@@ -1,0 +1,305 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.services.settingsservice &mdash; The Virtual Brain 1.0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.services.settingsservice</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Service layer for saving/editing TVB settings.</span>
+
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">hashlib</span> <span class="kn">import</span> <span class="n">md5</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">create_engine</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span> <span class="k">as</span> <span class="n">cfg</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">tvb.core.utils</span> <span class="kn">import</span> <span class="n">get_matlab_executable</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.exceptions</span> <span class="kn">import</span> <span class="n">InvalidSettingsException</span>
+
+
+
+<div class="viewcode-block" id="SettingsService"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.settingsservice.SettingsService">[docs]</a><span class="k">class</span> <span class="nc">SettingsService</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handle all TVB Setting related problems, at the service level.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">KEY_ADMIN_NAME</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">KEY_ADMIN_NAME</span>
+    <span class="n">KEY_ADMIN_PWD</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">KEY_ADMIN_PWD</span>
+    <span class="n">KEY_ADMIN_EMAIL</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">KEY_ADMIN_EMAIL</span>
+    <span class="n">KEY_STORAGE</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">KEY_STORAGE</span>
+    <span class="n">KEY_MAX_DISK_SPACE_USR</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">KEY_MAX_DISK_SPACE_USR</span>
+    <span class="n">KEY_MATLAB_EXECUTABLE</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">KEY_MATLAB_EXECUTABLE</span>
+    <span class="n">KEY_IP</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">KEY_IP</span>
+    <span class="n">KEY_PORT</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">KEY_PORT</span>
+    <span class="n">KEY_PORT_MPLH5</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">KEY_PORT_MPLH5</span>
+    <span class="n">KEY_SELECTED_DB</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">KEY_SELECTED_DB</span>
+    <span class="n">KEY_DB_URL</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">KEY_DB_URL</span>
+    <span class="n">KEY_CLUSTER</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">KEY_CLUSTER</span>
+    <span class="n">KEY_MAX_NR_THREADS</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">KEY_MAX_THREAD_NR</span>
+    <span class="n">KEY_MAX_RANGE</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">KEY_MAX_RANGE_NR</span>
+    <span class="n">KEY_MAX_NR_SURFACE_VERTEX</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">KEY_MAX_NR_SURFACE_VERTEX</span>
+    
+    <span class="c">#Display order for the keys. None means a separator/new line will be added</span>
+    <span class="n">KEYS_DISPLAY_ORDER</span> <span class="o">=</span> <span class="p">[</span><span class="n">KEY_ADMIN_NAME</span><span class="p">,</span> <span class="n">KEY_ADMIN_PWD</span><span class="p">,</span> <span class="n">KEY_ADMIN_EMAIL</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span>
+                          <span class="n">KEY_STORAGE</span><span class="p">,</span> <span class="n">KEY_MAX_DISK_SPACE_USR</span><span class="p">,</span> <span class="n">KEY_MATLAB_EXECUTABLE</span><span class="p">,</span> <span class="n">KEY_SELECTED_DB</span><span class="p">,</span> <span class="n">KEY_DB_URL</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span>
+                          <span class="n">KEY_IP</span><span class="p">,</span> <span class="n">KEY_PORT</span><span class="p">,</span> <span class="n">KEY_PORT_MPLH5</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">KEY_CLUSTER</span><span class="p">,</span> 
+                          <span class="n">KEY_MAX_NR_THREADS</span><span class="p">,</span> <span class="n">KEY_MAX_RANGE</span><span class="p">,</span> <span class="n">KEY_MAX_NR_SURFACE_VERTEX</span><span class="p">]</span>
+    
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">configurable_keys</span> <span class="o">=</span> <span class="p">{</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">KEY_STORAGE</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;label&#39;</span><span class="p">:</span><span class="s">&#39;Root folder for all projects&#39;</span><span class="p">,</span> <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">TVB_STORAGE</span><span class="p">,</span>
+                                        <span class="s">&#39;readonly&#39;</span><span class="p">:</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_first_run</span><span class="p">(),</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;text&#39;</span><span class="p">},</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">KEY_MAX_DISK_SPACE_USR</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;label&#39;</span><span class="p">:</span><span class="s">&#39;Max hard disk space per user (MBytes)&#39;</span><span class="p">,</span>
+                                                    <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MAX_DISK_SPACE</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">10</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;text&#39;</span><span class="p">},</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">KEY_MATLAB_EXECUTABLE</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;label&#39;</span><span class="p">:</span><span class="s">&#39;Optional Matlab or Octave path&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span><span class="s">&#39;text&#39;</span><span class="p">,</span>
+                                                  <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MATLAB_EXECUTABLE</span> <span class="ow">or</span> <span class="n">get_matlab_executable</span><span class="p">()</span> <span class="ow">or</span> <span class="s">&#39;&#39;</span><span class="p">,</span> 
+                                                  <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Some analyzers will not be available when matlab/octave are not found&#39;</span><span class="p">},</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">KEY_SELECTED_DB</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Select one DB engine&#39;</span><span class="p">,</span> <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">SELECTED_DB</span><span class="p">,</span>
+                                            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;select&#39;</span><span class="p">,</span> <span class="s">&#39;readonly&#39;</span><span class="p">:</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_first_run</span><span class="p">(),</span>
+                                            <span class="s">&#39;options&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">ACEEPTED_DBS</span> <span class="p">},</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">KEY_DB_URL</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&quot;DB connection URL&quot;</span><span class="p">,</span> <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">DB_URL</span><span class="p">,</span>
+                                       <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;text&#39;</span><span class="p">,</span> <span class="s">&#39;readonly&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">SELECTED_DB</span> <span class="o">==</span> <span class="s">&#39;sqlite&#39;</span><span class="p">},</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">KEY_IP</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Server name&#39;</span><span class="p">,</span> <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">SERVER_IP</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;text&#39;</span><span class="p">},</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">KEY_PORT</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;label&#39;</span><span class="p">:</span><span class="s">&#39;The port used by Cherrypy&#39;</span><span class="p">,</span>
+                                    <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">WEB_SERVER_PORT</span><span class="p">,</span> <span class="s">&#39;dtype&#39;</span><span class="p">:</span> <span class="s">&#39;primitive&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;text&#39;</span><span class="p">},</span> 
+                     <span class="bp">self</span><span class="o">.</span><span class="n">KEY_PORT_MPLH5</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Port used by Matplotlib&#39;</span><span class="p">,</span>
+                                           <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MPLH5_SERVER_PORT</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;text&#39;</span><span class="p">,</span> <span class="s">&#39;dtype&#39;</span><span class="p">:</span> <span class="s">&#39;primitive&#39;</span><span class="p">},</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">KEY_MAX_NR_THREADS</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;label&#39;</span> <span class="p">:</span> <span class="s">&#39;Maximum no. of threads for local installations&#39;</span><span class="p">,</span>
+                                               <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MAX_THREADS_NUMBER</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;text&#39;</span><span class="p">,</span> <span class="s">&#39;dtype&#39;</span><span class="p">:</span> <span class="s">&#39;primitive&#39;</span><span class="p">},</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">KEY_MAX_RANGE</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;label&#39;</span> <span class="p">:</span> <span class="s">&#39;Maximum no. of operations in one PSE&#39;</span><span class="p">,</span>
+                                          <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&quot;Parameters Space Exploration (PSE) maximum number of operations&quot;</span><span class="p">,</span>
+                                          <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MAX_RANGE_NUMBER</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;text&#39;</span><span class="p">,</span> <span class="s">&#39;dtype&#39;</span><span class="p">:</span> <span class="s">&#39;primitive&#39;</span><span class="p">},</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">KEY_MAX_NR_SURFACE_VERTEX</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;label&#39;</span> <span class="p">:</span> <span class="s">&#39;Maximum no. of vertices in a surface&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;text&#39;</span><span class="p">,</span>
+                                                      <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MAX_SURFACE_VERTICES_NUMBER</span><span class="p">,</span> <span class="s">&#39;dtype&#39;</span><span class="p">:</span> <span class="s">&#39;primitive&#39;</span><span class="p">},</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">KEY_CLUSTER</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;label&#39;</span><span class="p">:</span><span class="s">&#39;Deploy on cluster&#39;</span><span class="p">,</span> <span class="s">&#39;value&#39;</span><span class="p">:</span><span class="n">cfg</span><span class="o">.</span><span class="n">DEPLOY_CLUSTER</span><span class="p">,</span>
+                                        <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Check this only if on the web-server machine OARSUB command is enabled.&#39;</span><span class="p">,</span>
+                                        <span class="s">&#39;dtype&#39;</span><span class="p">:</span><span class="s">&#39;primitive&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span><span class="s">&#39;boolean&#39;</span><span class="p">},</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">KEY_ADMIN_NAME</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Administrator User Name&#39;</span><span class="p">,</span> <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">ADMINISTRATOR_NAME</span><span class="p">,</span>
+                                           <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;text&#39;</span><span class="p">,</span> <span class="s">&#39;readonly&#39;</span><span class="p">:</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_first_run</span><span class="p">(),</span>
+                                           <span class="s">&#39;description&#39;</span><span class="p">:(</span><span class="s">&#39;Password and Email can be edited after first run, &#39;</span>
+                                                          <span class="s">&#39;from the profile page directly.&#39;</span><span class="p">)},</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">KEY_ADMIN_PWD</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Password&#39;</span><span class="p">,</span> 
+                                          <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">ADMINISTRATOR_BLANK_PWD</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_first_run</span><span class="p">()</span> 
+                                                    <span class="k">else</span> <span class="n">cfg</span><span class="o">.</span><span class="n">ADMINISTRATOR_PASSWORD</span><span class="p">,</span>
+                                          <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;password&#39;</span><span class="p">,</span> <span class="s">&#39;readonly&#39;</span><span class="p">:</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_first_run</span><span class="p">()},</span> 
+                     <span class="bp">self</span><span class="o">.</span><span class="n">KEY_ADMIN_EMAIL</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Administrator Email&#39;</span><span class="p">,</span> <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">ADMINISTRATOR_EMAIL</span><span class="p">,</span>
+                                            <span class="s">&#39;readonly&#39;</span><span class="p">:</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_first_run</span><span class="p">(),</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;text&#39;</span> <span class="p">}}</span>
+        
+
+<div class="viewcode-block" id="SettingsService.check_db_url"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.settingsservice.SettingsService.check_db_url">[docs]</a>    <span class="k">def</span> <span class="nf">check_db_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Validate DB URL, that a connection can be done.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>           
+            <span class="n">connection</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+            <span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">InvalidSettingsException</span><span class="p">(</span><span class="s">&#39;Could not connect to DB! &#39;</span> <span class="s">&#39;Invalid URL:&#39;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">url</span><span class="p">))</span> 
+        
+        </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="SettingsService.is_first_run"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.settingsservice.SettingsService.is_first_run">[docs]</a>    <span class="k">def</span> <span class="nf">is_first_run</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if this is the first time TVB was started.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">file_dict</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">read_config_file</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">file_dict</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_dict</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">)</span>
+    
+    </div>
+    <span class="nd">@staticmethod</span>   
+<div class="viewcode-block" id="SettingsService.get_disk_free_space"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.settingsservice.SettingsService.get_disk_free_space">[docs]</a>    <span class="k">def</span> <span class="nf">get_disk_free_space</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: the available HDD space in KB in TVB_STORAGE folder.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;win&#39;</span><span class="p">):</span>
+            <span class="kn">import</span> <span class="nn">ctypes</span>
+            <span class="n">drive</span> <span class="o">=</span> <span class="nb">unicode</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s">&quot;SystemDrive&quot;</span><span class="p">))</span>
+            <span class="n">freeuser</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int64</span><span class="p">()</span>
+            <span class="n">total</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int64</span><span class="p">()</span>
+            <span class="n">free</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int64</span><span class="p">()</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">GetDiskFreeSpaceExW</span><span class="p">(</span><span class="n">drive</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">freeuser</span><span class="p">),</span>
+                                                       <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">total</span><span class="p">),</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">free</span><span class="p">))</span>
+            <span class="n">bytes_value</span> <span class="o">=</span>  <span class="n">freeuser</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mem_stat</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">statvfs</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">TVB_STORAGE</span><span class="p">)</span>
+            <span class="n">bytes_value</span> <span class="o">=</span> <span class="n">mem_stat</span><span class="o">.</span><span class="n">f_frsize</span> <span class="o">*</span> <span class="n">mem_stat</span><span class="o">.</span><span class="n">f_bavail</span>
+            <span class="c">## Occupied memory would be:</span>
+            <span class="c">#bytes_value = mem_stat.f_bsize * mem_stat.f_bavail</span>
+        <span class="k">return</span> <span class="n">bytes_value</span> <span class="o">/</span> <span class="mi">2</span><span class="o">**</span><span class="mi">10</span>
+  
+    </div>
+<div class="viewcode-block" id="SettingsService.save_settings"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.settingsservice.SettingsService.save_settings">[docs]</a>    <span class="k">def</span> <span class="nf">save_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if new settings are correct. </span>
+<span class="sd">        Make necessary changes, then save new data in configuration file.</span>
+<span class="sd">        Return two booleans:</span>
+<span class="sd">        -there were any changes to the configuration;</span>
+<span class="sd">        -a reset should be performed on the TVB relaunch.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_storage</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_STORAGE</span><span class="p">]</span>
+        <span class="n">previous_storage</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">TVB_STORAGE</span>
+
+        <span class="n">new_db</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_SELECTED_DB</span><span class="p">]</span>
+        <span class="n">previous_db</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">SELECTED_DB</span>
+        <span class="n">db_changed</span> <span class="o">=</span> <span class="n">new_db</span> <span class="o">!=</span> <span class="n">previous_db</span>
+        <span class="n">storage_changed</span> <span class="o">=</span> <span class="n">new_storage</span> <span class="o">!=</span> <span class="n">previous_storage</span>
+        
+        <span class="n">matlab_exec</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_MATLAB_EXECUTABLE</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">matlab_exec</span> <span class="o">==</span> <span class="s">&#39;None&#39;</span><span class="p">:</span> 
+            <span class="n">matlab_exec</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="c">#Storage changed but DB didn&#39;t, just copy TVB storage to new one.</span>
+        <span class="k">if</span> <span class="n">storage_changed</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">db_changed</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">new_storage</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">new_storage</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="p">):</span>
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">new_storage</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">InvalidSettingsException</span><span class="p">(</span><span class="s">&quot;No Write access on storage folder!!&quot;</span><span class="p">)</span> 
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">previous_storage</span><span class="p">,</span> <span class="n">new_storage</span><span class="p">)</span>
+            
+        <span class="c">#Save data to file, all while checking if any data has changed</span>
+        <span class="n">first_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_first_run</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">first_run</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">cfg</span><span class="o">.</span><span class="n">KEY_LAST_CHECKED_FILE_VERSION</span><span class="p">]</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">DATA_VERSION</span>
+            <span class="n">file_data</span> <span class="o">=</span> <span class="n">data</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">KEY_ADMIN_PWD</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_ADMIN_PWD</span><span class="p">]</span> <span class="o">=</span> <span class="n">md5</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_ADMIN_PWD</span><span class="p">])</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+            <span class="n">anything_changed</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">file_data</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">read_config_file</span><span class="p">()</span>
+            <span class="n">anything_changed</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">file_data</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_data</span><span class="p">[</span><span class="n">key</span><span class="p">]):</span>
+                    <span class="n">anything_changed</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="n">file_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">db_changed</span><span class="p">:</span>
+                <span class="n">file_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_DB_URL</span><span class="p">]</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">DB_URL</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">file_data</span><span class="p">:</span>
+                    <span class="n">anything_changed</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="n">file_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="c"># Write in file new data</span>
+        <span class="k">if</span> <span class="n">anything_changed</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">TVB_CONFIG_FILE</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_writer</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">file_data</span><span class="p">:</span>
+                    <span class="n">file_writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">key</span> <span class="o">+</span> <span class="s">&#39;=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_data</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">TVB_CONFIG_FILE</span><span class="p">,</span> <span class="mo">0644</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">anything_changed</span><span class="p">,</span> <span class="n">first_run</span> <span class="ow">or</span> <span class="n">db_changed</span>
+
+
+ 
+                    </div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

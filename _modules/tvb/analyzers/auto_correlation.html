@@ -1,0 +1,173 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.analyzers.auto_correlation &mdash; The Virtual Brain 1.0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.analyzers.auto_correlation</h1><pre>
+# -*- coding: utf-8 -*-
+#
+#
+#  TheVirtualBrain-Scientific Package. This package holds all simulators, and 
+# analysers necessary to run brain-simulations. You can use it stand alone or
+# in conjunction with TheVirtualBrain-Framework Package. See content of the
+# documentation-folder for more details. See also http://www.thevirtualbrain.org
+#
+# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
+#
+# This program is free software; you can redistribute it and/or modify it under 
+# the terms of the GNU General Public License version 2 as published by the Free
+# Software Foundation. This program is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+# License for more details. You should have received a copy of the GNU General 
+# Public License along with this program; if not, you can download it here
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0
+#
+#
+
+"""
+Calculate a ... on a .. datatype and return a ...
+
+.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;
+
+"""
+
+import numpy
+#TODO: Currently built around the Simulator's 4D timeseries -- generalise...
+import tvb.datatypes.time_series as time_series
+import tvb.basic.traits.core as core
+import tvb.basic.traits.util as util
+from tvb.basic.logger.builder import get_logger
+
+LOG = get_logger(__name__)
+
+
+
+<div class="viewcode-block" id="AutoCorrelation"><a class="viewcode-back" href="../../../tvb.analyzers.html#tvb.analyzers.auto_correlation.AutoCorrelation">[docs]</a>class AutoCorrelation(core.Type):
+    """
+    Compute the auto-correlation of the given input 4D TimeSeries datatype.
+    
+    Return a number_of_nodes-by-number_of_nodes auto-correlation matrix. 
+    """
+    
+    time_series = time_series.TimeSeries(
+        label = "Time Series",
+        required = True,
+        doc = """The timeseries on which the auto-correlation is calculated.""")
+    
+    
+    def evaluate(self):
+        """
+        Auto-correlate two one-dimensional arrays.
+        """
+        
+        self.time_series.trait["data"].log_debug(owner=self.__class__.__name__+".time_series")
+    
+        data_shape = self.time_series.data.shape
+        result_shape = data_shape
+        
+        #Base-line correct the segmented time-series
+        time_series = self.time_series.data
+        time_series = time_series - time_series.mean(axis=0)[numpy.newaxis, :]
+        util.log_debug_array(LOG, time_series, "time_series")
+        
+        result = numpy.zeros(result_shape)
+        for var in range(data_shape[1]):
+            for node in range(data_shape[2]):
+                for mode in range(data_shape[3]):
+                    x = time_series[:, var, node, mode]
+                    #import pdb; pdb.set_trace()
+                    result[:, var, node, mode] = numpy.correlate(x, x, mode="full")[(result_shape[0]-1):]
+        
+        util.log_debug_array(LOG, result, "result")
+        
+        return result</div>
+</pre>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

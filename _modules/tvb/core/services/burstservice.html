@@ -1,0 +1,729 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.services.burstservice &mdash; The Virtual Brain 1.0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.services.burstservice</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Apr 27, 2012</span>
+
+<span class="sd">.. moduleauthor:: lia.domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: bogdan.neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">IntType</span>
+<span class="kn">from</span> <span class="nn">tvb.config</span> <span class="kn">import</span> <span class="n">MEASURE_METRICS_MODULE</span><span class="p">,</span> <span class="n">MEASURE_METRICS_CLASS</span><span class="p">,</span> <span class="n">DEFAULT_PORTLETS</span>
+<span class="kn">from</span> <span class="nn">tvb.config</span> <span class="kn">import</span> <span class="n">SIMULATION_DATATYPE_MODULE</span><span class="p">,</span> <span class="n">SIMULATION_DATATYPE_CLASS</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">import</span> <span class="nn">tvb.core.entities.model</span> <span class="kn">as</span> <span class="nn">model</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.model</span> <span class="kn">import</span> <span class="n">KEY_PARAMETER_CHECKED</span><span class="p">,</span> <span class="n">KEY_SAVED_VALUE</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.transient.structure_entities</span> <span class="kn">import</span> <span class="n">DataTypeMetaData</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.transient.burst_configuration_entities</span> <span class="kn">import</span> <span class="n">PortletConfiguration</span><span class="p">,</span> <span class="n">WorkflowStepConfiguration</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.storage</span> <span class="kn">import</span> <span class="n">dao</span><span class="p">,</span> <span class="n">transactional</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.abcadapter</span> <span class="kn">import</span> <span class="n">ABCAdapter</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.abcdisplayer</span> <span class="kn">import</span> <span class="n">ABCDisplayer</span><span class="p">,</span> <span class="n">ABCMPLH5Displayer</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.operationservice</span> <span class="kn">import</span> <span class="n">OperationService</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.flowservice</span> <span class="kn">import</span> <span class="n">FlowService</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.workflowservice</span> <span class="kn">import</span> <span class="n">WorkflowService</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.projectservice</span> <span class="kn">import</span> <span class="n">ProjectService</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.exceptions</span> <span class="kn">import</span> <span class="n">RemoveDataTypeException</span><span class="p">,</span> <span class="n">InvalidPortletConfiguration</span><span class="p">,</span> <span class="n">BurstServiceException</span>
+<span class="kn">from</span> <span class="nn">tvb.core.portlets.portlet_configurer</span> <span class="kn">import</span> <span class="n">PortletConfigurer</span>
+
+
+<span class="n">MAX_BURSTS_DISPLAYED</span> <span class="o">=</span> <span class="mi">50</span>
+
+
+<div class="viewcode-block" id="BurstService"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.burstservice.BurstService">[docs]</a><span class="k">class</span> <span class="nc">BurstService</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Service layer for Burst related entities.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operation_service</span> <span class="o">=</span> <span class="n">OperationService</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">workflow_service</span> <span class="o">=</span> <span class="n">WorkflowService</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span><span class="p">)</span>
+    
+    
+<div class="viewcode-block" id="BurstService.build_portlet_interface"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.burstservice.BurstService.build_portlet_interface">[docs]</a>    <span class="k">def</span> <span class="nf">build_portlet_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">portlet_configuration</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        From a portlet_id and a project_id, first build the portlet</span>
+<span class="sd">        entity then get it&#39;s configurable interface. </span>
+<span class="sd">        </span>
+<span class="sd">        :param portlet_config: a portlet configuration entity. It holds at the</span>
+<span class="sd">            least the portlet_id, and in case any default parameters were saved</span>
+<span class="sd">            they can be rebuilt from the analyzers // visualizer parameters</span>
+<span class="sd">        :param project_id: the id of the current project   </span>
+<span class="sd">            </span>
+<span class="sd">        :return: the portlet interface will be of the following form::</span>
+<span class="sd">            [{&#39;interface&#39;: adapter_interface, </span>
+<span class="sd">            &#39;prefix&#39;: prefix_for_parameter_names, </span>
+<span class="sd">            &#39;subalg&#39;: {algorithm_field_name: default_algorithm_value},</span>
+<span class="sd">            &#39;algo_group&#39;: algorithm_group,</span>
+<span class="sd">            &#39;alg_ui_name&#39;: displayname},</span>
+<span class="sd">            ......]</span>
+<span class="sd">            A list of dictionaries for each adapter that makes up the portlet.</span>
+<span class="sd">            </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">portlet_entity</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_portlet_by_id</span><span class="p">(</span><span class="n">portlet_configuration</span><span class="o">.</span><span class="n">portlet_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">portlet_entity</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidPortletConfiguration</span><span class="p">(</span><span class="s">&quot;No portlet entity located in database with id=</span><span class="si">%s</span><span class="s">. &quot;</span>
+                                              <span class="s">&quot;Portlet configuration </span><span class="si">%s</span><span class="s"> is not valid.&quot;</span><span class="o">%</span><span class="p">(</span>
+                                              <span class="n">portlet_configuration</span><span class="o">.</span><span class="n">portlet_id</span><span class="p">,</span> <span class="n">portlet_configuration</span><span class="p">))</span>
+        <span class="n">portlet_configurer</span> <span class="o">=</span> <span class="n">PortletConfigurer</span><span class="p">(</span><span class="n">portlet_entity</span><span class="p">)</span>
+        <span class="n">portlet_interface</span> <span class="o">=</span> <span class="n">portlet_configurer</span><span class="o">.</span><span class="n">get_configurable_interface</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Created interface for portlet &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">([</span><span class="n">portlet_entity</span><span class="p">]))</span> 
+         
+        <span class="k">for</span> <span class="n">adapter_conf</span> <span class="ow">in</span> <span class="n">portlet_interface</span><span class="p">:</span>
+            <span class="n">interface</span> <span class="o">=</span> <span class="n">adapter_conf</span><span class="o">.</span><span class="n">interface</span>
+            <span class="n">interface</span> <span class="o">=</span> <span class="n">FlowService</span><span class="p">()</span><span class="o">.</span><span class="n">prepare_parameters</span><span class="p">(</span><span class="n">interface</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">adapter_conf</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">fk_category</span><span class="p">)</span>
+            <span class="n">interface</span> <span class="o">=</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">prepare_param_names</span><span class="p">(</span><span class="n">interface</span><span class="p">,</span> <span class="n">adapter_conf</span><span class="o">.</span><span class="n">prefix</span><span class="p">)</span>
+            <span class="n">adapter_conf</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="n">interface</span>
+        
+        <span class="n">portlet_configurer</span><span class="o">.</span><span class="n">update_default_values</span><span class="p">(</span><span class="n">portlet_interface</span><span class="p">,</span> <span class="n">portlet_configuration</span><span class="p">)</span>
+        <span class="n">portlet_configurer</span><span class="o">.</span><span class="n">prefix_adapters_parameters</span><span class="p">(</span><span class="n">portlet_interface</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">portlet_interface</span>
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BurstService.update_portlet_configuration"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.burstservice.BurstService.update_portlet_configuration">[docs]</a>    <span class="k">def</span> <span class="nf">update_portlet_configuration</span><span class="p">(</span><span class="n">portlet_configuration</span><span class="p">,</span> <span class="n">submited_parameters</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param portlet_configuration: the portlet configuration that needs to be updated</span>
+<span class="sd">        :param submited_parameters: a list of parameters as submitted from the UI. This </span>
+<span class="sd">            is a dictionary in the form : </span>
+<span class="sd">            {&#39;dynamic&#39; : {name:value pairs}, &#39;static&#39; : {name:value pairs}}</span>
+<span class="sd">            </span>
+<span class="sd">        All names are prefixed with adapter specific generated prefix.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">portlet_entity</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_portlet_by_id</span><span class="p">(</span><span class="n">portlet_configuration</span><span class="o">.</span><span class="n">portlet_id</span><span class="p">)</span>
+        <span class="n">portlet_configurer</span> <span class="o">=</span> <span class="n">PortletConfigurer</span><span class="p">(</span><span class="n">portlet_entity</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">portlet_configurer</span><span class="o">.</span><span class="n">update_portlet_configuration</span><span class="p">(</span><span class="n">portlet_configuration</span><span class="p">,</span> <span class="n">submited_parameters</span><span class="p">)</span>
+
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BurstService.new_burst_configuration"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.burstservice.BurstService.new_burst_configuration">[docs]</a>    <span class="k">def</span> <span class="nf">new_burst_configuration</span><span class="p">(</span><span class="n">project_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a new burst configuration entity with all the default values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">burst_configuration</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">BurstConfiguration</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+        <span class="n">burst_configuration</span><span class="o">.</span><span class="n">selected_tab</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">BurstService</span><span class="o">.</span><span class="n">set_default_portlets</span><span class="p">(</span><span class="n">burst_configuration</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">burst_configuration</span>
+
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BurstService.set_default_portlets"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.burstservice.BurstService.set_default_portlets">[docs]</a>    <span class="k">def</span> <span class="nf">set_default_portlets</span><span class="p">(</span><span class="n">burst_configuration</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the default portlets for the specified burst configuration.</span>
+<span class="sd">        The default portlets are specified in the __init__.py script from tvb root.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">tab_idx</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">DEFAULT_PORTLETS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">sel_idx</span><span class="p">,</span> <span class="n">portlet_identifier</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">portlet</span> <span class="o">=</span> <span class="n">BurstService</span><span class="o">.</span><span class="n">get_portlet_by_identifier</span><span class="p">(</span><span class="n">portlet_identifier</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">portlet</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">portlet_configuration</span> <span class="o">=</span> <span class="n">BurstService</span><span class="o">.</span><span class="n">new_portlet_configuration</span><span class="p">(</span><span class="n">portlet</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">tab_idx</span><span class="p">,</span>
+                        <span class="n">sel_idx</span><span class="p">,</span> <span class="n">portlet</span><span class="o">.</span><span class="n">algorithm_identifier</span><span class="p">)</span>
+                    <span class="n">burst_configuration</span><span class="o">.</span><span class="n">set_portlet</span><span class="p">(</span><span class="n">tab_idx</span><span class="p">,</span> <span class="n">sel_idx</span><span class="p">,</span> <span class="n">portlet_configuration</span><span class="p">)</span>
+
+</div>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_store_burst_config</span><span class="p">(</span><span class="n">burst_config</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Store a burst configuration entity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">burst_config</span><span class="o">.</span><span class="n">prepare_before_save</span><span class="p">()</span>
+        <span class="n">saved_entity</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">burst_config</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">saved_entity</span><span class="o">.</span><span class="n">id</span>
+    
+    
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BurstService.get_available_bursts"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.burstservice.BurstService.get_available_bursts">[docs]</a>    <span class="k">def</span> <span class="nf">get_available_bursts</span><span class="p">(</span><span class="n">project_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return all the burst for the current project.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bursts</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_bursts_for_project</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">page_end</span> <span class="o">=</span> <span class="n">MAX_BURSTS_DISPLAYED</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">burst</span> <span class="ow">in</span> <span class="n">bursts</span><span class="p">:</span>
+            <span class="n">burst</span><span class="o">.</span><span class="n">prepare_after_load</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">bursts</span>
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BurstService.rename_burst"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.burstservice.BurstService.rename_burst">[docs]</a>    <span class="k">def</span> <span class="nf">rename_burst</span><span class="p">(</span><span class="n">burst_id</span><span class="p">,</span> <span class="n">new_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rename the burst given by burst_id, setting it&#39;s new name to</span>
+<span class="sd">        burst_name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">burst</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_burst_by_id</span><span class="p">(</span><span class="n">burst_id</span><span class="p">)</span>
+        <span class="n">burst</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">new_name</span>
+        <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">burst</span><span class="p">)</span>
+    </div>
+<div class="viewcode-block" id="BurstService.load_burst"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.burstservice.BurstService.load_burst">[docs]</a>    <span class="k">def</span> <span class="nf">load_burst</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">burst_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param burst_id: the id of the burst that should be loaded</span>
+<span class="sd">        </span>
+<span class="sd">        Having this input the method should:</span>
+<span class="sd">        </span>
+<span class="sd">            - load the entity from the DB</span>
+<span class="sd">            - get all the workflow steps for the saved burst id</span>
+<span class="sd">            - go trough the visualization workflow steps to create the tab </span>
+<span class="sd">                configuration of the burst using the tab_index and index_in_tab </span>
+<span class="sd">                fields saved on each workflow_step</span>
+<span class="sd">                </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">burst</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_burst_by_id</span><span class="p">(</span><span class="n">burst_id</span><span class="p">)</span>
+        <span class="n">burst</span><span class="o">.</span><span class="n">prepare_after_load</span><span class="p">()</span>
+        <span class="n">burst</span><span class="o">.</span><span class="n">reset_tabs</span><span class="p">()</span>
+        <span class="n">burst_workflows</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_workflows_for_burst</span><span class="p">(</span><span class="n">burst</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        
+        <span class="n">group_id</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">burst_workflows</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c"># A simple burst with no range parameters</span>
+            <span class="n">burst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__populate_tabs_from_workflow</span><span class="p">(</span><span class="n">burst</span><span class="p">,</span> <span class="n">burst_workflows</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">burst_workflows</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c"># A burst workflow with a range of values, created multiple workflows and need</span>
+            <span class="c"># to launch parameter space exploration with the resulted group</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__populate_tabs_from_workflow</span><span class="p">(</span><span class="n">burst</span><span class="p">,</span> <span class="n">burst_workflows</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">executed_steps</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_workflow_steps</span><span class="p">(</span><span class="n">burst_workflows</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">workflow_group</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">operation</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operation_by_id</span><span class="p">(</span><span class="n">executed_steps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fk_operation</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">operation</span><span class="o">.</span><span class="n">operation_group</span><span class="p">:</span>
+                <span class="n">workflow_group</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_datatypegroup_by_op_group_id</span><span class="p">(</span><span class="n">operation</span><span class="o">.</span><span class="n">operation_group</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="n">group_id</span> <span class="o">=</span> <span class="n">workflow_group</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">return</span> <span class="n">burst</span><span class="p">,</span> <span class="n">group_id</span>
+    </div>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__populate_tabs_from_workflow</span><span class="p">(</span><span class="n">burst_entity</span><span class="p">,</span> <span class="n">workflow</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a burst and a workflow populate the tabs of the burst with the PortletConfigurations</span>
+<span class="sd">        generated from the steps of the workflow.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">visualizers</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_visualization_steps</span><span class="p">(</span><span class="n">workflow</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">visualizers</span><span class="p">:</span>
+            <span class="c">## For each visualize step, also load all of the analyze steps.</span>
+            <span class="n">portlet_cfg</span> <span class="o">=</span> <span class="n">PortletConfiguration</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">fk_portlet</span><span class="p">)</span>
+            <span class="n">portlet_cfg</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">ui_name</span>
+            <span class="n">portlet_cfg</span><span class="o">.</span><span class="n">set_visualizer</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+            <span class="n">analyzers</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_workflow_steps_for_position</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">fk_workflow</span><span class="p">,</span> <span class="n">entry</span><span class="o">.</span><span class="n">tab_index</span><span class="p">,</span> <span class="n">entry</span><span class="o">.</span><span class="n">index_in_tab</span><span class="p">)</span>
+            <span class="n">portlet_cfg</span><span class="o">.</span><span class="n">set_analyzers</span><span class="p">(</span><span class="n">analyzers</span><span class="p">)</span>
+            <span class="n">burst_entity</span><span class="o">.</span><span class="n">tabs</span><span class="p">[</span><span class="n">entry</span><span class="o">.</span><span class="n">tab_index</span><span class="p">]</span><span class="o">.</span><span class="n">portlets</span><span class="p">[</span><span class="n">entry</span><span class="o">.</span><span class="n">index_in_tab</span><span class="p">]</span> <span class="o">=</span> <span class="n">portlet_cfg</span>
+        <span class="k">return</span> <span class="n">burst_entity</span>
+    
+<div class="viewcode-block" id="BurstService.load_tab_configuration"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.burstservice.BurstService.load_tab_configuration">[docs]</a>    <span class="k">def</span> <span class="nf">load_tab_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">burst_entity</span><span class="p">,</span> <span class="n">op_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a burst entity and an operation id, find the workflow to which the op_id</span>
+<span class="sd">        belongs and the load the burst_entity&#39;s tab configuration with those workflow steps.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">originating_workflow</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_workflow_for_operation_id</span><span class="p">(</span><span class="n">op_id</span><span class="p">)</span>
+        <span class="n">burst_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__populate_tabs_from_workflow</span><span class="p">(</span><span class="n">burst_entity</span><span class="p">,</span> <span class="n">originating_workflow</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">burst_entity</span>
+    
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BurstService.new_portlet_configuration"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.burstservice.BurstService.new_portlet_configuration">[docs]</a>    <span class="k">def</span> <span class="nf">new_portlet_configuration</span><span class="p">(</span><span class="n">portlet_id</span><span class="p">,</span> <span class="n">tab_nr</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">index_in_tab</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">portlet_name</span><span class="o">=</span><span class="s">&#39;Default&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a new portlet configuration entitiy with default parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        :param portlet_id: the id of the portlet for which a configuration will</span>
+<span class="sd">            be stored</span>
+<span class="sd">        :param tab_nr: the index of the currently selected tab</span>
+<span class="sd">        :param index_in_tab: the index from the currently selected tab</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">portlet_entity</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_portlet_by_id</span><span class="p">(</span><span class="n">portlet_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">portlet_entity</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidPortletConfiguration</span><span class="p">(</span><span class="s">&quot;No portlet entity located in database with id=</span><span class="si">%s</span><span class="s">.&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">portlet_id</span><span class="p">))</span>
+        <span class="n">portlet_configurer</span> <span class="o">=</span> <span class="n">PortletConfigurer</span><span class="p">(</span><span class="n">portlet_entity</span><span class="p">)</span>
+        <span class="n">configuration</span> <span class="o">=</span> <span class="n">portlet_configurer</span><span class="o">.</span><span class="n">create_new_portlet_configuration</span><span class="p">(</span><span class="n">portlet_name</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">wf_step</span> <span class="ow">in</span> <span class="n">configuration</span><span class="o">.</span><span class="n">analyzers</span><span class="p">:</span>
+            <span class="n">wf_step</span><span class="o">.</span><span class="n">tab_index</span> <span class="o">=</span> <span class="n">tab_nr</span>
+            <span class="n">wf_step</span><span class="o">.</span><span class="n">index_in_tab</span> <span class="o">=</span> <span class="n">index_in_tab</span>
+        <span class="n">configuration</span><span class="o">.</span><span class="n">visualizer</span><span class="o">.</span><span class="n">tab_index</span> <span class="o">=</span> <span class="n">tab_nr</span>
+        <span class="n">configuration</span><span class="o">.</span><span class="n">visualizer</span><span class="o">.</span><span class="n">index_in_tab</span> <span class="o">=</span> <span class="n">index_in_tab</span>
+        <span class="k">return</span> <span class="n">configuration</span> 
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BurstService.get_available_portlets"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.burstservice.BurstService.get_available_portlets">[docs]</a>    <span class="k">def</span> <span class="nf">get_available_portlets</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: a list of all the available portlet entites</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_available_portlets</span><span class="p">()</span>
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BurstService.get_portlet_by_id"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.burstservice.BurstService.get_portlet_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_portlet_by_id</span><span class="p">(</span><span class="n">portlet_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: the portlet entity with the id =@portlet_id</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_portlet_by_id</span><span class="p">(</span><span class="n">portlet_id</span><span class="p">)</span>
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BurstService.get_portlet_by_identifier"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.burstservice.BurstService.get_portlet_by_identifier">[docs]</a>    <span class="k">def</span> <span class="nf">get_portlet_by_identifier</span><span class="p">(</span><span class="n">portlet_identifier</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: the portlet entity with the algorithm identifier =@portlet_identifier</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_portlet_by_identifier</span><span class="p">(</span><span class="n">portlet_identifier</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="BurstService.launch_burst"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.burstservice.BurstService.launch_burst">[docs]</a>    <span class="k">def</span> <span class="nf">launch_burst</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">burst_configuration</span><span class="p">,</span> <span class="n">simulator_index</span><span class="p">,</span> <span class="n">simulator_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">launch_mode</span><span class="o">=</span><span class="s">&#39;new&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a burst configuration and all the necessary data do the actual launch.</span>
+<span class="sd">        </span>
+<span class="sd">        :param burst_configuration: BurstConfiguration   </span>
+<span class="sd">        :param simulator_index: the position within the workflows step list that the simulator will take. This is needed</span>
+<span class="sd">            so that the rest of the portlet workflow steps know what steps do their dynamic parameters come from.</span>
+<span class="sd">        :param simulator_id: the id of the simulator adapter as stored in the DB. It&#39;s needed to load the simulator algo</span>
+<span class="sd">            group and category that are then passed to the launcher&#39;s prepare_operation method.</span>
+<span class="sd">        :param user_id: the id of the user that launched this burst</span>
+<span class="sd">        :param launch_mode: new/branch/continue</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">## 1. Prepare BurstConfiguration entity</span>
+        <span class="k">if</span> <span class="n">launch_mode</span> <span class="o">==</span> <span class="s">&#39;new&#39;</span><span class="p">:</span>
+            <span class="c">## Fully new entity for new simulation</span>
+            <span class="n">burst_config</span> <span class="o">=</span> <span class="n">burst_configuration</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">burst_config</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">new_id</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_max_burst_id</span><span class="p">()</span>
+                <span class="n">burst_config</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#39;simulation_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">new_id</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c">## Branch or Continue simulation</span>
+            <span class="n">burst_config</span> <span class="o">=</span> <span class="n">burst_configuration</span>
+            <span class="n">simulation_state</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_generic_entity</span><span class="p">(</span><span class="n">SIMULATION_DATATYPE_MODULE</span> <span class="o">+</span> <span class="s">&quot;.&quot;</span> <span class="o">+</span> <span class="n">SIMULATION_DATATYPE_CLASS</span><span class="p">,</span>
+                                                      <span class="n">burst_config</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s">&quot;fk_parent_burst&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">simulation_state</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">simulation_state</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">exc</span> <span class="o">=</span> <span class="n">BurstServiceException</span><span class="p">(</span><span class="s">&quot;Simulation state not found for burst_id </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">burst_config</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">exc</span>
+            
+            <span class="n">simulation_state</span> <span class="o">=</span> <span class="n">simulation_state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">burst_config</span><span class="o">.</span><span class="n">update_simulation_parameter</span><span class="p">(</span><span class="s">&quot;simulation_state&quot;</span><span class="p">,</span> <span class="n">simulation_state</span><span class="o">.</span><span class="n">gid</span><span class="p">)</span>
+            <span class="n">burst_config</span> <span class="o">=</span> <span class="n">burst_configuration</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+            
+            <span class="n">count</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">count_bursts_with_name</span><span class="p">(</span><span class="n">burst_config</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">burst_config</span><span class="o">.</span><span class="n">fk_project</span><span class="p">)</span>
+            <span class="n">burst_config</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">burst_config</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&quot;_&quot;</span> <span class="o">+</span> <span class="n">launch_mode</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+            
+        <span class="c">## 2. Create Operations and do the actual launch  </span>
+        <span class="k">if</span> <span class="n">launch_mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;new&#39;</span><span class="p">,</span> <span class="s">&#39;branch&#39;</span><span class="p">]:</span>
+            <span class="c">## New Burst entry in the history</span>
+            <span class="n">burst_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store_burst_config</span><span class="p">(</span><span class="n">burst_config</span><span class="p">)</span>
+            <span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_launch_and_prepare</span><span class="p">,</span> 
+                                      <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;burst_config&#39;</span> <span class="p">:</span> <span class="n">burst_config</span><span class="p">,</span> 
+                                                <span class="s">&#39;simulator_index&#39;</span> <span class="p">:</span> <span class="n">simulator_index</span><span class="p">,</span>
+                                                <span class="s">&#39;simulator_id&#39;</span> <span class="p">:</span> <span class="n">simulator_id</span><span class="p">,</span>
+                                                <span class="s">&#39;user_id&#39;</span> <span class="p">:</span> <span class="n">user_id</span><span class="p">})</span>
+            <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">burst_id</span><span class="p">,</span> <span class="n">burst_config</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c">## Continue simulation</span>
+            <span class="c">## TODO</span>
+            <span class="k">return</span> <span class="n">burst_config</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">burst_config</span><span class="o">.</span><span class="n">name</span>
+        
+        </div>
+    <span class="nd">@transactional</span>
+    <span class="k">def</span> <span class="nf">_prepare_operations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">burst_config</span><span class="p">,</span> <span class="n">simulator_index</span><span class="p">,</span> <span class="n">simulator_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare all required operations for burst launch.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">project_id</span> <span class="o">=</span> <span class="n">burst_config</span><span class="o">.</span><span class="n">fk_project</span>
+        <span class="n">burst_id</span> <span class="o">=</span> <span class="n">burst_config</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">workflow_step_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">starting_index</span> <span class="o">=</span> <span class="n">simulator_index</span> <span class="o">+</span> <span class="mi">1</span>
+        
+        <span class="n">sim_algo</span> <span class="o">=</span> <span class="n">FlowService</span><span class="p">()</span><span class="o">.</span><span class="n">get_algorithm_by_identifier</span><span class="p">(</span><span class="n">simulator_id</span><span class="p">)</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span><span class="n">DataTypeMetaData</span><span class="o">.</span><span class="n">KEY_BURST</span><span class="p">:</span> <span class="n">burst_id</span><span class="p">}</span>
+        <span class="n">launch_data</span> <span class="o">=</span> <span class="n">burst_config</span><span class="o">.</span><span class="n">get_all_simulator_values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">operations</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">operation_service</span><span class="o">.</span><span class="n">prepare_operations</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">sim_algo</span><span class="p">,</span> 
+                                                                      <span class="n">sim_algo</span><span class="o">.</span><span class="n">algo_group</span><span class="o">.</span><span class="n">group_category</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> 
+                                                                      <span class="o">**</span><span class="n">launch_data</span><span class="p">)</span>
+        <span class="n">group_launched</span> <span class="o">=</span> <span class="n">group</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">group_launched</span><span class="p">:</span>
+            <span class="n">starting_index</span> <span class="o">+=</span> <span class="mi">1</span>
+    
+        <span class="k">for</span> <span class="n">tab_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">burst_config</span><span class="o">.</span><span class="n">tabs</span><span class="p">)):</span>
+            <span class="n">tab</span> <span class="o">=</span> <span class="n">burst_config</span><span class="o">.</span><span class="n">tabs</span><span class="p">[</span><span class="n">tab_idx</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">portlet_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tab</span><span class="o">.</span><span class="n">portlets</span><span class="p">)):</span>
+                <span class="n">portlet_cfg</span> <span class="o">=</span> <span class="n">tab</span><span class="o">.</span><span class="n">portlets</span><span class="p">[</span><span class="n">portlet_idx</span><span class="p">]</span>
+                <span class="c">### For each portlet configuration stored, update the step index ###</span>
+                <span class="c">### and also change the dynamic parameters step indexes to point ###</span>
+                <span class="c">### to the simulator outputs.                                     ##</span>
+                <span class="k">if</span> <span class="n">portlet_cfg</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">analyzers</span> <span class="o">=</span> <span class="n">portlet_cfg</span><span class="o">.</span><span class="n">analyzers</span>
+                    <span class="n">visualizer</span> <span class="o">=</span> <span class="n">portlet_cfg</span><span class="o">.</span><span class="n">visualizer</span>
+                    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">analyzers</span><span class="p">:</span>
+                        <span class="n">entry</span><span class="o">.</span><span class="n">step_index</span> <span class="o">=</span> <span class="n">starting_index</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">workflow_service</span><span class="o">.</span><span class="n">set_dynamic_step_references</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">simulator_index</span><span class="p">)</span>
+                        <span class="n">workflow_step_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+                        <span class="n">starting_index</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="c">### Change the dynamic parameters to point to the last adapter from this portlet execution.</span>
+                    <span class="n">visualizer</span><span class="o">.</span><span class="n">step_visible</span> <span class="o">=</span> <span class="bp">False</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">workflow_step_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">workflow_step_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">model</span><span class="o">.</span><span class="n">WorkflowStep</span><span class="p">)):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">workflow_service</span><span class="o">.</span><span class="n">set_dynamic_step_references</span><span class="p">(</span><span class="n">visualizer</span><span class="p">,</span> <span class="n">workflow_step_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">step_index</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">workflow_service</span><span class="o">.</span><span class="n">set_dynamic_step_references</span><span class="p">(</span><span class="n">visualizer</span><span class="p">,</span> <span class="n">simulator_index</span><span class="p">)</span>
+                    <span class="n">workflow_step_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">visualizer</span><span class="p">)</span>
+                
+        <span class="k">if</span> <span class="n">group_launched</span><span class="p">:</span>
+            <span class="c">###  For a group of operations, make sure the metric for PSE view </span>
+            <span class="c">### is also computed, immediately after the simulation.</span>
+            <span class="n">metric_id</span><span class="p">,</span> <span class="n">metric_group</span> <span class="o">=</span> <span class="n">FlowService</span><span class="p">()</span><span class="o">.</span><span class="n">get_algorithm_by_module_and_class</span><span class="p">(</span><span class="n">MEASURE_METRICS_MODULE</span><span class="p">,</span> 
+                                                                                      <span class="n">MEASURE_METRICS_CLASS</span><span class="p">)</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">metric_interface</span> <span class="o">=</span> <span class="n">FlowService</span><span class="p">()</span><span class="o">.</span><span class="n">prepare_adapter</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">metric_group</span><span class="p">)</span>
+            <span class="n">dynamics</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">metric_interface</span><span class="p">:</span>
+                <span class="c"># We have a select that should be the dataType and a select multiple with the </span>
+                <span class="c"># required metric algorithms to be evaluated. Only dynamic parameter should be</span>
+                <span class="c"># the select type.</span>
+                <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_TYPE</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;select&#39;</span><span class="p">:</span>
+                    <span class="n">dynamics</span><span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_NAME</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="n">WorkflowStepConfiguration</span><span class="o">.</span><span class="n">DATATYPE_INDEX_KEY</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                                            <span class="n">WorkflowStepConfiguration</span><span class="o">.</span><span class="n">STEP_INDEX_KEY</span><span class="p">:</span> <span class="n">simulator_index</span><span class="p">}</span>
+            <span class="n">metric_step</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">WorkflowStep</span><span class="p">(</span><span class="n">algorithm_id</span> <span class="o">=</span> <span class="n">metric_id</span><span class="p">,</span> <span class="n">step_index</span> <span class="o">=</span> <span class="n">simulator_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> 
+                                             <span class="n">static_param</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">dynamic_param</span> <span class="o">=</span> <span class="n">dynamics</span> <span class="p">)</span>
+            <span class="n">metric_step</span><span class="o">.</span><span class="n">step_visible</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">workflow_step_list</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">metric_step</span><span class="p">)</span>
+        
+        <span class="n">workflows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow_service</span><span class="o">.</span><span class="n">create_and_store_workflow</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">burst_id</span><span class="p">,</span> <span class="n">simulator_index</span><span class="p">,</span> 
+                                                                    <span class="n">simulator_id</span><span class="p">,</span> <span class="n">operations</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operation_service</span><span class="o">.</span><span class="n">prepare_operations_for_workflowsteps</span><span class="p">(</span><span class="n">workflow_step_list</span><span class="p">,</span> <span class="n">workflows</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> 
+                                                                    <span class="n">burst_id</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">operations</span><span class="p">)</span>
+        <span class="n">operation_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">operation</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">operation</span> <span class="ow">in</span> <span class="n">operations</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">operation_ids</span>
+    
+    
+    <span class="k">def</span> <span class="nf">_async_launch_and_prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">burst_config</span><span class="p">,</span> <span class="n">simulator_index</span><span class="p">,</span> <span class="n">simulator_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare operations asynchronously.</span>
+<span class="sd">        &quot;&quot;&quot;</span>  
+        <span class="k">try</span><span class="p">:</span>  
+            <span class="n">operation_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_operations</span><span class="p">(</span><span class="n">burst_config</span><span class="p">,</span> <span class="n">simulator_index</span><span class="p">,</span> <span class="n">simulator_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Starting a total of </span><span class="si">%s</span><span class="s"> workflows&quot;</span><span class="o">%</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">operation_ids</span><span class="p">,)))</span>
+            <span class="n">wf_errs</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">operation_id</span> <span class="ow">in</span> <span class="n">operation_ids</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">OperationService</span><span class="p">()</span><span class="o">.</span><span class="n">launch_operation</span><span class="p">(</span><span class="n">operation_id</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+                    <span class="n">wf_errs</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">workflow_service</span><span class="o">.</span><span class="n">mark_burst_finished</span><span class="p">(</span><span class="n">burst_config</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">error_message</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">excep</span><span class="p">))</span>
+                    
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Finished launching workflows. &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">operation_ids</span><span class="p">)</span><span class="o">-</span> <span class="n">wf_errs</span><span class="p">)</span> <span class="o">+</span>
+                              <span class="s">&quot; were launched successfully, &quot;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">wf_errs</span><span class="p">)</span><span class="o">+</span><span class="s">&quot; had error on pre-launch steps&quot;</span><span class="p">)</span>       
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">workflow_service</span><span class="o">.</span><span class="n">mark_burst_finished</span><span class="p">(</span><span class="n">burst_config</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">error_message</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">excep</span><span class="p">))</span>
+            
+        
+                
+    
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BurstService.launch_visualization"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.burstservice.BurstService.launch_visualization">[docs]</a>    <span class="k">def</span> <span class="nf">launch_visualization</span><span class="p">(</span><span class="n">visualization</span><span class="p">,</span> <span class="n">frame_width</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">frame_height</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> 
+                             <span class="n">method_name</span><span class="o">=</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">LAUNCH_METHOD</span><span class="p">,</span> <span class="n">is_preview</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param visualization: a visualization workflow step</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dynamic_params</span> <span class="o">=</span> <span class="n">visualization</span><span class="o">.</span><span class="n">dynamic_param</span>
+        <span class="n">static_params</span> <span class="o">=</span> <span class="n">visualization</span><span class="o">.</span><span class="n">static_param</span>
+        <span class="n">parameters_dict</span> <span class="o">=</span> <span class="n">static_params</span>
+        <span class="n">operation_id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c">## Current operation id needed for export mechanism. So far just use ##</span>
+        <span class="c">## the operation of the workflow_step from which the inputs are taken    ####</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">dynamic_params</span><span class="p">:</span>
+            <span class="n">step_index</span> <span class="o">=</span> <span class="n">dynamic_params</span><span class="p">[</span><span class="n">param</span><span class="p">][</span><span class="n">WorkflowStepConfiguration</span><span class="o">.</span><span class="n">STEP_INDEX_KEY</span><span class="p">]</span>
+            <span class="n">datatype_index</span> <span class="o">=</span> <span class="n">dynamic_params</span><span class="p">[</span><span class="n">param</span><span class="p">][</span><span class="n">WorkflowStepConfiguration</span><span class="o">.</span><span class="n">DATATYPE_INDEX_KEY</span><span class="p">]</span>
+            <span class="n">workflow_step</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_workflow_step_by_step_index</span><span class="p">(</span><span class="n">visualization</span><span class="o">.</span><span class="n">fk_workflow</span><span class="p">,</span> <span class="n">step_index</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">datatype_index</span><span class="p">)</span> <span class="ow">is</span> <span class="n">IntType</span><span class="p">):</span>
+                <span class="c">## Entry is the output of a previous step ##</span>
+                <span class="n">operation_id</span> <span class="o">=</span> <span class="n">workflow_step</span><span class="o">.</span><span class="n">fk_operation</span>
+                <span class="n">datatypes</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_results_for_operation</span><span class="p">(</span><span class="n">operation_id</span><span class="p">)</span>
+                <span class="n">parameters_dict</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">datatypes</span><span class="p">[</span><span class="n">datatype_index</span><span class="p">]</span><span class="o">.</span><span class="n">gid</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c">## Entry is the input of a previous step ###</span>
+                <span class="n">operation</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operation_by_id</span><span class="p">(</span><span class="n">workflow_step</span><span class="o">.</span><span class="n">fk_operation</span><span class="p">)</span>
+                <span class="n">parameters_dict</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">operation</span><span class="o">.</span><span class="n">parameters</span><span class="p">)[</span><span class="n">datatype_index</span><span class="p">]</span>
+        <span class="n">algorithm</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_algorithm_by_id</span><span class="p">(</span><span class="n">visualization</span><span class="o">.</span><span class="n">fk_algorithm</span><span class="p">)</span>
+        <span class="n">adapter_instance</span> <span class="o">=</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">build_adapter</span><span class="p">(</span><span class="n">algorithm</span><span class="o">.</span><span class="n">algo_group</span><span class="p">)</span>
+        <span class="n">prepared_inputs</span> <span class="o">=</span> <span class="n">adapter_instance</span><span class="o">.</span><span class="n">prepare_ui_inputs</span><span class="p">(</span><span class="n">parameters_dict</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">frame_width</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">prepared_inputs</span><span class="p">[</span><span class="n">ABCDisplayer</span><span class="o">.</span><span class="n">PARAM_FIGURE_SIZE</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">frame_width</span><span class="p">,</span> <span class="n">frame_height</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">adapter_instance</span><span class="p">,</span> <span class="n">ABCMPLH5Displayer</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_preview</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">prepared_inputs</span><span class="p">[</span><span class="n">ABCMPLH5Displayer</span><span class="o">.</span><span class="n">SHOW_FULL_TOOLBAR</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s">&quot;adapter_instance.&quot;</span><span class="o">+</span> <span class="n">method_name</span><span class="o">+</span><span class="s">&quot;(**prepared_inputs)&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">parameters_dict</span><span class="p">,</span> <span class="n">operation_id</span>
+    
+    </div>
+<div class="viewcode-block" id="BurstService.update_history_status"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.burstservice.BurstService.update_history_status">[docs]</a>    <span class="k">def</span> <span class="nf">update_history_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For each burst_id received in the id_list read new status from DB and return a list [id, new_status] pair.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">b_id</span> <span class="ow">in</span> <span class="n">id_list</span><span class="p">:</span>
+            <span class="n">burst</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_burst_by_id</span><span class="p">(</span><span class="n">b_id</span><span class="p">)</span>
+            <span class="n">burst</span><span class="o">.</span><span class="n">prepare_after_load</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">burst</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">burst</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">burst</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">burst</span><span class="o">.</span><span class="n">is_group</span><span class="p">,</span>
+                               <span class="s">&quot;Check Operations page for error Message&quot;</span> <span class="k">if</span> <span class="n">burst</span><span class="o">.</span><span class="n">status</span><span class="o">==</span><span class="n">burst</span><span class="o">.</span><span class="n">BURST_ERROR</span> <span class="k">else</span> <span class="s">&#39;&#39;</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Could not find burst with id=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">b_id</span><span class="p">)</span><span class="o">+</span> <span class="s">&quot;. Might have been deleted by user!!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+        
+    </div>
+<div class="viewcode-block" id="BurstService.stop_burst"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.burstservice.BurstService.stop_burst">[docs]</a>    <span class="k">def</span> <span class="nf">stop_burst</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">burst_entity</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop all the entities for the current burst and set the burst status to canceled.</span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="n">burst_wfs</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_workflows_for_burst</span><span class="p">(</span><span class="n">burst_entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">operation_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">workflow</span> <span class="ow">in</span> <span class="n">burst_wfs</span><span class="p">:</span>
+            <span class="n">wf_steps</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_workflow_steps</span><span class="p">(</span><span class="n">workflow</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">wf_steps</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">step</span><span class="o">.</span><span class="n">fk_operation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">operation_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="o">.</span><span class="n">fk_operation</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">operation_service</span><span class="o">.</span><span class="n">stop_operations</span><span class="p">(</span><span class="n">operation_ids</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">burst_entity</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">burst_entity</span><span class="o">.</span><span class="n">BURST_CANCELED</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">workflow_service</span><span class="o">.</span><span class="n">mark_burst_finished</span><span class="p">(</span><span class="n">burst_entity</span><span class="p">,</span> <span class="n">cancel</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+    </div>
+    <span class="nd">@transactional</span> 
+<div class="viewcode-block" id="BurstService.remove_burst"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.burstservice.BurstService.remove_burst">[docs]</a>    <span class="k">def</span> <span class="nf">remove_burst</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">burst_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove the burst given by burst_id. If burst is still running just stop it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">burst_entity</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_burst_by_id</span><span class="p">(</span><span class="n">burst_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">burst_entity</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">burst_entity</span><span class="o">.</span><span class="n">BURST_RUNNING</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stop_burst</span><span class="p">(</span><span class="n">burst_entity</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        
+        <span class="n">service</span> <span class="o">=</span> <span class="n">ProjectService</span><span class="p">()</span>
+        <span class="c">## Remove each DataType in current burst.</span>
+        <span class="c">## We can not leave all on cascade, because it won&#39;t work on SQLite for mapped dataTypes.</span>
+        <span class="n">datatypes</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_all_datatypes_in_burst</span><span class="p">(</span><span class="n">burst_id</span><span class="p">)</span>
+        <span class="c">## Get operations linked to current burst before removing the burst or else </span>
+        <span class="c">##    the burst won&#39;t be there to identify operations any more.</span>
+        <span class="n">remaining_ops</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operations_in_burst</span><span class="p">(</span><span class="n">burst_id</span><span class="p">)</span>
+        
+        <span class="c">#Remove burst first to delete work-flow steps which still hold foreign keys to operations.</span>
+        <span class="n">correct</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">remove_entity</span><span class="p">(</span><span class="n">burst_entity</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">burst_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">correct</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">RemoveDataTypeException</span><span class="p">(</span><span class="s">&quot;Could not remove Burst entity!&quot;</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="n">datatypes</span><span class="p">:</span>
+            <span class="n">service</span><span class="o">.</span><span class="n">remove_datatype</span><span class="p">(</span><span class="n">burst_entity</span><span class="o">.</span><span class="n">fk_project</span><span class="p">,</span> <span class="n">datatype</span><span class="o">.</span><span class="n">gid</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c">## Remove all Operations remained.</span>
+        <span class="n">correct</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">remaining_op_groups</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">oper</span> <span class="ow">in</span> <span class="n">remaining_ops</span><span class="p">:</span>
+            <span class="n">is_remaining</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_generic_entity</span><span class="p">(</span><span class="n">oper</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">oper</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">is_remaining</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c">### Operation removed cascaded.</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">oper</span><span class="o">.</span><span class="n">fk_operation_group</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">oper</span><span class="o">.</span><span class="n">fk_operation_group</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">remaining_op_groups</span><span class="p">:</span>
+                <span class="n">is_remaining</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_generic_entity</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">OperationGroup</span><span class="p">,</span> <span class="n">oper</span><span class="o">.</span><span class="n">fk_operation_group</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">is_remaining</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">remaining_op_groups</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">oper</span><span class="o">.</span><span class="n">fk_operation_group</span><span class="p">)</span>
+                    <span class="n">correct</span> <span class="o">=</span> <span class="n">correct</span> <span class="ow">and</span> <span class="n">dao</span><span class="o">.</span><span class="n">remove_entity</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">OperationGroup</span><span class="p">,</span> <span class="n">oper</span><span class="o">.</span><span class="n">fk_operation_group</span><span class="p">)</span>
+            <span class="n">correct</span> <span class="o">=</span> <span class="n">correct</span> <span class="ow">and</span> <span class="n">dao</span><span class="o">.</span><span class="n">remove_entity</span><span class="p">(</span><span class="n">oper</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">oper</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+         
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">correct</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">RemoveDataTypeException</span><span class="p">(</span><span class="s">&quot;Could not remove Burst because a linked operation could not be dropped!!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">True</span>
+        
+            </div>
+    <span class="nd">@staticmethod</span>       
+<div class="viewcode-block" id="BurstService.get_portlet_status"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.burstservice.BurstService.get_portlet_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_portlet_status</span><span class="p">(</span><span class="n">portlet_cfg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Get the status of a portlet configuration. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">BurstConfiguration</span><span class="o">.</span><span class="n">BURST_FINISHED</span>
+        <span class="n">error_msg</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">portlet_cfg</span><span class="o">.</span><span class="n">analyzers</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">analyze_step</span> <span class="ow">in</span> <span class="n">portlet_cfg</span><span class="o">.</span><span class="n">analyzers</span><span class="p">:</span>
+                <span class="n">operation</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operation_by_id</span><span class="p">(</span><span class="n">analyze_step</span><span class="o">.</span><span class="n">fk_operation</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">operation</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">status</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">BurstConfiguration</span><span class="o">.</span><span class="n">BURST_ERROR</span>
+                    <span class="n">error_msg</span> <span class="o">=</span> <span class="s">&quot;Operation has been removed&quot;</span>
+                    <span class="k">break</span>
+                <span class="k">if</span> <span class="n">operation</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">STATUS_STARTED</span><span class="p">:</span>
+                    <span class="n">status</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">BurstConfiguration</span><span class="o">.</span><span class="n">BURST_RUNNING</span>
+                    <span class="k">break</span>
+                <span class="k">if</span> <span class="n">operation</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">STATUS_ERROR</span><span class="p">:</span>
+                    <span class="n">status</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">BurstConfiguration</span><span class="o">.</span><span class="n">BURST_ERROR</span>
+                    <span class="n">error_msg</span> <span class="o">=</span> <span class="n">operation</span><span class="o">.</span><span class="n">additional_info</span>
+                    <span class="k">break</span>
+                <span class="k">if</span> <span class="n">operation</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">STATUS_CANCELED</span><span class="p">:</span>
+                    <span class="n">status</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">BurstConfiguration</span><span class="o">.</span><span class="n">BURST_CANCELED</span>
+                    <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c">## Simulator is first step so now decide if we are waiting for input or output ##</span>
+            <span class="n">visualizer</span> <span class="o">=</span> <span class="n">portlet_cfg</span><span class="o">.</span><span class="n">visualizer</span>
+            <span class="n">wait_on_outputs</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">visualizer</span><span class="o">.</span><span class="n">dynamic_param</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">visualizer</span><span class="o">.</span><span class="n">dynamic_param</span><span class="p">[</span><span class="n">entry</span><span class="p">][</span><span class="n">WorkflowStepConfiguration</span><span class="o">.</span><span class="n">DATATYPE_INDEX_KEY</span><span class="p">])</span> <span class="o">==</span> <span class="n">IntType</span><span class="p">:</span>
+                    <span class="n">wait_on_outputs</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">wait_on_outputs</span><span class="p">:</span>
+                <span class="n">simulator_step</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_workflow_step_by_step_index</span><span class="p">(</span><span class="n">visualizer</span><span class="o">.</span><span class="n">fk_workflow</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">operation</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operation_by_id</span><span class="p">(</span><span class="n">simulator_step</span><span class="o">.</span><span class="n">fk_operation</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">operation</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">status</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">BurstConfiguration</span><span class="o">.</span><span class="n">BURST_ERROR</span>
+                    <span class="n">error_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;At least one simulation result was not found, it might have been removed. &lt;br\&gt;&quot;</span>
+                                 <span class="s">&quot;You can copy and relaunch current simulation, if you are interested in having &quot;</span>
+                                 <span class="s">&quot;your results re-computed.&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">operation</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">STATUS_STARTED</span><span class="p">:</span>
+                    <span class="n">status</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">BurstConfiguration</span><span class="o">.</span><span class="n">BURST_RUNNING</span>
+                <span class="k">elif</span> <span class="n">operation</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">STATUS_ERROR</span><span class="p">:</span>
+                    <span class="n">status</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">BurstConfiguration</span><span class="o">.</span><span class="n">BURST_ERROR</span>
+                    <span class="n">error_msg</span> <span class="o">=</span> <span class="n">operation</span><span class="o">.</span><span class="n">additional_info</span>
+                <span class="k">elif</span> <span class="n">operation</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">STATUS_CANCELED</span><span class="p">:</span>
+                    <span class="n">status</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">BurstConfiguration</span><span class="o">.</span><span class="n">BURST_CANCELED</span>
+        <span class="k">return</span> <span class="n">status</span><span class="p">,</span> <span class="n">error_msg</span>
+            
+            </div>
+<div class="viewcode-block" id="BurstService.select_simulator_inputs"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.burstservice.BurstService.select_simulator_inputs">[docs]</a>    <span class="k">def</span> <span class="nf">select_simulator_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">full_tree</span><span class="p">,</span> <span class="n">selection_dictionary</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cut Simulator input Tree, to display only user-checked inputs.</span>
+<span class="sd">        </span>
+<span class="sd">        :param full_tree: the simulator input tree</span>
+<span class="sd">        :param selection_dictionary: a dictionary that keeps for each entry a default value and if it is check or not.</span>
+<span class="sd">        :param prefix: a prefix to be added to the ui_name in case a select with subtrees is not selected</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">full_tree</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">full_tree</span><span class="p">:</span>
+            <span class="n">param_name</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_NAME</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_LABEL</span> <span class="ow">in</span> <span class="n">param</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
+                <span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_LABEL</span><span class="p">]</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s">&#39;_&#39;</span> <span class="o">+</span> <span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_LABEL</span><span class="p">]</span> 
+            <span class="n">is_checked</span> <span class="o">=</span> <span class="p">(</span><span class="n">param_name</span> <span class="ow">in</span> <span class="n">selection_dictionary</span> 
+                          <span class="ow">and</span> <span class="n">selection_dictionary</span><span class="p">[</span><span class="n">param_name</span><span class="p">][</span><span class="n">KEY_PARAMETER_CHECKED</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">is_checked</span><span class="p">:</span>
+                <span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span><span class="p">]</span> <span class="o">=</span> <span class="n">selection_dictionary</span><span class="p">[</span><span class="n">param_name</span><span class="p">][</span><span class="n">model</span><span class="o">.</span><span class="n">KEY_SAVED_VALUE</span><span class="p">]</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_OPTIONS</span><span class="p">)</span> <span class="ow">and</span> <span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_OPTIONS</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">is_checked</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_OPTIONS</span><span class="p">]:</span>
+                        <span class="k">if</span> <span class="n">option</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span><span class="p">):</span>
+                            <span class="n">option</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_simulator_inputs</span><span class="p">(</span>
+                                                    <span class="n">option</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span><span class="p">],</span> <span class="n">selection_dictionary</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+                            <span class="n">option</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span><span class="p">]</span> <span class="o">=</span> <span class="n">selection_dictionary</span><span class="p">[</span><span class="n">param_name</span><span class="p">][</span><span class="n">model</span><span class="o">.</span><span class="n">KEY_SAVED_VALUE</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c">## Since entry is not selected, just recurse on the default option and ###</span>
+                    <span class="c">## all it&#39;s subtree will come up one level in the input tree         #####</span>
+                    <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_OPTIONS</span><span class="p">]:</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">param_name</span> <span class="ow">in</span> <span class="n">selection_dictionary</span> <span class="ow">and</span> <span class="n">option</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span><span class="p">)</span> <span class="ow">and</span>
+                            <span class="n">option</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_VALUE</span><span class="p">]</span> <span class="o">==</span> <span class="n">selection_dictionary</span><span class="p">[</span><span class="n">param_name</span><span class="p">][</span><span class="n">model</span><span class="o">.</span><span class="n">KEY_SAVED_VALUE</span><span class="p">]):</span>
+                            <span class="n">new_prefix</span> <span class="o">=</span> <span class="n">option</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_VALUE</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;_&#39;</span> <span class="o">+</span> <span class="n">prefix</span>
+                            <span class="n">recursive_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_simulator_inputs</span><span class="p">(</span><span class="n">option</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span><span class="p">],</span> 
+                                                                             <span class="n">selection_dictionary</span><span class="p">,</span> <span class="n">new_prefix</span><span class="p">)</span>
+                            <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">recursive_results</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+    
+    
+            </div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

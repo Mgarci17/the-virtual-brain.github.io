@@ -1,0 +1,328 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.datatypes.equations_framework &mdash; The Virtual Brain 1.0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.datatypes.equations_framework</h1><pre>
+# -*- coding: utf-8 -*-
+#
+#
+#  TheVirtualBrain-Scientific Package. This package holds all simulators, and 
+# analysers necessary to run brain-simulations. You can use it stand alone or
+# in conjunction with TheVirtualBrain-Framework Package. See content of the
+# documentation-folder for more details. See also http://www.thevirtualbrain.org
+#
+# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
+#
+# This program is free software; you can redistribute it and/or modify it under 
+# the terms of the GNU General Public License version 2 as published by the Free
+# Software Foundation. This program is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+# License for more details. You should have received a copy of the GNU General 
+# Public License along with this program; if not, you can download it here
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0
+#
+#
+
+"""
+
+Framework methods for the Equation datatypes.
+
+.. moduleauthor:: Ionel Ortelecan &lt;ionel.ortelecan@codemart.ro&gt;
+.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;
+.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;
+
+"""
+import re
+import json
+import parser
+
+import numpy
+import tvb.datatypes.equations_data as equations_data
+import tvb.basic.traits.parameters_factory as parameters_factory
+from tvb.basic.logger.builder import get_logger
+
+LOG = get_logger(__name__)
+
+# In how many points should the equation be evaluated for the plot. Increasing this will
+# give smoother results at the cost of some performance
+DEFAULT_PLOT_GRANULARITY = 1024
+
+
+<div class="viewcode-block" id="EquationFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.EquationFramework">[docs]</a>class EquationFramework(equations_data.EquationData):
+    """ This class exists to add framework methods to EquationData. """
+    __tablename__ = None
+
+    @property
+    def ui_equation(self):
+        """
+        The string representation of this equation that will be used for computing the values in certain points.
+
+        Because some equations contains operations that python doesn't know how to interpret
+        we replaced those operations with others known by python.
+        E.g.: exp($expression) replaced with 2.71**($expression)
+        """
+        return self.equation
+
+
+    def get_parsed_equation(self):
+        """
+        Parses the string representation of the equation and replaces
+        all the parameters placeholders with their values.
+        """
+        equation_str = self.ui_equation
+        for param in self.parameters:
+            equation_str = re.sub('\\b' + param + '\\b', str(self.parameters[param]), equation_str)
+        return equation_str
+
+
+    def get_series_data(self, min_range = 0, max_range = 100, step = None):
+        """
+        NOTE: The symbol from the equation which varies should be named: var
+        Returns the series data needed for plotting this equation.
+        """
+        if step is None:
+            step = float(max_range - min_range) / DEFAULT_PLOT_GRANULARITY
+            
+        from math import sin, cos, sqrt
+        result = []
+        parsed_equation = self.get_parsed_equation()
+        parsed_equation = parser.expr(parsed_equation).compile()
+        last_valid_point_value = 0
+        was_exception_thrown = False
+        for var in numpy.arange(min_range, max_range + step, step):
+            try:
+                point_value = eval(parsed_equation)
+                #the number should have max 20 decimals
+                point_value = round(point_value, 19)
+                result.append([float(var), point_value])
+                last_valid_point_value = point_value
+            except OverflowError, exc:
+                LOG.exception(exc)
+                LOG.error("Could not evaluate the equation at step var = " + str(var))
+                result.append([var, last_valid_point_value])
+                was_exception_thrown = True
+        return result, was_exception_thrown
+
+
+    @staticmethod
+    def build_equation_from_dict(equation_field_name, submitted_data_dict):
+        """
+        Builds from the given data dictionary the equation for the specified field name.
+        The dictionary should have the data collapsed.
+        """
+        equation = None
+        if equation_field_name in submitted_data_dict:
+            equation_type = submitted_data_dict[equation_field_name]
+            equation_parameters = {}
+            eq_param_str = equation_field_name + '_parameters'
+            if eq_param_str in submitted_data_dict and 'parameters_parameters' in submitted_data_dict[eq_param_str]:
+                equation_parameters = submitted_data_dict[eq_param_str]['parameters_parameters']
+            equation = parameters_factory.get_traited_instance_for_name(equation_type, equations_data.EquationData,
+                    {'parameters': equation_parameters})
+        return equation
+
+
+    @staticmethod
+    def to_json(entity):
+        """
+        Returns the json representation of this equation.
+
+        The representation of an equation is a dictionary with the following form:
+        {'equation_type': '$equation_type', 'parameters': {'$param_name': '$param_value', ...}}
+        """
+        if entity is not None:
+            result = {'__mapped_module' : entity.__class__.__module__, '__mapped_class': entity.__class__.__name__, 'parameters': entity.parameters}
+            return json.dumps(result)
+        return None
+
+
+    @staticmethod
+    def from_json(string):
+        loaded_dict = json.loads(string)
+        if loaded_dict is None:
+            return None
+        modulename = loaded_dict['__mapped_module']
+        classname = loaded_dict['__mapped_class']
+        module_entity = __import__(modulename, globals(), locals(), [classname])
+        class_entity = eval('module_entity.' + classname)
+        loaded_instance = class_entity()
+        loaded_instance.parameters = loaded_dict['parameters']
+        return loaded_instance
+        
+        
+
+
+</div>
+<div class="viewcode-block" id="FiniteSupportEquationFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.FiniteSupportEquationFramework">[docs]</a>class FiniteSupportEquationFramework(equations_data.FiniteSupportEquationData,
+                                     EquationFramework):
+    """
+    This class exists to add framework methods to FiniteSupportEquationData
+    """
+    pass
+
+</div>
+<div class="viewcode-block" id="DiscreteFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.DiscreteFramework">[docs]</a>class DiscreteFramework(equations_data.DiscreteData,
+                        FiniteSupportEquationFramework):
+    """ This class exists to add framework methods to DiscreteData """
+    pass
+
+
+#class ScalingFramework(equations_data.ScalingData, EquationFramework):
+#    """ This class exists to add framework methods to ScalingData """
+#    pass
+
+</div>
+<div class="viewcode-block" id="LinearFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.LinearFramework">[docs]</a>class LinearFramework(equations_data.LinearData, EquationFramework):
+    """ This class exists to add framework methods to LinearData """
+    pass
+
+</div>
+<div class="viewcode-block" id="GaussianFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.GaussianFramework">[docs]</a>class GaussianFramework(equations_data.GaussianData,
+                        FiniteSupportEquationFramework):
+    """ This class exists to add framework methods to GaussianData """
+
+    @property
+    def ui_equation(self):
+        return "amp * 2.71**(-((var-midpoint)**2 / (2.0 * sigma**2)))"
+
+</div>
+<div class="viewcode-block" id="DoubleGaussianFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.DoubleGaussianFramework">[docs]</a>class DoubleGaussianFramework(equations_data.DoubleGaussianData,
+                              FiniteSupportEquationFramework):
+    """ This class exists to add framework methods to DoubleGaussianData """
+    @property
+    def ui_equation(self):
+        return "(amp_1 * 2.71**(-((var-midpoint_1)**2 / (2.0 * sigma_1**2)))) - (amp_2 * 2.71**(-((var-midpoint_2)**2 / (2.0 * sigma_2**2))))"
+
+</div>
+<div class="viewcode-block" id="SigmoidFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.SigmoidFramework">[docs]</a>class SigmoidFramework(equations_data.SigmoidData,
+                       FiniteSupportEquationFramework):
+    """ This class exists to add framework methods to SigmoidData """
+    @property
+    def ui_equation(self):
+        return "amp / (1.0 + 2.71**(-1.8137993642342178 * (radius-var)/sigma))"
+
+</div>
+<div class="viewcode-block" id="GeneralizedSigmoidFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.GeneralizedSigmoidFramework">[docs]</a>class GeneralizedSigmoidFramework(equations_data.GeneralizedSigmoidData,
+                                  EquationFramework):
+    """ This class exists to add framework methods to GeneralizedSigmoidData """
+    @property
+    def ui_equation(self):
+        return "low + (high - low) / (1.0 + 2.71**(-1.8137993642342178 * (var-midpoint)/sigma))"
+
+
+</div>
+<div class="viewcode-block" id="SinusoidFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.SinusoidFramework">[docs]</a>class SinusoidFramework(equations_data.SinusoidData, EquationFramework):
+    """ This class exists to add framework methods to SinusoidData """
+    pass
+
+</div>
+<div class="viewcode-block" id="CosineFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.CosineFramework">[docs]</a>class CosineFramework(equations_data.CosineData, EquationFramework):
+    """ This class exists to add framework methods to CosineData """
+    pass
+
+</div>
+<div class="viewcode-block" id="AlphaFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.AlphaFramework">[docs]</a>class AlphaFramework(equations_data.AlphaData, EquationFramework):
+    """ This class exists to add framework methods to AlphaData """
+    @property
+    def ui_equation(self):
+        return "(alpha * beta) / (beta - alpha) * (2.71**(-alpha * (var-onset)) - 2.71**(-beta * (var-onset))) if (var-onset) &gt; 0 else  0.0 * var"
+        
+        </div>
+<div class="viewcode-block" id="PulseTrainFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.PulseTrainFramework">[docs]</a>class PulseTrainFramework(equations_data.PulseTrainData, EquationFramework):
+    """ This class exists to add framework methods to PulseTrainData """
+    @property
+    def ui_equation(self):
+        return "amp if (var % T) &lt; tau else 0.0 * var"
+    
+    
+    </pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

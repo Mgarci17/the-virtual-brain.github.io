@@ -1,0 +1,553 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.interfaces.web.controllers.userscontroller &mdash; The Virtual Brain 1.0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '1.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.interfaces.web.controllers.userscontroller</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Here, user related tasks are described.</span>
+<span class="sd">Basic authentication processes are described here, </span>
+<span class="sd">but also user related annotation (checked-logged).</span>
+
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">cherrypy</span>
+<span class="kn">import</span> <span class="nn">formencode</span>
+<span class="kn">from</span> <span class="nn">hashlib</span> <span class="kn">import</span> <span class="n">md5</span>
+<span class="kn">from</span> <span class="nn">urllib2</span> <span class="kn">import</span> <span class="n">urlopen</span>
+<span class="kn">from</span> <span class="nn">formencode</span> <span class="kn">import</span> <span class="n">validators</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span> <span class="k">as</span> <span class="n">cfg</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.userservice</span> <span class="kn">import</span> <span class="n">UserService</span><span class="p">,</span> <span class="n">KEY_PASSWORD</span><span class="p">,</span> <span class="n">KEY_EMAIL</span><span class="p">,</span> <span class="n">KEY_USERNAME</span><span class="p">,</span> <span class="n">KEY_COMMENT</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.projectservice</span> <span class="kn">import</span> <span class="n">ProjectService</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.exceptions</span> <span class="kn">import</span> <span class="n">UsernameException</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.settingsservice</span> <span class="kn">import</span> <span class="n">SettingsService</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.basecontroller</span> <span class="kn">import</span> <span class="n">using_template</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.basecontroller</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">import</span> <span class="nn">tvb.interfaces.web.controllers.basecontroller</span> <span class="kn">as</span> <span class="nn">basecontroller</span> 
+
+<span class="n">KEY_SERVER_VERSION</span> <span class="o">=</span> <span class="s">&quot;versionInfo&quot;</span>
+<span class="n">KEY_CURRENT_VERSION_FULL</span> <span class="o">=</span> <span class="s">&quot;currentVersionLongText&quot;</span>
+<span class="n">KEY_NEED_FILE_STORAGE_UPG</span> <span class="o">=</span> <span class="s">&quot;needFileStorageUpgrade&quot;</span>
+
+<div class="viewcode-block" id="logged"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.userscontroller.logged">[docs]</a><span class="k">def</span> <span class="nf">logged</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Annotation to check if a user is logged before accessing a controller method.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">dec</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Allow to get the signature back&quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">deco</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">b</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot; Allow to get the docstring back&quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cherrypy</span><span class="p">,</span> <span class="n">basecontroller</span><span class="o">.</span><span class="n">KEY_SESSION</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">basecontroller</span><span class="o">.</span><span class="n">get_logged_user</span><span class="p">():</span>
+                    <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">b</span><span class="p">)</span>
+                
+            <span class="n">basecontroller</span><span class="o">.</span><span class="n">set_error_message</span><span class="p">(</span><span class="s">&#39;Login Required!&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">HTTPRedirect</span><span class="p">(</span><span class="s">&#39;/user&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">deco</span>
+    <span class="k">return</span> <span class="n">dec</span>
+
+</div>
+<div class="viewcode-block" id="admin"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.userscontroller.admin">[docs]</a><span class="k">def</span> <span class="nf">admin</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Annotation to check if a user is administrator before accessing a controller method</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">dec</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Annotation wrapping web public function&quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">deco</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">b</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot; Decorator for public method&quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cherrypy</span><span class="p">,</span> <span class="n">basecontroller</span><span class="o">.</span><span class="n">KEY_SESSION</span><span class="p">):</span>
+                <span class="n">user</span> <span class="o">=</span> <span class="n">basecontroller</span><span class="o">.</span><span class="n">get_logged_user</span><span class="p">()</span>
+                <span class="k">if</span> <span class="p">((</span><span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">is_administrator</span><span class="p">())</span> 
+                    <span class="ow">or</span> <span class="n">SettingsService</span><span class="o">.</span><span class="n">is_first_run</span><span class="p">()):</span>
+                    <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">b</span><span class="p">)</span>
+            <span class="n">basecontroller</span><span class="o">.</span><span class="n">set_error_message</span><span class="p">(</span><span class="s">&#39;Only Administrators can access this application area!&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">HTTPRedirect</span><span class="p">(</span><span class="s">&#39;/tvb&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">deco</span>
+    <span class="k">return</span> <span class="n">dec</span>
+
+
+</div>
+<div class="viewcode-block" id="UserController"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.userscontroller.UserController">[docs]</a><span class="k">class</span> <span class="nc">UserController</span><span class="p">(</span><span class="n">basecontroller</span><span class="o">.</span><span class="n">BaseController</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class takes care of the user authentication and/or register.</span>
+<span class="sd">    &quot;&quot;&quot;</span>  
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">basecontroller</span><span class="o">.</span><span class="n">BaseController</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;user/base_user&#39;</span><span class="p">)</span>
+    <span class="nd">@settings</span><span class="p">()</span>
+<div class="viewcode-block" id="UserController.index"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.userscontroller.UserController.index">[docs]</a>    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Login page (with or without messages).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">template_specification</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">mainContent</span><span class="o">=</span><span class="s">&quot;login&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;Login&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span><span class="p">:</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="n">LoginForm</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">to_python</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">username</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">KEY_USERNAME</span><span class="p">]</span>
+                <span class="n">password</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">KEY_PASSWORD</span><span class="p">]</span>
+                <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">check_login</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">basecontroller</span><span class="o">.</span><span class="n">add2session</span><span class="p">(</span><span class="n">basecontroller</span><span class="o">.</span><span class="n">KEY_USER</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+                    <span class="n">basecontroller</span><span class="o">.</span><span class="n">set_info_message</span><span class="p">(</span><span class="s">&#39;Welcome &#39;</span><span class="o">+</span> <span class="n">username</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;User &quot;</span><span class="o">+</span> <span class="n">username</span> <span class="o">+</span><span class="s">&quot; has just logged in!&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">selected_project</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">):</span>
+                        <span class="n">prj</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">selected_project</span>
+                        <span class="n">prj</span> <span class="o">=</span> <span class="n">ProjectService</span><span class="p">()</span><span class="o">.</span><span class="n">find_project</span><span class="p">(</span><span class="n">prj</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_mark_selected</span><span class="p">(</span><span class="n">prj</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">HTTPRedirect</span><span class="p">(</span><span class="s">&#39;/user/profile&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">basecontroller</span><span class="o">.</span><span class="n">set_error_message</span><span class="p">(</span><span class="s">&#39;Wrong username/password, or user not yet validated...&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Wrong username &quot;</span><span class="o">+</span> <span class="n">username</span> <span class="o">+</span><span class="s">&quot; !!!&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">formencode</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+                <span class="n">template_specification</span><span class="p">[</span><span class="n">basecontroller</span><span class="o">.</span><span class="n">KEY_ERRORS</span><span class="p">]</span> <span class="o">=</span> <span class="n">excep</span><span class="o">.</span><span class="n">unpack_errors</span><span class="p">()</span>
+            
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_default_attributes</span><span class="p">(</span><span class="n">template_specification</span><span class="p">)</span>
+
+     </div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;user/base_user&#39;</span><span class="p">)</span>
+    <span class="nd">@settings</span><span class="p">()</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="UserController.profile"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.userscontroller.UserController.profile">[docs]</a>    <span class="k">def</span> <span class="nf">profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logout</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Display current user&#39;s profile page.</span>
+<span class="sd">        On POST: logout, or save password/email.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span> <span class="ow">and</span> <span class="n">logout</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">HTTPRedirect</span><span class="p">(</span><span class="s">&#39;/user/logout&#39;</span><span class="p">)</span>
+        <span class="n">template_specification</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">mainContent</span><span class="o">=</span><span class="s">&quot;profile&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;User Profile&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span> <span class="ow">and</span> <span class="n">save</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">form</span> <span class="o">=</span> <span class="n">EditUserForm</span><span class="p">()</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">to_python</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">user</span> <span class="o">=</span> <span class="n">basecontroller</span><span class="o">.</span><span class="n">get_logged_user</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">KEY_PASSWORD</span> <span class="ow">in</span> <span class="n">data</span> <span class="ow">and</span> <span class="n">data</span><span class="p">[</span><span class="n">KEY_PASSWORD</span><span class="p">]:</span>
+                    <span class="n">user</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">md5</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">KEY_PASSWORD</span><span class="p">])</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">KEY_EMAIL</span> <span class="ow">in</span> <span class="n">data</span> <span class="ow">and</span> <span class="n">data</span><span class="p">[</span><span class="n">KEY_EMAIL</span><span class="p">]:</span>
+                    <span class="n">user</span><span class="o">.</span><span class="n">email</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">KEY_EMAIL</span><span class="p">]</span>
+                <span class="n">old_password</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="k">if</span> <span class="s">&#39;old_password&#39;</span> <span class="ow">in</span> <span class="n">data</span> <span class="ow">and</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;old_password&#39;</span><span class="p">]:</span>
+                    <span class="n">old_password</span> <span class="o">=</span> <span class="n">md5</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;old_password&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">edit_user</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">old_password</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">old_password</span><span class="p">:</span>
+                    <span class="n">basecontroller</span><span class="o">.</span><span class="n">set_info_message</span><span class="p">(</span><span class="s">&quot;Changes Submitted!&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">basecontroller</span><span class="o">.</span><span class="n">set_info_message</span><span class="p">(</span><span class="s">&quot;Submitted!  No password changed.&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">formencode</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+                <span class="n">template_specification</span><span class="p">[</span><span class="n">basecontroller</span><span class="o">.</span><span class="n">KEY_ERRORS</span><span class="p">]</span> <span class="o">=</span> <span class="n">excep</span><span class="o">.</span><span class="n">unpack_errors</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">UsernameException</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+                <span class="n">user</span> <span class="o">=</span> <span class="n">basecontroller</span><span class="o">.</span><span class="n">get_logged_user</span><span class="p">()</span>
+                <span class="n">basecontroller</span><span class="o">.</span><span class="n">add2session</span><span class="p">(</span><span class="n">basecontroller</span><span class="o">.</span><span class="n">KEY_USER</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user_by_id</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+                <span class="n">basecontroller</span><span class="o">.</span><span class="n">set_error_message</span><span class="p">(</span><span class="s">&quot;Could not save changes. Probably wrong old password!!&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">basecontroller</span><span class="o">.</span><span class="n">get_logged_user</span><span class="p">()</span>
+            <span class="c">#Update session user since disk size might have changed from last time to profile.</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user_by_id</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">basecontroller</span><span class="o">.</span><span class="n">add2session</span><span class="p">(</span><span class="n">basecontroller</span><span class="o">.</span><span class="n">KEY_USER</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_default_attributes</span><span class="p">(</span><span class="n">template_specification</span><span class="p">)</span>  
+    
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="UserController.logout"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.userscontroller.UserController.logout">[docs]</a>    <span class="k">def</span> <span class="nf">logout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Logging out user and clean session</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">basecontroller</span><span class="o">.</span><span class="n">remove_from_session</span><span class="p">(</span><span class="n">basecontroller</span><span class="o">.</span><span class="n">KEY_USER</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;User &quot;</span><span class="o">+</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span> <span class="o">+</span><span class="s">&quot; is just logging out!&quot;</span><span class="p">)</span>
+        <span class="n">basecontroller</span><span class="o">.</span><span class="n">remove_from_session</span><span class="p">(</span><span class="n">basecontroller</span><span class="o">.</span><span class="n">KEY_PROJECT</span><span class="p">)</span>
+        <span class="n">basecontroller</span><span class="o">.</span><span class="n">remove_from_session</span><span class="p">(</span><span class="n">basecontroller</span><span class="o">.</span><span class="n">KEY_BURST_CONFIG</span><span class="p">)</span>
+        <span class="n">basecontroller</span><span class="o">.</span><span class="n">set_info_message</span><span class="p">(</span><span class="s">&quot;Thank you for using The Virtual Brain!&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">HTTPRedirect</span><span class="p">(</span><span class="s">&quot;/user&quot;</span><span class="p">)</span>
+
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="UserController.switchOnlineHelp"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.userscontroller.UserController.switchOnlineHelp">[docs]</a>    <span class="k">def</span> <span class="nf">switchOnlineHelp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Switch flag that displays online helps</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">basecontroller</span><span class="o">.</span><span class="n">get_logged_user</span><span class="p">()</span>
+        
+        <span class="c"># Change OnlineHelp Active flag and save user</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">switch_online_help_state</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">edit_user</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">HTTPRedirect</span><span class="p">(</span><span class="s">&quot;/user/profile&quot;</span><span class="p">)</span>
+        
+            </div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;user/base_user&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="UserController.register"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.userscontroller.UserController.register">[docs]</a>    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cancel</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This register form send an e-mail to the user and to the site admin.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">template_specification</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">mainContent</span><span class="o">=</span><span class="s">&quot;register&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span> <span class="s">&quot;Register&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span> <span class="n">data</span><span class="p">)</span>
+        <span class="n">redirect</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cancel</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">HTTPRedirect</span><span class="p">(</span><span class="s">&#39;/user&#39;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">okmessage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_user</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">basecontroller</span><span class="o">.</span><span class="n">set_info_message</span><span class="p">(</span><span class="n">okmessage</span><span class="p">)</span>
+                <span class="n">redirect</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">except</span> <span class="n">formencode</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+                <span class="n">template_specification</span><span class="p">[</span><span class="n">basecontroller</span><span class="o">.</span><span class="n">KEY_ERRORS</span><span class="p">]</span> <span class="o">=</span> <span class="n">excep</span><span class="o">.</span><span class="n">unpack_errors</span><span class="p">()</span>
+                <span class="n">redirect</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Could not create user:&quot;</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="s">&quot;username&quot;</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep1</span><span class="p">)</span>
+                <span class="n">basecontroller</span><span class="o">.</span><span class="n">set_error_message</span><span class="p">(</span><span class="s">&quot;We are very sorry, but we could not create your &quot;</span> <span class="o">+</span>
+                                                 <span class="s">&quot;user. Most probably is because it was impossible&quot;</span> <span class="o">+</span>
+                                                 <span class="s">&quot; to sent emails. Please try again later...&quot;</span><span class="p">)</span>
+                <span class="n">redirect</span> <span class="o">=</span> <span class="bp">False</span>
+                
+        <span class="k">if</span> <span class="n">redirect</span><span class="p">:</span> 
+            <span class="c">#Redirect to login page, with some success message to display</span>
+            <span class="k">raise</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">HTTPRedirect</span><span class="p">(</span><span class="s">&#39;/user&#39;</span><span class="p">)</span> 
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c">#Stay on the same page</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_default_attributes</span><span class="p">(</span><span class="n">template_specification</span><span class="p">)</span>
+        
+    </div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;user/base_user&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="UserController.create_new"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.userscontroller.UserController.create_new">[docs]</a>    <span class="k">def</span> <span class="nf">create_new</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cancel</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create new user with data submitted from UI.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">cancel</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">HTTPRedirect</span><span class="p">(</span><span class="s">&#39;/user/usermanagement&#39;</span><span class="p">)</span>
+        <span class="n">template_specification</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">mainContent</span><span class="o">=</span><span class="s">&quot;create_new&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span> <span class="s">&quot;Create New&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span> <span class="n">data</span><span class="p">)</span>
+        <span class="n">redirect</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">KEY_COMMENT</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;Created by administrator.&quot;</span>
+                <span class="c"># User is created by administrator, should be validated automatically, and credentials</span>
+                <span class="c"># should be sent to user by email.</span>
+                <span class="n">email_msg</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;A TVB account was just created for you by an administrator.</span>
+<span class="s">                Your credentials are username=</span><span class="si">%s</span><span class="s">, password=</span><span class="si">%s</span><span class="s">.&quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">KEY_USERNAME</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">KEY_PASSWORD</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_create_user</span><span class="p">(</span><span class="n">email_msg</span><span class="o">=</span><span class="n">email_msg</span><span class="p">,</span> <span class="n">validated</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">basecontroller</span><span class="o">.</span><span class="n">set_info_message</span><span class="p">(</span><span class="s">&quot;New user created successfully.&quot;</span><span class="p">)</span>
+                <span class="n">redirect</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">except</span> <span class="n">formencode</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+                <span class="n">template_specification</span><span class="p">[</span><span class="n">basecontroller</span><span class="o">.</span><span class="n">KEY_ERRORS</span><span class="p">]</span> <span class="o">=</span> <span class="n">excep</span><span class="o">.</span><span class="n">unpack_errors</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exceptrion</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+                <span class="n">basecontroller</span><span class="o">.</span><span class="n">set_error_message</span><span class="p">(</span><span class="s">&quot;We are very sorry, but we could not create your &quot;</span> <span class="o">+</span>
+                                                     <span class="s">&quot;user. Most probably is because it was impossible&quot;</span> <span class="o">+</span>
+                                                     <span class="s">&quot; to sent emails. Please try again later...&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">redirect</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">HTTPRedirect</span><span class="p">(</span><span class="s">&#39;/user/usermanagement&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_default_attributes</span><span class="p">(</span><span class="n">template_specification</span><span class="p">)</span>
+            
+            </div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;user/base_user&#39;</span><span class="p">)</span>
+    <span class="nd">@admin</span><span class="p">()</span>
+<div class="viewcode-block" id="UserController.usermanagement"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.userscontroller.UserController.usermanagement">[docs]</a>    <span class="k">def</span> <span class="nf">usermanagement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cancel</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">do_persist</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Display a table used for user management.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">cancel</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">HTTPRedirect</span><span class="p">(</span><span class="s">&#39;/user/profile&#39;</span><span class="p">)</span>
+        
+        <span class="n">page</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">page</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span> <span class="ow">and</span> <span class="n">do_persist</span><span class="p">:</span>
+            <span class="n">not_deleted</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="n">user_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">if</span> <span class="s">&#39;delete_&#39;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">delete_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="s">&quot;role_&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">((</span><span class="s">&quot;delete_&quot;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">user_id</span><span class="p">))</span> <span class="ow">in</span> <span class="n">data</span><span class="p">):</span>
+                    <span class="n">valid</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;validate_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">user_id</span><span class="p">))</span> <span class="ow">in</span> <span class="n">data</span>
+                    <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user_by_id</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+                    <span class="n">user</span><span class="o">.</span><span class="n">role</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                    <span class="n">user</span><span class="o">.</span><span class="n">validated</span> <span class="o">=</span> <span class="n">valid</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">edit_user</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+                    <span class="n">not_deleted</span> <span class="o">=</span> <span class="n">not_deleted</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="c"># The entire current page was deleted, go to previous page</span>
+            <span class="k">if</span> <span class="n">not_deleted</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">page</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">page</span> <span class="o">=</span> <span class="n">page</span> <span class="o">-</span> <span class="mi">1</span>
+                
+        <span class="n">admin_</span> <span class="o">=</span> <span class="n">basecontroller</span><span class="o">.</span><span class="n">get_logged_user</span><span class="p">()</span><span class="o">.</span><span class="n">username</span>
+        <span class="n">user_list</span><span class="p">,</span> <span class="n">pages_no</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">retrieve_all_users</span><span class="p">(</span><span class="n">admin_</span><span class="p">,</span> <span class="n">page</span><span class="p">)</span>
+        <span class="n">template_specification</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">mainContent</span><span class="o">=</span> <span class="s">&quot;user_management&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span> <span class="s">&quot;Users management&quot;</span><span class="p">,</span> <span class="n">page_number</span><span class="o">=</span> <span class="n">page</span><span class="p">,</span> 
+                                    <span class="n">total_pages</span><span class="o">=</span><span class="n">pages_no</span><span class="p">,</span> <span class="n">userList</span><span class="o">=</span><span class="n">user_list</span><span class="p">,</span> <span class="n">allRoles</span><span class="o">=</span><span class="n">UserService</span><span class="o">.</span><span class="n">USER_ROLES</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{})</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_default_attributes</span><span class="p">(</span><span class="n">template_specification</span><span class="p">)</span>
+        
+    </div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;user/base_user&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="UserController.recoverpassword"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.userscontroller.UserController.recoverpassword">[docs]</a>    <span class="k">def</span> <span class="nf">recoverpassword</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cancel</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This form should reset a password for a given userName/email and send a </span>
+<span class="sd">        notification message to that email.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">template_specification</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">mainContent</span><span class="o">=</span><span class="s">&quot;recover_password&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;Recover password&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">redirect</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cancel</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">HTTPRedirect</span><span class="p">(</span><span class="s">&#39;/user&#39;</span><span class="p">)</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="n">RecoveryForm</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">to_python</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">okmessage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">reset_password</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">basecontroller</span><span class="o">.</span><span class="n">set_info_message</span><span class="p">(</span><span class="n">okmessage</span><span class="p">)</span>
+                <span class="n">redirect</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">except</span> <span class="n">formencode</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+                <span class="n">template_specification</span><span class="p">[</span><span class="n">basecontroller</span><span class="o">.</span><span class="n">KEY_ERRORS</span><span class="p">]</span> <span class="o">=</span> <span class="n">excep</span><span class="o">.</span><span class="n">unpack_errors</span><span class="p">()</span>
+                <span class="n">redirect</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">except</span> <span class="n">UsernameException</span><span class="p">,</span> <span class="n">excep1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Could not reset password!&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep1</span><span class="p">)</span>
+                <span class="n">basecontroller</span><span class="o">.</span><span class="n">set_error_message</span><span class="p">(</span><span class="n">excep1</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+                <span class="n">redirect</span> <span class="o">=</span> <span class="bp">False</span>            
+        <span class="k">if</span> <span class="n">redirect</span><span class="p">:</span> 
+            <span class="c">#Redirect to login page, with some success message to display</span>
+            <span class="k">raise</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">HTTPRedirect</span><span class="p">(</span><span class="s">&#39;/user&#39;</span><span class="p">)</span> 
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c">#Stay on the same page</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_default_attributes</span><span class="p">(</span><span class="n">template_specification</span><span class="p">)</span>
+        </div>
+    <span class="nd">@cherrypy.expose</span>
+<div class="viewcode-block" id="UserController.upgrade_file_storage"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.userscontroller.UserController.upgrade_file_storage">[docs]</a>    <span class="k">def</span> <span class="nf">upgrade_file_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Upgrade the file storage to the latest version if needed.</span>
+<span class="sd">        Otherwise just return. This is called on user login.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">status</span><span class="p">,</span> <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">upgrade_file_storage</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">))</span>
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@admin</span><span class="p">()</span>
+<div class="viewcode-block" id="UserController.validate"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.userscontroller.UserController.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A link to this page will be sent to the administrator to validate </span>
+<span class="sd">        the registration of each user.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">validate_user</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+            <span class="n">basecontroller</span><span class="o">.</span><span class="n">set_error_message</span><span class="p">(</span><span class="s">&quot;Problem validating user:&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="o">+</span> <span class="s">&quot;!! Please check logs.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Problem validating user &quot;</span><span class="o">+</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">basecontroller</span><span class="o">.</span><span class="n">set_info_message</span><span class="p">(</span><span class="s">&quot;User Validated successfully and notification email sent!&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">HTTPRedirect</span><span class="p">(</span><span class="s">&#39;/tvb&#39;</span><span class="p">)</span>
+    
+    </div>
+    <span class="k">def</span> <span class="nf">_create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email_msg</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">validated</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Just create a user given the data input. Do form validation beforehand.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">RegisterForm</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">to_python</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">KEY_PASSWORD</span><span class="p">]</span> <span class="o">=</span> <span class="n">md5</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">KEY_PASSWORD</span><span class="p">])</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+        <span class="n">data</span><span class="p">[</span><span class="s">&#39;password2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">md5</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;password2&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span><span class="n">email_msg</span><span class="o">=</span><span class="n">email_msg</span><span class="p">,</span> <span class="n">validated</span><span class="o">=</span><span class="n">validated</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">)</span>
+    
+    
+<div class="viewcode-block" id="UserController.fill_default_attributes"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.userscontroller.UserController.fill_default_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">fill_default_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_dictionary</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fill into &#39;template_dictionary&#39; data that we want to have ready in UI.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">template_dictionary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_populate_version</span><span class="p">(</span><span class="n">template_dictionary</span><span class="p">)</span>
+        <span class="n">basecontroller</span><span class="o">.</span><span class="n">BaseController</span><span class="o">.</span><span class="n">fill_default_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_dictionary</span><span class="p">)</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">basecontroller</span><span class="o">.</span><span class="n">KEY_INCLUDE_TOOLTIP</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">basecontroller</span><span class="o">.</span><span class="n">KEY_WRAP_CONTENT_IN_MAIN_DIV</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">basecontroller</span><span class="o">.</span><span class="n">KEY_CURRENT_TAB</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;nav-user&#39;</span>
+        <span class="k">return</span> <span class="n">template_dictionary</span>
+    
+    </div>
+    <span class="k">def</span> <span class="nf">_populate_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_dictionary</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fill in template informations about current version available online.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">version_info</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">content</span> <span class="o">=</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">URL_TVB_VERSION</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">version_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_service</span><span class="o">.</span><span class="n">parse_version_xml</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
+                <span class="n">pos</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">URL_TVB_VERSION</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="s">&#39;url&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">URL_TVB_VERSION</span><span class="p">[:</span><span class="n">pos</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Could not read current version.xml!&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">version_info</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_SERVER_VERSION</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">version_info</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_CURRENT_VERSION_FULL</span><span class="p">]</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">CURRENT_VERSION</span>
+        <span class="k">return</span> <span class="n">template_dictionary</span>
+    
+
+</div>
+<div class="viewcode-block" id="LoginForm"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.userscontroller.LoginForm">[docs]</a><span class="k">class</span> <span class="nc">LoginForm</span><span class="p">(</span><span class="n">formencode</span><span class="o">.</span><span class="n">Schema</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate for Login UI Form</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">empty_msg</span> <span class="o">=</span> <span class="s">&#39;Please enter a value&#39;</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">validators</span><span class="o">.</span><span class="n">UnicodeString</span><span class="p">(</span><span class="n">not_empty</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">use_builtins_gettext</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;empty&#39;</span><span class="p">:</span> <span class="n">empty_msg</span><span class="p">})</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="n">validators</span><span class="o">.</span><span class="n">UnicodeString</span><span class="p">(</span><span class="n">not_empty</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">use_builtins_gettext</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;empty&#39;</span><span class="p">:</span> <span class="n">empty_msg</span><span class="p">})</span>
+ 
+ </div>
+<div class="viewcode-block" id="UniqueUsername"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.userscontroller.UniqueUsername">[docs]</a><span class="k">class</span> <span class="nc">UniqueUsername</span><span class="p">(</span><span class="n">formencode</span><span class="o">.</span><span class="n">FancyValidator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Custom validator to check that a given user-name is unique.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_to_python</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Fancy validate for Unique user-name &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">UserService</span><span class="p">()</span><span class="o">.</span><span class="n">is_username_valid</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">formencode</span><span class="o">.</span><span class="n">Invalid</span><span class="p">(</span><span class="s">&#39;Please choose another user-name, this one is already in use!&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+   </div>
+<div class="viewcode-block" id="RegisterForm"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.userscontroller.RegisterForm">[docs]</a><span class="k">class</span> <span class="nc">RegisterForm</span><span class="p">(</span><span class="n">formencode</span><span class="o">.</span><span class="n">Schema</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate Register Form</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">formencode</span><span class="o">.</span><span class="n">All</span><span class="p">(</span><span class="n">validators</span><span class="o">.</span><span class="n">UnicodeString</span><span class="p">(</span><span class="n">not_empty</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span> <span class="n">validators</span><span class="o">.</span><span class="n">PlainText</span><span class="p">(),</span> <span class="n">UniqueUsername</span><span class="p">())</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="n">validators</span><span class="o">.</span><span class="n">UnicodeString</span><span class="p">(</span><span class="n">not_empty</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">password2</span> <span class="o">=</span> <span class="n">validators</span><span class="o">.</span><span class="n">UnicodeString</span><span class="p">(</span><span class="n">not_empty</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">validators</span><span class="o">.</span><span class="n">Email</span><span class="p">(</span><span class="n">not_empty</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">comment</span> <span class="o">=</span> <span class="n">validators</span><span class="o">.</span><span class="n">UnicodeString</span><span class="p">()</span>
+    <span class="n">role</span> <span class="o">=</span> <span class="n">validators</span><span class="o">.</span><span class="n">UnicodeString</span><span class="p">()</span>
+    <span class="n">chained_validators</span> <span class="o">=</span> <span class="p">[</span><span class="n">validators</span><span class="o">.</span><span class="n">FieldsMatch</span><span class="p">(</span><span class="s">&#39;password&#39;</span><span class="p">,</span> <span class="s">&#39;password2&#39;</span><span class="p">)]</span>
+    
+</div>
+<div class="viewcode-block" id="RecoveryForm"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.userscontroller.RecoveryForm">[docs]</a><span class="k">class</span> <span class="nc">RecoveryForm</span><span class="p">(</span><span class="n">formencode</span><span class="o">.</span><span class="n">Schema</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate Recover Password Form</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">formencode</span><span class="o">.</span><span class="n">All</span><span class="p">(</span><span class="n">validators</span><span class="o">.</span><span class="n">UnicodeString</span><span class="p">(</span><span class="n">not_empty</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span> <span class="n">validators</span><span class="o">.</span><span class="n">PlainText</span><span class="p">())</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">validators</span><span class="o">.</span><span class="n">Email</span><span class="p">(</span><span class="n">not_empty</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+ 
+ </div>
+<div class="viewcode-block" id="EditUserForm"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.userscontroller.EditUserForm">[docs]</a><span class="k">class</span> <span class="nc">EditUserForm</span><span class="p">(</span><span class="n">formencode</span><span class="o">.</span><span class="n">Schema</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;   </span>
+<span class="sd">    Validate fields on user-edit</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">old_password</span> <span class="o">=</span> <span class="n">validators</span><span class="o">.</span><span class="n">UnicodeString</span><span class="p">(</span><span class="n">if_missing</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="n">validators</span><span class="o">.</span><span class="n">UnicodeString</span><span class="p">(</span><span class="n">if_missing</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+    <span class="n">password2</span> <span class="o">=</span> <span class="n">validators</span><span class="o">.</span><span class="n">UnicodeString</span><span class="p">(</span><span class="n">if_missing</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">validators</span><span class="o">.</span><span class="n">Email</span><span class="p">(</span><span class="n">if_missing</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+    <span class="n">chained_validators</span> <span class="o">=</span> <span class="p">[</span><span class="n">validators</span><span class="o">.</span><span class="n">FieldsMatch</span><span class="p">(</span><span class="s">&#39;password&#39;</span><span class="p">,</span> <span class="s">&#39;password2&#39;</span><span class="p">),</span> 
+                          <span class="n">validators</span><span class="o">.</span><span class="n">RequireIfPresent</span><span class="p">(</span><span class="s">&#39;password&#39;</span><span class="p">,</span> <span class="n">present</span><span class="o">=</span><span class="s">&#39;old_password&#39;</span><span class="p">)]</span>
+    
+    </div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

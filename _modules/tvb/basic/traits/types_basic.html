@@ -1,0 +1,394 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.basic.traits.types_basic &mdash; The Virtual Brain 1.0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.basic.traits.types_basic</h1><pre>
+# -*- coding: utf-8 -*-
+#
+#
+#  TheVirtualBrain-Scientific Package. This package holds all simulators, and 
+# analysers necessary to run brain-simulations. You can use it stand alone or
+# in conjunction with TheVirtualBrain-Framework Package. See content of the
+# documentation-folder for more details. See also http://www.thevirtualbrain.org
+#
+# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
+#
+# This program is free software; you can redistribute it and/or modify it under 
+# the terms of the GNU General Public License version 2 as published by the Free
+# Software Foundation. This program is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+# License for more details. You should have received a copy of the GNU General 
+# Public License along with this program; if not, you can download it here
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0
+#
+#
+
+"""
+This module describes the simple of traited attributes one might needs on a class.
+
+If your subclass should be mapped to a database table (true for most entities
+that will be reused), use MappedType as superclass.
+
+If you subclass is supported natively by SQLAlchemy, subclass Type, otherwise
+subclass MappedType.
+
+Important:
+- Type - traited, possible mapped to db *col*
+- MappedType - traited, mapped to db *table*
+
+
+.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;
+.. moduleauthor:: marmaduke &lt;duke@eml.cc&gt;
+"""
+
+import numpy
+import math
+import json
+import tvb.basic.traits.core as core
+from tvb.basic.logger.builder import get_logger
+
+LOG = get_logger(__name__)
+
+
+<div class="viewcode-block" id="String"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.types_basic.String">[docs]</a>class String(core.Type):
+    """
+    Traits type that wraps a Python string.
+    """
+    wraps = (str, unicode)
+
+</div>
+<div class="viewcode-block" id="Bool"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.types_basic.Bool">[docs]</a>class Bool(core.Type):
+    """
+    Traits type wrapping Python boolean primitive. 
+    The only instances of Python bool are True and False.
+    """
+    wraps = bool
+
+</div>
+<div class="viewcode-block" id="Integer"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.types_basic.Integer">[docs]</a>class Integer(core.Type):
+    """
+    Traits type that wraps Numpy's int32.
+    """
+    wraps = (int, long)
+
+</div>
+<div class="viewcode-block" id="Float"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.types_basic.Float">[docs]</a>class Float(core.Type):
+    """
+    Traits type that wraps Numpy's float64.
+    """
+    wraps = (float, numpy.float32, int)
+
+</div>
+<div class="viewcode-block" id="Complex"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.types_basic.Complex">[docs]</a>class Complex(core.Type):
+    """
+    Traits type that wraps Numpy's complex64.
+    """
+    wraps = numpy.complex64
+
+</div>
+<div class="viewcode-block" id="MapAsJson"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.types_basic.MapAsJson">[docs]</a>class MapAsJson():
+    """Add functionality of converting from/to JSON"""
+
+    def __get__(self, inst, cls):
+        if (inst is not None and self.trait.bound and hasattr(inst, '_' + self.trait.name)):
+            string = getattr(inst, '_' + self.trait.name)
+            if string is None or (not isinstance(string, (str, unicode))):
+                return string
+            if len(string) &lt; 1:
+                return None
+            json_value = self.from_json(string)
+            setattr(inst, '_' + self.trait.name, json_value)
+            return json_value
+        return self
+
+    @staticmethod
+    def to_json(entity):
+        return json.dumps(entity)
+
+    @staticmethod
+    def from_json(string):
+        return json.loads(string)
+    
+    @staticmethod
+    def decode_map_as_json(dct):
+        """
+        Used in the __convert_to_array to get an equation from the UI corresponding string.
+        """
+        for key, value in dct.items():
+            if isinstance(value, unicode) and '__mapped_module' in value:
+                dict_value = json.loads(value)
+                if '__mapped_module' not in dict_value:
+                    dct[key] = MapAsJson.decode_map_as_json(dict_value)
+                else:
+                    modulename = dict_value['__mapped_module']
+                    classname = dict_value['__mapped_class']
+                    module_entity = __import__(modulename, globals(), locals(), [classname])
+                    class_entity = eval('module_entity.' + classname)
+                    loaded_entity = class_entity.from_json(value)
+                    dct[key] = loaded_entity
+        return dct
+    
+    class MapAsJsonEncoder(json.JSONEncoder):
+        """
+        Used before any save to the database to encode Equation type opjects.
+        """
+        def default(self, obj):
+            if isinstance(obj, MapAsJson):
+                return obj.to_json(obj)
+            else:
+                return json.JSONEncoder.default(self, obj)
+                
+                </div>
+<div class="viewcode-block" id="Sequence"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.types_basic.Sequence">[docs]</a>class Sequence(MapAsJson, String):
+    """
+    Traits type base class that wraps python sequence 
+    python types (containers)
+    """
+    wraps = (dict, list, tuple, set, slice, numpy.ndarray)
+
+</div>
+<div class="viewcode-block" id="Enumerate"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.types_basic.Enumerate">[docs]</a>class Enumerate(Sequence):
+    """
+    Traits type that mimics an enumeration.
+    """
+    wraps = numpy.ndarray
+    
+    def __get__(self, inst, cls):
+        if inst is None:
+            return self
+        if self.trait.bound:
+            return numpy.array(super(Enumerate, self).__get__(inst, cls))
+        return numpy.array(self.trait.value)
+    
+    def __set__(self, inst, value):
+        if not isinstance(value, list):
+            # So it works for simple selects aswell as multiple selects
+            value = [value]
+        if self.trait.select_multiple:
+            super(Enumerate, self).__set__(inst, value)
+        else:
+            #Bypass default since that only accepts arrays for multiple selects
+            setattr(inst, '_' + self.trait.name, self.to_json(value))
+            self.trait.value = value
+
+</div>
+<div class="viewcode-block" id="Dict"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.types_basic.Dict">[docs]</a>class Dict(Sequence):
+    """
+    Traits type that wraps a python dict.
+    """
+    wraps = dict
+
+</div>
+<div class="viewcode-block" id="Set"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.types_basic.Set">[docs]</a>class Set(Sequence):
+    """
+    Traits type that wraps a python set.
+    """
+    wraps = set
+
+</div>
+<div class="viewcode-block" id="Tuple"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.types_basic.Tuple">[docs]</a>class Tuple(Sequence):
+    """
+    Traits type that wraps a python tuple.
+    """
+    wraps = tuple
+    
+    def __get__(self, inst, cls):
+        list_value = super(Tuple, self).__get__(inst, cls)
+        
+        if isinstance(list_value, list):
+            return (list_value[0], list_value[1])
+        
+        return list_value
+
+</div>
+<div class="viewcode-block" id="List"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.types_basic.List">[docs]</a>class List(Sequence):
+    """
+    Traits type that wraps a Python list.
+    """
+    wraps = (list, numpy.ndarray)
+
+</div>
+<div class="viewcode-block" id="Slice"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.types_basic.Slice">[docs]</a>class Slice(Sequence):
+    """
+    Useful of for specifying views or slices of containers.
+    """
+    wraps = slice
+
+</div>
+<div class="viewcode-block" id="Range"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.types_basic.Range">[docs]</a>class Range(core.Type):
+    """
+    Range is like Python range() except that it will accept ranges with
+    multiplicative or additive step sizes.
+
+    Instances of Range will not generate their discrete values automatically,
+    but these values can be obtained by converting to a list
+
+        &gt;&gt;&gt; range_values = list(Range(hi=1.0, step=0.1))
+
+    or direct iteration
+
+        &gt;&gt;&gt; for val in Range(lo=0.0, hi=3.0):
+                print val
+        0.0
+        1.0
+        2.0
+
+    """
+    lo = Float(doc='start of range')
+    hi = Float(doc='end of range')
+
+    step = Float(default = 1.0, doc = 'fixed step size between elements')
+
+    base = Float(default = math.e, doc = 'fixed multiplier between elements')
+ 
+    def __iter__(self):
+        """ Get valid values in interval"""
+        def gen():
+            val = self.lo
+            while val &lt; self.hi:
+                if self.step:
+                    val += self.step
+                    yield val
+                else:
+                    val *= self.base
+                    yield val
+        return gen()
+
+</div>
+<div class="viewcode-block" id="ValidationRange"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.types_basic.ValidationRange">[docs]</a>class ValidationRange(core.Type):
+    """
+    ValidationRange represents a Range used only for validating a number.
+    """
+
+</div>
+<div class="viewcode-block" id="JSONType"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.types_basic.JSONType">[docs]</a>class JSONType(String):
+    """
+    Wrapper over a String which holds a serializable object.
+    On set/get JSON load/dump will be called.
+    """
+    
+    def __get__(self, inst, cls):
+        if inst:
+            string = super(JSONType, self).__get__(inst, cls)
+            if string is None or (not isinstance(string, (str, unicode))):
+                return string
+            if len(string) &lt; 1:
+                return None
+            return json.loads(string)
+        return super(JSONType, self).__get__(inst, cls)
+        
+    def __set__(self, inst, value):
+        if not isinstance(value, (str, unicode)):
+            value = json.dumps(value)
+        super(JSONType, self).__set__(inst, value)
+  
+  </div>
+<div class="viewcode-block" id="DType"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.types_basic.DType">[docs]</a>class DType(String):
+    """
+    Traits type that wraps a Numpy dType specification.
+    """
+
+    wraps = (numpy.dtype, str)
+    defaults = ((numpy.float64, ), {})
+    
+    def __get__(self, inst, cls):
+        if inst:
+            type_ = super(DType, self).__get__(inst, cls)
+            return str(type_).replace("&lt;type '", '').replace("'&gt;", '')
+        return super(DType, self).__get__(inst, cls)
+        
+    def __set__(self, inst, value):
+        super(DType, self).__set__(inst, str(value))
+
+   </div>
+</pre>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

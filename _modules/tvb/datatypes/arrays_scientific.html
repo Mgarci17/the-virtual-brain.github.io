@@ -1,0 +1,234 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.datatypes.arrays_scientific &mdash; The Virtual Brain 1.0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.datatypes.arrays_scientific</h1><pre>
+# -*- coding: utf-8 -*-
+#
+#
+#  TheVirtualBrain-Scientific Package. This package holds all simulators, and 
+# analysers necessary to run brain-simulations. You can use it stand alone or
+# in conjunction with TheVirtualBrain-Framework Package. See content of the
+# documentation-folder for more details. See also http://www.thevirtualbrain.org
+#
+# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
+#
+# This program is free software; you can redistribute it and/or modify it under 
+# the terms of the GNU General Public License version 2 as published by the Free
+# Software Foundation. This program is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+# License for more details. You should have received a copy of the GNU General 
+# Public License along with this program; if not, you can download it here
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0
+#
+#
+
+"""
+
+Scientific methods for the Array datatypes.
+
+.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;
+
+"""
+
+import numpy
+import tvb.datatypes.arrays_data as arrays_data
+from tvb.basic.traits.types_mapped import MappedType
+
+
+<div class="viewcode-block" id="FloatArrayScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_scientific.FloatArrayScientific">[docs]</a>class FloatArrayScientific(arrays_data.FloatArrayData):
+    """ This class exists to add scientific methods to FloatArrayData """
+    
+    
+    def _find_summary_info(self):
+        """
+        Gather scientifically interesting summary information from an instance
+        of this datatype.
+        """
+        summary = {"Array type": self.__class__.__name__}
+        summary["Shape"] = self.shape
+        summary["Maximum"] = self.value.max()
+        summary["Minimum"] = self.value.min()
+        summary["Mean"] = self.value.mean()
+        return summary
+
+</div>
+<div class="viewcode-block" id="IntegerArrayScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_scientific.IntegerArrayScientific">[docs]</a>class IntegerArrayScientific(arrays_data.IntegerArrayData):
+    """ This class exists to add scientific methods to IntegerArrayData """
+    
+    
+    def _find_summary_info(self):
+        """
+        Gather scientifically interesting summary information from an instance
+        of this datatype.
+        """
+        summary = {"Array type": self.__class__.__name__}
+        summary["Shape"] = self.shape
+        summary["Maximum"] = self.value.max()
+        summary["Minimum"] = self.value.min()
+        summary["Mean"] = self.value.mean()
+        summary["Median"] = numpy.median(self.value)
+        return summary
+
+</div>
+<div class="viewcode-block" id="ComplexArrayScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_scientific.ComplexArrayScientific">[docs]</a>class ComplexArrayScientific(arrays_data.ComplexArrayData):
+    """ This class exists to add scientific methods to ComplexArrayData """
+    
+    _stored_metadata = [key for key in MappedType.ALL_METADATA_ARRAY.keys() 
+                          if key != MappedType.METADATA_ARRAY_VAR]
+    
+    def _find_summary_info(self):
+        """
+        Gather scientifically interesting summary information from an instance
+        of this datatype.
+        """
+        summary = {"Array type": self.__class__.__name__}
+        summary["Shape"] = self.shape
+        summary["Maximum"] = self.value.max()
+        summary["Minimum"] = self.value.min()
+        summary["Mean"] = self.value.mean()
+        return summary
+
+</div>
+<div class="viewcode-block" id="BoolArrayScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_scientific.BoolArrayScientific">[docs]</a>class BoolArrayScientific(arrays_data.BoolArrayData):
+    """ This class exists to add scientific methods to BoolArrayData """
+    
+    _stored_metadata = [MappedType.METADATA_ARRAY_SHAPE]
+    
+    def _find_summary_info(self):
+        """
+        Gather scientifically interesting summary information from an instance
+        of this datatype.
+        """
+        summary = {"Array type": self.__class__.__name__}
+        summary["Shape"] = self.shape
+        return summary
+
+</div>
+<div class="viewcode-block" id="StringArrayScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_scientific.StringArrayScientific">[docs]</a>class StringArrayScientific(arrays_data.StringArrayData):
+    """ This class exists to add scientific methods to StringArrayData """
+    
+    _stored_metadata = [MappedType.METADATA_ARRAY_SHAPE]
+    
+    def _find_summary_info(self):
+        """
+        Gather scientifically interesting summary information from an instance
+        of this datatype.
+        """
+        summary = {"Array type": self.__class__.__name__}
+        summary["Shape"] = self.shape
+        return summary
+
+</div>
+<div class="viewcode-block" id="PositionArrayScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_scientific.PositionArrayScientific">[docs]</a>class PositionArrayScientific(arrays_data.PositionArrayData, FloatArrayScientific):
+    """ This class exists to add scientific methods to PositionArrayData"""
+    pass
+
+</div>
+<div class="viewcode-block" id="OrientationArrayScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_scientific.OrientationArrayScientific">[docs]</a>class OrientationArrayScientific(arrays_data.OrientationArrayData, FloatArrayScientific):
+    """ This class exists to add scientific methods to OrientationArrayData """
+    pass
+
+</div>
+<div class="viewcode-block" id="IndexArrayScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_scientific.IndexArrayScientific">[docs]</a>class IndexArrayScientific(arrays_data.IndexArrayData, IntegerArrayScientific):
+    """ This class exists to add scientific methods to IndexArrayData """
+    pass
+
+</div>
+<div class="viewcode-block" id="MappedArrayScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_scientific.MappedArrayScientific">[docs]</a>class MappedArrayScientific(arrays_data.MappedArrayData):
+    """This class exists to add scientific methods to MappedArrayData"""
+    __tablename__ = None
+
+
+</div>
+</pre>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
