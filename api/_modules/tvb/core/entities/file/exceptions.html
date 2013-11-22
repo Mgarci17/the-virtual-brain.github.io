@@ -1,0 +1,170 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.entities.file.exceptions &mdash; The Virtual Brain 1.0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '1.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.entities.file.exceptions</h1><pre>
+# -*- coding: utf-8 -*-
+#
+#
+# TheVirtualBrain-Framework Package. This package holds all Data Management, and 
+# Web-UI helpful to run brain-simulations. To use it, you also need do download
+# TheVirtualBrain-Scientific Package (for simulators). See content of the
+# documentation-folder for more details. See also http://www.thevirtualbrain.org
+#
+# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
+#
+# This program is free software; you can redistribute it and/or modify it under 
+# the terms of the GNU General Public License version 2 as published by the Free
+# Software Foundation. This program is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+# License for more details. You should have received a copy of the GNU General 
+# Public License along with this program; if not, you can download it here
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0
+#
+#
+"""
+Exceptions for File Storage layer. 
+   
+.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;
+.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;
+"""
+from tvb.basic.traits.exceptions import TVBException
+
+
+<div class="viewcode-block" id="FileStructureException"><a class="viewcode-back" href="../../../../../tvb.core.entities.file.html#tvb.core.entities.file.exceptions.FileStructureException">[docs]</a>class FileStructureException(TVBException):
+    """
+    Exception to be thrown in case of a problem 
+    related to File Structure Storage.
+    """
+    def __init__(self, message):
+        TVBException.__init__(self, message)
+        
+</div>
+<div class="viewcode-block" id="FileStorageException"><a class="viewcode-back" href="../../../../../tvb.core.entities.file.html#tvb.core.entities.file.exceptions.FileStorageException">[docs]</a>class FileStorageException(TVBException):
+    """
+    Generic exception when storing in data in files.
+    """
+    def __init__(self, message):
+        TVBException.__init__(self, message)
+        
+   </div>
+<div class="viewcode-block" id="MissingDataSetException"><a class="viewcode-back" href="../../../../../tvb.core.entities.file.html#tvb.core.entities.file.exceptions.MissingDataSetException">[docs]</a>class MissingDataSetException(FileStorageException):
+    """
+    Exception when a dataset is accessed, but no written entry exists in HDF5 file for it.
+    we will consider the attribute None.
+    """   
+    def __init__(self, message):
+        FileStorageException.__init__(self, message)
+        </div>
+<div class="viewcode-block" id="MissingDataFileException"><a class="viewcode-back" href="../../../../../tvb.core.entities.file.html#tvb.core.entities.file.exceptions.MissingDataFileException">[docs]</a>class MissingDataFileException(FileStorageException):
+    """
+    Exception when the file associated to some manager does not exist on disk for some reason.
+    """   
+    def __init__(self, message):
+        FileStorageException.__init__(self, message)
+    </div>
+<div class="viewcode-block" id="FileVersioningException"><a class="viewcode-back" href="../../../../../tvb.core.entities.file.html#tvb.core.entities.file.exceptions.FileVersioningException">[docs]</a>class FileVersioningException(TVBException):
+    """
+    A base exception class for all TVB file storage version conversion custom exceptions.
+    """
+    def __init__(self, message):
+        TVBException.__init__(self, message)
+                </div>
+<div class="viewcode-block" id="IncompatibleFileManagerException"><a class="viewcode-back" href="../../../../../tvb.core.entities.file.html#tvb.core.entities.file.exceptions.IncompatibleFileManagerException">[docs]</a>class IncompatibleFileManagerException(FileVersioningException):        
+    """
+    Exception that should be raised in case a file is handled by some filemanager which
+    is incompatible with that version of TVB file storage.
+    """
+    def __init__(self, message):
+        FileVersioningException.__init__(self, message)
+        </pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

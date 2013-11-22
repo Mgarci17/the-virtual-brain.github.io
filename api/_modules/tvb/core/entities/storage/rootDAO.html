@@ -1,0 +1,214 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.entities.storage.rootDAO &mdash; The Virtual Brain 1.0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '1.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.entities.storage.rootDAO</h1><pre>
+# -*- coding: utf-8 -*-
+#
+#
+# TheVirtualBrain-Framework Package. This package holds all Data Management, and 
+# Web-UI helpful to run brain-simulations. To use it, you also need do download
+# TheVirtualBrain-Scientific Package (for simulators). See content of the
+# documentation-folder for more details. See also http://www.thevirtualbrain.org
+#
+# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
+#
+# This program is free software; you can redistribute it and/or modify it under 
+# the terms of the GNU General Public License version 2 as published by the Free
+# Software Foundation. This program is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+# License for more details. You should have received a copy of the GNU General 
+# Public License along with this program; if not, you can download it here
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0
+#
+#
+
+"""
+Base DAO behavior.
+
+.. moduleauthor:: bogdan.neacsa &lt;bogdan.neacsa@codemart.ro&gt;
+.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;
+"""
+
+from tvb.basic.logger.builder import get_logger
+from tvb.core.entities import model
+from tvb.core.entities.storage.sessionmaker import SESSION_META_CLASS
+from tvb.config import SIMULATION_DATATYPE_CLASS
+
+
+<div class="viewcode-block" id="RootDAO"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.rootDAO.RootDAO">[docs]</a>class RootDAO(object):
+    """
+    GLOBAL OPERATIONS
+    """
+    
+    __metaclass__ = SESSION_META_CLASS
+    session = None
+    logger = get_logger(__name__)
+    
+    EXCEPTION_DATATYPE_GROUP = "DataTypeGroup"
+    EXCEPTION_DATATYPE_SIMULATION = SIMULATION_DATATYPE_CLASS
+    
+    
+<div class="viewcode-block" id="RootDAO.store_entity"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.rootDAO.RootDAO.store_entity">[docs]</a>    def store_entity(self, entity):
+        """Store in DB one generic entity."""
+        self.session.add(entity)
+        self.session.commit()
+        saved_entity = self.session.query(entity.__class__ ).filter_by(id=entity.id).one()
+        return saved_entity
+        
+     </div>
+<div class="viewcode-block" id="RootDAO.store_entities"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.rootDAO.RootDAO.store_entities">[docs]</a>    def store_entities(self, entities_list):
+        """Store in DB a list of generic entities."""
+        self.session.add_all(entities_list)
+        self.session.commit()
+        stored_entities = []
+        for entity in entities_list:
+            stored_entities.append(self.session.query(entity.__class__).filter_by(id=entity.id).one())
+        return stored_entities
+    
+    </div>
+<div class="viewcode-block" id="RootDAO.get_generic_entity"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.rootDAO.RootDAO.get_generic_entity">[docs]</a>    def get_generic_entity(self, entity_type, filter_value, select_field="id"):
+        """Retrieve an entity from a generic table,filtered by a generic field."""
+        if isinstance(entity_type, (str, unicode)):
+            classname = entity_type[entity_type.rfind(".") + 1:]
+            entity_class = __import__(entity_type[0: entity_type.rfind(".")], 
+                                        globals(), locals(), classname)
+            entity_class = eval("entity_class." + classname)
+            result = self.session.query(entity_class).filter(
+                        entity_class.__dict__[select_field]==filter_value).all()
+        else:
+            result = self.session.query(entity_type).filter(
+                         entity_type.__dict__[select_field]==filter_value).all()
+        # Need this since entity has attributes loaded automatically on DB load from 
+        # traited DB events. This causes the session to see the entity as dirty and issues
+        # an invalid commit() which leaves the entity unattached to any sessions later on.
+        self.session.expunge_all()
+        return result
+    
+    </div>
+<div class="viewcode-block" id="RootDAO.remove_entity"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.rootDAO.RootDAO.remove_entity">[docs]</a>    def remove_entity(self, entity_class, entity_id):
+        """ 
+        Find entity by Id and Type, end then remove it.
+        Return True, when entity was removed successfully, of False when exception.
+        """
+        result = False
+        try:
+            entity = self.session.query(entity_class).filter_by(id=entity_id).one()
+            self.session.delete(entity)
+            self.session.commit()
+            result = True
+        except Exception, excep:
+            self.logger.exception(excep)
+        return result
+    
+    #
+    # DATA_TYPE RELATED METHODS
+    #
+    </div>
+<div class="viewcode-block" id="RootDAO.remove_datatype"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.rootDAO.RootDAO.remove_datatype">[docs]</a>    def remove_datatype(self, gid):
+        """When removing dataType, remove from all tables referenced."""
+        data = self.session.query(model.DataType).filter(model.DataType.gid==gid).all()
+        for entity in data:
+            extended_ent = self.get_generic_entity(entity.module +"."+ entity.type, entity.id)
+            self.session.delete(extended_ent[0])
+        self.session.commit()
+    
+        </div>
+<div class="viewcode-block" id="RootDAO.get_datatype_by_id"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.rootDAO.RootDAO.get_datatype_by_id">[docs]</a>    def get_datatype_by_id(self, data_id):
+        """Retrieve DataType entity by ID."""
+        result = self.session.query(model.DataType).filter_by(id=data_id).one()
+        result.parent_operation.project
+        return result
+    
+  </div></div>
+</pre>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

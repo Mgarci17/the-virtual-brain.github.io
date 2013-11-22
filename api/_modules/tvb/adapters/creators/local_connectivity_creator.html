@@ -1,0 +1,197 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.adapters.creators.local_connectivity_creator &mdash; The Virtual Brain 1.0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.adapters.creators.local_connectivity_creator</h1><pre>
+# -*- coding: utf-8 -*-
+#
+#
+# TheVirtualBrain-Framework Package. This package holds all Data Management, and 
+# Web-UI helpful to run brain-simulations. To use it, you also need do download
+# TheVirtualBrain-Scientific Package (for simulators). See content of the
+# documentation-folder for more details. See also http://www.thevirtualbrain.org
+#
+# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
+#
+# This program is free software; you can redistribute it and/or modify it under 
+# the terms of the GNU General Public License version 2 as published by the Free
+# Software Foundation. This program is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+# License for more details. You should have received a copy of the GNU General 
+# Public License along with this program; if not, you can download it here
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0
+#
+#
+
+"""
+.. Ionel Ortelecan &lt;ionel.ortelecan@codemart.ro&gt;
+"""
+
+from tvb.basic.config.settings import TVBSettings
+from tvb.core.adapters.abcadapter import ABCAsynchronous
+from tvb.datatypes.surfaces import LocalConnectivity
+import tvb.basic.traits.traited_interface as interface
+import tvb.basic.traits.parameters_factory as parameters_factory
+import tvb.datatypes.equations_data as equations_data
+
+
+<div class="viewcode-block" id="LocalConnectivityCreator"><a class="viewcode-back" href="../../../../tvb.adapters.creators.html#tvb.adapters.creators.local_connectivity_creator.LocalConnectivityCreator">[docs]</a>class LocalConnectivityCreator(ABCAsynchronous):
+    """
+    The purpose of this adapter is create a LocalConnectivity.
+    """
+
+<div class="viewcode-block" id="LocalConnectivityCreator.get_input_tree"><a class="viewcode-back" href="../../../../tvb.adapters.creators.html#tvb.adapters.creators.local_connectivity_creator.LocalConnectivityCreator.get_input_tree">[docs]</a>    def get_input_tree(self):
+        """
+        Returns the input interface for this adapter.
+        """
+        local_connectivity = LocalConnectivity()
+        local_connectivity.trait.bound = interface.INTERFACE_ATTRIBUTES_ONLY
+        inputList = local_connectivity.interface[interface.INTERFACE_ATTRIBUTES]
+
+        return inputList
+
+</div>
+<div class="viewcode-block" id="LocalConnectivityCreator.get_output"><a class="viewcode-back" href="../../../../tvb.adapters.creators.html#tvb.adapters.creators.local_connectivity_creator.LocalConnectivityCreator.get_output">[docs]</a>    def get_output(self):
+        """
+        Describes the outputs of the launch method.
+        """
+        return [LocalConnectivity]
+
+</div>
+<div class="viewcode-block" id="LocalConnectivityCreator.launch"><a class="viewcode-back" href="../../../../tvb.adapters.creators.html#tvb.adapters.creators.local_connectivity_creator.LocalConnectivityCreator.launch">[docs]</a>    def launch(self, **kwargs):
+        """
+        Used for creating a LocalConnectivity
+        """
+        local_connectivity = LocalConnectivity(storage_path=self.storage_path)
+        local_connectivity.cutoff = float(kwargs['cutoff'])
+        local_connectivity.surface = kwargs['surface']
+        local_connectivity.equation = self.get_lconn_equation(kwargs)
+        local_connectivity.compute_sparse_matrix()
+
+        return local_connectivity
+
+    </div>
+<div class="viewcode-block" id="LocalConnectivityCreator.get_lconn_equation"><a class="viewcode-back" href="../../../../tvb.adapters.creators.html#tvb.adapters.creators.local_connectivity_creator.LocalConnectivityCreator.get_lconn_equation">[docs]</a>    def get_lconn_equation(self, kwargs):
+        """
+        Get the equation for the local connectivity from a dictionary of arguments.
+        """
+        return parameters_factory.get_traited_instance_for_name(kwargs['equation'], equations_data.EquationData,
+                                            {'parameters': kwargs['equation_parameters'].get('parameters', {})})
+
+</div>
+<div class="viewcode-block" id="LocalConnectivityCreator.get_required_disk_size"><a class="viewcode-back" href="../../../../tvb.adapters.creators.html#tvb.adapters.creators.local_connectivity_creator.LocalConnectivityCreator.get_required_disk_size">[docs]</a>    def get_required_disk_size(self, **kwargs):
+        """
+        Returns the required disk size to be able to run the adapter. (in kB)
+        """
+        if 'surface' in kwargs:
+            surface = kwargs['surface']
+            points_no = float(kwargs['cutoff']) / surface.edge_length_mean
+            disk_size_b = surface.number_of_vertices * points_no * points_no * 8
+            return disk_size_b * TVBSettings.MAGIC_NUMBER / 2 ** 10
+        return 0
+
+</div>
+<div class="viewcode-block" id="LocalConnectivityCreator.get_required_memory_size"><a class="viewcode-back" href="../../../../tvb.adapters.creators.html#tvb.adapters.creators.local_connectivity_creator.LocalConnectivityCreator.get_required_memory_size">[docs]</a>    def get_required_memory_size(self, **kwargs):
+        """
+        Return the required memory to run this algorithm.
+        """
+        if 'surface' in kwargs:
+            surface = kwargs['surface']
+            return surface.number_of_vertices * surface.number_of_vertices * 8.0
+        return -1
+
+
+
+    
+    
+    </pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

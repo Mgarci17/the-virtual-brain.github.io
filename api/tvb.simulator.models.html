@@ -1,0 +1,1689 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Models &mdash; The Virtual Brain 1.0.4 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="index.html" />
+    <link rel="up" title="" href="tvb.simulator.html" />
+    <link rel="next" title="Integrators" href="tvb.simulator.integrators.html" />
+    <link rel="prev" title="Coupling" href="tvb.simulator.coupling.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.simulator.integrators.html" title="Integrators"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tvb.simulator.coupling.html" title="Coupling"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ></a> &raquo;</li>
+          <li><a href="tvb.simulator.html" accesskey="U"></a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="models">
+<h1><tt class="xref py py-mod docutils literal"><span class="pre">Models</span></tt><a class="headerlink" href="#models" title="Permalink to this headline">¶</a></h1>
+<a class="reference external image-reference" href="_images/classes_models.svg"><div align="center" class="align-center"><img alt="Class diagram for tvb.simulator.models" height="600px" src="_images/classes_models.svg" /></div>
+</a>
+<span class="target" id="module-tvb.simulator.models"></span><p>A collection of neuronal dynamics models.</p>
+<p>Specific models inherit from the abstract class Model, which in turn inherits
+from the class Trait from the tvb.basic.traits module.</p>
+<dl class="attribute">
+<dt id="tvb.simulator.models.Model">
+<tt class="descclassname">tvb.simulator.models.</tt><tt class="descname">Model</tt><a class="reference internal" href="_modules/tvb/simulator/models.html#Model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.Model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the abstract class for neuronal models.</p>
+<dl class="method">
+<dt id="tvb.simulator.models.Model.__init__">
+<tt class="descclassname">Model.</tt><tt class="descname">__init__</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/models.html#Model.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.Model.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the model with parameters as keywords arguments, a sensible
+default parameter set should be provided via the trait mechanism.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.models.Model.dfun">
+<tt class="descclassname">Model.</tt><tt class="descname">dfun</tt><big>(</big><em>state_variables</em>, <em>coupling</em>, <em>local_coupling=0.0</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/models.html#Model.dfun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.Model.dfun" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the dynamic equations. That is, the derivative of the 
+state-variables given their current state <tt class="docutils literal"><span class="pre">state_variables</span></tt>, the past 
+state from other regions of the brain currently arriving <tt class="docutils literal"><span class="pre">coupling</span></tt>, 
+and the current state of the &#8220;local&#8221; neighbourhood <tt class="docutils literal"><span class="pre">local_coupling</span></tt>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.models.Model.update_derived_parameters">
+<tt class="descclassname">Model.</tt><tt class="descname">update_derived_parameters</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/simulator/models.html#Model.update_derived_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.Model.update_derived_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>When needed, this should be a method for calculating parameters that are
+calculated based on paramaters directly set by the caller. For example, 
+see, ReducedSetFitzHughNagumo. When not needed, this pass simplifies 
+code that updates an arbitrary models parameters &#8211; ie, this can be 
+safely called on any model, whether it&#8217;s used or not.</p>
+</dd></dl>
+
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">noise</span></tt> (Initial Conditions Noise)</dt>
+<dd><div class="first last line-block">
+<div class="line">A noise source used to provide random initial conditions when         no, or insufficient, explicit initial conditions are provided.          NOTE: Dispersion is computed based on <tt class="docutils literal"><span class="pre">state_variable_range</span></tt>.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.simulator.noise.Noise&#8217;&gt; </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.models.model_device_info">
+<tt class="descclassname">tvb.simulator.models.</tt><tt class="descname">model_device_info</tt><a class="reference internal" href="_modules/tvb/simulator/models.html#model_device_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.model_device_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>A model_device_info is a class that provides enough additional information, on
+request, in order to run the owner on a native code device, e.g. a CUDA
+GPU.</p>
+<p>All such device_data classes will need to furnish their corresponding 
+global values as well as corresponding array arguments for update(.), 
+already initialized based on the instance object that the device_data
+instance is attached to.</p>
+<p>Such things are built on conventions: a class should declare both
+a device_data attribute as well as class specific information, that is
+not programmatically available via traits. In general, each of the 
+abstract classes (Model, Noise, Integrator &amp; Coupling) have n_xxpr
+and xxpr, but they don&#8217;t have symmetric properties, so it will be done
+case by case.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.models.WilsonCowan">
+<tt class="descclassname">tvb.simulator.models.</tt><tt class="descname">WilsonCowan</tt><a class="reference internal" href="_modules/tvb/simulator/models.html#WilsonCowan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.WilsonCowan" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils citation" frame="void" id="wc-1972" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[WC_1972]</a></td><td>Wilson, H.R. and Cowan, J.D. <em>Excitatory and inhibitory 
+interactions in localized populations of model neurons</em>, Biophysical
+journal, 12: 1-24, 1972.</td></tr>
+</tbody>
+</table>
+<p>Eqns 11 and 12 with P and Q were replaced by our long range and local couplings.</p>
+<p>The default parameters are taken from figure 4 of <a class="reference internal" href="#wc-1972">[WC_1972]</a>, pag. 10</p>
+<p>The models (<span class="math">\(E\)</span>, <span class="math">\(I\)</span>) phase-plane, including a representation of
+the vector field as well as its nullclines, using default parameters, can be
+seen below:</p>
+<blockquote>
+<div><div class="figure" id="phase-plane-wc">
+<img alt="Wilson-Cowan phase plane (E, I)" src="_images/WilsonCowan_01_mode_0_pplane.svg" /><p class="caption">The (<span class="math">\(E\)</span>, <span class="math">\(I\)</span>) phase-plane for the Wilson-Cowan model.</p>
+</div>
+</div></blockquote>
+<dl class="method">
+<dt id="tvb.simulator.models.WilsonCowan.__init__">
+<tt class="descclassname">WilsonCowan.</tt><tt class="descname">__init__</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/models.html#WilsonCowan.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.WilsonCowan.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the WilsonCowan model&#8217;s traited attributes, any provided as
+keywords will overide their traited default.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.models.WilsonCowan.dfun">
+<tt class="descclassname">WilsonCowan.</tt><tt class="descname">dfun</tt><big>(</big><em>state_variables</em>, <em>coupling</em>, <em>local_coupling=0.0</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/models.html#WilsonCowan.dfun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.WilsonCowan.dfun" title="Permalink to this definition">¶</a></dt>
+<dd><div class="math">
+\[\begin{split}\tau \dot{x}(t) &amp;= -z(t) + \phi(z(t)) \\
+\phi(x) &amp;= \frac{c}{1-exp(-a (x-b))}\end{split}\]</div>
+</dd></dl>
+
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">a_e</span></tt> (<span class="math">\(a_e\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">The slope parameter for the excitatory response function</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.2] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 1.0 ; high = 1.4 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">a_i</span></tt> (<span class="math">\(a_i\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">The slope parameter for the inhibitory response function</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 2.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">c_1</span></tt> (<span class="math">\(c_1\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Excitatory to excitatory  coupling coefficient</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 12.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 11.0 ; high = 16.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">c_2</span></tt> (<span class="math">\(c_2\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Inhibitory to excitatory coupling coefficient</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 4.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 2.0 ; high = 15.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">c_3</span></tt> (<span class="math">\(c_3\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Excitatory to inhibitory coupling coefficient.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 13.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 2.0 ; high = 22.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">c_4</span></tt> (<span class="math">\(c_4\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Inhibitory to inhibitory coupling coefficient.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 11.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 2.0 ; high = 15.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">k_e</span></tt> (<span class="math">\(k_e\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Maximum value of the excitatory response function</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.5 ; high = 2.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">k_i</span></tt> (<span class="math">\(k_i\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Maximum value of the inhibitory response function</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 2.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">noise</span></tt> (Initial Conditions Noise)</dt>
+<dd><div class="first last line-block">
+<div class="line">A noise source used to provide random initial conditions when         no, or insufficient, explicit initial conditions are provided.          NOTE: Dispersion is computed based on <tt class="docutils literal"><span class="pre">state_variable_range</span></tt>.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.simulator.noise.Noise&#8217;&gt; </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">r_e</span></tt> (<span class="math">\(r_e\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Excitatory refractory period</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.5 ; high = 2.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">r_i</span></tt> (<span class="math">\(r_i\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Inhibitory refractory period</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.5 ; high = 2.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">state_variable_range</span></tt> (State Variable ranges [lo, hi])</dt>
+<dd><div class="first last line-block">
+<div class="line">The values for each state-variable should be set to encompass         the expected dynamic range of that state-variable for the current          parameters, it is used as a mechanism for bounding random inital          conditions when the simulation isn&#8217;t started from an explicit history,         it is also provides the default range of phase-plane plots.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  {&#8216;I&#8217;: array([ 0. ,  0.5]), &#8216;E&#8217;: array([ 0. ,  0.5])} </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">tau_e</span></tt> (<span class="math">\(\tau_e\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Excitatory population, membrane time-constant [ms]</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 10.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 5.0 ; high = 15.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">tau_i</span></tt> (<span class="math">\(\tau_i\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Inhibitory population, membrane time-constant [ms]</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 10.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 5.0 ; high = 15.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">theta_e</span></tt> (<span class="math">\(\theta_e\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Position of the maximum slope of a sigmoid function [in         threshold units].</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 2.8] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 1.4 ; high = 4.2 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">theta_i</span></tt> (<span class="math">\(\theta_i\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Position of the maximum slope of a sigmoid function [in         threshold units]</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 4.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 2.0 ; high = 6.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Variables watched by Monitors)</dt>
+<dd><div class="first last line-block">
+<div class="line">This represents the default state-variables of this Model to be                                     monitored. It can be overridden for each Monitor if desired. The                                      corresponding state-variable indices for this model are <span class="math">\(E = 0\)</span>                                     and <span class="math">\(I = 1\)</span>.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [&#8216;E&#8217;] </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.models.ReducedSetFitzHughNagumo">
+<tt class="descclassname">tvb.simulator.models.</tt><tt class="descname">ReducedSetFitzHughNagumo</tt><a class="reference internal" href="_modules/tvb/simulator/models.html#ReducedSetFitzHughNagumo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.ReducedSetFitzHughNagumo" title="Permalink to this definition">¶</a></dt>
+<dd><p>A reduced representation of a set of Fitz-Hugh Nagumo oscillators,
+<a class="reference internal" href="#sj-2008">[SJ_2008]</a>.</p>
+<p>The models (<span class="math">\(\xi\)</span>, <span class="math">\(\eta\)</span>) phase-plane, including a 
+representation of the vector field as well as its nullclines, using default
+parameters, can be seen below:</p>
+<blockquote>
+<div><div class="figure" id="phase-plane-rfhn-0">
+<img alt="Reduced set of FitzHughNagumo phase plane (xi, eta), 1st mode." src="_images/ReducedSetFitzHughNagumo_01_mode_0_pplane.svg" /><p class="caption">The (<span class="math">\(\xi\)</span>, <span class="math">\(\eta\)</span>) phase-plane for the first mode of
+a reduced set of Fitz-Hugh Nagumo oscillators.</p>
+</div>
+<div class="figure" id="phase-plane-rfhn-1">
+<img alt="Reduced set of FitzHughNagumo phase plane (xi, eta), 2nd mode." src="_images/ReducedSetFitzHughNagumo_01_mode_1_pplane.svg" /><p class="caption">The (<span class="math">\(\xi\)</span>, <span class="math">\(\eta\)</span>) phase-plane for the second mode of
+a reduced set of Fitz-Hugh Nagumo oscillators.</p>
+</div>
+<div class="figure" id="phase-plane-rfhn-2">
+<img alt="Reduced set of FitzHughNagumo phase plane (xi, eta), 3rd mode." src="_images/ReducedSetFitzHughNagumo_01_mode_2_pplane.svg" /><p class="caption">The (<span class="math">\(\xi\)</span>, <span class="math">\(\eta\)</span>) phase-plane for the third mode of
+a reduced set of Fitz-Hugh Nagumo oscillators.</p>
+</div>
+</div></blockquote>
+<dl class="method">
+<dt id="tvb.simulator.models.ReducedSetFitzHughNagumo.__init__">
+<tt class="descclassname">ReducedSetFitzHughNagumo.</tt><tt class="descname">__init__</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/models.html#ReducedSetFitzHughNagumo.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.ReducedSetFitzHughNagumo.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise parameters for a reduced representation of a set of
+Fitz-Hugh Nagumo oscillators.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.models.ReducedSetFitzHughNagumo.dfun">
+<tt class="descclassname">ReducedSetFitzHughNagumo.</tt><tt class="descname">dfun</tt><big>(</big><em>state_variables</em>, <em>coupling</em>, <em>local_coupling=0.0</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/models.html#ReducedSetFitzHughNagumo.dfun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.ReducedSetFitzHughNagumo.dfun" title="Permalink to this definition">¶</a></dt>
+<dd><div class="math">
+\[\begin{split}\dot{\xi}_i &amp;= 
+    c\left(\xi_i-e_i\frac{\xi_i^3}{3}-\eta_i\right) +
+    K_{11}\left[\sum_{k=1}^{3} A_{ik}\xi_k-\xi_i\right] -
+    K_{12}\left[\sum_{k=1}^{3} B_{ik}\alpha_k-\xi_i\right] +
+    cIE_i \\
+\dot{\eta}_i &amp;=
+    \frac{1}{c}\left(\xi_i-b\eta_i+m_i\right) \\
+\dot{\alpha}_i &amp;=
+    c\left(\alpha_i-f_i\frac{\alpha_i^3}{3}-\beta_i\right) +
+    K_{21}\left[\sum_{k=1}^{3} C_{ik}\xi_i-\alpha_i\right] +
+    cII_i \\
+\dot{\beta}_i &amp;= \frac{1}{c}\left(\alpha_i-b\beta_i+n_i\right)\end{split}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.models.ReducedSetFitzHughNagumo.update_derived_parameters">
+<tt class="descclassname">ReducedSetFitzHughNagumo.</tt><tt class="descname">update_derived_parameters</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/simulator/models.html#ReducedSetFitzHughNagumo.update_derived_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.ReducedSetFitzHughNagumo.update_derived_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate coefficients for the Reduced FitzHugh-Nagumo oscillator based
+neural field model. Specifically, this method implements equations for
+calculating coefficients found in the supplemental material of
+<a class="reference internal" href="#sj-2008">[SJ_2008]</a>.</p>
+<p>Include equations here...</p>
+</dd></dl>
+
+<p>#NOTE: In the Article this modelis called StefanescuJirsa2D</p>
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">K11</span></tt> (<span class="math">\(K_{11}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Internal coupling, excitatory to excitatory</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.5] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">K12</span></tt> (<span class="math">\(K_{12}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Internal coupling, excitatory to inhibitory</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.15] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">K21</span></tt> (<span class="math">\(K_{21}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Internal coupling, inhibitory to excitatory</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.15] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">a</span></tt> (<span class="math">\(a\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">doc...</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.45] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">b</span></tt> (<span class="math">\(b\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">doc...</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.9] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">mu</span></tt> (<span class="math">\(\mu\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Mean of Gaussian distribution</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">noise</span></tt> (Initial Conditions Noise)</dt>
+<dd><div class="first last line-block">
+<div class="line">A noise source used to provide random initial conditions when         no, or insufficient, explicit initial conditions are provided.          NOTE: Dispersion is computed based on <tt class="docutils literal"><span class="pre">state_variable_range</span></tt>.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.simulator.noise.Noise&#8217;&gt; </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">sigma</span></tt> (<span class="math">\(\sigma\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Standard deviation of Gaussian distribution</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.35] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">state_variable_range</span></tt> (State Variable ranges [lo, hi])</dt>
+<dd><div class="first last line-block">
+<div class="line">The values for each state-variable should be set to encompass         the expected dynamic range of that state-variable for the current          parameters, it is used as a mechanism for bounding random inital          conditions when the simulation isn&#8217;t started from an explicit history,         it is also provides the default range of phase-plane plots.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  {&#8216;alpha&#8217;: array([-4.,  4.]), &#8216;beta&#8217;: array([-3.,  3.]), &#8216;xi&#8217;: array([-4.,  4.]), &#8216;eta&#8217;: array([-3.,  3.])} </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">tau</span></tt> (<span class="math">\(\tau\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">doc...(prob something about timescale seperation)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 3.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 1.5 ; high = 4.5 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Variables watched by Monitors)</dt>
+<dd><div class="first last line-block">
+<div class="line">This represents the default state-variables of this Model to be                                     monitored. It can be overridden for each Monitor if desired. The                                      corresponding state-variable indices for this model are <span class="math">\(\xi = 0\)</span>,                                     <span class="math">\(\eta = 1\)</span>, <span class="math">\(\alpha = 2\)</span>, and <span class="math">\(\beta= 3\)</span>.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [&#8216;xi&#8217;, &#8216;alpha&#8217;] </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.models.ReducedSetHindmarshRose">
+<tt class="descclassname">tvb.simulator.models.</tt><tt class="descname">ReducedSetHindmarshRose</tt><a class="reference internal" href="_modules/tvb/simulator/models.html#ReducedSetHindmarshRose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.ReducedSetHindmarshRose" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils citation" frame="void" id="sj-2008" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[SJ_2008]</td><td><em>(<a class="fn-backref" href="#id3">1</a>, <a class="fn-backref" href="#id4">2</a>, <a class="fn-backref" href="#id5">3</a>, <a class="fn-backref" href="#id6">4</a>, <a class="fn-backref" href="#id7">5</a>)</em> Stefanescu and Jirsa, PLoS Computational Biology, <em>A Low
+Dimensional Description of Globally Coupled Heterogeneous Neural
+Networks of Excitatory and Inhibitory</em>  4, 11, 26&#8211;36, 2008.</td></tr>
+</tbody>
+</table>
+<p>The models (<span class="math">\(\xi\)</span>, <span class="math">\(\eta\)</span>) phase-plane, including a 
+representation of the vector field as well as its nullclines, using default
+parameters, can be seen below:</p>
+<blockquote>
+<div><div class="figure" id="phase-plane-rhr-0">
+<img alt="Reduced set of FitzHughNagumo phase plane (xi, eta), 1st mode." src="_images/ReducedSetHindmarshRose_01_mode_0_pplane.svg" /><p class="caption">The (<span class="math">\(\xi\)</span>, <span class="math">\(\eta\)</span>) phase-plane for the first mode of
+a reduced set of Hindmarsh-Rose oscillators.</p>
+</div>
+<div class="figure" id="phase-plane-rhr-1">
+<img alt="Reduced set of FitzHughNagumo phase plane (xi, eta), 2nd mode." src="_images/ReducedSetHindmarshRose_01_mode_1_pplane.svg" /><p class="caption">The (<span class="math">\(\xi\)</span>, <span class="math">\(\eta\)</span>) phase-plane for the second mode of 
+a reduced set of Hindmarsh-Rose oscillators.</p>
+</div>
+<div class="figure" id="phase-plane-rhr-2">
+<img alt="Reduced set of FitzHughNagumo phase plane (xi, eta), 3rd mode." src="_images/ReducedSetHindmarshRose_01_mode_2_pplane.svg" /><p class="caption">The (<span class="math">\(\xi\)</span>, <span class="math">\(\eta\)</span>) phase-plane for the third mode of
+a reduced set of Hindmarsh-Rose oscillators.</p>
+</div>
+</div></blockquote>
+<dl class="method">
+<dt id="tvb.simulator.models.ReducedSetHindmarshRose.__init__">
+<tt class="descclassname">ReducedSetHindmarshRose.</tt><tt class="descname">__init__</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/models.html#ReducedSetHindmarshRose.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.ReducedSetHindmarshRose.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise parameters for a reduced representation of a set of
+Hindmarsh Rose oscillators, <a class="reference internal" href="#sj-2008">[SJ_2008]</a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.models.ReducedSetHindmarshRose.dfun">
+<tt class="descclassname">ReducedSetHindmarshRose.</tt><tt class="descname">dfun</tt><big>(</big><em>state_variables</em>, <em>coupling</em>, <em>local_coupling=0.0</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/models.html#ReducedSetHindmarshRose.dfun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.ReducedSetHindmarshRose.dfun" title="Permalink to this definition">¶</a></dt>
+<dd><p>The dynamic equations were taken from <a class="reference internal" href="#sj-2008">[SJ_2008]</a>, ...</p>
+<div class="math">
+\[\begin{split}\dot{\xi}_i &amp;= \eta_i - a_i\xi_i^3 + b_i\xi_i^2 -
+                 \tau_i + K_{11} \left[\sum_{k=1}^{3} A_{ik} \xi_k -
+                 \xi_i \right] - K_{12} \left[\sum_{k=1}^{3} B_{ik} \alpha_k -
+                 \xi_i\right] + IE_i \\
+\dot{\eta}_i &amp;= c_i-d_i\xi_i^2-\eta_i \\
+\dot{\tau}_i &amp;= rs\xi_i-r\tau_i-m_i \\
+\dot{\alpha}_i &amp;= \beta_i - e_i \alpha_i^3 +
+                    f_i \alpha_i^2 - \gamma_i +
+                    K_{21} \left[\sum_{k=1}^{3} C_{ik} \xi_k -
+                    \alpha_i \right] + II_i \\
+\dot{\beta}_i &amp;= h_i - p_i \alpha_i^2 - \beta_i \\
+\dot{\gamma}_i &amp;= rs \alpha_i - r \gamma_i - n_i\end{split}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.models.ReducedSetHindmarshRose.update_derived_parameters">
+<tt class="descclassname">ReducedSetHindmarshRose.</tt><tt class="descname">update_derived_parameters</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/simulator/models.html#ReducedSetHindmarshRose.update_derived_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.ReducedSetHindmarshRose.update_derived_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate coefficients for the neural field model based on a Reduced set
+of Hindmarsh-Rose oscillators. Specifically, this method implements
+equations for calculating coefficients found in the supplemental
+material of <a class="reference internal" href="#sj-2008">[SJ_2008]</a>.</p>
+<p>Include equations here...</p>
+</dd></dl>
+
+<p>#NOTE: In the Article this modelis called StefanescuJirsa3D</p>
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">K11</span></tt> (<span class="math">\(K_{11}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Internal coupling, excitatory to excitatory</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.5] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">K12</span></tt> (<span class="math">\(K_{12}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Internal coupling, excitatory to inhibitory</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.15] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">K21</span></tt> (<span class="math">\(K_{21}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Internal coupling, inhibitory to excitatory</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.15] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">a</span></tt> (<span class="math">\(a\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Dimensionless parameter as in the Hindmarsh-Rose model</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">b</span></tt> (<span class="math">\(b\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Dimensionless parameter as in the Hindmarsh-Rose model</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 3.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 3.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">c</span></tt> (<span class="math">\(c\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Dimensionless parameter as in the Hindmarsh-Rose model</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">d</span></tt> (<span class="math">\(d\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Dimensionless parameter as in the Hindmarsh-Rose model</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 5.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 2.5 ; high = 7.5 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">mu</span></tt> (<span class="math">\(\mu\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Mean of Gaussian distribution</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 2.2] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 1.1 ; high = 3.3 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">noise</span></tt> (Initial Conditions Noise)</dt>
+<dd><div class="first last line-block">
+<div class="line">A noise source used to provide random initial conditions when         no, or insufficient, explicit initial conditions are provided.          NOTE: Dispersion is computed based on <tt class="docutils literal"><span class="pre">state_variable_range</span></tt>.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.simulator.noise.Noise&#8217;&gt; </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">r</span></tt> (<span class="math">\(r\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Adaptation parameter</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.006] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">s</span></tt> (<span class="math">\(s\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Adaptation paramters, governs feedback</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 4.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 2.0 ; high = 6.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">sigma</span></tt> (<span class="math">\(\sigma\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Standard deviation of Gaussian distribution</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.3] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">state_variable_range</span></tt> (State Variable ranges [lo, hi])</dt>
+<dd><div class="first last line-block">
+<div class="line">The values for each state-variable should be set to encompass         the expected dynamic range of that state-variable for the current          parameters, it is used as a mechanism for bounding random inital          conditions when the simulation isn&#8217;t started from an explicit history,         it is also provides the default range of phase-plane plots.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  {&#8216;tau&#8217;: array([  2.,  10.]), &#8216;xi&#8217;: array([-4.,  4.]), &#8216;beta&#8217;: array([-20.,  20.]), &#8216;eta&#8217;: array([-25.,  20.]), &#8216;alpha&#8217;: array([-4.,  4.]), &#8216;gamma&#8217;: array([  2.,  10.])} </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Variables watched by Monitors)</dt>
+<dd><div class="first last line-block">
+<div class="line">This represents the default state-variables of this Model to be                                     monitored. It can be overridden for each Monitor if desired. The                                      corresponding state-variable indices for this model are <span class="math">\(\xi = 0\)</span>,                                     <span class="math">\(\eta = 1\)</span>, <span class="math">\(\tau = 2\)</span>, <span class="math">\(\alpha = 3\)</span>,                                     <span class="math">\(\beta = 4\)</span>, and <span class="math">\(\gamma = 5\)</span></div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [&#8216;xi&#8217;, &#8216;eta&#8217;, &#8216;tau&#8217;] </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">xo</span></tt> (<span class="math">\(x_{o}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Leftmost equilibrium point of x</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [-1.6] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -2.4 ; high = -0.8 </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.models.JansenRit">
+<tt class="descclassname">tvb.simulator.models.</tt><tt class="descname">JansenRit</tt><a class="reference internal" href="_modules/tvb/simulator/models.html#JansenRit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.JansenRit" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Jansen and Rit is a biologically inspired mathematical framework
+originally conceived to simulate the spontaneous electrical activity of
+neuronal assemblies, with a particular focus on alpha activity, for instance,
+as measured by EEG. Later on, it was discovered that in addition to alpha
+activity, this model was also able to simulate evoked potentials.</p>
+<table class="docutils citation" frame="void" id="jr-1995" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[JR_1995]</td><td><em>(<a class="fn-backref" href="#id8">1</a>, <a class="fn-backref" href="#id9">2</a>)</em> Jansen, B., H. and Rit V., G., <em>Electroencephalogram and
+visual evoked potential generation in a mathematical model of
+coupled cortical columns</em>, Biological Cybernetics (73) 357:366, 1995.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="j-1993" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[J_1993]</td><td>Jansen, B., Zouridakis, G. and Brandt, M., <em>A
+neurophysiologically-based mathematical model of flash visual evoked
+potentials</em></td></tr>
+</tbody>
+</table>
+<div class="figure">
+<img alt="Jansen and Rit phase plane (y4, y5)" src="_images/JansenRit_45_mode_0_pplane.svg" /><p class="caption">The (<span class="math">\(y_4\)</span>, <span class="math">\(y_5\)</span>) phase-plane for the Jansen and Rit model.</p>
+</div>
+<dl class="method">
+<dt id="tvb.simulator.models.JansenRit.__init__">
+<tt class="descclassname">JansenRit.</tt><tt class="descname">__init__</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/models.html#JansenRit.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.JansenRit.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise parameters for the Jansen Rit column, <a class="reference internal" href="#jr-1995">[JR_1995]</a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.models.JansenRit.dfun">
+<tt class="descclassname">JansenRit.</tt><tt class="descname">dfun</tt><big>(</big><em>state_variables</em>, <em>coupling</em>, <em>local_coupling=0.0</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/models.html#JansenRit.dfun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.JansenRit.dfun" title="Permalink to this definition">¶</a></dt>
+<dd><p>The dynamic equations were taken from <a class="reference internal" href="#jr-1995">[JR_1995]</a></p>
+<div class="math">
+\[\begin{split}\dot{y_0} &amp;= y_3 \\
+\dot{y_3} &amp;= A a\,S[y_1 - y_2] - 2a\,y_3 - 2a^2\, y_0 \\
+\dot{y_1} &amp;= y_4\\
+\dot{y_4} &amp;= A a \,[p(t) + \alpha_2 J + S[\alpha_1 J\,y_0]+ c_0]
+            -2a\,y - a^2\,y_1 \\
+\dot{y_2} &amp;= y_5 \\
+\dot{y_5} &amp;= B b (\alpha_4 J\, S[\alpha_3 J \,y_0]) - 2 b\, y_5
+            - b^2\,y_2 \\
+S[v] &amp;= \frac{2\, \nu_{max}}{1 + \exp^{r(v_0 - v)}}\end{split}\]</div>
+<p><span class="math">\(p(t)\)</span> can be any arbitrary function, including white noise or 
+random numbers taken from a uniform distribution, representing a pulse
+density with an amplitude varying between 120 and 320</p>
+<p>For Evoked Potentials, a transient component of the input, 
+representing the impulse density attribuable to a brief visual input is 
+applied. Time should be in seconds.</p>
+<div class="math">
+\[\begin{split}p(t) = q\,(\frac{t}{w})^n \, \exp{-\frac{t}{w}} \\
+q = 0.5 \\
+n = 7 \\
+w = 0.005 [s]\end{split}\]</div>
+</dd></dl>
+
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">A</span></tt> (<span class="math">\(A\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Maximum amplitude of EPSP [mV].</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 3.25] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 2.6 ; high = 9.75 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">B</span></tt> (<span class="math">\(B\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Maximum amplitude of IPSP [mV].</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 22.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 17.6 ; high = 110.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">J</span></tt> (<span class="math">\(J\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Average number of synapses between populations.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 135.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 65.0 ; high = 1350.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">a</span></tt> (<span class="math">\(a\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Reciprocal of the time constant of passive membrane and all         other spatially distributed delays in the dendritic network [ms^-1].</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.1] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.05 ; high = 0.15 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">a_1</span></tt> (<span class="math">\(\alpha_1\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Average probability of synaptic contacts in the feedback          excitatory loop.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.5 ; high = 1.5 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">a_2</span></tt> (<span class="math">\(\alpha_2\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Average probability of synaptic contacts in the feedback          excitatory loop.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.8] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.4 ; high = 1.2 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">a_3</span></tt> (<span class="math">\(\alpha_3\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Average probability of synaptic contacts in the feedback          excitatory loop.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.25] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.125 ; high = 0.375 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">a_4</span></tt> (<span class="math">\(\alpha_4\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Average probability of synaptic contacts in the slow feedback          inhibitory loop.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.25] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.125 ; high = 0.375 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">b</span></tt> (<span class="math">\(b\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Reciprocal of the time constant of passive membrane and all          other spatially distributed delays in the dendritic network [ms^-1].</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.05] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.025 ; high = 0.075 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">mu</span></tt> (<span class="math">\(\mu_{max}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Mean input firing rate</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.22] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 0.22 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">noise</span></tt> (Initial Conditions Noise)</dt>
+<dd><div class="first last line-block">
+<div class="line">A noise source used to provide random initial conditions when         no, or insufficient, explicit initial conditions are provided.          NOTE: Dispersion is computed based on <tt class="docutils literal"><span class="pre">state_variable_range</span></tt>.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.simulator.noise.Noise&#8217;&gt; </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">nu_max</span></tt> (<span class="math">\(\nu_{max}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Determines the maximum firing rate of the neural population          [s^-1].</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.0025] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.00125 ; high = 0.00375 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">p_max</span></tt> (<span class="math">\(p_{max}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Maximum input firing rate.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.32] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 0.32 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">p_min</span></tt> (<span class="math">\(p_{min}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Minimum input firing rate.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.12] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 0.12 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">r</span></tt> (<span class="math">\(r\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Steepness of the sigmoidal transformation [mV^-1].</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.56] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.28 ; high = 0.84 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">state_variable_range</span></tt> (State Variable ranges [lo, hi])</dt>
+<dd><div class="first last line-block">
+<div class="line">The values for each state-variable should be set to encompass         the expected dynamic range of that state-variable for the current          parameters, it is used as a mechanism for bounding random inital          conditions when the simulation isn&#8217;t started from an explicit history,         it is also provides the default range of phase-plane plots.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  {&#8216;y1&#8217;: array([-500.,  500.]), &#8216;y0&#8217;: array([-1.,  1.]), &#8216;y3&#8217;: array([-6.,  6.]), &#8216;y2&#8217;: array([-50.,  50.]), &#8216;y5&#8217;: array([-500.,  500.]), &#8216;y4&#8217;: array([-20.,  20.])} </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">v0</span></tt> (<span class="math">\(v_0\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Firing threshold (PSP) for which a 50% firing rate is achieved.         In other words, it is the value of the average membrane potential         corresponding to the inflection point of the sigmoid [mV].</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 5.52] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 3.12 ; high = 6.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Variables watched by Monitors)</dt>
+<dd><div class="first last line-block">
+<div class="line">This represents the default state-variables of this Model to be                                     monitored. It can be overridden for each Monitor if desired. The                                      corresponding state-variable indices for this model are <span class="math">\(y0 = 0\)</span>,                                     <span class="math">\(y1 = 1\)</span>, <span class="math">\(y2 = 2\)</span>, <span class="math">\(y3 = 3\)</span>, <span class="math">\(y4 = 4\)</span>, and                                     <span class="math">\(y5 = 5\)</span></div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [&#8216;y0&#8217;, &#8216;y1&#8217;, &#8216;y2&#8217;, &#8216;y3&#8217;] </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.models.Generic2dOscillator">
+<tt class="descclassname">tvb.simulator.models.</tt><tt class="descname">Generic2dOscillator</tt><a class="reference internal" href="_modules/tvb/simulator/models.html#Generic2dOscillator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.Generic2dOscillator" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Generic2dOscillator model is a generic dynamic system with two state
+variables. The dynamic equations of this model are composed of two ordinary
+differential equations comprising two nullclines. The first nullcline is a
+cubic function as it is found in most neuron and population models; the 
+second nullcline is arbitrarily configurable as a polynomial function up to
+second order. The manipulation of the latter nullcline&#8217;s parameters allows
+to generate a wide range of different behaviors.</p>
+<p>See:</p>
+<blockquote>
+<div><table class="docutils citation" frame="void" id="fh-1961" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[FH_1961]</td><td>FitzHugh, R., <em>Impulses and physiological states in theoretical
+models of nerve membrane</em>, Biophysical Journal 1: 445, 1961.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="nagumo-1962" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[Nagumo_1962]</td><td>Nagumo et.al, <em>An Active Pulse Transmission Line Simulating
+Nerve Axon</em>, Proceedings of the IRE 50: 2061, 1962.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="sj-2011" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[SJ_2011]</td><td>Stefanescu, R., Jirsa, V.K. <em>Reduced representations of 
+heterogeneous mixed neural networks with synaptic coupling</em>.  
+Physical Review E, 83, 2011.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="sj-2010" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[SJ_2010]</td><td>Jirsa VK, Stefanescu R.  <em>Neural population modes capture 
+biologically realistic large-scale network dynamics</em>. Bulletin of 
+Mathematical Biology, 2010.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="sj-2008-a" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[SJ_2008_a]</td><td>Stefanescu, R., Jirsa, V.K. <em>A low dimensional description
+of globally coupled heterogeneous neural networks of excitatory and
+inhibitory neurons</em>. PLoS Computational Biology, 4(11), 2008).</td></tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>The model&#8217;s (<span class="math">\(V\)</span>, <span class="math">\(W\)</span>) time series and phase-plane its nullclines 
+can be seen in the figure below.</p>
+<p>The model with its default parameters exhibits FitzHugh-Nagumo like dynamics.</p>
+<blockquote>
+<div></div></blockquote>
+<div class="line-block">
+<div class="line">EXCITABLE CONFIGURATION  |
+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</div>
+</div>
+<div class="line-block">
+<div class="line">a            |     -2.0   |</div>
+<div class="line">b            |    -10.0   |</div>
+<div class="line">c            |      0.0   |</div>
+<div class="line">d            |      0.1   |</div>
+<div class="line">I            |      0.0   |</div>
+</div>
+<blockquote>
+<div></div></blockquote>
+<div class="line-block">
+<div class="line">BISTABLE CONFIGURATION  |
+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</div>
+</div>
+<div class="line-block">
+<div class="line">a            |      1.0   |</div>
+<div class="line">b            |      0.0   |</div>
+<div class="line">c            |     -5.0   |</div>
+<div class="line">d            |      0.1   |</div>
+<div class="line">I            |      0.0   |</div>
+</div>
+<p><a href="#id10"><span class="problematic" id="id11">|</span></a>* monostable regime:       |
+<a href="#id12"><span class="problematic" id="id13">|</span></a>* fixed point if Iext=-2.0 |
+<a href="#id14"><span class="problematic" id="id15">|</span></a>* limit cylce if Iext=-1.0 |
+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;</p>
+<blockquote>
+<div></div></blockquote>
+<div class="line-block">
+<div class="line">EXCITABLE CONFIGURATION  | (similar to Morris-Lecar)
+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</div>
+</div>
+<div class="line-block">
+<div class="line">a            |      0.5   |</div>
+<div class="line">b            |      0.6   |</div>
+<div class="line">c            |     -4.0   |</div>
+<div class="line">d            |      0.1   |</div>
+<div class="line">I            |      0.0   |</div>
+</div>
+<p><a href="#id22"><span class="problematic" id="id23">|* excitable regime if b=0.6|</span></a>
+<a href="#id16"><span class="problematic" id="id17">|</span></a>* oscillatory if b=0.4     |
+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;</p>
+<blockquote>
+<div></div></blockquote>
+<div class="line-block">
+<div class="line">SanzLeonetAl  2013       | 
+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</div>
+</div>
+<div class="line-block">
+<div class="line">a            |    - 0.5   |</div>
+<div class="line">b            |    -15.0   |</div>
+<div class="line">c            |      0.0   |</div>
+<div class="line">d            |      0.02  |</div>
+<div class="line">I            |      0.0   |</div>
+</div>
+<p><a href="#id18"><span class="problematic" id="id19">|</span></a>* excitable regime if      |
+<a href="#id20"><span class="problematic" id="id21">|</span></a>* intrinsic frequency is   |
+|  approx 10 Hz             |
+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;</p>
+<div class="figure">
+<img src="_images/Generic2dOscillator_01_mode_0_pplane.svg" /></div>
+<blockquote>
+<div>The (<span class="math">\(V\)</span>, <span class="math">\(W\)</span>) phase-plane for the generic 2D population 
+model for default parameters. The dynamical system has an equilibrium 
+point.</div></blockquote>
+<dl class="method">
+<dt id="tvb.simulator.models.Generic2dOscillator.__init__">
+<tt class="descclassname">Generic2dOscillator.</tt><tt class="descname">__init__</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/models.html#Generic2dOscillator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.Generic2dOscillator.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>May need to put kwargs back if we can&#8217;t get them from trait...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.models.Generic2dOscillator.dfun">
+<tt class="descclassname">Generic2dOscillator.</tt><tt class="descname">dfun</tt><big>(</big><em>state_variables</em>, <em>coupling</em>, <em>local_coupling=0.0</em>, <em>ev=&lt;function evaluate at 0x3f92e60&gt;</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/models.html#Generic2dOscillator.dfun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.Generic2dOscillator.dfun" title="Permalink to this definition">¶</a></dt>
+<dd><p>The two state variables <span class="math">\(V\)</span> and <span class="math">\(W\)</span> are typically considered 
+to represent a function of the neuron&#8217;s membrane potential, such as the 
+firing rate or dendritic currents, and a recovery variable, respectively. 
+If there is a time scale hierarchy, then typically <span class="math">\(V\)</span> is faster 
+than <span class="math">\(W\)</span> corresponding to a value of <span class="math">\(\tau\)</span> greater than 1.</p>
+<p>The equations of the generic 2D population model read</p>
+<div class="math">
+\[\begin{split}\dot{V} &amp;= \tau (\alpha W - V^3 +3 V^2 + I) \\
+\dot{W} &amp;= (a\, + b\, V + c\, V^2 - \, beta W) / \tau\end{split}\]</div>
+<p>where external currents <span class="math">\(I\)</span> provide the entry point for local, 
+long-range connectivity and stimulation.</p>
+</dd></dl>
+
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">I</span></tt> (<span class="math">\(I_{ext}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Baseline shift of the cubic nullcline</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -2.0 ; high = 2.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">a</span></tt> (<span class="math">\(a\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Vertical shift of the configurable nullcline</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [-2.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -5.0 ; high = 5.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">alpha</span></tt> (<span class="math">\(lpha\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Constant parameter to scale the rate of feedback from the              slow variable to the fast variable.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -5.0 ; high = 5.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">b</span></tt> (<span class="math">\(b\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Linear slope of the configurable nullcline</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [-10.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -20.0 ; high = 15.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">beta</span></tt> (<span class="math">\(eta\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Constant parameter to scale the rate of feedback from the              slow variable to itself</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -5.0 ; high = 5.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">c</span></tt> (<span class="math">\(c\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Parabolic term of the configurable nullcline</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -10.0 ; high = 10.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">d</span></tt> (<span class="math">\(d\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Temporal scale factor. Warning: do not use it unless          you know what you are doing and know about time tides.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.1] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0001 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">e</span></tt> (<span class="math">\(e\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Coefficient of the quadratic term of the cubic nullcline.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 3.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -5.0 ; high = 5.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">f</span></tt> (<span class="math">\(f\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Coefficient of the cubic term of the cubic nullcline.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -5.0 ; high = 5.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">noise</span></tt> (Initial Conditions Noise)</dt>
+<dd><div class="first last line-block">
+<div class="line">A noise source used to provide random initial conditions when         no, or insufficient, explicit initial conditions are provided.          NOTE: Dispersion is computed based on <tt class="docutils literal"><span class="pre">state_variable_range</span></tt>.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.simulator.noise.Noise&#8217;&gt; </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">state_variable_range</span></tt> (State Variable ranges [lo, hi])</dt>
+<dd><div class="first last line-block">
+<div class="line">The values for each state-variable should be set to encompass             the expected dynamic range of that state-variable for the current              parameters, it is used as a mechanism for bounding random initial              conditions when the simulation isn&#8217;t started from an explicit             history, it is also provides the default range of phase-plane plots.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  {&#8216;W&#8217;: array([-6.,  6.]), &#8216;V&#8217;: array([-2.,  4.])} </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">tau</span></tt> (<span class="math">\(\tau\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">A time-scale hierarchy can be introduced for the state          variables <span class="math">\(V\)</span> and <span class="math">\(W\)</span>. Default parameter is 1, which means         no time-scale hierarchy.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 1e-05 ; high = 5.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Variables watched by Monitors)</dt>
+<dd><div class="first last line-block">
+<div class="line">This represents the default state-variables of this Model to be                                         monitored. It can be overridden for each Monitor if desired. The                                          corresponding state-variable indices for this model are <span class="math">\(V = 0\)</span>                                         and <span class="math">\(W = 1\)</span>.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [&#8216;V&#8217;] </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.models.BrunelWang">
+<tt class="descclassname">tvb.simulator.models.</tt><tt class="descname">BrunelWang</tt><a class="reference internal" href="_modules/tvb/simulator/models.html#BrunelWang"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.BrunelWang" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils citation" frame="void" id="dj-2012" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[DJ_2012]</td><td>Deco G and Jirsa V. <em>Ongoing Cortical 
+Activity at Rest: Criticality, Multistability, and Ghost Attractors</em>. 
+Journal of Neuroscience 32, 3366-3375, 2012.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="bw-2001" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[BW_2001]</td><td>Brunel N and Wang X-J. <em>Effects of neuromodulation in a cortical 
+network model of object working memory dominated by recurrent inhibition</em>. 
+Journal of Computational Neuroscience 11, 63–85, 2001.
+Each node consists of one excitatory (E) and one inhibitory (I) pool.</td></tr>
+</tbody>
+</table>
+<p>At a global level, it uses Hagmann&#8217;s 2008 connectome 66 areas(hagmann_struct.csv) 
+with a global scaling weight (W) of 1.65.</p>
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">C</span></tt> (<span class="math">\(C\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Number of neurons for each node</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [200] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 100 ; high = 500 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">Cext</span></tt> (<span class="math">\(C_{ext}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Number of external (excitatory) connections</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [800] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 500 ; high = 1200 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">Cm_e</span></tt> (<span class="math">\(Cm_e\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Excitatory membrane capacitance (mF)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 500.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 200.0 ; high = 600.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">Cm_i</span></tt> (<span class="math">\(Cm_i\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Inhibitory membrane capacitance (mF)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 200.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 150.0 ; high = 250.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">NMAX</span></tt> (<span class="math">\(N_{MAX}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">This is a magic number as given in the original code.         It is used to compute the psi function.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [8] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 2 ; high = 8 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">VE</span></tt> (<span class="math">\(V_E\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Extracellular potential (mV)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 10.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">VI</span></tt> (<span class="math">\(V_I\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [-70.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -70.0 ; high = -50.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">VL</span></tt> (<span class="math">\(V_L\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Resting potential (mV)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [-70.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -70.0 ; high = -50.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">Vreset</span></tt> (<span class="math">\(V_{reset}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Reset potential (mV)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [-55.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -70.0 ; high = -30.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">Vthr</span></tt> (<span class="math">\(V_{thr}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Threshold potential (mV)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [-50.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -50.0 ; high = -30.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">W</span></tt> (<span class="math">\(W\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Global scaling weight [W] (dimensionless). As given in Deco and         Jirsa 2012 using the 66 regions Hagmann connectivity matrix</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.65] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 1.4 ; high = 1.9 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">a</span></tt> (<span class="math">\(a\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.80823563] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.8 ; high = 0.88 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">b</span></tt> (<span class="math">\(b\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 67.06177975] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 66.0 ; high = 69.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">calpha</span></tt> (<span class="math">\(c_{\alpha}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">NMDA saturation parameter (kHz)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.5] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.4 ; high = 0.5 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">cbeta</span></tt> (<span class="math">\(c_{\beta}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Inverse MG2+ blockade potential(mV-1)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.062] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.06 ; high = 0.062 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">cgamma</span></tt> (<span class="math">\(c_{\gamma}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Strength of Mg2+ blockade</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.28011204] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.280112044 ; high = 0.2801120448 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">gAMPAext_e</span></tt> (<span class="math">\(g_{AMPA_{ext_e}}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">AMPA(external) cond on post-synaptic (nS)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 2.496] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 2.08 ; high = 2.496 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">gAMPAext_i</span></tt> (<span class="math">\(g_{AMPA_{ext_i}}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">AMPA(external) cond on post-synaptic (nS)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.944] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 1.62 ; high = 1.944 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">gAMPArec_e</span></tt> (<span class="math">\(g_{AMPA_{rec_e}}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">AMPA(recurrent) cond on post-synaptic (nS)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.104] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.1 ; high = 0.11 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">gAMPArec_i</span></tt> (<span class="math">\(g_{AMPA_{rec_i}}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">AMPA(recurrent) cond on post-synaptic (nS)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.081] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.081 ; high = 0.1 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">gGABA_e</span></tt> (<span class="math">\(g_{GABA_{e}}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">GABA conductance on excitatory post-synaptic (nS)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 4.375] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 1.25 ; high = 4.375 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">gGABA_i</span></tt> (<span class="math">\(g_{GABA_{i}}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">GABA conductance on inhibitory post-synaptic (nS)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 3.4055] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.973 ; high = 3.4055 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">gNMDA_e</span></tt> (<span class="math">\(g_{NMDA_{e}}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">NMDA conductance on post-synaptic excitatory (nS)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.327] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.32 ; high = 0.35 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">gNMDA_i</span></tt> (<span class="math">\(g_{NMDA_{i}}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">NMDA conductance on post-synaptic inhibitory (nS)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.258] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.25 ; high = 0.27 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">gm_e</span></tt> (<span class="math">\(gm_e\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Excitatory membrane conductance (nS)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 25.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 20.0 ; high = 25.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">gm_i</span></tt> (<span class="math">\(gm_i\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Inhibitory membrane conductance (nS)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 20.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 15.0 ; high = 21.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">nerf_table</span></tt> (Nerf Table)</dt>
+<dd><div class="first last line-block">
+<div class="line">Nerf Table (description).</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;DataType(None, 3b84141c-a5d1-11e2-bdbb-b63455551f78, NerfTable, tvb.datatypes.lookup_tables, , None, None, None, None, None, None, None)&gt; </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">noise</span></tt> (Initial Conditions Noise)</dt>
+<dd><div class="first last line-block">
+<div class="line">A noise source used to provide random initial conditions when         no, or insufficient, explicit initial conditions are provided.          NOTE: Dispersion is computed based on <tt class="docutils literal"><span class="pre">state_variable_range</span></tt>.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.simulator.noise.Noise&#8217;&gt; </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">nuext</span></tt> (<span class="math">\(\nu_{ext}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">External firing rate (kHz)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.003] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.002 ; high = 0.01 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">pool_nodes</span></tt> (<span class="math">\(p_{nodes}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Scale internal coupling weights by the number of nodes in the          network. This value should be == number of nodes</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 74.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 1.0 ; high = 74.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">psi_table</span></tt> (Psi Table)</dt>
+<dd><div class="first last line-block">
+<div class="line">Psi Table (description).</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;DataType(None, 3b832804-a5d1-11e2-bdbb-b63455551f78, PsiTable, tvb.datatypes.lookup_tables, , None, None, None, None, None, None, None)&gt; </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">state_variable_range</span></tt> (State Variable ranges [lo, hi])</dt>
+<dd><div class="first last line-block">
+<div class="line">The values for each state-variable should be set to encompass             the expected dynamic range of that state-variable for the current              parameters, it is used as a mechanism for bounding random initial              conditions when the simulation isn&#8217;t started from an explicit             history, it is also provides the default range of phase-plane plots.             The corresponding state-variable units for this model are kHz.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  {&#8216;I&#8217;: array([ 0.001,  0.003]), &#8216;X&#8217;: array([ 0.001,  0.003]), &#8216;E&#8217;: array([ 0.001,  0.009])} </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">tau</span></tt> (<span class="math">\(\tau\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">A time-scale separation between the fast, <span class="math">\(V\)</span>, and slow,         <span class="math">\(W\)</span>, state-variables of the model.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.25] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.01 ; high = 5.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">tauAMPA</span></tt> (<span class="math">\(\tau_{AMPA}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">AMPA time constant (decay) (ms)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 2.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 1.0 ; high = 2.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">tauGABA</span></tt> (<span class="math">\(\tau_{GABA}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">GABA time constant (decay) (ms)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 10.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 5.0 ; high = 15.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">tauNMDAdecay</span></tt> (<span class="math">\(\tau_{NMDA_{decay}}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">NMDA time constant (decay) (ms)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 100.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 50.0 ; high = 100.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">tauNMDArise</span></tt> (<span class="math">\(\tau_{NMDA_{rise}}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">NMDA time constant (rise) (ms)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 2.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 2.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">taum_e</span></tt> (<span class="math">\(\tau_{m_{e}}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Excitatory membrane leak time (ms)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 20.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 10.0 ; high = 25.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">taum_i</span></tt> (<span class="math">\(\tau_{m_{i}}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Inhibitory Membrane leak time (ms)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 10.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 5.0 ; high = 15.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">taurp_e</span></tt> (<span class="math">\(\tau_{{rp}_{e}}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Excitatory absolute refractory period (ms)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 2.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 4.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">taurp_i</span></tt> (<span class="math">\(\tau_{{rp}_{i}}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Inhibitory absolute refractory period (ms)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 2.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Variables watched by Monitors)</dt>
+<dd><div class="first last line-block">
+<div class="line">This represents the default state-variables of this Model to be                                     monitored. It can be overridden for each Monitor if desired. The                                      corresponding state-variable indices for this model are <span class="math">\(E = 0\)</span>                                     and <span class="math">\(I = 1\)</span>.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [&#8216;E&#8217;] </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">ve</span></tt> (<span class="math">\(ve\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [-52.5] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -50.0 ; high = -45.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">vi</span></tt> (<span class="math">\(vi\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [-52.5] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -50.0 ; high = -45.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">wminus</span></tt> (<span class="math">\(w_{-}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Synaptic coupling strength [w-] (dimensionless).         It has to be 1 / (number_of_regions * 2)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0005 ; high = 0.00675675675676 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">wplus</span></tt> (<span class="math">\(w_{+}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Synaptic coupling strength [w+] (dimensionless).         It has to be 1.5 / (number_of_regions * 2)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.01013514] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.006 ; high = 0.0101351351351 </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.models.WongWang">
+<tt class="descclassname">tvb.simulator.models.</tt><tt class="descname">WongWang</tt><a class="reference internal" href="_modules/tvb/simulator/models.html#WongWang"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.WongWang" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils citation" frame="void" id="ww-2006" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[WW_2006]</td><td>Kong-Fatt Wong and Xiao-Jing Wang,  <em>A Recurrent Network 
+Mechanism of Time Integration in Perceptual Decisions</em>. 
+Journal of Neuroscience 26(4), 1314-1328, 2006.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="ww-2006-si" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[WW_2006_SI]</td><td>Supplementary Information</td></tr>
+</tbody>
+</table>
+<p>A reduced model by Wong and Wang: A reduced two-variable neural model 
+that offers a simple yet biophysically plausible framework for studying 
+perceptual decision making in general.</p>
+<p>S is the NMDA gating variable. Since its decay time is much longer that those
+corresponding to AMPA and GABA gating variables, it is assumed that is 
+<span class="math">\(S_{NMDA}\)</span> that dominates the time evolution of the system.</p>
+<p>The model (<span class="math">\(S1\)</span>, <span class="math">\(S2\)</span>) phase-plane, including a representation 
+of the vector field as well as its nullclines, using default parameters, 
+can be seen below:</p>
+<div class="figure">
+<img src="_images/WongWang_01_mode_0_pplane.svg" /></div>
+<dl class="docutils">
+<dt>To reproduce the phase plane in Figure 4A, page 1319 (five steady states):</dt>
+<dd>J11 = 0.54
+J22 = 0.18
+J12 = 0.08
+J21 = 0.58
+J_ext = 0.0
+I_o = 0.34
+sigma_noise = 0.02
+mu_o = 0.00
+c = 100.0</dd>
+<dt>To reproduce the phase plane in Figure 4B, page 1319 (saddle-type point):</dt>
+<dd>b = 0.108
+d = 121.0
+gamma = 0.11
+tau_s = 100.
+J11 = 0.78
+J22 = 0.59
+J12 = 0.72
+J21 = 0.67
+J_ext = 0.52
+I_o = 0.3255
+sigma_noise = 0.02
+mu_o = 0.35
+c = 0.0</dd>
+</dl>
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">I_o</span></tt> (<span class="math">\(I_{o}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Effective external input</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.3255] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">J11</span></tt> (<span class="math">\(J_{11}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Synaptic coupling</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.2609] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">J12</span></tt> (<span class="math">\(J_{12}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Synaptic coupling</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.0497] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">J21</span></tt> (<span class="math">\(J_{21}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Synaptic coupling</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.0497] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">J22</span></tt> (<span class="math">\(J_{22}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Synaptic coupling</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.2609] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">J_ext</span></tt> (<span class="math">\(J_{ext}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Synaptic coupling</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.52] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">a</span></tt> (<span class="math">\(a\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line-block">
+<div class="line">(mVnC)^{-1}. Parameter chosen to ﬁt numerical solutions.</div>
+</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.27] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">b</span></tt> (<span class="math">\(b\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">[kHz]. Parameter chosen to ﬁt numerical solutions.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.108] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">c</span></tt> (<span class="math">\(c\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">[%].  Percentage coherence or motion strength. This parameter         comes from experiments in MT cells.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 51.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 100.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">d</span></tt> (<span class="math">\(d\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">[ms]. Parameter chosen to ﬁt numerical solutions.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 154.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 200.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">gamma</span></tt> (<span class="math">\(\gamma\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Kinetic parameter</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.0641] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">mu_o</span></tt> (<span class="math">\(\mu_{0}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Stimulus amplitude</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.03] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">noise</span></tt> (Initial Conditions Noise)</dt>
+<dd><div class="first last line-block">
+<div class="line">A noise source used to provide random initial conditions when         no, or insufficient, explicit initial conditions are provided.          NOTE: Dispersion is computed based on <tt class="docutils literal"><span class="pre">state_variable_range</span></tt>.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.simulator.noise.Noise&#8217;&gt; </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">sigma_noise</span></tt> (<span class="math">\(\sigma_{noise}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Noise amplitude. Take this value into account for stochatic          integration schemes.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.02] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">state_variable_range</span></tt> (State variable ranges [lo, hi])</dt>
+<dd><div class="first last line-block">
+<div class="line">n/a</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  {&#8216;S2&#8217;: array([ 0. ,  0.3]), &#8216;S1&#8217;: array([ 0. ,  0.3])} </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">tau_ampa</span></tt> (<span class="math">\(\tau_{ampa}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Kinetic parameter. AMPA decay time constant.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 2.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 1.0 ; high = 10.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">tau_s</span></tt> (<span class="math">\(\tau_S\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Kinetic parameter. NMDA decay time constant.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 100.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 50.0 ; high = 150.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Variables watched by Monitors)</dt>
+<dd><div class="first last line-block">
+<div class="line">default state variables to be monitored</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [&#8216;S1&#8217;] </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.models.Kuramoto">
+<tt class="descclassname">tvb.simulator.models.</tt><tt class="descname">Kuramoto</tt><a class="reference internal" href="_modules/tvb/simulator/models.html#Kuramoto"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.models.Kuramoto" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Kuramoto model is a model of synchronization phenomena derived by
+Yoshiki Kuramoto in 1975 which has since been applied to diverse domains
+including the study of neuronal oscillations and synchronization.</p>
+<p>See:</p>
+<blockquote>
+<div><table class="docutils citation" frame="void" id="yk-1975" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[YK_1975]</td><td>Y. Kuramoto, in: H. Arakai (Ed.), International Symposium
+on Mathematical Problems in Theoretical Physics, Lecture Notes in
+Physics, page 420, vol. 39, 1975.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="ss-2000" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[SS_2000]</td><td>S. H. Strogatz. <em>From Kuramoto to Crawford: exploring the
+onset of synchronization in populations of coupled oscillators</em>.
+Physica D, 143, 2000.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="jc-2011" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[JC_2011]</td><td>J. Cabral, E. Hugues, O. Sporns, G. Deco. <em>Role of local
+network oscillations in resting-state functional connectivity</em>.
+NeuroImage, 57, 1, 2011.</td></tr>
+</tbody>
+</table>
+</div></blockquote>
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">noise</span></tt> (Initial Conditions Noise)</dt>
+<dd><div class="first last line-block">
+<div class="line">A noise source used to provide random initial conditions when         no, or insufficient, explicit initial conditions are provided.          NOTE: Dispersion is computed based on <tt class="docutils literal"><span class="pre">state_variable_range</span></tt>.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.simulator.noise.Noise&#8217;&gt; </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">omega</span></tt> (<span class="math">\(\omega\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line"><span class="math">\(\omega\)</span> sets the base line frequency for the              Kuramoto oscillator</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.01 ; high = 200.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">state_variable_range</span></tt> (State Variable ranges [lo, hi])</dt>
+<dd><div class="first last line-block">
+<div class="line">The values for each state-variable should be set to encompass             the expected dynamic range of that state-variable for the current              parameters, it is used as a mechanism for bounding random initial              conditions when the simulation isn&#8217;t started from an explicit             history, it is also provides the default range of phase-plane plots.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  {&#8216;theta&#8217;: array([ 0.        ,  6.28318531])} </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Variables watched by Monitors)</dt>
+<dd><div class="first last line-block">
+<div class="line">This represents the default state-variables of this Model to be                             monitored. It can be overridden for each Monitor if desired. The Kuramoto                             model, however, only has one state variable with and index of 0, so it                             is not necessary to change the default here.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [&#8216;theta&#8217;] </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tvb.simulator.coupling.html"
+                        title="previous chapter"><tt class="docutils literal docutils literal"><span class="pre">Coupling</span></tt></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tvb.simulator.integrators.html"
+                        title="next chapter"><tt class="docutils literal docutils literal"><span class="pre">Integrators</span></tt></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tvb.simulator.models.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.simulator.integrators.html" title="Integrators"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tvb.simulator.coupling.html" title="Coupling"
+             >previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ></a> &raquo;</li>
+          <li><a href="tvb.simulator.html" ></a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

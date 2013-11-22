@@ -1,0 +1,233 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.datatypes.arrays_data &mdash; The Virtual Brain 1.0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.datatypes.arrays_data</h1><pre>
+# -*- coding: utf-8 -*-
+#
+#
+#  TheVirtualBrain-Scientific Package. This package holds all simulators, and 
+# analysers necessary to run brain-simulations. You can use it stand alone or
+# in conjunction with TheVirtualBrain-Framework Package. See content of the
+# documentation-folder for more details. See also http://www.thevirtualbrain.org
+#
+# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
+#
+# This program is free software; you can redistribute it and/or modify it under 
+# the terms of the GNU General Public License version 2 as published by the Free
+# Software Foundation. This program is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+# License for more details. You should have received a copy of the GNU General 
+# Public License along with this program; if not, you can download it here
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0
+#
+#
+
+"""
+
+The Data component of traited array datatypes.
+
+.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;
+.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;
+
+"""
+
+import numpy
+import tvb.basic.traits.core as core
+import tvb.basic.traits.types_basic as basic
+from tvb.basic.traits.types_mapped import MappedType, Array
+
+
+<div class="viewcode-block" id="FloatArrayData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_data.FloatArrayData">[docs]</a>class FloatArrayData(Array):
+    """ A numpy.ndarray of dtype numpy.float64 """
+    _ui_name = "Floating-point array"
+    dtype = basic.DType(default=numpy.float64)
+
+</div>
+<div class="viewcode-block" id="IntegerArrayData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_data.IntegerArrayData">[docs]</a>class IntegerArrayData(Array):
+    """ A numpy.ndarray of dtype numpy.int32 """
+    _ui_name = "Array of integers"
+    dtype = basic.DType(default=numpy.int32)
+
+</div>
+<div class="viewcode-block" id="ComplexArrayData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_data.ComplexArrayData">[docs]</a>class ComplexArrayData(Array):
+    """ A numpy.ndarray of dtype numpy.complex128 """
+    _ui_name = "Array of complex numbers"
+    dtype = basic.DType(default=numpy.complex128)
+
+</div>
+<div class="viewcode-block" id="BoolArrayData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_data.BoolArrayData">[docs]</a>class BoolArrayData(Array):
+    """ A numpy.ndarray of dtype numpy.bool """
+    _ui_name = "Boolean array"
+    dtype = basic.DType(default=numpy.bool)
+
+
+# if you want variable length strings, you must use dtype=object
+# otherwise, must specify max lenth as 'na' where n is integer,
+# e.g. dtype='100a' for a string w/ max len 100 characters.</div>
+<div class="viewcode-block" id="StringArrayData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_data.StringArrayData">[docs]</a>class StringArrayData(Array):
+    """ A numpy.ndarray of dtype str """
+    _ui_name = "Array of strings"
+    dtype = "128a" # "42a"
+
+</div>
+<div class="viewcode-block" id="PositionArrayData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_data.PositionArrayData">[docs]</a>class PositionArrayData(FloatArrayData):
+    """ An array specifying position. """
+    _ui_name = "Array of positions"
+    
+    coordinate_system = basic.String(
+        label = "Coordinate system",
+        default = "cartesian", 
+        doc = """The coordinate system used to specify the positions.
+            Eg: 'spherical', 'polar'""")
+
+    coordinate_space = basic.String( # ?Make this only an extension where needed?
+        label = "Coordinate space",
+        default = "None",
+        doc = "The standard space the positions are in, eg, 'MNI', 'colin27'")
+
+</div>
+<div class="viewcode-block" id="OrientationArrayData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_data.OrientationArrayData">[docs]</a>class OrientationArrayData(FloatArrayData):
+    """ An array specifying orientations. """
+    _ui_name = "Array of orientations"
+
+    coordinate_system_or = basic.String(
+        label = "Coordinate system",
+        default = "cartesian")
+
+</div>
+<div class="viewcode-block" id="IndexArrayData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_data.IndexArrayData">[docs]</a>class IndexArrayData(IntegerArrayData):
+    """ An array that indexes another array. """
+    _ui_name = "Index array"
+ 
+    target = Array(
+        label = "Indexed array",
+        file_storage = core.FILE_STORAGE_NONE,
+        doc = "A link to the array that the indices index.")
+
+</div>
+<div class="viewcode-block" id="MappedArrayData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_data.MappedArrayData">[docs]</a>class MappedArrayData(MappedType):
+    """
+    Array that will be Mapped as a table in DB.
+    """
+    
+    title = basic.String
+    label_x, label_y = basic.String, basic.String
+    aggregation_functions = basic.JSONType(required = False)
+    dimensions_labels = basic.JSONType(required = False)
+    
+    nr_dimensions, length_1d, length_2d, length_3d, length_4d = [basic.Integer]*5
+    array_data = Array()  
+    
+    __generate_table__ = True
+
+    @property
+    def display_name(self):
+        """
+        Overwrite from superclass and add title field
+        """
+        previous = super(MappedArrayData, self).display_name
+        if previous is None:
+            return str(self.title)
+        return str(self.title) +  " " + previous
+       
+       
+    @property
+    def shape(self):
+        """
+        Shape for current wrapped NumPy array.
+        """
+        return self.array_data.shape
+    
+     </div>
+</pre>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

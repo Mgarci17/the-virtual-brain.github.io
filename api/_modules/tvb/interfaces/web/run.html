@@ -1,0 +1,297 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.interfaces.web.run &mdash; The Virtual Brain 1.0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.interfaces.web.run</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Launches the web server and configure the controllers for UI.</span>
+
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">cherrypy</span>
+<span class="kn">import</span> <span class="nn">webbrowser</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span> <span class="nn">cherrypy</span> <span class="kn">import</span> <span class="n">Tool</span>
+<span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">platform</span><span class="p">,</span> <span class="n">argv</span>
+
+<span class="c">### Set running profile from arguments.</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.profile</span> <span class="kn">import</span> <span class="n">TvbProfile</span>
+<span class="n">TvbProfile</span><span class="o">.</span><span class="n">set_profile</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span>
+
+<span class="c">### For Linux Distribution, correctly set MatplotLib Path, before start.</span>
+<span class="k">if</span> <span class="n">TVBSettings</span><span class="p">()</span><span class="o">.</span><span class="n">is_linux</span><span class="p">():</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;MATPLOTLIBDATA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">),</span> <span class="s">&#39;mpl-data&#39;</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">)]</span>
+    
+<span class="c">### Import MPLH5 to have the back-end Thread started.</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.mplh5</span> <span class="kn">import</span> <span class="n">mplh5server</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="s">&#39;tvb.interfaces.web.mplh5.mplh5server&#39;</span><span class="p">)</span>
+<span class="n">mplh5server</span><span class="o">.</span><span class="n">start_server</span><span class="p">(</span><span class="n">LOGGER</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.abcdisplayer</span> <span class="kn">import</span> <span class="n">ABCDisplayer</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.settingsservice</span> <span class="kn">import</span> <span class="n">SettingsService</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.initializer</span> <span class="kn">import</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">reset</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.exceptions</span> <span class="kn">import</span> <span class="n">InvalidSettingsException</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.request_handler</span> <span class="kn">import</span> <span class="n">RequestHandler</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.basecontroller</span> <span class="kn">import</span> <span class="n">BaseController</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.userscontroller</span> <span class="kn">import</span> <span class="n">UserController</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.help.helpcontroller</span> <span class="kn">import</span> <span class="n">HelpController</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.project.projectcontroller</span> <span class="kn">import</span> <span class="n">ProjectController</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.project.figurecontroller</span> <span class="kn">import</span> <span class="n">FigureController</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.project.dtipipelinecontroller</span> <span class="kn">import</span> <span class="n">DTIPipelineController</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.flowcontroller</span> <span class="kn">import</span> <span class="n">FlowController</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.settingscontroller</span> <span class="kn">import</span> <span class="n">SettingsController</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.burst.burstcontroller</span> <span class="kn">import</span> <span class="n">BurstController</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.burst.explorationcontroller</span> <span class="kn">import</span> <span class="n">ParameterExplorationController</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller</span> <span class="kn">import</span> <span class="n">SpatioTemporalController</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller</span> <span class="kn">import</span> <span class="n">RegionsModelParametersController</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller</span> <span class="kn">import</span> <span class="n">SurfaceModelParametersController</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.spatial.regionstimuluscontroller</span> <span class="kn">import</span> <span class="n">RegionStimulusController</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller</span> <span class="kn">import</span> <span class="n">SurfaceStimulusController</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.spatial.localconnectivitycontroller</span> <span class="kn">import</span> <span class="n">LocalConnectivityController</span>
+
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="s">&#39;tvb.interface.web.run&#39;</span><span class="p">)</span>
+<span class="n">CONFIG_EXISTS</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">SettingsService</span><span class="o">.</span><span class="n">is_first_run</span><span class="p">()</span>
+<span class="n">PARAM_RESET_DB</span> <span class="o">=</span> <span class="s">&quot;reset&quot;</span>
+
+<span class="c">### Ensure Python is using UTF-8 encoding.</span>
+<span class="c">### While running distribution/console, default encoding is ASCII</span>
+<span class="nb">reload</span><span class="p">(</span><span class="n">sys</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">setdefaultencoding</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span>
+<span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;TVB application running using encoding: &quot;</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">getdefaultencoding</span><span class="p">())</span>
+
+<div class="viewcode-block" id="init_cherrypy"><a class="viewcode-back" href="../../../../tvb.interfaces.web.html#tvb.interfaces.web.run.init_cherrypy">[docs]</a><span class="k">def</span> <span class="nf">init_cherrypy</span><span class="p">(</span><span class="n">arguments</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+    <span class="c">#### Mount static folders from modules marked for introspection</span>
+    <span class="n">arguments</span> <span class="o">=</span> <span class="n">arguments</span> <span class="ow">or</span> <span class="p">[]</span>
+    <span class="n">CONFIGUER</span> <span class="o">=</span> <span class="n">TVBSettings</span><span class="o">.</span><span class="n">CHERRYPY_CONFIGURATION</span>
+    <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">arguments</span><span class="p">:</span>
+        <span class="n">module_inst</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">module</span><span class="p">),</span> <span class="nb">globals</span><span class="p">(),</span> <span class="nb">locals</span><span class="p">(),</span> <span class="p">[</span><span class="s">&quot;__init__&quot;</span><span class="p">])</span>
+        <span class="n">module_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">module_inst</span><span class="o">.</span><span class="n">__file__</span><span class="p">))</span>
+        <span class="n">CONFIGUER</span><span class="p">[</span><span class="s">&quot;/static_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">module</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;tools.staticdir.on&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span> 
+                                             <span class="s">&#39;tools.staticdir.dir&#39;</span><span class="p">:</span> <span class="s">&#39;.&#39;</span><span class="p">,</span>
+                                             <span class="s">&#39;tools.staticdir.root&#39;</span><span class="p">:</span> <span class="n">module_path</span><span class="p">}</span>
+        
+    <span class="c">#### Mount controllers, and specify the root URL for them.</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">BaseController</span><span class="p">(),</span> <span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span> <span class="n">CONFIGUER</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">UserController</span><span class="p">(),</span> <span class="s">&quot;/user/&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span> <span class="n">CONFIGUER</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">ProjectController</span><span class="p">(),</span> <span class="s">&quot;/project/&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span> <span class="n">CONFIGUER</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">FigureController</span><span class="p">(),</span> <span class="s">&quot;/project/figure/&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span> <span class="n">CONFIGUER</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">FlowController</span><span class="p">(),</span> <span class="s">&quot;/flow/&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span> <span class="n">CONFIGUER</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">SettingsController</span><span class="p">(),</span> <span class="s">&quot;/settings/&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span> <span class="n">CONFIGUER</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">DTIPipelineController</span><span class="p">(),</span> <span class="s">&quot;/pipeline/&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span> <span class="n">CONFIGUER</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">HelpController</span><span class="p">(),</span> <span class="s">&quot;/help/&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span> <span class="n">CONFIGUER</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">BurstController</span><span class="p">(),</span> <span class="s">&quot;/burst/&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span> <span class="n">CONFIGUER</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">ParameterExplorationController</span><span class="p">(),</span> <span class="s">&quot;/burst/explore/&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span> <span class="n">CONFIGUER</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">SpatioTemporalController</span><span class="p">(),</span> <span class="s">&quot;/spatial/&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span> <span class="n">CONFIGUER</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">RegionsModelParametersController</span><span class="p">(),</span> <span class="s">&quot;/spatial/modelparameters/regions/&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span> <span class="n">CONFIGUER</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">SurfaceModelParametersController</span><span class="p">(),</span> <span class="s">&quot;/spatial/modelparameters/surface/&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span> <span class="n">CONFIGUER</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">RegionStimulusController</span><span class="p">(),</span> <span class="s">&quot;/spatial/stimulus/region/&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span> <span class="n">CONFIGUER</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">SurfaceStimulusController</span><span class="p">(),</span> <span class="s">&quot;/spatial/stimulus/surface/&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span> <span class="n">CONFIGUER</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">LocalConnectivityController</span><span class="p">(),</span> <span class="s">&quot;/spatial/localconnectivity/&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span> <span class="n">CONFIGUER</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">CONFIGUER</span><span class="p">)</span>
+    
+    <span class="c">#----------------- Register additional request handlers -----------------</span>
+    <span class="c"># This tool checks for MAX upload size</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">upload</span> <span class="o">=</span> <span class="n">Tool</span><span class="p">(</span><span class="s">&#39;on_start_resource&#39;</span><span class="p">,</span> <span class="n">RequestHandler</span><span class="o">.</span><span class="n">check_upload_size</span><span class="p">)</span>
+    <span class="c"># This tools clean up files on disk (mainly after export)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">cleanup</span> <span class="o">=</span> <span class="n">Tool</span><span class="p">(</span><span class="s">&#39;on_end_request&#39;</span><span class="p">,</span> <span class="n">RequestHandler</span><span class="o">.</span><span class="n">clean_files_on_disk</span><span class="p">)</span>
+    <span class="c">#----------------- End register additional request handlers ----------------</span>
+      
+    <span class="c">#### HTTP Server is fired now ######  </span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    
+</div>
+<div class="viewcode-block" id="start_tvb"><a class="viewcode-back" href="../../../../tvb.interfaces.web.html#tvb.interfaces.web.run.start_tvb">[docs]</a><span class="k">def</span> <span class="nf">start_tvb</span><span class="p">(</span><span class="n">arguments</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fire CherryPy server and listen on a free port</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">if</span> <span class="n">PARAM_RESET_DB</span> <span class="ow">in</span> <span class="n">arguments</span><span class="p">:</span>
+    <span class="c">##### When specified, clean everything in DB</span>
+        <span class="n">reset</span><span class="p">()</span>
+        <span class="n">arguments</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">PARAM_RESET_DB</span><span class="p">)</span>
+        
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">TVBSettings</span><span class="o">.</span><span class="n">TVB_STORAGE</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">TVBSettings</span><span class="o">.</span><span class="n">TVB_STORAGE</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s">&quot;You do not have enough rights to use TVB storage folder:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">TVBSettings</span><span class="o">.</span><span class="n">TVB_STORAGE</span><span class="p">))</span>
+            
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">initialize</span><span class="p">(</span><span class="n">arguments</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">InvalidSettingsException</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+    <span class="c">#### Mark that the interface is Web</span>
+    <span class="n">ABCDisplayer</span><span class="o">.</span><span class="n">VISUALIZERS_ROOT</span> <span class="o">=</span> <span class="n">TVBSettings</span><span class="o">.</span><span class="n">WEB_VISUALIZERS_ROOT</span>
+    <span class="n">ABCDisplayer</span><span class="o">.</span><span class="n">VISUALIZERS_URL_PREFIX</span> <span class="o">=</span> <span class="n">TVBSettings</span><span class="o">.</span><span class="n">WEB_VISUALIZERS_URL_PREFIX</span>
+    
+    <span class="n">init_cherrypy</span><span class="p">(</span><span class="n">arguments</span><span class="p">)</span>
+    
+    <span class="k">try</span><span class="p">:</span>
+    <span class="c">################ Fire a browser page at the end. </span>
+        <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;win&#39;</span><span class="p">):</span>
+            <span class="n">browser_app</span> <span class="o">=</span> <span class="n">webbrowser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;windows-default&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">platform</span> <span class="o">==</span> <span class="s">&#39;darwin&#39;</span><span class="p">:</span>
+            <span class="n">browser_app</span> <span class="o">=</span> <span class="n">webbrowser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;macosx&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">browser_app</span> <span class="o">=</span> <span class="n">webbrowser</span>
+            
+        <span class="c"># Remove the paths that we set in the startup script as in some Linux</span>
+        <span class="c"># machines this could break the default browser from opening TVB start page.</span>
+        <span class="n">ORIGINAL_LD_LIBRARY_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;LD_LIBRARY_PATH&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="n">ORIGINAL_LD_RUN_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;LD_RUN_PATH&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ORIGINAL_LD_LIBRARY_PATH</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;LD_LIBRARY_PATH&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">ORIGINAL_LD_RUN_PATH</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;LD_RUN_PATH&#39;</span><span class="p">]</span>
+            
+        <span class="c">## Actual browser fire.</span>
+        <span class="k">if</span> <span class="n">CONFIG_EXISTS</span><span class="p">:</span>
+            <span class="n">browser_app</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">TVBSettings</span><span class="o">.</span><span class="n">BASE_URL</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">browser_app</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">TVBSettings</span><span class="o">.</span><span class="n">BASE_URL</span> <span class="o">+</span> <span class="s">&#39;settings/settings&#39;</span><span class="p">)</span>   
+            
+        <span class="c">## Restore environment settings after fire browser.</span>
+        <span class="k">if</span> <span class="n">ORIGINAL_LD_LIBRARY_PATH</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;LD_LIBRARY_PATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ORIGINAL_LD_LIBRARY_PATH</span>
+        <span class="k">if</span> <span class="n">ORIGINAL_LD_RUN_PATH</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;LD_RUN_PATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ORIGINAL_LD_RUN_PATH</span>
+            
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Browser could not be fired!  Please manually type in your preferred browser: &quot;</span>
+                     <span class="s">&quot;http://127.0.0.1:8080/&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span> 
+    
+    <span class="c">## Launch CherryPy loop forever.      </span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Finished starting TVB version:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">TVBSettings</span><span class="o">.</span><span class="n">CURRENT_VERSION</span><span class="p">))</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error_log</span>
+
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c">#### Prepare parameters and fire CherryPy</span>
+    
+    <span class="c">#### Remove not-relevant parameter, 0 should point towards this &quot;run.py&quot; file</span>
+    <span class="n">DUPLICATE_ARGV</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+    <span class="n">DUPLICATE_ARGV</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">DUPLICATE_ARGV</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    
+    <span class="n">start_tvb</span><span class="p">(</span><span class="n">DUPLICATE_ARGV</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

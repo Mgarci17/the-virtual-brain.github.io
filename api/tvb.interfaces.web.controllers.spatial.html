@@ -1,0 +1,617 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title> &mdash; The Virtual Brain 1.0.4 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="index.html" />
+    <link rel="up" title="" href="tvb.interfaces.web.controllers.html" />
+    <link rel="next" title="" href="tvb.interfaces.web.entities.html" />
+    <link rel="prev" title="" href="tvb.interfaces.web.controllers.project.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.interfaces.web.entities.html" title=""
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tvb.interfaces.web.controllers.project.html" title=""
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ></a> &raquo;</li>
+          <li><a href="tvb.interfaces.html" ></a> &raquo;</li>
+          <li><a href="tvb.interfaces.web.html" ></a> &raquo;</li>
+          <li><a href="tvb.interfaces.web.controllers.html" accesskey="U"></a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="logo">
+<h1><a class="reference external" href="http://www.thevirtualbrain.org"><div align="top" class="align-top"><img alt="The Virtual Brain Project" height="148" src="_images/evil_tvb_logo_transparent.svg" /></div>
+</a><a class="headerlink" href="#logo" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="spatial-package">
+<h2>spatial Package<a class="headerlink" href="#spatial-package" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller">
+<span id="base-spatiotemporalcontroller-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">base_spatiotemporalcontroller</span></tt> Module<a class="headerlink" href="#module-tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.</tt><tt class="descname">SpatioTemporalController</tt><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/base_spatiotemporalcontroller.html#SpatioTemporalController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.basecontroller.BaseController" title="tvb.interfaces.web.controllers.basecontroller.BaseController"><tt class="xref py py-class docutils literal"><span class="pre">tvb.interfaces.web.controllers.basecontroller.BaseController</span></tt></a></p>
+<p>Base class which contains methods related to spatio-temporal actions.</p>
+<dl class="staticmethod">
+<dt id="tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.add_interface_to_session">
+<em class="property">static </em><tt class="descname">add_interface_to_session</tt><big>(</big><em>left_input_tree</em>, <em>right_input_tree</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/base_spatiotemporalcontroller.html#SpatioTemporalController.add_interface_to_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.add_interface_to_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>left_input_tree and right_input_tree are expected to be lists of dictionaries.</p>
+<p>Those 2 given lists will be concatenated and added to session.
+In order to work the filters, the interface should be added to session.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.build_final_json">
+<em class="property">static </em><tt class="descname">build_final_json</tt><big>(</big><em>list_of_series</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/base_spatiotemporalcontroller.html#SpatioTemporalController.build_final_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.build_final_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a list with all the data points, build the final FLOT json.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.display_surface">
+<em class="property">static </em><tt class="descname">display_surface</tt><big>(</big><em>surface_gid</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/base_spatiotemporalcontroller.html#SpatioTemporalController.display_surface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.display_surface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the HTML for displaying the surface with the given ID.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.fill_default_attributes">
+<tt class="descname">fill_default_attributes</tt><big>(</big><em>template_dictionary</em>, <em>subsection='stimulus'</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/base_spatiotemporalcontroller.html#SpatioTemporalController.fill_default_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.fill_default_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrite base controller to add required parameters for adapter templates.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.get_connectivity_parameters">
+<em class="property">static </em><tt class="descname">get_connectivity_parameters</tt><big>(</big><em>input_connectivity</em>, <em>surface_data=None</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/base_spatiotemporalcontroller.html#SpatioTemporalController.get_connectivity_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.get_connectivity_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionary which contains all the needed data for drawing a connectivity.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.get_creator_and_interface">
+<tt class="descname">get_creator_and_interface</tt><big>(</big><em>creator_module</em>, <em>creator_class</em>, <em>datatype_instance</em>, <em>lock_midpoint_for_eq=None</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/base_spatiotemporalcontroller.html#SpatioTemporalController.get_creator_and_interface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.get_creator_and_interface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a Tuple: a creator instance and a dictionary for the creator interface.
+The interface is prepared for rendering, it is populated with existent data, in case of a
+parameter of type DataType. The name of the attributes are also prefixed to identify groups.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.get_data_from_burst_configuration">
+<tt class="descname">get_data_from_burst_configuration</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/base_spatiotemporalcontroller.html#SpatioTemporalController.get_data_from_burst_configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.get_data_from_burst_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the model, integrator, connectivity and surface instances from the burst configuration.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.get_select_existent_entities">
+<tt class="descname">get_select_existent_entities</tt><big>(</big><em>label</em>, <em>entity_type</em>, <em>entity_gid=None</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/base_spatiotemporalcontroller.html#SpatioTemporalController.get_select_existent_entities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.get_select_existent_entities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the dictionary needed for drawing the select which display all
+the created entities of the specified type.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.get_series_json">
+<em class="property">static </em><tt class="descname">get_series_json</tt><big>(</big><em>data</em>, <em>label</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/base_spatiotemporalcontroller.html#SpatioTemporalController.get_series_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.get_series_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>For each data point entry, build the FLOT specific JSON.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.get_ui_message">
+<em class="property">static </em><tt class="descname">get_ui_message</tt><big>(</big><em>list_of_equation_names</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/base_spatiotemporalcontroller.html#SpatioTemporalController.get_ui_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.get_ui_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>The message returned by this method should be displayed if
+the equation with the given name couldn&#8217;t be evaluated in all points.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.get_x_axis_range">
+<tt class="descname">get_x_axis_range</tt><big>(</big><em>min_x_str</em>, <em>max_x_str</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/base_spatiotemporalcontroller.html#SpatioTemporalController.get_x_axis_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.get_x_axis_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill range for the X-axis displayed in 2D graph.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.index">
+<tt class="descname">index</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/base_spatiotemporalcontroller.html#SpatioTemporalController.index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.is_int">
+<em class="property">static </em><tt class="descname">is_int</tt><big>(</big><em>str_value</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/base_spatiotemporalcontroller.html#SpatioTemporalController.is_int"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.is_int" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the given string may be converted to an int value.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.prepare_entity_interface">
+<em class="property">static </em><tt class="descname">prepare_entity_interface</tt><big>(</big><em>input_list</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/base_spatiotemporalcontroller.html#SpatioTemporalController.prepare_entity_interface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController.prepare_entity_interface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares the input tree obtained from a creator.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.interfaces.web.controllers.spatial.localconnectivitycontroller">
+<span id="localconnectivitycontroller-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">localconnectivitycontroller</span></tt> Module<a class="headerlink" href="#module-tvb.interfaces.web.controllers.spatial.localconnectivitycontroller" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.</tt><tt class="descname">LocalConnectivityController</tt><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/localconnectivitycontroller.html#LocalConnectivityController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController" title="tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController"><tt class="xref py py-class docutils literal"><span class="pre">tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController</span></tt></a></p>
+<p>Controller layer for displaying/creating a LocalConnectivity entity.</p>
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController.compute_data_for_gradient_view">
+<tt class="descname">compute_data_for_gradient_view</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/localconnectivitycontroller.html#LocalConnectivityController.compute_data_for_gradient_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController.compute_data_for_gradient_view" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController.create_local_connectivity">
+<tt class="descname">create_local_connectivity</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/localconnectivitycontroller.html#LocalConnectivityController.create_local_connectivity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController.create_local_connectivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController.fill_default_attributes">
+<tt class="descname">fill_default_attributes</tt><big>(</big><em>template_dictionary</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/localconnectivitycontroller.html#LocalConnectivityController.fill_default_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController.fill_default_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrite base controller to add required parameters for adapter templates.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController.get_equation_chart">
+<tt class="descname">get_equation_chart</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/localconnectivitycontroller.html#LocalConnectivityController.get_equation_chart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController.get_equation_chart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController.get_series_json">
+<em class="property">static </em><tt class="descname">get_series_json</tt><big>(</big><em>ideal_case</em>, <em>average_case</em>, <em>worst_case</em>, <em>best_case</em>, <em>vertical_line</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/localconnectivitycontroller.html#LocalConnectivityController.get_series_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController.get_series_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gather all the separate data arrays into a single flot series.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController.get_template_from_context">
+<tt class="descname">get_template_from_context</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/localconnectivitycontroller.html#LocalConnectivityController.get_template_from_context"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController.get_template_from_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the parameters for the local connectivity in case one is stored in context. Load the entity
+and use it to populate the defaults from the interface accordingly.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController.load_local_connectivity">
+<tt class="descname">load_local_connectivity</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/localconnectivitycontroller.html#LocalConnectivityController.load_local_connectivity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController.load_local_connectivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController.reset_local_connectivity">
+<tt class="descname">reset_local_connectivity</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/localconnectivitycontroller.html#LocalConnectivityController.reset_local_connectivity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController.reset_local_connectivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController.step_1">
+<tt class="descname">step_1</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/localconnectivitycontroller.html#LocalConnectivityController.step_1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController.step_1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController.step_2">
+<tt class="descname">step_2</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/localconnectivitycontroller.html#LocalConnectivityController.step_2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.localconnectivitycontroller.LocalConnectivityController.step_2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller">
+<span id="regionsmodelparameterscontroller-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">regionsmodelparameterscontroller</span></tt> Module<a class="headerlink" href="#module-tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller.RegionsModelParametersController">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller.</tt><tt class="descname">RegionsModelParametersController</tt><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionsmodelparameterscontroller.html#RegionsModelParametersController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller.RegionsModelParametersController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController" title="tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController"><tt class="xref py py-class docutils literal"><span class="pre">tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController</span></tt></a></p>
+<p>Controller class for editing Model Parameters on regions in a visual manner.</p>
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller.RegionsModelParametersController.copy_model">
+<tt class="descname">copy_model</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionsmodelparameterscontroller.html#RegionsModelParametersController.copy_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller.RegionsModelParametersController.copy_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller.RegionsModelParametersController.edit_model_parameters">
+<tt class="descname">edit_model_parameters</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionsmodelparameterscontroller.html#RegionsModelParametersController.edit_model_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller.RegionsModelParametersController.edit_model_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller.RegionsModelParametersController.fill_default_attributes">
+<tt class="descname">fill_default_attributes</tt><big>(</big><em>template_dictionary</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionsmodelparameterscontroller.html#RegionsModelParametersController.fill_default_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller.RegionsModelParametersController.fill_default_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrite base controller to add required parameters for adapter templates.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller.RegionsModelParametersController.get_data_for_param_sliders">
+<tt class="descname">get_data_for_param_sliders</tt><big>(</big><em>connectivity_node_index</em>, <em>context_model_parameters</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionsmodelparameterscontroller.html#RegionsModelParametersController.get_data_for_param_sliders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller.RegionsModelParametersController.get_data_for_param_sliders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method used only for handling the exception.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller.RegionsModelParametersController.load_model_for_connectivity_node">
+<tt class="descname">load_model_for_connectivity_node</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionsmodelparameterscontroller.html#RegionsModelParametersController.load_model_for_connectivity_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller.RegionsModelParametersController.load_model_for_connectivity_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller.RegionsModelParametersController.reset_model_parameters_for_nodes">
+<tt class="descname">reset_model_parameters_for_nodes</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionsmodelparameterscontroller.html#RegionsModelParametersController.reset_model_parameters_for_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller.RegionsModelParametersController.reset_model_parameters_for_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller.RegionsModelParametersController.submit_model_parameters">
+<tt class="descname">submit_model_parameters</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionsmodelparameterscontroller.html#RegionsModelParametersController.submit_model_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller.RegionsModelParametersController.submit_model_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller.RegionsModelParametersController.update_model_parameter_for_nodes">
+<tt class="descname">update_model_parameter_for_nodes</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionsmodelparameterscontroller.html#RegionsModelParametersController.update_model_parameter_for_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller.RegionsModelParametersController.update_model_parameter_for_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.interfaces.web.controllers.spatial.regionstimuluscontroller">
+<span id="regionstimuluscontroller-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">regionstimuluscontroller</span></tt> Module<a class="headerlink" href="#module-tvb.interfaces.web.controllers.spatial.regionstimuluscontroller" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.</tt><tt class="descname">RegionStimulusController</tt><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionstimuluscontroller.html#RegionStimulusController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController" title="tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController"><tt class="xref py py-class docutils literal"><span class="pre">tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController</span></tt></a></p>
+<p>Control layer for defining Stimulus entities on Regions.</p>
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.create_stimulus">
+<tt class="descname">create_stimulus</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionstimuluscontroller.html#RegionStimulusController.create_stimulus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.create_stimulus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a stimulus from the given data.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.display_connectivity">
+<tt class="descname">display_connectivity</tt><big>(</big><em>connectivity_gid</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionstimuluscontroller.html#RegionStimulusController.display_connectivity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.display_connectivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the html for displaying the connectivity matrix.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.do_step">
+<tt class="descname">do_step</tt><big>(</big><em>step_idx</em>, <em>from_step=None</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionstimuluscontroller.html#RegionStimulusController.do_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.do_step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Go to the step given by :param step_idx. In case the next step is the
+create one (3), we want to remain on the same step as before so that is
+handled differently depending on the :param from_step.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.fill_default_attributes">
+<tt class="descname">fill_default_attributes</tt><big>(</big><em>template_dictionary</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionstimuluscontroller.html#RegionStimulusController.fill_default_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.fill_default_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrite base controller to add required parameters for adapter templates.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.get_equation_chart">
+<tt class="descname">get_equation_chart</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionstimuluscontroller.html#RegionStimulusController.get_equation_chart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.get_equation_chart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.load_region_stimulus">
+<tt class="descname">load_region_stimulus</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionstimuluscontroller.html#RegionStimulusController.load_region_stimulus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.load_region_stimulus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.reset_region_stimulus">
+<tt class="descname">reset_region_stimulus</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionstimuluscontroller.html#RegionStimulusController.reset_region_stimulus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.reset_region_stimulus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.step_1">
+<tt class="descname">step_1</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionstimuluscontroller.html#RegionStimulusController.step_1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.step_1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the required template dictionary for the first step.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.step_1_submit">
+<tt class="descname">step_1_submit</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionstimuluscontroller.html#RegionStimulusController.step_1_submit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.step_1_submit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.step_2">
+<tt class="descname">step_2</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionstimuluscontroller.html#RegionStimulusController.step_2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.step_2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the required template dictionary for the second step.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.step_2_submit">
+<tt class="descname">step_2_submit</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionstimuluscontroller.html#RegionStimulusController.step_2_submit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.step_2_submit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.update_scaling">
+<tt class="descname">update_scaling</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/regionstimuluscontroller.html#RegionStimulusController.update_scaling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.regionstimuluscontroller.RegionStimulusController.update_scaling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the scaling according to the UI.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller">
+<span id="surfacemodelparameterscontroller-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">surfacemodelparameterscontroller</span></tt> Module<a class="headerlink" href="#module-tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller.SurfaceModelParametersController">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller.</tt><tt class="descname">SurfaceModelParametersController</tt><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacemodelparameterscontroller.html#SurfaceModelParametersController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller.SurfaceModelParametersController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController" title="tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController"><tt class="xref py py-class docutils literal"><span class="pre">tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController</span></tt></a></p>
+<p>Control for defining parameters of a model in a visual manner.
+Here we focus on model-parameters spread over a brain surface.</p>
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller.SurfaceModelParametersController.apply_equation">
+<tt class="descname">apply_equation</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacemodelparameterscontroller.html#SurfaceModelParametersController.apply_equation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller.SurfaceModelParametersController.apply_equation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller.SurfaceModelParametersController.apply_focal_point">
+<tt class="descname">apply_focal_point</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacemodelparameterscontroller.html#SurfaceModelParametersController.apply_focal_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller.SurfaceModelParametersController.apply_focal_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller.SurfaceModelParametersController.edit_model_parameters">
+<tt class="descname">edit_model_parameters</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacemodelparameterscontroller.html#SurfaceModelParametersController.edit_model_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller.SurfaceModelParametersController.edit_model_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller.SurfaceModelParametersController.fill_default_attributes">
+<tt class="descname">fill_default_attributes</tt><big>(</big><em>template_dictionary</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacemodelparameterscontroller.html#SurfaceModelParametersController.fill_default_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller.SurfaceModelParametersController.fill_default_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrite base controller to add required parameters for adapter templates.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller.SurfaceModelParametersController.get_equation_chart">
+<tt class="descname">get_equation_chart</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacemodelparameterscontroller.html#SurfaceModelParametersController.get_equation_chart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller.SurfaceModelParametersController.get_equation_chart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller.SurfaceModelParametersController.get_focal_points">
+<tt class="descname">get_focal_points</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacemodelparameterscontroller.html#SurfaceModelParametersController.get_focal_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller.SurfaceModelParametersController.get_focal_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller.SurfaceModelParametersController.get_surface_model_parameters_data">
+<tt class="descname">get_surface_model_parameters_data</tt><big>(</big><em>default_selected_model_param=None</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacemodelparameterscontroller.html#SurfaceModelParametersController.get_surface_model_parameters_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller.SurfaceModelParametersController.get_surface_model_parameters_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionary which contains all the data needed for drawing the
+model parameters.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller.SurfaceModelParametersController.remove_focal_point">
+<tt class="descname">remove_focal_point</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacemodelparameterscontroller.html#SurfaceModelParametersController.remove_focal_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller.SurfaceModelParametersController.remove_focal_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller.SurfaceModelParametersController.submit_model_parameters">
+<tt class="descname">submit_model_parameters</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacemodelparameterscontroller.html#SurfaceModelParametersController.submit_model_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller.SurfaceModelParametersController.submit_model_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller">
+<span id="surfacestimuluscontroller-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">surfacestimuluscontroller</span></tt> Module<a class="headerlink" href="#module-tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.</tt><tt class="descname">SurfaceStimulusController</tt><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacestimuluscontroller.html#SurfaceStimulusController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController" title="tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController"><tt class="xref py py-class docutils literal"><span class="pre">tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller.SpatioTemporalController</span></tt></a></p>
+<p>Control layer for defining Stimulus entities on a cortical surface.</p>
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.create_stimulus">
+<tt class="descname">create_stimulus</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacestimuluscontroller.html#SurfaceStimulusController.create_stimulus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.create_stimulus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a stimulus from the given data.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.do_step">
+<tt class="descname">do_step</tt><big>(</big><em>step_idx</em>, <em>from_step=None</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacestimuluscontroller.html#SurfaceStimulusController.do_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.do_step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Go to the step given by :param step_idx. In case the next step is the
+create one (3), we want to remain on the same step as before so that is
+handled differently depending on the :param from_step.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.fill_default_attributes">
+<tt class="descname">fill_default_attributes</tt><big>(</big><em>template_specification</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacestimuluscontroller.html#SurfaceStimulusController.fill_default_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.fill_default_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add some entries that are used in both steps then fill the default required attributes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.get_spatial_equation_chart">
+<tt class="descname">get_spatial_equation_chart</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacestimuluscontroller.html#SurfaceStimulusController.get_spatial_equation_chart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.get_spatial_equation_chart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.get_stimulus_chunk">
+<tt class="descname">get_stimulus_chunk</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacestimuluscontroller.html#SurfaceStimulusController.get_stimulus_chunk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.get_stimulus_chunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.get_temporal_equation_chart">
+<tt class="descname">get_temporal_equation_chart</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacestimuluscontroller.html#SurfaceStimulusController.get_temporal_equation_chart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.get_temporal_equation_chart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.load_surface_stimulus">
+<tt class="descname">load_surface_stimulus</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacestimuluscontroller.html#SurfaceStimulusController.load_surface_stimulus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.load_surface_stimulus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.reload_default">
+<tt class="descname">reload_default</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacestimuluscontroller.html#SurfaceStimulusController.reload_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.reload_default" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.step_1">
+<tt class="descname">step_1</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacestimuluscontroller.html#SurfaceStimulusController.step_1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.step_1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used for generating the interface which allows the user to define a stimulus.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.step_1_submit">
+<tt class="descname">step_1_submit</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacestimuluscontroller.html#SurfaceStimulusController.step_1_submit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.step_1_submit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.step_2">
+<tt class="descname">step_2</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacestimuluscontroller.html#SurfaceStimulusController.step_2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.step_2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used for generating the interface which allows the user to define a stimulus.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.step_2_submit">
+<tt class="descname">step_2_submit</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacestimuluscontroller.html#SurfaceStimulusController.step_2_submit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.step_2_submit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.view_stimulus">
+<tt class="descname">view_stimulus</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/spatial/surfacestimuluscontroller.html#SurfaceStimulusController.view_stimulus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller.SurfaceStimulusController.view_stimulus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"></a><ul>
+<li><a class="reference internal" href="#spatial-package">spatial Package</a><ul>
+<li><a class="reference internal" href="#module-tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller"><tt class="docutils literal"><span class="pre">base_spatiotemporalcontroller</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.interfaces.web.controllers.spatial.localconnectivitycontroller"><tt class="docutils literal"><span class="pre">localconnectivitycontroller</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller"><tt class="docutils literal"><span class="pre">regionsmodelparameterscontroller</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.interfaces.web.controllers.spatial.regionstimuluscontroller"><tt class="docutils literal"><span class="pre">regionstimuluscontroller</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller"><tt class="docutils literal"><span class="pre">surfacemodelparameterscontroller</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller"><tt class="docutils literal"><span class="pre">surfacestimuluscontroller</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tvb.interfaces.web.controllers.project.html"
+                        title="previous chapter"></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tvb.interfaces.web.entities.html"
+                        title="next chapter"></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tvb.interfaces.web.controllers.spatial.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.interfaces.web.entities.html" title=""
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tvb.interfaces.web.controllers.project.html" title=""
+             >previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ></a> &raquo;</li>
+          <li><a href="tvb.interfaces.html" ></a> &raquo;</li>
+          <li><a href="tvb.interfaces.web.html" ></a> &raquo;</li>
+          <li><a href="tvb.interfaces.web.controllers.html" ></a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

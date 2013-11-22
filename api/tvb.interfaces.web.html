@@ -1,0 +1,591 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title> &mdash; The Virtual Brain 1.0.4 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="index.html" />
+    <link rel="up" title="" href="tvb.interfaces.html" />
+    <link rel="next" title="" href="tvb.interfaces.web.controllers.html" />
+    <link rel="prev" title="" href="tvb.interfaces.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.interfaces.web.controllers.html" title=""
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tvb.interfaces.html" title=""
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ></a> &raquo;</li>
+          <li><a href="tvb.interfaces.html" accesskey="U"></a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="logo">
+<h1><a class="reference external" href="http://www.thevirtualbrain.org"><div align="top" class="align-top"><img alt="The Virtual Brain Project" height="148" src="_images/evil_tvb_logo_transparent.svg" /></div>
+</a><a class="headerlink" href="#logo" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="web-package">
+<h2>web Package<a class="headerlink" href="#web-package" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-tvb.interfaces.web.request_handler">
+<span id="request-handler-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">request_handler</span></tt> Module<a class="headerlink" href="#module-tvb.interfaces.web.request_handler" title="Permalink to this headline">¶</a></h3>
+<p>&#64;author: calin.pavel &lt;<a class="reference external" href="mailto:calin&#46;pavel&#37;&#52;&#48;codemart&#46;ro">calin<span>&#46;</span>pavel<span>&#64;</span>codemart<span>&#46;</span>ro</a>&gt;</p>
+<dl class="class">
+<dt id="tvb.interfaces.web.request_handler.RequestHandler">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.request_handler.</tt><tt class="descname">RequestHandler</tt><a class="reference internal" href="_modules/tvb/interfaces/web/request_handler.html#RequestHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.request_handler.RequestHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>This class contains different methods that can be used to enhance 
+request processing. They are called at different moments depending the 
+way they were registered in cherrypy configuration.</p>
+<dl class="staticmethod">
+<dt id="tvb.interfaces.web.request_handler.RequestHandler.check_upload_size">
+<em class="property">static </em><tt class="descname">check_upload_size</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/request_handler.html#RequestHandler.check_upload_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.request_handler.RequestHandler.check_upload_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method checks if the uploaded content exceeds a given size</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.interfaces.web.request_handler.RequestHandler.clean_files_on_disk">
+<em class="property">static </em><tt class="descname">clean_files_on_disk</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/request_handler.html#RequestHandler.clean_files_on_disk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.request_handler.RequestHandler.clean_files_on_disk" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is executed at the end of a request and checks if there is any
+file which should be deleted on disk.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.interfaces.web.run">
+<span id="run-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">run</span></tt> Module<a class="headerlink" href="#module-tvb.interfaces.web.run" title="Permalink to this headline">¶</a></h3>
+<p>Launches the web server and configure the controllers for UI.</p>
+<dl class="function">
+<dt id="tvb.interfaces.web.run.init_cherrypy">
+<tt class="descclassname">tvb.interfaces.web.run.</tt><tt class="descname">init_cherrypy</tt><big>(</big><em>arguments=None</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/run.html#init_cherrypy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.run.init_cherrypy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="tvb.interfaces.web.run.start_tvb">
+<tt class="descclassname">tvb.interfaces.web.run.</tt><tt class="descname">start_tvb</tt><big>(</big><em>arguments</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/run.html#start_tvb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.run.start_tvb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fire CherryPy server and listen on a free port</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.interfaces.web.structure">
+<span id="structure-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">structure</span></tt> Module<a class="headerlink" href="#module-tvb.interfaces.web.structure" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="tvb.interfaces.web.structure.WebStructure">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.structure.</tt><tt class="descname">WebStructure</tt><a class="reference internal" href="_modules/tvb/interfaces/web/structure.html#WebStructure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SECTION_ANALYZE">
+<tt class="descname">SECTION_ANALYZE</tt><em class="property"> = 'analyze'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SECTION_ANALYZE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SECTION_BURST">
+<tt class="descname">SECTION_BURST</tt><em class="property"> = 'burst'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SECTION_BURST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SECTION_CONNECTIVITY">
+<tt class="descname">SECTION_CONNECTIVITY</tt><em class="property"> = 'connectivity'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SECTION_CONNECTIVITY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SECTION_PROJECT">
+<tt class="descname">SECTION_PROJECT</tt><em class="property"> = 'project'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SECTION_PROJECT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SECTION_STIMULUS">
+<tt class="descname">SECTION_STIMULUS</tt><em class="property"> = 'stimulus'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SECTION_STIMULUS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SECTION_USER">
+<tt class="descname">SECTION_USER</tt><em class="property"> = 'user'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SECTION_USER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ACCOUNT">
+<tt class="descname">SUB_SECTION_ACCOUNT</tt><em class="property"> = 'account'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ACCOUNT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_1">
+<tt class="descname">SUB_SECTION_ANALYZE_1</tt><em class="property"> = 'crosscorr'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_10">
+<tt class="descname">SUB_SECTION_ANALYZE_10</tt><em class="property"> = 'bctcentrality'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_10" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_11">
+<tt class="descname">SUB_SECTION_ANALYZE_11</tt><em class="property"> = 'bctclustering'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_11" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_12">
+<tt class="descname">SUB_SECTION_ANALYZE_12</tt><em class="property"> = 'bctdegree'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_12" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_13">
+<tt class="descname">SUB_SECTION_ANALYZE_13</tt><em class="property"> = 'bctdensity'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_13" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_14">
+<tt class="descname">SUB_SECTION_ANALYZE_14</tt><em class="property"> = 'bctdistance'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_14" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_2">
+<tt class="descname">SUB_SECTION_ANALYZE_2</tt><em class="property"> = 'fourier'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_3">
+<tt class="descname">SUB_SECTION_ANALYZE_3</tt><em class="property"> = 'timeseries'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_3" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_4">
+<tt class="descname">SUB_SECTION_ANALYZE_4</tt><em class="property"> = 'coherence'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_4" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_5">
+<tt class="descname">SUB_SECTION_ANALYZE_5</tt><em class="property"> = 'covariance'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_5" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_6">
+<tt class="descname">SUB_SECTION_ANALYZE_6</tt><em class="property"> = 'components'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_6" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_7">
+<tt class="descname">SUB_SECTION_ANALYZE_7</tt><em class="property"> = 'ica'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_7" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_8">
+<tt class="descname">SUB_SECTION_ANALYZE_8</tt><em class="property"> = 'wavelet'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_8" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_9">
+<tt class="descname">SUB_SECTION_ANALYZE_9</tt><em class="property"> = 'bct'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_9" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_MENU">
+<tt class="descname">SUB_SECTION_ANALYZE_MENU</tt><em class="property"> = 'analyze'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_ANALYZE_MENU" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_BURST">
+<tt class="descname">SUB_SECTION_BURST</tt><em class="property"> = 'burst'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_BURST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_CONNECTIVITY">
+<tt class="descname">SUB_SECTION_CONNECTIVITY</tt><em class="property"> = 'connectivity'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_CONNECTIVITY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_CONNECTIVITY_MENU">
+<tt class="descname">SUB_SECTION_CONNECTIVITY_MENU</tt><em class="property"> = 'step'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_CONNECTIVITY_MENU" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_DATA_STRUCTURE">
+<tt class="descname">SUB_SECTION_DATA_STRUCTURE</tt><em class="property"> = 'data'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_DATA_STRUCTURE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_FIGURES">
+<tt class="descname">SUB_SECTION_FIGURES</tt><em class="property"> = 'figures'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_FIGURES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_LIST_PROJECTS">
+<tt class="descname">SUB_SECTION_LIST_PROJECTS</tt><em class="property"> = 'list'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_LIST_PROJECTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_LOCAL_CONNECTIVITY">
+<tt class="descname">SUB_SECTION_LOCAL_CONNECTIVITY</tt><em class="property"> = 'local'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_LOCAL_CONNECTIVITY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_LOGIN">
+<tt class="descname">SUB_SECTION_LOGIN</tt><em class="property"> = 'login'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_LOGIN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_MODEL_REGIONS">
+<tt class="descname">SUB_SECTION_MODEL_REGIONS</tt><em class="property"> = 'regionmodel'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_MODEL_REGIONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_MODEL_SURFACE">
+<tt class="descname">SUB_SECTION_MODEL_SURFACE</tt><em class="property"> = 'surfacemodel'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_MODEL_SURFACE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_OPERATIONS">
+<tt class="descname">SUB_SECTION_OPERATIONS</tt><em class="property"> = 'operations'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_OPERATIONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_PIPELINE">
+<tt class="descname">SUB_SECTION_PIPELINE</tt><em class="property"> = 'pipeline'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_PIPELINE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_PROJECT_MENU">
+<tt class="descname">SUB_SECTION_PROJECT_MENU</tt><em class="property"> = 'project'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_PROJECT_MENU" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_PROPERTIES_PROJECT">
+<tt class="descname">SUB_SECTION_PROPERTIES_PROJECT</tt><em class="property"> = 'properties'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_PROPERTIES_PROJECT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_STIMULUS_MENU">
+<tt class="descname">SUB_SECTION_STIMULUS_MENU</tt><em class="property"> = 'stimulus'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_STIMULUS_MENU" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_STIMULUS_REGION">
+<tt class="descname">SUB_SECTION_STIMULUS_REGION</tt><em class="property"> = 'surfacestim'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_STIMULUS_REGION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_STIMULUS_SURFACE">
+<tt class="descname">SUB_SECTION_STIMULUS_SURFACE</tt><em class="property"> = 'regionstim'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_STIMULUS_SURFACE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_1">
+<tt class="descname">SUB_SECTION_VIEW_1</tt><em class="property"> = 'view_brain'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_10">
+<tt class="descname">SUB_SECTION_VIEW_10</tt><em class="property"> = 'view_topography'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_10" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_11">
+<tt class="descname">SUB_SECTION_VIEW_11</tt><em class="property"> = 'view_wavelet'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_11" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_12">
+<tt class="descname">SUB_SECTION_VIEW_12</tt><em class="property"> = 'view_pse'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_12" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_13">
+<tt class="descname">SUB_SECTION_VIEW_13</tt><em class="property"> = 'view_pca'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_13" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_14">
+<tt class="descname">SUB_SECTION_VIEW_14</tt><em class="property"> = 'view_timeseries'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_14" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_2">
+<tt class="descname">SUB_SECTION_VIEW_2</tt><em class="property"> = 'view_connectivity'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_3">
+<tt class="descname">SUB_SECTION_VIEW_3</tt><em class="property"> = 'view_covariance'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_3" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_4">
+<tt class="descname">SUB_SECTION_VIEW_4</tt><em class="property"> = 'view_coherence'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_4" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_5">
+<tt class="descname">SUB_SECTION_VIEW_5</tt><em class="property"> = 'view_correlation'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_5" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_6">
+<tt class="descname">SUB_SECTION_VIEW_6</tt><em class="property"> = 'view_eeg'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_6" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_7">
+<tt class="descname">SUB_SECTION_VIEW_7</tt><em class="property"> = 'view_histogram'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_7" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_8">
+<tt class="descname">SUB_SECTION_VIEW_8</tt><em class="property"> = 'view_fourier'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_8" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_9">
+<tt class="descname">SUB_SECTION_VIEW_9</tt><em class="property"> = 'view_timeseries_mplh5'</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.SUB_SECTION_VIEW_9" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.WEB_SECTION_TITLES">
+<tt class="descname">WEB_SECTION_TITLES</tt><em class="property"> = {'burst': 'Simulator', 'stimulus': 'Stimulus', 'project': 'Project', 'connectivity': 'Connectivity', 'user': 'User', 'analyze': 'Analyze'}</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.WEB_SECTION_TITLES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.structure.WebStructure.WEB_SUBSECTION_TITLES">
+<tt class="descname">WEB_SUBSECTION_TITLES</tt><em class="property"> = {'operations': 'Operations', 'bctdistance': 'BCT Distance', 'regionmodel': 'Region Model Parameters', 'surfacemodel': 'Surface Model Parameters', 'view_coherence': 'Coherence Viewer', 'view_wavelet': 'Wavelet Viewer', 'regionstim': 'Region', 'analyze': '', 'local': 'Local', 'view_histogram': 'Histogram Viewer', 'view_connectivity': 'Connectivity Viewer', 'coherence': 'Coherence', 'covariance': 'Covariance', 'view_correlation': 'Correlation Viewer', 'bctdegree': 'BCT Degree', 'account': 'Register', 'crosscorr': 'Cross Correlation', 'stimulus': '', 'list': 'List', 'view_covariance': 'Covariance Viewer', 'project': '', 'bctdensity': 'BCT Density', 'burst': '', 'view_brain': 'Brain Viewer', 'view_eeg': 'TimeSeries Viewer', 'view_topography': 'Topography Viewer', 'bctcentrality': 'BCT Centrality', 'bctclustering': 'BCT Clusteing', 'ica': 'ICA', 'wavelet': 'Wavelet', 'view_pse': 'PSE Viewer', 'surfacestim': 'Surface', 'view_timeseries': 'TimeSeries Viewer', 'view_pca': 'PCA Viewer', 'connectivity': 'Large Scale', 'step': '', 'timeseries': 'TimeSeries', 'view_fourier': 'Fourier Viewer', 'data': 'Data Structure', 'properties': 'Properties', 'pipeline': 'DTI Pipeline', 'view_timeseries_mplh5': 'TimeSeries Viewer', 'figures': 'Image Archive', 'components': 'Principal Components', 'bct': 'BCT', 'login': 'Login', 'fourier': 'Fourier'}</em><a class="headerlink" href="#tvb.interfaces.web.structure.WebStructure.WEB_SUBSECTION_TITLES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="subpackages">
+<h3>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tvb.interfaces.web.controllers.html"></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tvb.interfaces.web.controllers.html#controllers-package">controllers Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.controllers.html#module-tvb.interfaces.web.controllers.basecontroller"><tt class="docutils literal"><span class="pre">basecontroller</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.controllers.html#module-tvb.interfaces.web.controllers.flowcontroller"><tt class="docutils literal"><span class="pre">flowcontroller</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.controllers.html#module-tvb.interfaces.web.controllers.settingscontroller"><tt class="docutils literal"><span class="pre">settingscontroller</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.controllers.html#module-tvb.interfaces.web.controllers.userscontroller"><tt class="docutils literal"><span class="pre">userscontroller</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.controllers.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="tvb.interfaces.web.controllers.burst.html"></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="tvb.interfaces.web.controllers.burst.html#burst-package">burst Package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="tvb.interfaces.web.controllers.burst.html#module-tvb.interfaces.web.controllers.burst.burstcontroller"><tt class="docutils literal"><span class="pre">burstcontroller</span></tt> Module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="tvb.interfaces.web.controllers.burst.html#module-tvb.interfaces.web.controllers.burst.explorationcontroller"><tt class="docutils literal"><span class="pre">explorationcontroller</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="tvb.interfaces.web.controllers.help.html"></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="tvb.interfaces.web.controllers.help.html#help-package">help Package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="tvb.interfaces.web.controllers.help.html#module-tvb.interfaces.web.controllers.help.help_config"><tt class="docutils literal"><span class="pre">help_config</span></tt> Module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="tvb.interfaces.web.controllers.help.html#module-tvb.interfaces.web.controllers.help.helpcontroller"><tt class="docutils literal"><span class="pre">helpcontroller</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="tvb.interfaces.web.controllers.project.html"></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="tvb.interfaces.web.controllers.project.html#project-package">project Package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="tvb.interfaces.web.controllers.project.html#module-tvb.interfaces.web.controllers.project.dtipipelinecontroller"><tt class="docutils literal"><span class="pre">dtipipelinecontroller</span></tt> Module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="tvb.interfaces.web.controllers.project.html#module-tvb.interfaces.web.controllers.project.figurecontroller"><tt class="docutils literal"><span class="pre">figurecontroller</span></tt> Module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="tvb.interfaces.web.controllers.project.html#module-tvb.interfaces.web.controllers.project.projectcontroller"><tt class="docutils literal"><span class="pre">projectcontroller</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="tvb.interfaces.web.controllers.spatial.html"></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="tvb.interfaces.web.controllers.spatial.html#spatial-package">spatial Package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="tvb.interfaces.web.controllers.spatial.html#module-tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller"><tt class="docutils literal"><span class="pre">base_spatiotemporalcontroller</span></tt> Module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="tvb.interfaces.web.controllers.spatial.html#module-tvb.interfaces.web.controllers.spatial.localconnectivitycontroller"><tt class="docutils literal"><span class="pre">localconnectivitycontroller</span></tt> Module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="tvb.interfaces.web.controllers.spatial.html#module-tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller"><tt class="docutils literal"><span class="pre">regionsmodelparameterscontroller</span></tt> Module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="tvb.interfaces.web.controllers.spatial.html#module-tvb.interfaces.web.controllers.spatial.regionstimuluscontroller"><tt class="docutils literal"><span class="pre">regionstimuluscontroller</span></tt> Module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="tvb.interfaces.web.controllers.spatial.html#module-tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller"><tt class="docutils literal"><span class="pre">surfacemodelparameterscontroller</span></tt> Module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="tvb.interfaces.web.controllers.spatial.html#module-tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller"><tt class="docutils literal"><span class="pre">surfacestimuluscontroller</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tvb.interfaces.web.entities.html"></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tvb.interfaces.web.entities.html#entities-package">entities Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.entities.html#module-tvb.interfaces.web.entities.context_model_parameters"><tt class="docutils literal"><span class="pre">context_model_parameters</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.entities.html#module-tvb.interfaces.web.entities.context_overlay"><tt class="docutils literal"><span class="pre">context_overlay</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.entities.html#module-tvb.interfaces.web.entities.context_selected_adapter"><tt class="docutils literal"><span class="pre">context_selected_adapter</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tvb.interfaces.web.mplh5.html"></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tvb.interfaces.web.mplh5.html#mplh5-package">mplh5 Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.mplh5.html#module-tvb.interfaces.web.mplh5.mplh5_backend"><tt class="docutils literal"><span class="pre">mplh5_backend</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.mplh5.html#module-tvb.interfaces.web.mplh5.mplh5server"><tt class="docutils literal"><span class="pre">mplh5server</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tvb.interfaces.web.templates.html"></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tvb.interfaces.web.templates.html#templates-package">templates Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.templates.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="tvb.interfaces.web.templates.genshi.html"></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="tvb.interfaces.web.templates.genshi.html#genshi-package">genshi Package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="tvb.interfaces.web.templates.genshi.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="tvb.interfaces.web.templates.genshi.flow.html"></a><ul>
+<li class="toctree-l8"><a class="reference internal" href="tvb.interfaces.web.templates.genshi.flow.html#flow-package">flow Package</a><ul>
+<li class="toctree-l9"><a class="reference internal" href="tvb.interfaces.web.templates.genshi.flow.html#subpackages">Subpackages</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l7"><a class="reference internal" href="tvb.interfaces.web.templates.genshi.visualizers.html"></a><ul>
+<li class="toctree-l8"><a class="reference internal" href="tvb.interfaces.web.templates.genshi.visualizers.html#visualizers-package">visualizers Package</a><ul>
+<li class="toctree-l9"><a class="reference internal" href="tvb.interfaces.web.templates.genshi.visualizers.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l10"><a class="reference internal" href="tvb.interfaces.web.templates.genshi.visualizers.brain.html"></a><ul>
+<li class="toctree-l11"><a class="reference internal" href="tvb.interfaces.web.templates.genshi.visualizers.brain.html#brain-package">brain Package</a></li>
+</ul>
+</li>
+<li class="toctree-l10"><a class="reference internal" href="tvb.interfaces.web.templates.genshi.visualizers.connectivity.html"></a><ul>
+<li class="toctree-l11"><a class="reference internal" href="tvb.interfaces.web.templates.genshi.visualizers.connectivity.html#connectivity-package">connectivity Package</a></li>
+</ul>
+</li>
+<li class="toctree-l10"><a class="reference internal" href="tvb.interfaces.web.templates.genshi.visualizers.eeg.html"></a><ul>
+<li class="toctree-l11"><a class="reference internal" href="tvb.interfaces.web.templates.genshi.visualizers.eeg.html#eeg-package">eeg Package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"></a><ul>
+<li><a class="reference internal" href="#web-package">web Package</a><ul>
+<li><a class="reference internal" href="#module-tvb.interfaces.web.request_handler"><tt class="docutils literal"><span class="pre">request_handler</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.interfaces.web.run"><tt class="docutils literal"><span class="pre">run</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.interfaces.web.structure"><tt class="docutils literal"><span class="pre">structure</span></tt> Module</a></li>
+<li><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tvb.interfaces.html"
+                        title="previous chapter"></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tvb.interfaces.web.controllers.html"
+                        title="next chapter"></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tvb.interfaces.web.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.interfaces.web.controllers.html" title=""
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tvb.interfaces.html" title=""
+             >previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ></a> &raquo;</li>
+          <li><a href="tvb.interfaces.html" ></a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

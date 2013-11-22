@@ -1,0 +1,406 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.datatypes.equations &mdash; The Virtual Brain 1.0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.datatypes.equations</h1><pre>
+# -*- coding: utf-8 -*-
+#
+#
+#  TheVirtualBrain-Scientific Package. This package holds all simulators, and 
+# analysers necessary to run brain-simulations. You can use it stand alone or
+# in conjunction with TheVirtualBrain-Framework Package. See content of the
+# documentation-folder for more details. See also http://www.thevirtualbrain.org
+#
+# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
+#
+# This program is free software; you can redistribute it and/or modify it under 
+# the terms of the GNU General Public License version 2 as published by the Free
+# Software Foundation. This program is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+# License for more details. You should have received a copy of the GNU General 
+# Public License along with this program; if not, you can download it here
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0
+#
+#
+
+"""
+
+The Equation datatypes. This brings together the scientific and framework 
+methods that are associated with the Equation datatypes.
+
+.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;
+
+"""
+
+import tvb.datatypes.equations_scientific as equations_scientific
+import tvb.datatypes.equations_framework as equations_framework
+from tvb.basic.logger.builder import get_logger
+
+LOG = get_logger(__name__)
+
+
+<div class="viewcode-block" id="Equation"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.Equation">[docs]</a>class Equation(equations_scientific.EquationScientific, equations_framework.EquationFramework):
+    """
+    This class brings together the scientific and framework methods that are
+    associated with the Equation dataTypes.
+    
+    ::
+        
+                           EquationData
+                                 |
+                                / \\
+               EquationFramework   EquationScientific
+                                \ /
+                                 |
+                              Equation
+        
+    
+    """
+    pass
+
+</div>
+<div class="viewcode-block" id="FiniteSupportEquation"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.FiniteSupportEquation">[docs]</a>class FiniteSupportEquation(equations_scientific.FiniteSupportEquationScientific,
+                            equations_framework.FiniteSupportEquationFramework,
+                            Equation):
+    """
+    This class brings together the scientific and framework methods that are
+    associated with the FiniteSupportEquation dataTypes.
+    
+    ::
+        
+                           FiniteSupportEquationData
+                                       |
+                                      / \\
+        FiniteSupportEquationFramework   FiniteSupportEquationScientific
+                                      \ /
+                                       |
+                              FiniteSupportEquation
+        
+    
+    """
+    pass
+</div>
+<div class="viewcode-block" id="SpatialApplicableEquation"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.SpatialApplicableEquation">[docs]</a>class SpatialApplicableEquation(Equation):
+    pass
+
+</div>
+<div class="viewcode-block" id="Discrete"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.Discrete">[docs]</a>class Discrete(equations_scientific.DiscreteScientific,
+               equations_framework.DiscreteFramework, FiniteSupportEquation):
+    """
+    This class brings together the scientific and framework methods that are
+    associated with the Discrete datatypes.
+    
+    ::
+        
+                           DiscreteData
+                                 |
+                                / \\
+               DiscreteFramework   DiscreteScientific
+                                \ /
+                                 |
+                              Discrete
+        
+    
+    """
+    pass
+
+
+#class Scaling(equations_scientific.ScalingScientific,
+#            equations_framework.ScalingFramework, Equation):
+#    """
+#    This class brings together the scientific and framework methods that are
+#    associated with the Scaling datatypes.
+#    
+#    ::
+#        
+#                            ScalingData
+#                                 |
+#                                / \\
+#                ScalingFramework   ScalingScientific
+#                                \ /
+#                                 |
+#                              Scaling
+#        
+#    
+#    """
+#    pass
+
+</div>
+<div class="viewcode-block" id="Linear"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.Linear">[docs]</a>class Linear(equations_scientific.LinearScientific,
+            equations_framework.LinearFramework, Equation):
+    """
+    This class brings together the scientific and framework methods that are
+    associated with the Linear datatypes.
+    
+    ::
+        
+                             LinearData
+                                 |
+                                / \\
+                 LinearFramework   LinearScientific
+                                \ /
+                                 |
+                               Linear
+        
+    
+    """
+    pass
+
+</div>
+<div class="viewcode-block" id="Gaussian"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.Gaussian">[docs]</a>class Gaussian(equations_scientific.GaussianScientific,
+               equations_framework.GaussianFramework, SpatialApplicableEquation, FiniteSupportEquation):
+    """
+    This class brings together the scientific and framework methods that are
+    associated with the Gaussian datatypes.
+    
+    ::
+        
+                           GaussianData
+                                 |
+                                / \\
+               GaussianFramework   GaussianScientific
+                                \ /
+                                 |
+                              Gaussian
+        
+    
+    """
+    pass
+
+</div>
+<div class="viewcode-block" id="DoubleGaussian"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.DoubleGaussian">[docs]</a>class DoubleGaussian(equations_scientific.DoubleGaussianScientific,
+               equations_framework.DoubleGaussianFramework, FiniteSupportEquation):
+    """
+    This class brings together the scientific and framework methods that are
+    associated with the DoubleGaussian datatypes.
+    
+    ::
+        
+                         DoubleGaussianData
+                                 |
+                                / \\
+         DoubleGaussianFramework   DoubleGaussianScientific
+                                \ /
+                                 |
+                            DoubleGaussian
+        
+    
+    """
+    pass
+
+</div>
+<div class="viewcode-block" id="Sigmoid"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.Sigmoid">[docs]</a>class Sigmoid(equations_scientific.SigmoidScientific,
+               equations_framework.SigmoidFramework, SpatialApplicableEquation, FiniteSupportEquation):
+    """
+    This class brings together the scientific and framework methods that are
+    associated with the Sigmoid datatypes.
+    
+    ::
+        
+                            SigmoidData
+                                 |
+                                / \\
+                SigmoidFramework   SigmoidScientific
+                                \ /
+                                 |
+                              Sigmoid
+        
+    
+    """
+    pass
+
+</div>
+<div class="viewcode-block" id="GeneralizedSigmoid"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.GeneralizedSigmoid">[docs]</a>class GeneralizedSigmoid(equations_scientific.GeneralizedSigmoidScientific,
+               equations_framework.GeneralizedSigmoidFramework, Equation):
+    """
+    This class brings together the scientific and framework methods that are
+    associated with the Generalized Sigmoid datatypes.
+    
+    ::
+        
+                            GeneralizedSigmoidData
+                                     |
+                                    / \\
+         GeneralizedSigmoidFramework   GeneralizedSigmoidScientific
+                                    \ /
+                                     |
+                            GeneralizedSigmoid
+        
+    
+    """
+    pass
+</div>
+<div class="viewcode-block" id="Sinusoid"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.Sinusoid">[docs]</a>class Sinusoid(equations_scientific.SinusoidScientific,
+               equations_framework.SinusoidFramework, Equation):
+    """
+    This class brings together the scientific and framework methods that are
+    associated with the Sinusoid datatypes.
+    
+    ::
+        
+                           SinusoidData
+                                 |
+                                / \\
+               SinusoidFramework   SinusoidScientific
+                                \ /
+                                 |
+                              Sinusoid
+        
+    
+    """
+    pass
+    
+</div>
+<div class="viewcode-block" id="Cosine"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.Cosine">[docs]</a>class Cosine(equations_scientific.CosineScientific,
+               equations_framework.CosineFramework, Equation):
+    """
+    This class brings together the scientific and framework methods that are
+    associated with the Sinusoid datatypes.
+    
+    ::
+        
+                           CosineData
+                                 |
+                                / \\
+                 CosineFramework   CosineScientific
+                                \ /
+                                 |
+                              Cosine
+        
+    
+    """
+    pass
+
+</div>
+<div class="viewcode-block" id="Alpha"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.Alpha">[docs]</a>class Alpha(equations_scientific.AlphaScientific,
+            equations_framework.AlphaFramework, Equation):
+    """
+    This class brings together the scientific and framework methods that are
+    associated with the Alpha datatypes.
+    
+    ::
+        
+                             AlphaData
+                                 |
+                                / \\
+                  AlphaFramework   AlphaScientific
+                                \ /
+                                 |
+                               Alpha
+        
+    
+    """
+    pass
+
+</div>
+<div class="viewcode-block" id="PulseTrain"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.PulseTrain">[docs]</a>class PulseTrain(equations_scientific.PulseTrainScientific,
+            equations_framework.PulseTrainFramework, Equation):
+    """
+    This class brings together the scientific and framework methods that are
+    associated with the PulseTrain datatypes.
+    
+    ::
+        
+                            PulseTrainData
+                                 |
+                                / \\
+            PulseTrainFramework    PulseScientific
+                                \ /
+                                 |
+                               Pulsetrain
+        
+    
+    """
+    pass
+</div>
+</pre>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

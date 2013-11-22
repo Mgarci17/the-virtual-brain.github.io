@@ -1,0 +1,964 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title> &mdash; The Virtual Brain 1.0.4 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="index.html" />
+    <link rel="up" title="" href="tvb.interfaces.web.html" />
+    <link rel="next" title="" href="tvb.interfaces.web.controllers.burst.html" />
+    <link rel="prev" title="" href="tvb.interfaces.web.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.interfaces.web.controllers.burst.html" title=""
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tvb.interfaces.web.html" title=""
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ></a> &raquo;</li>
+          <li><a href="tvb.interfaces.html" ></a> &raquo;</li>
+          <li><a href="tvb.interfaces.web.html" accesskey="U"></a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="logo">
+<h1><a class="reference external" href="http://www.thevirtualbrain.org"><div align="top" class="align-top"><img alt="The Virtual Brain Project" height="148" src="_images/evil_tvb_logo_transparent.svg" /></div>
+</a><a class="headerlink" href="#logo" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="controllers-package">
+<h2>controllers Package<a class="headerlink" href="#controllers-package" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-tvb.interfaces.web.controllers.basecontroller">
+<span id="basecontroller-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">basecontroller</span></tt> Module<a class="headerlink" href="#module-tvb.interfaces.web.controllers.basecontroller" title="Permalink to this headline">¶</a></h3>
+<p>The Main class in this file is initialized in web/run.py to be 
+served on the root of the Web site.</p>
+<p>This is the main UI entry point.</p>
+<dl class="class">
+<dt id="tvb.interfaces.web.controllers.basecontroller.BaseController">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.controllers.basecontroller.</tt><tt class="descname">BaseController</tt><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#BaseController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.BaseController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>This class contains the methods served at the root of the Web site.</p>
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.basecontroller.BaseController.error">
+<tt class="descname">error</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#BaseController.error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.BaseController.error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.basecontroller.BaseController.fill_default_attributes">
+<tt class="descname">fill_default_attributes</tt><big>(</big><em>template_dictionary</em>, <em>escape_db_operations=False</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#BaseController.fill_default_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.BaseController.fill_default_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill into &#8216;template_dictionary&#8217; data that we want to have ready in UI.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.basecontroller.BaseController.fill_overlay_attributes">
+<tt class="descname">fill_overlay_attributes</tt><big>(</big><em>template_dictionary</em>, <em>title</em>, <em>description</em>, <em>content_template</em>, <em>css_class</em>, <em>tabs=None</em>, <em>overlay_indexes=None</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#BaseController.fill_overlay_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.BaseController.fill_overlay_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method prepares parameters for rendering overlay (overlay.html)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>title</strong> &#8211; overlay title</li>
+<li><strong>description</strong> &#8211; overlay description</li>
+<li><strong>content_template</strong> &#8211; path&amp;name of the template file which will fill overlay content (without .html)</li>
+<li><strong>css_class</strong> &#8211; CSS class to be applied on overlay</li>
+<li><strong>tabs</strong> &#8211; list of strings containing names of the tabs</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.interfaces.web.controllers.basecontroller.BaseController.get_url_adapter">
+<em class="property">static </em><tt class="descname">get_url_adapter</tt><big>(</big><em>step_key</em>, <em>adapter_id</em>, <em>back_page=None</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#BaseController.get_url_adapter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.BaseController.get_url_adapter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the URLs for a given adapter. 
+Same URL is used both for GET and POST.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.basecontroller.BaseController.index">
+<tt class="descname">index</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#BaseController.index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.BaseController.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>/ Path response
+Redirects to /tvb</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.interfaces.web.controllers.basecontroller.BaseController.mark_file_for_delete">
+<em class="property">static </em><tt class="descname">mark_file_for_delete</tt><big>(</big><em>file_name</em>, <em>delete_parent_folder=False</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#BaseController.mark_file_for_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.BaseController.mark_file_for_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method stores provided file name in session, 
+and later on when request is done, all these files/folders
+are deleted</p>
+<p>::param file_name: name of the file or folder to be deleted   
+::param delete_parent_fodler: specify if the parent folder of the</p>
+<blockquote>
+<div>file should be removed too.</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.basecontroller.BaseController.showBlockerOverlay">
+<tt class="descname">showBlockerOverlay</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#BaseController.showBlockerOverlay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.BaseController.showBlockerOverlay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.basecontroller.BaseController.tvb">
+<tt class="descname">tvb</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#BaseController.tvb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.BaseController.tvb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.basecontroller.BaseController.update_operations_count">
+<tt class="descname">update_operations_count</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#BaseController.update_operations_count"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.BaseController.update_operations_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>If a project is selected, update Operation Numbers in call-out.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.interfaces.web.controllers.basecontroller.add2session">
+<tt class="descclassname">tvb.interfaces.web.controllers.basecontroller.</tt><tt class="descname">add2session</tt><big>(</big><em>key</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#add2session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.add2session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set in session, at a key, a value</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.interfaces.web.controllers.basecontroller.get_current_project">
+<tt class="descclassname">tvb.interfaces.web.controllers.basecontroller.</tt><tt class="descname">get_current_project</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#get_current_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.get_current_project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get current Project from session</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.interfaces.web.controllers.basecontroller.get_from_session">
+<tt class="descclassname">tvb.interfaces.web.controllers.basecontroller.</tt><tt class="descname">get_from_session</tt><big>(</big><em>attribute</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#get_from_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.get_from_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>check if something exists in session and return</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.interfaces.web.controllers.basecontroller.get_logged_user">
+<tt class="descclassname">tvb.interfaces.web.controllers.basecontroller.</tt><tt class="descname">get_logged_user</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#get_logged_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.get_logged_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get current logged User from session</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.interfaces.web.controllers.basecontroller.profile">
+<tt class="descclassname">tvb.interfaces.web.controllers.basecontroller.</tt><tt class="descname">profile</tt><big>(</big><em>template_path</em>, <em>func</em>, <em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapping function, used when profiling.
+We duplicate the code here, in a separate function, to help profiling,
+but for the runtime process we do not want a separate call, to increase time.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.interfaces.web.controllers.basecontroller.remove_from_session">
+<tt class="descclassname">tvb.interfaces.web.controllers.basecontroller.</tt><tt class="descname">remove_from_session</tt><big>(</big><em>key</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#remove_from_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.remove_from_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove from session an attributes if exists.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.interfaces.web.controllers.basecontroller.set_error_message">
+<tt class="descclassname">tvb.interfaces.web.controllers.basecontroller.</tt><tt class="descname">set_error_message</tt><big>(</big><em>msg</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#set_error_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.set_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set error message in session</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.interfaces.web.controllers.basecontroller.set_info_message">
+<tt class="descclassname">tvb.interfaces.web.controllers.basecontroller.</tt><tt class="descname">set_info_message</tt><big>(</big><em>msg</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#set_info_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.set_info_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set info message in session</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.interfaces.web.controllers.basecontroller.set_message">
+<tt class="descclassname">tvb.interfaces.web.controllers.basecontroller.</tt><tt class="descname">set_message</tt><big>(</big><em>msg</em>, <em>m_type</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#set_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.set_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set in session a message of a given type</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.interfaces.web.controllers.basecontroller.set_warning_message">
+<tt class="descclassname">tvb.interfaces.web.controllers.basecontroller.</tt><tt class="descname">set_warning_message</tt><big>(</big><em>msg</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#set_warning_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.set_warning_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set warning message in session</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.interfaces.web.controllers.basecontroller.settings">
+<tt class="descclassname">tvb.interfaces.web.controllers.basecontroller.</tt><tt class="descname">settings</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Annotation to check if a the settings file exists before allowing access
+to some parts of TVB.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.interfaces.web.controllers.basecontroller.using_template">
+<tt class="descclassname">tvb.interfaces.web.controllers.basecontroller.</tt><tt class="descname">using_template</tt><big>(</big><em>template_name</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/basecontroller.html#using_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.basecontroller.using_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Annotation to check if a user is logged before accessing a controller method.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.interfaces.web.controllers.flowcontroller">
+<span id="flowcontroller-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">flowcontroller</span></tt> Module<a class="headerlink" href="#module-tvb.interfaces.web.controllers.flowcontroller" title="Permalink to this headline">¶</a></h3>
+<p>Steps which a user needs to execute for achieving a 
+given action are described here.</p>
+<dl class="class">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.FlowController">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.controllers.flowcontroller.</tt><tt class="descname">FlowController</tt><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/flowcontroller.html#FlowController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.FlowController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.interfaces.web.controllers.basecontroller.BaseController" title="tvb.interfaces.web.controllers.basecontroller.BaseController"><tt class="xref py py-class docutils literal"><span class="pre">tvb.interfaces.web.controllers.basecontroller.BaseController</span></tt></a></p>
+<p>This class takes care of executing steps in projects.</p>
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.FlowController.NEW_SELECTION_NAME">
+<tt class="descname">NEW_SELECTION_NAME</tt><em class="property"> = 'New selection'</em><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.FlowController.NEW_SELECTION_NAME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.FlowController.accepted__aggregation_functions">
+<em class="property">static </em><tt class="descname">accepted__aggregation_functions</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/flowcontroller.html#FlowController.accepted__aggregation_functions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.FlowController.accepted__aggregation_functions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of aggregation functions that may be
+applied on arrays.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.FlowController.default">
+<tt class="descname">default</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/flowcontroller.html#FlowController.default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.FlowController.default" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.FlowController.execute_post">
+<tt class="descname">execute_post</tt><big>(</big><em>project_id</em>, <em>submit_url</em>, <em>success_url</em>, <em>step_key</em>, <em>algo_group</em>, <em>method_name=None</em>, <em>**data</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/flowcontroller.html#FlowController.execute_post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.FlowController.execute_post" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute HTTP POST on a generic step.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.FlowController.fill_default_attributes">
+<tt class="descname">fill_default_attributes</tt><big>(</big><em>template_dictionary</em>, <em>algo_group=None</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/flowcontroller.html#FlowController.fill_default_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.FlowController.fill_default_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrite base controller to add required parameters for adapter templates.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.FlowController.get_adapter_template">
+<tt class="descname">get_adapter_template</tt><big>(</big><em>project_id</em>, <em>algo_group_id</em>, <em>is_upload=False</em>, <em>back_page=None</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/flowcontroller.html#FlowController.get_adapter_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.FlowController.get_adapter_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the template for an adapter based on the algo group id.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.FlowController.get_available_selections">
+<tt class="descname">get_available_selections</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/flowcontroller.html#FlowController.get_available_selections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.FlowController.get_available_selections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.FlowController.get_simple_adapter_interface">
+<tt class="descname">get_simple_adapter_interface</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/flowcontroller.html#FlowController.get_simple_adapter_interface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.FlowController.get_simple_adapter_interface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.FlowController.get_template_for_adapter">
+<tt class="descname">get_template_for_adapter</tt><big>(</big><em>project_id</em>, <em>step_key</em>, <em>algo_group</em>, <em>submit_url</em>, <em>session_reset=True</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/flowcontroller.html#FlowController.get_template_for_adapter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.FlowController.get_template_for_adapter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Input HTML Interface template or a given adapter</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.FlowController.getadapterinterface">
+<tt class="descname">getadapterinterface</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/flowcontroller.html#FlowController.getadapterinterface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.FlowController.getadapterinterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.FlowController.getfiltereddatatypes">
+<tt class="descname">getfiltereddatatypes</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/flowcontroller.html#FlowController.getfiltereddatatypes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.FlowController.getfiltereddatatypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.FlowController.gettemplatefordimensionselect">
+<tt class="descname">gettemplatefordimensionselect</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/flowcontroller.html#FlowController.gettemplatefordimensionselect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.FlowController.gettemplatefordimensionselect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.FlowController.invokeadaptermethod">
+<tt class="descname">invokeadaptermethod</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/flowcontroller.html#FlowController.invokeadaptermethod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.FlowController.invokeadaptermethod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.FlowController.read_datatype_attribute">
+<tt class="descname">read_datatype_attribute</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/flowcontroller.html#FlowController.read_datatype_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.FlowController.read_datatype_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.FlowController.readserverstaticfile">
+<tt class="descname">readserverstaticfile</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/flowcontroller.html#FlowController.readserverstaticfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.FlowController.readserverstaticfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.FlowController.reloadoperation">
+<tt class="descname">reloadoperation</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/flowcontroller.html#FlowController.reloadoperation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.FlowController.reloadoperation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.FlowController.step">
+<tt class="descname">step</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/flowcontroller.html#FlowController.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.FlowController.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.FlowController.step_connectivity">
+<tt class="descname">step_connectivity</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/flowcontroller.html#FlowController.step_connectivity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.FlowController.step_connectivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.FlowController.stop_operation">
+<tt class="descname">stop_operation</tt><big>(</big><em>operation_id</em>, <em>is_group</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/flowcontroller.html#FlowController.stop_operation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.FlowController.stop_operation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the operation given by operation_id. If is_group is true stop all the
+operations from that group.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.FlowController.store_connectivity_selection">
+<tt class="descname">store_connectivity_selection</tt><big>(</big><em>ui_name</em>, <em>**data</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/flowcontroller.html#FlowController.store_connectivity_selection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.FlowController.store_connectivity_selection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the passed connectivity selection. Since cherryPy/Ajax seems to 
+have problems when passing arrays, the data is passed as a string 
+that needs to be split.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.interfaces.web.controllers.flowcontroller.context_selected">
+<tt class="descclassname">tvb.interfaces.web.controllers.flowcontroller.</tt><tt class="descname">context_selected</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/flowcontroller.html#context_selected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.flowcontroller.context_selected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Annotation to check if a project is currently selected.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.interfaces.web.controllers.settingscontroller">
+<span id="settingscontroller-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">settingscontroller</span></tt> Module<a class="headerlink" href="#module-tvb.interfaces.web.controllers.settingscontroller" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="tvb.interfaces.web.controllers.settingscontroller.DiskSpaceValidator">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.controllers.settingscontroller.</tt><tt class="descname">DiskSpaceValidator</tt><big>(</big><em>*args</em>, <em>**kw</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/settingscontroller.html#DiskSpaceValidator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.settingscontroller.DiskSpaceValidator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">formencode.api.FancyValidator</span></tt></p>
+<p>Custom validator for TVB disk space / user.</p>
+<p><strong>Messages</strong></p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">badType</span></tt>:</dt>
+<dd>The input must be a string (not a <tt class="docutils literal"><span class="pre">%(type)s</span></tt>: <tt class="docutils literal"><span class="pre">%(value)r</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">empty</span></tt>:</dt>
+<dd>Please enter a value</dd>
+<dt><tt class="docutils literal"><span class="pre">noneType</span></tt>:</dt>
+<dd>The input must be a string (not None)</dd>
+</dl>
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.settingscontroller.DiskSpaceValidator.declarative_count">
+<tt class="descname">declarative_count</tt><em class="property"> = 109</em><a class="headerlink" href="#tvb.interfaces.web.controllers.settingscontroller.DiskSpaceValidator.declarative_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.interfaces.web.controllers.settingscontroller.MatlabValidator">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.controllers.settingscontroller.</tt><tt class="descname">MatlabValidator</tt><big>(</big><em>*args</em>, <em>**kw</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/settingscontroller.html#MatlabValidator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.settingscontroller.MatlabValidator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">formencode.api.FancyValidator</span></tt></p>
+<p>Custom validator for the number of vertices allowed for a surface</p>
+<p><strong>Messages</strong></p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">badType</span></tt>:</dt>
+<dd>The input must be a string (not a <tt class="docutils literal"><span class="pre">%(type)s</span></tt>: <tt class="docutils literal"><span class="pre">%(value)r</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">empty</span></tt>:</dt>
+<dd>Please enter a value</dd>
+<dt><tt class="docutils literal"><span class="pre">noneType</span></tt>:</dt>
+<dd>The input must be a string (not None)</dd>
+</dl>
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.settingscontroller.MatlabValidator.declarative_count">
+<tt class="descname">declarative_count</tt><em class="property"> = 113</em><a class="headerlink" href="#tvb.interfaces.web.controllers.settingscontroller.MatlabValidator.declarative_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.interfaces.web.controllers.settingscontroller.PortValidator">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.controllers.settingscontroller.</tt><tt class="descname">PortValidator</tt><big>(</big><em>*args</em>, <em>**kw</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/settingscontroller.html#PortValidator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.settingscontroller.PortValidator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">formencode.api.FancyValidator</span></tt></p>
+<p>Custom validator for OS Port number.</p>
+<p><strong>Messages</strong></p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">badType</span></tt>:</dt>
+<dd>The input must be a string (not a <tt class="docutils literal"><span class="pre">%(type)s</span></tt>: <tt class="docutils literal"><span class="pre">%(value)r</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">empty</span></tt>:</dt>
+<dd>Please enter a value</dd>
+<dt><tt class="docutils literal"><span class="pre">noneType</span></tt>:</dt>
+<dd>The input must be a string (not None)</dd>
+</dl>
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.settingscontroller.PortValidator.declarative_count">
+<tt class="descname">declarative_count</tt><em class="property"> = 110</em><a class="headerlink" href="#tvb.interfaces.web.controllers.settingscontroller.PortValidator.declarative_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.interfaces.web.controllers.settingscontroller.SettingsController">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.controllers.settingscontroller.</tt><tt class="descname">SettingsController</tt><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/settingscontroller.html#SettingsController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.settingscontroller.SettingsController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.interfaces.web.controllers.userscontroller.UserController" title="tvb.interfaces.web.controllers.userscontroller.UserController"><tt class="xref py py-class docutils literal"><span class="pre">tvb.interfaces.web.controllers.userscontroller.UserController</span></tt></a></p>
+<p>Controller for TVB-Settings web page.
+Inherit from UserController, to have the same fill_default_attributes method (with versionInfo).</p>
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.settingscontroller.SettingsController.check_db_url">
+<tt class="descname">check_db_url</tt><big>(</big><em>**data</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/settingscontroller.html#SettingsController.check_db_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.settingscontroller.SettingsController.check_db_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Action on DB-URL validate button.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.settingscontroller.SettingsController.settings">
+<tt class="descname">settings</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/settingscontroller.html#SettingsController.settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.settingscontroller.SettingsController.settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.settingscontroller.SettingsController.validate_matlab_path">
+<tt class="descname">validate_matlab_path</tt><big>(</big><em>**data</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/settingscontroller.html#SettingsController.validate_matlab_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.settingscontroller.SettingsController.validate_matlab_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the set path from the ui actually corresponds to a matlab executable.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.interfaces.web.controllers.settingscontroller.SettingsForm">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.controllers.settingscontroller.</tt><tt class="descname">SettingsForm</tt><big>(</big><em>*args</em>, <em>**kw</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/settingscontroller.html#SettingsForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.settingscontroller.SettingsForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">formencode.schema.Schema</span></tt></p>
+<p>Validate Settings Page inputs.</p>
+<p><strong>Messages</strong></p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">badDictType</span></tt>:</dt>
+<dd>The input must be dict-like (not a <tt class="docutils literal"><span class="pre">%(type)s</span></tt>: <tt class="docutils literal"><span class="pre">%(value)r</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">badType</span></tt>:</dt>
+<dd>The input must be a string (not a <tt class="docutils literal"><span class="pre">%(type)s</span></tt>: <tt class="docutils literal"><span class="pre">%(value)r</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">empty</span></tt>:</dt>
+<dd>Please enter a value</dd>
+<dt><tt class="docutils literal"><span class="pre">missingValue</span></tt>:</dt>
+<dd>Missing value</dd>
+<dt><tt class="docutils literal"><span class="pre">noneType</span></tt>:</dt>
+<dd>The input must be a string (not None)</dd>
+<dt><tt class="docutils literal"><span class="pre">notExpected</span></tt>:</dt>
+<dd>The input field <tt class="docutils literal"><span class="pre">%(name)s</span></tt> was not expected.</dd>
+</dl>
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.settingscontroller.SettingsForm.chained_validators">
+<tt class="descname">chained_validators</tt><em class="property"> = []</em><a class="headerlink" href="#tvb.interfaces.web.controllers.settingscontroller.SettingsForm.chained_validators" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.settingscontroller.SettingsForm.declarative_count">
+<tt class="descname">declarative_count</tt><em class="property"> = 131</em><a class="headerlink" href="#tvb.interfaces.web.controllers.settingscontroller.SettingsForm.declarative_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.settingscontroller.SettingsForm.fields">
+<tt class="descname">fields</tt><em class="property"> = {'MAXIMUM_NR_OF_OPS_IN_RANGE': &lt;Int object 129 max=5000 min=5 not_empty=True&gt;, 'USR_DISK_SPACE': &lt;DiskSpaceValidator object 120&gt;, 'ADMINISTRATOR_EMAIL': &lt;Email object 118 not_empty=True&gt;, 'MATLAB_EXECUTABLE': &lt;MatlabValidator object 121&gt;, 'MAXIMUM_NR_OF_THREADS': &lt;ThreadNrValidator object 127&gt;, 'WEB_SERVER_PORT': &lt;PortValidator object 125&gt;, 'DEPLOY_CLUSTER': &lt;Bool object 130&gt;, 'ADMINISTRATOR_NAME': &lt;All [&lt;UnicodeString object 114 inputEncoding='utf-8' not_empty=True outputEncoding='utf-8'&gt;, &lt;PlainText object 115 regex=&lt;_sre.SRE_Pattern object at 0x1415c2f0&gt;&gt;]&gt;, 'SERVER_IP': &lt;UnicodeString object 124 inputEncoding='utf-8' not_empty=True outputEncoding='utf-8'&gt;, 'URL_VALUE': &lt;UnicodeString object 123 inputEncoding='utf-8' not_empty=True outputEncoding='utf-8'&gt;, 'ADMINISTRATOR_PASSWORD': &lt;UnicodeString object 117 inputEncoding='utf-8' not_empty=True outputEncoding='utf-8'&gt;, 'SELECTED_DB': &lt;UnicodeString object 122 inputEncoding='utf-8' not_empty=True outputEncoding='utf-8'&gt;, 'MAXIMUM_NR_OF_VERTICES_ON_SURFACE': &lt;SurfaceVerticesNrValidator object 128&gt;, 'MPLH5_SERVER_PORT': &lt;PortValidator object 126&gt;, 'TVB_STORAGE': &lt;UnicodeString object 119 inputEncoding='utf-8' not_empty=True outputEncoding='utf-8'&gt;}</em><a class="headerlink" href="#tvb.interfaces.web.controllers.settingscontroller.SettingsForm.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.settingscontroller.SettingsForm.pre_validators">
+<tt class="descname">pre_validators</tt><em class="property"> = []</em><a class="headerlink" href="#tvb.interfaces.web.controllers.settingscontroller.SettingsForm.pre_validators" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.interfaces.web.controllers.settingscontroller.SurfaceVerticesNrValidator">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.controllers.settingscontroller.</tt><tt class="descname">SurfaceVerticesNrValidator</tt><big>(</big><em>*args</em>, <em>**kw</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/settingscontroller.html#SurfaceVerticesNrValidator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.settingscontroller.SurfaceVerticesNrValidator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">formencode.api.FancyValidator</span></tt></p>
+<p>Custom validator for the number of vertices allowed for a surface</p>
+<p><strong>Messages</strong></p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">badType</span></tt>:</dt>
+<dd>The input must be a string (not a <tt class="docutils literal"><span class="pre">%(type)s</span></tt>: <tt class="docutils literal"><span class="pre">%(value)r</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">empty</span></tt>:</dt>
+<dd>Please enter a value</dd>
+<dt><tt class="docutils literal"><span class="pre">noneType</span></tt>:</dt>
+<dd>The input must be a string (not None)</dd>
+</dl>
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.settingscontroller.SurfaceVerticesNrValidator.MAX_VALUE">
+<tt class="descname">MAX_VALUE</tt><em class="property"> = 16777217</em><a class="headerlink" href="#tvb.interfaces.web.controllers.settingscontroller.SurfaceVerticesNrValidator.MAX_VALUE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.settingscontroller.SurfaceVerticesNrValidator.declarative_count">
+<tt class="descname">declarative_count</tt><em class="property"> = 112</em><a class="headerlink" href="#tvb.interfaces.web.controllers.settingscontroller.SurfaceVerticesNrValidator.declarative_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.interfaces.web.controllers.settingscontroller.ThreadNrValidator">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.controllers.settingscontroller.</tt><tt class="descname">ThreadNrValidator</tt><big>(</big><em>*args</em>, <em>**kw</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/settingscontroller.html#ThreadNrValidator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.settingscontroller.ThreadNrValidator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">formencode.api.FancyValidator</span></tt></p>
+<p>Custom validator number of threads.</p>
+<p><strong>Messages</strong></p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">badType</span></tt>:</dt>
+<dd>The input must be a string (not a <tt class="docutils literal"><span class="pre">%(type)s</span></tt>: <tt class="docutils literal"><span class="pre">%(value)r</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">empty</span></tt>:</dt>
+<dd>Please enter a value</dd>
+<dt><tt class="docutils literal"><span class="pre">noneType</span></tt>:</dt>
+<dd>The input must be a string (not None)</dd>
+</dl>
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.settingscontroller.ThreadNrValidator.declarative_count">
+<tt class="descname">declarative_count</tt><em class="property"> = 111</em><a class="headerlink" href="#tvb.interfaces.web.controllers.settingscontroller.ThreadNrValidator.declarative_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.interfaces.web.controllers.userscontroller">
+<span id="userscontroller-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">userscontroller</span></tt> Module<a class="headerlink" href="#module-tvb.interfaces.web.controllers.userscontroller" title="Permalink to this headline">¶</a></h3>
+<p>Here, user related tasks are described.
+Basic authentication processes are described here, 
+but also user related annotation (checked-logged).</p>
+<dl class="class">
+<dt id="tvb.interfaces.web.controllers.userscontroller.EditUserForm">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.controllers.userscontroller.</tt><tt class="descname">EditUserForm</tt><big>(</big><em>*args</em>, <em>**kw</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/userscontroller.html#EditUserForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.EditUserForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">formencode.schema.Schema</span></tt></p>
+<p>Validate fields on user-edit</p>
+<p><strong>Messages</strong></p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">badDictType</span></tt>:</dt>
+<dd>The input must be dict-like (not a <tt class="docutils literal"><span class="pre">%(type)s</span></tt>: <tt class="docutils literal"><span class="pre">%(value)r</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">badType</span></tt>:</dt>
+<dd>The input must be a string (not a <tt class="docutils literal"><span class="pre">%(type)s</span></tt>: <tt class="docutils literal"><span class="pre">%(value)r</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">empty</span></tt>:</dt>
+<dd>Please enter a value</dd>
+<dt><tt class="docutils literal"><span class="pre">missingValue</span></tt>:</dt>
+<dd>Missing value</dd>
+<dt><tt class="docutils literal"><span class="pre">noneType</span></tt>:</dt>
+<dd>The input must be a string (not None)</dd>
+<dt><tt class="docutils literal"><span class="pre">notExpected</span></tt>:</dt>
+<dd>The input field <tt class="docutils literal"><span class="pre">%(name)s</span></tt> was not expected.</dd>
+</dl>
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.userscontroller.EditUserForm.chained_validators">
+<tt class="descname">chained_validators</tt><em class="property"> = [&lt;FieldsMatch object 77 field_names=('password', 'password2')&gt;, &lt;RequireIfMissing object 78 present='old_password' required='password'&gt;]</em><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.EditUserForm.chained_validators" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.userscontroller.EditUserForm.declarative_count">
+<tt class="descname">declarative_count</tt><em class="property"> = 79</em><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.EditUserForm.declarative_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.userscontroller.EditUserForm.fields">
+<tt class="descname">fields</tt><em class="property"> = {'password2': &lt;UnicodeString object 75 if_missing=None inputEncoding='utf-8' outputEncoding='utf-8'&gt;, 'password': &lt;UnicodeString object 74 if_missing=None inputEncoding='utf-8' outputEncoding='utf-8'&gt;, 'old_password': &lt;UnicodeString object 73 if_missing=None inputEncoding='utf-8' outputEncoding='utf-8'&gt;, 'email': &lt;Email object 76 if_missing=None&gt;}</em><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.EditUserForm.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.userscontroller.EditUserForm.pre_validators">
+<tt class="descname">pre_validators</tt><em class="property"> = []</em><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.EditUserForm.pre_validators" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.interfaces.web.controllers.userscontroller.LoginForm">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.controllers.userscontroller.</tt><tt class="descname">LoginForm</tt><big>(</big><em>*args</em>, <em>**kw</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/userscontroller.html#LoginForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.LoginForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">formencode.schema.Schema</span></tt></p>
+<p>Validate for Login UI Form</p>
+<p><strong>Messages</strong></p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">badDictType</span></tt>:</dt>
+<dd>The input must be dict-like (not a <tt class="docutils literal"><span class="pre">%(type)s</span></tt>: <tt class="docutils literal"><span class="pre">%(value)r</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">badType</span></tt>:</dt>
+<dd>The input must be a string (not a <tt class="docutils literal"><span class="pre">%(type)s</span></tt>: <tt class="docutils literal"><span class="pre">%(value)r</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">empty</span></tt>:</dt>
+<dd>Please enter a value</dd>
+<dt><tt class="docutils literal"><span class="pre">missingValue</span></tt>:</dt>
+<dd>Missing value</dd>
+<dt><tt class="docutils literal"><span class="pre">noneType</span></tt>:</dt>
+<dd>The input must be a string (not None)</dd>
+<dt><tt class="docutils literal"><span class="pre">notExpected</span></tt>:</dt>
+<dd>The input field <tt class="docutils literal"><span class="pre">%(name)s</span></tt> was not expected.</dd>
+</dl>
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.userscontroller.LoginForm.chained_validators">
+<tt class="descname">chained_validators</tt><em class="property"> = []</em><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.LoginForm.chained_validators" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.userscontroller.LoginForm.declarative_count">
+<tt class="descname">declarative_count</tt><em class="property"> = 55</em><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.LoginForm.declarative_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.userscontroller.LoginForm.empty_msg">
+<tt class="descname">empty_msg</tt><em class="property"> = 'Please enter a value'</em><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.LoginForm.empty_msg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.userscontroller.LoginForm.fields">
+<tt class="descname">fields</tt><em class="property"> = {'username': &lt;UnicodeString object 53 inputEncoding='utf-8' not_empty=True outputEncoding='utf-8' use_builtins_gettext=False&gt;, 'password': &lt;UnicodeString object 54 inputEncoding='utf-8' not_empty=True outputEncoding='utf-8' use_builtins_gettext=False&gt;}</em><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.LoginForm.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.userscontroller.LoginForm.pre_validators">
+<tt class="descname">pre_validators</tt><em class="property"> = []</em><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.LoginForm.pre_validators" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.interfaces.web.controllers.userscontroller.RecoveryForm">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.controllers.userscontroller.</tt><tt class="descname">RecoveryForm</tt><big>(</big><em>*args</em>, <em>**kw</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/userscontroller.html#RecoveryForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.RecoveryForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">formencode.schema.Schema</span></tt></p>
+<p>Validate Recover Password Form</p>
+<p><strong>Messages</strong></p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">badDictType</span></tt>:</dt>
+<dd>The input must be dict-like (not a <tt class="docutils literal"><span class="pre">%(type)s</span></tt>: <tt class="docutils literal"><span class="pre">%(value)r</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">badType</span></tt>:</dt>
+<dd>The input must be a string (not a <tt class="docutils literal"><span class="pre">%(type)s</span></tt>: <tt class="docutils literal"><span class="pre">%(value)r</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">empty</span></tt>:</dt>
+<dd>Please enter a value</dd>
+<dt><tt class="docutils literal"><span class="pre">missingValue</span></tt>:</dt>
+<dd>Missing value</dd>
+<dt><tt class="docutils literal"><span class="pre">noneType</span></tt>:</dt>
+<dd>The input must be a string (not None)</dd>
+<dt><tt class="docutils literal"><span class="pre">notExpected</span></tt>:</dt>
+<dd>The input field <tt class="docutils literal"><span class="pre">%(name)s</span></tt> was not expected.</dd>
+</dl>
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.userscontroller.RecoveryForm.chained_validators">
+<tt class="descname">chained_validators</tt><em class="property"> = []</em><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.RecoveryForm.chained_validators" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.userscontroller.RecoveryForm.declarative_count">
+<tt class="descname">declarative_count</tt><em class="property"> = 72</em><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.RecoveryForm.declarative_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.userscontroller.RecoveryForm.fields">
+<tt class="descname">fields</tt><em class="property"> = {'username': &lt;All [&lt;UnicodeString object 68 inputEncoding='utf-8' not_empty=True outputEncoding='utf-8'&gt;, &lt;PlainText object 69 regex=&lt;_sre.SRE_Pattern object at 0x1415c2f0&gt;&gt;]&gt;, 'email': &lt;Email object 71 not_empty=True&gt;}</em><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.RecoveryForm.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.userscontroller.RecoveryForm.pre_validators">
+<tt class="descname">pre_validators</tt><em class="property"> = []</em><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.RecoveryForm.pre_validators" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.interfaces.web.controllers.userscontroller.RegisterForm">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.controllers.userscontroller.</tt><tt class="descname">RegisterForm</tt><big>(</big><em>*args</em>, <em>**kw</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/userscontroller.html#RegisterForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.RegisterForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">formencode.schema.Schema</span></tt></p>
+<p>Validate Register Form</p>
+<p><strong>Messages</strong></p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">badDictType</span></tt>:</dt>
+<dd>The input must be dict-like (not a <tt class="docutils literal"><span class="pre">%(type)s</span></tt>: <tt class="docutils literal"><span class="pre">%(value)r</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">badType</span></tt>:</dt>
+<dd>The input must be a string (not a <tt class="docutils literal"><span class="pre">%(type)s</span></tt>: <tt class="docutils literal"><span class="pre">%(value)r</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">empty</span></tt>:</dt>
+<dd>Please enter a value</dd>
+<dt><tt class="docutils literal"><span class="pre">missingValue</span></tt>:</dt>
+<dd>Missing value</dd>
+<dt><tt class="docutils literal"><span class="pre">noneType</span></tt>:</dt>
+<dd>The input must be a string (not None)</dd>
+<dt><tt class="docutils literal"><span class="pre">notExpected</span></tt>:</dt>
+<dd>The input field <tt class="docutils literal"><span class="pre">%(name)s</span></tt> was not expected.</dd>
+</dl>
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.userscontroller.RegisterForm.chained_validators">
+<tt class="descname">chained_validators</tt><em class="property"> = [&lt;FieldsMatch object 66 field_names=('password', 'password2')&gt;]</em><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.RegisterForm.chained_validators" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.userscontroller.RegisterForm.declarative_count">
+<tt class="descname">declarative_count</tt><em class="property"> = 67</em><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.RegisterForm.declarative_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.userscontroller.RegisterForm.fields">
+<tt class="descname">fields</tt><em class="property"> = {'username': &lt;All [&lt;UnicodeString object 57 inputEncoding='utf-8' not_empty=True outputEncoding='utf-8'&gt;, &lt;PlainText object 58 regex=&lt;_sre.SRE_Pattern object at 0x1415c2f0&gt;&gt;, &lt;UniqueUsername object 59&gt;]&gt;, 'comment': &lt;UnicodeString object 64 inputEncoding='utf-8' outputEncoding='utf-8'&gt;, 'password2': &lt;UnicodeString object 62 inputEncoding='utf-8' not_empty=True outputEncoding='utf-8'&gt;, 'role': &lt;UnicodeString object 65 inputEncoding='utf-8' outputEncoding='utf-8'&gt;, 'password': &lt;UnicodeString object 61 inputEncoding='utf-8' not_empty=True outputEncoding='utf-8'&gt;, 'email': &lt;Email object 63 not_empty=True&gt;}</em><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.RegisterForm.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.userscontroller.RegisterForm.pre_validators">
+<tt class="descname">pre_validators</tt><em class="property"> = []</em><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.RegisterForm.pre_validators" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.interfaces.web.controllers.userscontroller.UniqueUsername">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.controllers.userscontroller.</tt><tt class="descname">UniqueUsername</tt><big>(</big><em>*args</em>, <em>**kw</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/userscontroller.html#UniqueUsername"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.UniqueUsername" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">formencode.api.FancyValidator</span></tt></p>
+<p>Custom validator to check that a given user-name is unique.</p>
+<p><strong>Messages</strong></p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">badType</span></tt>:</dt>
+<dd>The input must be a string (not a <tt class="docutils literal"><span class="pre">%(type)s</span></tt>: <tt class="docutils literal"><span class="pre">%(value)r</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">empty</span></tt>:</dt>
+<dd>Please enter a value</dd>
+<dt><tt class="docutils literal"><span class="pre">noneType</span></tt>:</dt>
+<dd>The input must be a string (not None)</dd>
+</dl>
+<dl class="attribute">
+<dt id="tvb.interfaces.web.controllers.userscontroller.UniqueUsername.declarative_count">
+<tt class="descname">declarative_count</tt><em class="property"> = 56</em><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.UniqueUsername.declarative_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.interfaces.web.controllers.userscontroller.UserController">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.controllers.userscontroller.</tt><tt class="descname">UserController</tt><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/userscontroller.html#UserController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.UserController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.interfaces.web.controllers.basecontroller.BaseController" title="tvb.interfaces.web.controllers.basecontroller.BaseController"><tt class="xref py py-class docutils literal"><span class="pre">tvb.interfaces.web.controllers.basecontroller.BaseController</span></tt></a></p>
+<p>This class takes care of the user authentication and/or register.</p>
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.userscontroller.UserController.create_new">
+<tt class="descname">create_new</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/userscontroller.html#UserController.create_new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.UserController.create_new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.userscontroller.UserController.fill_default_attributes">
+<tt class="descname">fill_default_attributes</tt><big>(</big><em>template_dictionary</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/userscontroller.html#UserController.fill_default_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.UserController.fill_default_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill into &#8216;template_dictionary&#8217; data that we want to have ready in UI.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.userscontroller.UserController.index">
+<tt class="descname">index</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/userscontroller.html#UserController.index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.UserController.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.userscontroller.UserController.logout">
+<tt class="descname">logout</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/userscontroller.html#UserController.logout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.UserController.logout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.userscontroller.UserController.profile">
+<tt class="descname">profile</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/userscontroller.html#UserController.profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.UserController.profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.userscontroller.UserController.recoverpassword">
+<tt class="descname">recoverpassword</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/userscontroller.html#UserController.recoverpassword"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.UserController.recoverpassword" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.userscontroller.UserController.register">
+<tt class="descname">register</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/userscontroller.html#UserController.register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.UserController.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.userscontroller.UserController.switchOnlineHelp">
+<tt class="descname">switchOnlineHelp</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/userscontroller.html#UserController.switchOnlineHelp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.UserController.switchOnlineHelp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.userscontroller.UserController.upgrade_file_storage">
+<tt class="descname">upgrade_file_storage</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/userscontroller.html#UserController.upgrade_file_storage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.UserController.upgrade_file_storage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upgrade the file storage to the latest version if needed.
+Otherwise just return. This is called on user login.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.userscontroller.UserController.usermanagement">
+<tt class="descname">usermanagement</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/userscontroller.html#UserController.usermanagement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.UserController.usermanagement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to get the docstring back</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.controllers.userscontroller.UserController.validate">
+<tt class="descname">validate</tt><big>(</big><em>*a</em>, <em>**b</em><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/userscontroller.html#UserController.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.UserController.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator for public method</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.interfaces.web.controllers.userscontroller.admin">
+<tt class="descclassname">tvb.interfaces.web.controllers.userscontroller.</tt><tt class="descname">admin</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/userscontroller.html#admin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.admin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Annotation to check if a user is administrator before accessing a controller method</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.interfaces.web.controllers.userscontroller.logged">
+<tt class="descclassname">tvb.interfaces.web.controllers.userscontroller.</tt><tt class="descname">logged</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/interfaces/web/controllers/userscontroller.html#logged"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.interfaces.web.controllers.userscontroller.logged" title="Permalink to this definition">¶</a></dt>
+<dd><p>Annotation to check if a user is logged before accessing a controller method.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="subpackages">
+<h3>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tvb.interfaces.web.controllers.burst.html"></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tvb.interfaces.web.controllers.burst.html#burst-package">burst Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.controllers.burst.html#module-tvb.interfaces.web.controllers.burst.burstcontroller"><tt class="docutils literal"><span class="pre">burstcontroller</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.controllers.burst.html#module-tvb.interfaces.web.controllers.burst.explorationcontroller"><tt class="docutils literal"><span class="pre">explorationcontroller</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tvb.interfaces.web.controllers.help.html"></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tvb.interfaces.web.controllers.help.html#help-package">help Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.controllers.help.html#module-tvb.interfaces.web.controllers.help.help_config"><tt class="docutils literal"><span class="pre">help_config</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.controllers.help.html#module-tvb.interfaces.web.controllers.help.helpcontroller"><tt class="docutils literal"><span class="pre">helpcontroller</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tvb.interfaces.web.controllers.project.html"></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tvb.interfaces.web.controllers.project.html#project-package">project Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.controllers.project.html#module-tvb.interfaces.web.controllers.project.dtipipelinecontroller"><tt class="docutils literal"><span class="pre">dtipipelinecontroller</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.controllers.project.html#module-tvb.interfaces.web.controllers.project.figurecontroller"><tt class="docutils literal"><span class="pre">figurecontroller</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.controllers.project.html#module-tvb.interfaces.web.controllers.project.projectcontroller"><tt class="docutils literal"><span class="pre">projectcontroller</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tvb.interfaces.web.controllers.spatial.html"></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tvb.interfaces.web.controllers.spatial.html#spatial-package">spatial Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.controllers.spatial.html#module-tvb.interfaces.web.controllers.spatial.base_spatiotemporalcontroller"><tt class="docutils literal"><span class="pre">base_spatiotemporalcontroller</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.controllers.spatial.html#module-tvb.interfaces.web.controllers.spatial.localconnectivitycontroller"><tt class="docutils literal"><span class="pre">localconnectivitycontroller</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.controllers.spatial.html#module-tvb.interfaces.web.controllers.spatial.regionsmodelparameterscontroller"><tt class="docutils literal"><span class="pre">regionsmodelparameterscontroller</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.controllers.spatial.html#module-tvb.interfaces.web.controllers.spatial.regionstimuluscontroller"><tt class="docutils literal"><span class="pre">regionstimuluscontroller</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.controllers.spatial.html#module-tvb.interfaces.web.controllers.spatial.surfacemodelparameterscontroller"><tt class="docutils literal"><span class="pre">surfacemodelparameterscontroller</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tvb.interfaces.web.controllers.spatial.html#module-tvb.interfaces.web.controllers.spatial.surfacestimuluscontroller"><tt class="docutils literal"><span class="pre">surfacestimuluscontroller</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"></a><ul>
+<li><a class="reference internal" href="#controllers-package">controllers Package</a><ul>
+<li><a class="reference internal" href="#module-tvb.interfaces.web.controllers.basecontroller"><tt class="docutils literal"><span class="pre">basecontroller</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.interfaces.web.controllers.flowcontroller"><tt class="docutils literal"><span class="pre">flowcontroller</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.interfaces.web.controllers.settingscontroller"><tt class="docutils literal"><span class="pre">settingscontroller</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.interfaces.web.controllers.userscontroller"><tt class="docutils literal"><span class="pre">userscontroller</span></tt> Module</a></li>
+<li><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tvb.interfaces.web.html"
+                        title="previous chapter"></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tvb.interfaces.web.controllers.burst.html"
+                        title="next chapter"></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tvb.interfaces.web.controllers.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.interfaces.web.controllers.burst.html" title=""
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tvb.interfaces.web.html" title=""
+             >previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ></a> &raquo;</li>
+          <li><a href="tvb.interfaces.html" ></a> &raquo;</li>
+          <li><a href="tvb.interfaces.web.html" ></a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

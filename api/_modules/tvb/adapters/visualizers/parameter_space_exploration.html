@@ -1,0 +1,225 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.adapters.visualizers.parameter_space_exploration &mdash; The Virtual Brain 1.0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.adapters.visualizers.parameter_space_exploration</h1><pre>
+# -*- coding: utf-8 -*-
+#
+#
+# TheVirtualBrain-Framework Package. This package holds all Data Management, and 
+# Web-UI helpful to run brain-simulations. To use it, you also need do download
+# TheVirtualBrain-Scientific Package (for simulators). See content of the
+# documentation-folder for more details. See also http://www.thevirtualbrain.org
+#
+# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
+#
+# This program is free software; you can redistribute it and/or modify it under 
+# the terms of the GNU General Public License version 2 as published by the Free
+# Software Foundation. This program is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+# License for more details. You should have received a copy of the GNU General 
+# Public License along with this program; if not, you can download it here
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0
+#
+#
+
+"""
+.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;
+.. moduleauthor:: Ionel Ortelecan &lt;ionel.ortelecan@codemart.ro&gt;
+.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;
+"""
+
+import json
+from tvb.core.entities import model
+from tvb.core.entities.storage import dao
+from tvb.core.entities.transient.pse import ContextPSE
+from tvb.core.adapters.abcdisplayer import ABCDisplayer
+from tvb.datatypes.mapped_values import DatatypeMeasure
+
+
+<div class="viewcode-block" id="ParameterExplorationAdapter"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.parameter_space_exploration.ParameterExplorationAdapter">[docs]</a>class ParameterExplorationAdapter(ABCDisplayer):
+    """
+    Visualization adapter for Parameter Space Exploration.
+    Will be used as a generic visualizer, accessible when input entity is DataTypeGroup.
+    Will also be used in Burst as a supplementary navigation layer.
+    """
+    _ui_name = "Parameter Space Exploration"
+    _ui_subsection = "pse"
+    
+    
+<div class="viewcode-block" id="ParameterExplorationAdapter.get_input_tree"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.parameter_space_exploration.ParameterExplorationAdapter.get_input_tree">[docs]</a>    def get_input_tree(self):
+        """
+        Take as Input a Connectivity Object.
+        """
+        return [{'name': 'datatype_group', 'label': 'Datatype Group', 
+                  'type' : model.DataTypeGroup, 'required': True}]
+    </div>
+    def __init__(self):
+        ABCDisplayer.__init__(self)
+
+
+<div class="viewcode-block" id="ParameterExplorationAdapter.get_required_memory_size"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.parameter_space_exploration.ParameterExplorationAdapter.get_required_memory_size">[docs]</a>    def get_required_memory_size(self, **kwargs):
+        """
+        Return the required memory to run this algorithm.
+        """
+        # Don't know how much memory is needed.
+        return -1
+      </div>
+<div class="viewcode-block" id="ParameterExplorationAdapter.launch"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.parameter_space_exploration.ParameterExplorationAdapter.launch">[docs]</a>    def launch(self, datatype_group, color_metric = None, size_metric = None):
+        """
+        Launch the visualizer.
+        """
+        pse_context = self.prepare_parameters(datatype_group.id, color_metric, size_metric)
+        pse_context.prepare_individual_jsons()
+        
+        return self.build_display_result('parameter_exploration/view', pse_context)
+        
+    </div>
+    @staticmethod
+<div class="viewcode-block" id="ParameterExplorationAdapter.prepare_parameters"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.parameter_space_exploration.ParameterExplorationAdapter.prepare_parameters">[docs]</a>    def prepare_parameters(datatype_group_id, color_metric = None, size_metric = None):
+        """
+        We suppose that there are max 2 ranges and from each operation results exactly one dataType.
+        """
+        datatype_group = dao.get_datatype_group_by_id(datatype_group_id)
+        if datatype_group is None:
+            raise Exception("Selected DataTypeGroup is no longer present in the database. " 
+                            "It might have been remove or the specified id is not the correct one.")
+            
+        operation_group = dao.get_operationgroup_by_id(datatype_group.fk_operation_group)
+        if operation_group.range1 is None and operation_group.range2 is None:
+            raise Exception("Invalid DataTypeGroup...")
+
+        range1 = json.loads(operation_group.range1)
+        range1_labels = range1[1]
+        range1_name = range1[0]
+
+        range2 = operation_group.range2
+        range2_labels = ["_"]
+        range2_name = "_"
+
+        if range2 is not None:
+            range2 = json.loads(range2)
+            range2_labels = range2[1]
+            range2_name = range2[0]
+        
+        pse_context = ContextPSE(datatype_group_id, range1_labels, range2_labels, color_metric, size_metric)  
+          
+        final_dict = dict()
+        operations = dao.get_operations_in_group(operation_group.id)
+        for operation_ in operations:
+            if operation_.status == model.STATUS_STARTED:
+                pse_context.has_started_ops = True
+            range_values = eval(operation_.range_values)
+            key_1 = range_values[range1_name]
+            key_2 = "_"
+            if range2 is not None:
+                key_2 = range_values[range2_name]
+            datatype = None
+            if operation_.status == model.STATUS_FINISHED:
+                datatype = dao.get_results_for_operation(operation_.id)[0]
+                measures = dao.get_generic_entity(DatatypeMeasure, datatype.gid, '_analyzed_datatype')
+                pse_context.prepare_metrics_datatype(measures, datatype)
+            if key_1 not in final_dict:
+                final_dict[key_1] = {key_2 : pse_context.build_node_info(operation_, datatype)}
+            else:
+                final_dict[key_1][key_2] = pse_context.build_node_info(operation_, datatype)
+                
+        pse_context.fill_object(final_dict)
+        ## datatypes_dict is not actually used in the drawing of the PSE and actually
+        ## causes problems in case of NaN values, so just remove it before creating the json
+        pse_context.datatypes_dict = {}
+        return pse_context
+
+    
+    </div></div>
+</pre>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

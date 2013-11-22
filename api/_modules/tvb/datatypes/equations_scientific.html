@@ -1,0 +1,270 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.datatypes.equations_scientific &mdash; The Virtual Brain 1.0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.datatypes.equations_scientific</h1><pre>
+# -*- coding: utf-8 -*-
+#
+#
+#  TheVirtualBrain-Scientific Package. This package holds all simulators, and 
+# analysers necessary to run brain-simulations. You can use it stand alone or
+# in conjunction with TheVirtualBrain-Framework Package. See content of the
+# documentation-folder for more details. See also http://www.thevirtualbrain.org
+#
+# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
+#
+# This program is free software; you can redistribute it and/or modify it under 
+# the terms of the GNU General Public License version 2 as published by the Free
+# Software Foundation. This program is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+# License for more details. You should have received a copy of the GNU General 
+# Public License along with this program; if not, you can download it here
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0
+#
+#
+
+"""
+
+Scientific methods for the Equation datatypes.
+
+.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;
+
+"""
+
+# from third-party python packages
+import numexpr
+import numpy
+
+# From "The Virtual Brain"
+import tvb.datatypes.equations_data as equations_data
+
+#NOTE: Maybe create a Waveform or PerioodicEquation datatype
+
+<div class="viewcode-block" id="EquationScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_scientific.EquationScientific">[docs]</a>class EquationScientific(equations_data.EquationData):
+    """ This class exists to add scientific methods to EquationData. """
+    __tablename__ = None
+    
+    
+    def _find_summary_info(self):
+        """
+        Gather scientifically interesting summary information from an instance
+        of this datatype.
+        """
+        summary = {"Equation type": self.__class__.__name__}
+        summary["equation"] = self.trait["equation"].doc
+        summary["parameters"] = self.parameters
+        return summary
+        
+    #------------------------------ pattern -----------------------------------#
+    def _get_pattern(self):
+        """
+        Return a discrete representation of the equation.
+        """
+        return self._pattern
+        
+    def _set_pattern(self, var):
+        """
+        Generate a discrete representation of the equation for the space
+        represented by ``var``.
+        
+        The argument ``var`` can represent a distance, or effective distance,
+        for each node in a simulation. Or a time, or in principle any arbitrary
+        `` space ``. ``var`` can be a single number, a numpy.ndarray or a
+        ?scipy.sparse_matrix? TODO: think this last one is true, need to check
+        as we need it for LocalConnectivity...
+        
+        """
+        
+        self._pattern = numexpr.evaluate(self.equation,
+                                         global_dict = self.parameters)
+    
+    pattern = property(fget=_get_pattern, fset=_set_pattern)
+    #--------------------------------------------------------------------------#
+
+</div>
+<div class="viewcode-block" id="FiniteSupportEquationScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_scientific.FiniteSupportEquationScientific">[docs]</a>class FiniteSupportEquationScientific(equations_data.FiniteSupportEquationData,
+                                      EquationScientific):
+    """ This class exists to add scientific methods to FiniteSupportEquationData """
+    pass
+
+</div>
+<div class="viewcode-block" id="DiscreteScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_scientific.DiscreteScientific">[docs]</a>class DiscreteScientific(equations_data.DiscreteData,
+                         FiniteSupportEquationScientific):
+    """ This class exists to add scientific methods to DiscreteData """
+    pass
+
+
+#class ScalingScientific(equations_data.ScalingData, EquationScientific):
+#    """ This class exists to add scientific methods to ScalingData """
+#    pass
+
+</div>
+<div class="viewcode-block" id="LinearScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_scientific.LinearScientific">[docs]</a>class LinearScientific(equations_data.LinearData, EquationScientific):
+    """ This class exists to add scientific methods to LinearData """
+    pass
+
+</div>
+<div class="viewcode-block" id="GaussianScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_scientific.GaussianScientific">[docs]</a>class GaussianScientific(equations_data.GaussianData,
+                         FiniteSupportEquationScientific):
+    """ This class exists to add scientific methods to GaussianData """
+    pass
+
+</div>
+<div class="viewcode-block" id="DoubleGaussianScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_scientific.DoubleGaussianScientific">[docs]</a>class DoubleGaussianScientific(equations_data.DoubleGaussianData,
+                               FiniteSupportEquationScientific):
+    """ This class exists to add scientific methods to DoubleGaussianData """
+    pass
+
+</div>
+<div class="viewcode-block" id="SigmoidScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_scientific.SigmoidScientific">[docs]</a>class SigmoidScientific(equations_data.SigmoidData,
+                        FiniteSupportEquationScientific):
+    """ This class exists to add scientific methods to SigmoidData """
+    pass
+    
+</div>
+<div class="viewcode-block" id="GeneralizedSigmoidScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_scientific.GeneralizedSigmoidScientific">[docs]</a>class GeneralizedSigmoidScientific(equations_data.GeneralizedSigmoidData,
+                                   EquationScientific):
+    """ This class exists to add scientific methods to GeneralizedSigmoidData """
+    pass
+
+</div>
+<div class="viewcode-block" id="SinusoidScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_scientific.SinusoidScientific">[docs]</a>class SinusoidScientific(equations_data.SinusoidData, EquationScientific):
+    """ This class exists to add scientific methods to SinusoidData """
+    pass
+
+</div>
+<div class="viewcode-block" id="CosineScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_scientific.CosineScientific">[docs]</a>class CosineScientific(equations_data.CosineData, EquationScientific):
+    """ This class exists to add scientific methods to CosineData """
+    pass
+    </div>
+<div class="viewcode-block" id="AlphaScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_scientific.AlphaScientific">[docs]</a>class AlphaScientific(equations_data.AlphaData, EquationScientific):
+    """ This class exists to add scientific methods to AlphaData """
+    pass
+    </div>
+<div class="viewcode-block" id="PulseTrainScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_scientific.PulseTrainScientific">[docs]</a>class PulseTrainScientific(equations_data.PulseTrainData, EquationScientific):
+    """ This class exists to add scientific methods to PulseTrainData """
+    
+    def _get_pattern(self):
+        """
+        Return a discrete representation of the equation.
+        """
+        return self._pattern
+        
+    def _set_pattern(self, var):
+        """
+        Generate a discrete representation of the equation for the space
+        represented by ``var``.
+        
+        The argument ``var`` can represent a distance, or effective distance,
+        for each node in a simulation. Or a time, or in principle any arbitrary
+        `` space ``. ``var`` can be a single number, a numpy.ndarray or a
+        ?scipy.sparse_matrix? TODO: think this last one is true, need to check
+        as we need it for LocalConnectivity...
+        
+        """
+       
+        # rolling in the deep ...  
+        onset = self.parameters["onset"]
+        off = var &lt; onset 
+        var = numpy.roll(var, int(off.sum()+1))
+        var[:,0:off.sum()] = 0.0
+        self._pattern = numexpr.evaluate(self.equation,
+                                         global_dict = self.parameters)
+        self._pattern[:,0:off.sum()] = 0.0
+    
+    pattern = property(fget=_get_pattern, fset=_set_pattern)
+        
+    
+    pass
+</div>
+</pre>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
