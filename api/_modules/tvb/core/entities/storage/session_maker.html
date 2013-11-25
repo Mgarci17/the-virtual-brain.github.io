@@ -1,0 +1,471 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.entities.storage.session_maker &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../index.html" />
+    <link rel="up" title="tvb.core.entities.storage" href="../storage.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../storage.html" accesskey="U">tvb.core.entities.storage</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.entities.storage.session_maker</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">FunctionType</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">create_engine</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">sessionmaker</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm.exc</span> <span class="kn">import</span> <span class="n">NoResultFound</span>
+
+<span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span> <span class="k">as</span> <span class="n">cfg</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.storage.exceptions</span> <span class="kn">import</span> <span class="n">NestedTransactionUnsupported</span><span class="p">,</span> <span class="n">InvalidTransactionAccess</span>
+
+
+<span class="c">###</span>
+<span class="c">### INITIALIZATION AREA</span>
+<span class="c">###</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">SELECTED_DB</span> <span class="o">==</span> <span class="s">&#39;postgres&#39;</span><span class="p">:</span>
+    <span class="c">### Control the pool size for PostgreSQL, otherwise we might end with multiple </span>
+    <span class="c">### concurrent Python processes failing because of too many opened connections.</span>
+    <span class="n">DB_ENGINE</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">DB_URL</span><span class="p">,</span> <span class="n">pool_recycle</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">max_overflow</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">pool_size</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">MAX_DB_CONNECTIONS</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c">### SqlLite does not support pool-size</span>
+    <span class="n">DB_ENGINE</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">DB_URL</span><span class="p">,</span> <span class="n">pool_recycle</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="n">SA_SESSIONMAKER</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">DB_ENGINE</span><span class="p">)</span>
+
+
+
+<div class="viewcode-block" id="singleton"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.session_maker.singleton">[docs]</a><span class="k">def</span> <span class="nf">singleton</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class decorator that makes sure only one instance of that class is ever returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">instances</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+    <span class="k">def</span> <span class="nf">getinstance</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when a new instance is about to be created.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">cls</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">:</span>
+            <span class="n">instances</span><span class="p">[</span><span class="n">cls</span><span class="p">]</span> <span class="o">=</span> <span class="n">cls</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">instances</span><span class="p">[</span><span class="n">cls</span><span class="p">]</span>
+
+
+    <span class="k">return</span> <span class="n">getinstance</span>
+
+
+</div>
+<div class="viewcode-block" id="MetaClassFactory"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.session_maker.MetaClassFactory">[docs]</a><span class="k">def</span> <span class="nf">MetaClassFactory</span><span class="p">(</span><span class="n">decorator_functions</span><span class="o">=</span><span class="p">[],</span> <span class="n">new_attributes</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A metaclass factory that creates a metaclass which makes sure a list of decorators</span>
+<span class="sd">    are applied to all it&#39;s classes and also adds a dictionary of attributes.</span>
+<span class="sd">    </span>
+<span class="sd">    :param decorator_functions: a list of functions. These will be applied as decorators to</span>
+<span class="sd">        all methods from the class that uses the returned metaclass.</span>
+<span class="sd">    :param new_attributes: a dictionary of attribute_name &amp; attribute_value pairs that will</span>
+<span class="sd">        be added to the class that uses the returned metaclass</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">class</span> <span class="nc">MetaClass</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        New MetaClass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">mcs</span><span class="p">,</span> <span class="n">classname</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">class_dict</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Called when a new class gets instantiated.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">new_class_dict</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">class_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">attribute</span><span class="p">)</span> <span class="o">==</span> <span class="n">FunctionType</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">attribute</span><span class="o">.</span><span class="n">__name__</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;__&#39;</span><span class="p">)</span>
+                                                             <span class="ow">and</span> <span class="n">attribute</span><span class="o">.</span><span class="n">__name__</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;__&#39;</span><span class="p">))):</span>
+                    <span class="k">for</span> <span class="n">function</span> <span class="ow">in</span> <span class="n">decorator_functions</span><span class="p">:</span>
+                        <span class="n">attribute</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">attribute</span><span class="p">)</span>
+
+                <span class="n">new_class_dict</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">attribute</span>
+                <span class="n">new_class_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_attributes</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">type</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">mcs</span><span class="p">,</span> <span class="n">classname</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">new_class_dict</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">MetaClass</span>
+
+
+</div>
+<div class="viewcode-block" id="SessionsStack"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.session_maker.SessionsStack">[docs]</a><span class="k">class</span> <span class="nc">SessionsStack</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper class that holds a stack of SqlAlchemys session object and a counter that</span>
+<span class="sd">    keeps track of how many transactions are opened.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        In the empty state just add a list that will hold all the sessions and </span>
+<span class="sd">        initialize the transactions counter to 0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sessions_stack</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">open_transactions</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+<div class="viewcode-block" id="SessionsStack.close_session"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.session_maker.SessionsStack.close_session">[docs]</a>    <span class="k">def</span> <span class="nf">close_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method called by all &#39;`add_session` decorated methods. First check if there</span>
+<span class="sd">        are any changes that needed to be committed but weren&#39;t. Then either close the</span>
+<span class="sd">        session if it&#39;s not part of a transaction, or just expunge all objects otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">top_session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">top_session</span><span class="o">.</span><span class="n">dirty</span> <span class="ow">or</span> <span class="n">top_session</span><span class="o">.</span><span class="n">deleted</span> <span class="ow">or</span> <span class="n">top_session</span><span class="o">.</span><span class="n">new</span><span class="p">:</span>
+            <span class="n">top_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_transactions</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c"># We are not part of a transaction. Just close the session.</span>
+            <span class="n">top_session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># We are part of a transaction. Just expunge the objects, the transaction will handle the close.</span>
+            <span class="n">top_session</span><span class="o">.</span><span class="n">expunge_all</span><span class="p">()</span>
+        <span class="k">del</span> <span class="n">top_session</span>
+
+</div>
+<div class="viewcode-block" id="SessionsStack.open_session"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.session_maker.SessionsStack.open_session">[docs]</a>    <span class="k">def</span> <span class="nf">open_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new session. If we are part of a transaction we bind it to the parent</span>
+<span class="sd">        session, otherwise just create a new session.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_transactions</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">new_session</span> <span class="o">=</span> <span class="n">SA_SESSIONMAKER</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_session</span> <span class="o">=</span> <span class="n">SA_SESSIONMAKER</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sessions_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">connection</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sessions_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_session</span><span class="p">)</span>
+
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="SessionsStack.current_session"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.session_maker.SessionsStack.current_session">[docs]</a>    <span class="k">def</span> <span class="nf">current_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Property just for ease of access. Current session will always be top of stack.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="SessionsStack.start_transaction"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.session_maker.SessionsStack.start_transaction">[docs]</a>    <span class="k">def</span> <span class="nf">start_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start a new transaction. If this is top level transaction just created new session.</span>
+<span class="sd">        Otherwise depending if we support nested or not, either raise exception or create a session</span>
+<span class="sd">        binded to parent one.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_transactions</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c"># New transaction, just create a new session.</span>
+            <span class="n">transaction</span> <span class="o">=</span> <span class="n">SA_SESSIONMAKER</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># We are part of a nested transaction.</span>
+            <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">ALLOW_NESTED_TRANSACTIONS</span><span class="p">:</span>
+                <span class="n">transaction</span> <span class="o">=</span> <span class="n">SA_SESSIONMAKER</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sessions_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">connection</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NestedTransactionUnsupported</span><span class="p">(</span><span class="s">&quot;We do not support nested transaction in TVB.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sessions_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transaction</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">open_transactions</span> <span class="o">+=</span> <span class="mi">1</span>
+
+</div>
+<div class="viewcode-block" id="SessionsStack.rollback_transaction"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.session_maker.SessionsStack.rollback_transaction">[docs]</a>    <span class="k">def</span> <span class="nf">rollback_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        RollBack a transaction. </span>
+<span class="sd">        If we are part of nested transaction - rollback everything up to top parent transaction.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_transactions</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidTransactionAccess</span><span class="p">(</span><span class="s">&quot;You are trying to close a transaction that was not started.&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">transaction_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">open_transactions</span><span class="p">):</span>
+            <span class="n">transaction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions_stack</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">transaction_idx</span><span class="p">)]</span>
+            <span class="n">transaction</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="SessionsStack.close_transaction"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.session_maker.SessionsStack.close_transaction">[docs]</a>    <span class="k">def</span> <span class="nf">close_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close a transaction. Make sure to commit beforehand so all changes are written to database. Then</span>
+<span class="sd">        depending on if we are top level or not either close or expunge session.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_transactions</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidTransactionAccess</span><span class="p">(</span><span class="s">&quot;You are trying to close a transaction that was not started.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">open_transactions</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">top_transaction_session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">top_transaction_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_transactions</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">top_transaction_session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">top_transaction_session</span><span class="o">.</span><span class="n">expunge_all</span><span class="p">()</span>
+        <span class="k">del</span> <span class="n">top_transaction_session</span>
+
+
+</div></div>
+<span class="nd">@singleton</span>
+<div class="viewcode-block" id="SessionMaker"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.session_maker.SessionMaker">[docs]</a><span class="k">class</span> <span class="nc">SessionMaker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is our custom SessionMaker class, aggregating SessionsStack class.</span>
+<span class="sd">    It has the purpose of obtaining a new SessionsStack for each thread.</span>
+<span class="sd">    When calling self.session._something_ our mechanism comes in place and checks having a new stack for every threadID.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a dictionary with thread : session pairs to make sure we are thread-safe.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handled_sessions</span> <span class="o">=</span> <span class="p">{</span><span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">():</span> <span class="n">SessionsStack</span><span class="p">()}</span>
+
+
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        __getattr__ is only called if `name` was not found in standard lookup (e.g. class or super-class attributes)</span>
+<span class="sd">        In that case just delegate to the corresponding SQLAlchemy session.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">current_thread</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">handled_sessions</span><span class="p">:</span>
+            <span class="c"># This if first session for a new threads. Just create a new one.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handled_sessions</span><span class="p">[</span><span class="n">current_thread</span><span class="p">]</span> <span class="o">=</span> <span class="n">SessionsStack</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">thread</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">handled_sessions</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="c"># If thread finished we just delete entry to avoid dangling unused objects.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">thread</span><span class="o">.</span><span class="n">isAlive</span><span class="p">():</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">handled_sessions</span><span class="p">[</span><span class="n">thread</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="c">### Ignore this error because a concurrent thread might have removed this meanwhile.</span>
+                    <span class="k">pass</span>
+        <span class="n">delegate_method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handled_sessions</span><span class="p">[</span><span class="n">current_thread</span><span class="p">]</span><span class="o">.</span><span class="n">current_session</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">delegate_method</span>
+
+
+    <span class="k">def</span> <span class="nf">open_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Open a new session for the current thread.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">current_thread</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">handled_sessions</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handled_sessions</span><span class="p">[</span><span class="n">current_thread</span><span class="p">]</span> <span class="o">=</span> <span class="n">SessionsStack</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handled_sessions</span><span class="p">[</span><span class="n">current_thread</span><span class="p">]</span><span class="o">.</span><span class="n">open_session</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">close_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close the session for the current thread.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handled_sessions</span><span class="p">[</span><span class="n">current_thread</span><span class="p">]</span><span class="o">.</span><span class="n">close_session</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">rollback_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rollback a transaction for the current thread.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handled_sessions</span><span class="p">[</span><span class="n">current_thread</span><span class="p">]</span><span class="o">.</span><span class="n">rollback_transaction</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">start_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start a new transaction for the current thread.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">current_thread</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">handled_sessions</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handled_sessions</span><span class="p">[</span><span class="n">current_thread</span><span class="p">]</span> <span class="o">=</span> <span class="n">SessionsStack</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handled_sessions</span><span class="p">[</span><span class="n">current_thread</span><span class="p">]</span><span class="o">.</span><span class="n">start_transaction</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">close_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close a transaction for the current thread.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handled_sessions</span><span class="p">[</span><span class="n">current_thread</span><span class="p">]</span><span class="o">.</span><span class="n">close_transaction</span><span class="p">()</span>
+
+
+<span class="c">###</span>
+<span class="c">### PUBLIC EXPOSED ENTITIES FOR USAGE: 2 decorators and 1 meta-class-factory.</span>
+<span class="c">### </span>
+</div>
+<div class="viewcode-block" id="transactional"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.session_maker.transactional">[docs]</a><span class="k">def</span> <span class="nf">transactional</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator that makes sure that all DAO calls that will result from the docorated</span>
+<span class="sd">    method will be encapsulated in a transaction that will be rolled back if any </span>
+<span class="sd">    unexpected exceptions appear.</span>
+<span class="sd">    This is indended to be used on service layer methods.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">dec</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Decorate methods.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">session_maker</span> <span class="o">=</span> <span class="n">SessionMaker</span><span class="p">()</span>
+        <span class="n">session_maker</span><span class="o">.</span><span class="n">start_transaction</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">session_maker</span><span class="o">.</span><span class="n">rollback_transaction</span><span class="p">()</span>
+            <span class="k">raise</span> <span class="n">ex</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">session_maker</span><span class="o">.</span><span class="n">close_transaction</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+
+    <span class="k">return</span> <span class="n">dec</span>
+
+
+</div>
+<div class="viewcode-block" id="add_session"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.session_maker.add_session">[docs]</a><span class="k">def</span> <span class="nf">add_session</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator that handles session related precautions before/after method call.</span>
+<span class="sd">    Before each new method a session is created that will later on be closed/rolled back as necessary.</span>
+<span class="sd">    This is intended to be used on all DAO methods</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">dec</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Decorate by populating self.session</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">open_session</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">NoResultFound</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ex</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ex</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">close_session</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+
+    <span class="k">return</span> <span class="n">dec</span>
+
+
+<span class="c">### All Classes having this meta-class will have automatically populated:</span>
+<span class="c">### - Attribute self.session</span>
+<span class="c">### - Annotation add_session over every method in that class.</span></div>
+<span class="n">SESSION_META_CLASS</span> <span class="o">=</span> <span class="n">MetaClassFactory</span><span class="p">([</span><span class="n">add_session</span><span class="p">],</span> <span class="p">{</span><span class="s">&#39;session&#39;</span><span class="p">:</span> <span class="n">SessionMaker</span><span class="p">()})</span>
+
+
+
+      
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../storage.html" >tvb.core.entities.storage</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

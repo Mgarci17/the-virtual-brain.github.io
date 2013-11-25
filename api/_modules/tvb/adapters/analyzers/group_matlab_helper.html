@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.adapters.analyzers.group_matlab_helper &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.adapters.analyzers.group_matlab_helper &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../index.html" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -49,222 +48,187 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for tvb.adapters.analyzers.group_matlab_helper</h1><pre>
-# -*- coding: utf-8 -*-
-#
-#
-# TheVirtualBrain-Framework Package. This package holds all Data Management, and 
-# Web-UI helpful to run brain-simulations. To use it, you also need do download
-# TheVirtualBrain-Scientific Package (for simulators). See content of the
-# documentation-folder for more details. See also http://www.thevirtualbrain.org
-#
-# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
-#
-# This program is free software; you can redistribute it and/or modify it under 
-# the terms of the GNU General Public License version 2 as published by the Free
-# Software Foundation. This program is distributed in the hope that it will be
-# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
-# License for more details. You should have received a copy of the GNU General 
-# Public License along with this program; if not, you can download it here
-# http://www.gnu.org/licenses/old-licenses/gpl-2.0
-#
-#
+  <h1>Source code for tvb.adapters.analyzers.group_matlab_helper</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
 
-"""
-This module implements a class for executing arbitray MATLAB code
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module implements a class for executing arbitray MATLAB code</span>
 
-Conversion between Python types and MATLAB types is handled and dependent
-on scipy.io's loadmat and savemat function.
+<span class="sd">Conversion between Python types and MATLAB types is handled and dependent</span>
+<span class="sd">on scipy.io&#39;s loadmat and savemat function.</span>
 
-.. moduleauthor:: Marmaduke Woodman &lt;Marmaduke@tvb.invalid&gt;
-.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;
-"""
+<span class="sd">.. moduleauthor:: Marmaduke Woodman &lt;Marmaduke@tvb.invalid&gt;</span>
+<span class="sd">.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
-import os, time, random, tempfile
-from scipy.io import loadmat, savemat
-from tvb.basic.config.settings import TVBSettings as cfg
-from tvb.core.utils import MATLAB, OCTAVE, matlab_cmd
-from tvb.core.adapters.abcadapter import ABCAsynchronous
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span><span class="p">,</span> <span class="n">savemat</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span> <span class="k">as</span> <span class="n">cfg</span>
+<span class="kn">from</span> <span class="nn">tvb.core.utils</span> <span class="kn">import</span> <span class="n">MATLAB</span><span class="p">,</span> <span class="n">OCTAVE</span><span class="p">,</span> <span class="n">matlab_cmd</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.abcadapter</span> <span class="kn">import</span> <span class="n">ABCAsynchronous</span>
 
 
-<div class="viewcode-block" id="MatlabAnalyzer"><a class="viewcode-back" href="../../../../tvb.adapters.analyzers.html#tvb.adapters.analyzers.group_matlab_helper.MatlabAnalyzer">[docs]</a>class MatlabAnalyzer(ABCAsynchronous):
-    """
-    MatlabAnalyzer is an adapter for calling arbitrary MATLAB code with
-    arbitrary data.
 
-    Specific analyzers should derive from this class and implement the
-    interface and launch methods inherited from Asynchronous Adapter.
-    """
+<div class="viewcode-block" id="MatlabAnalyzer"><a class="viewcode-back" href="../../../../tvb.adapters.analyzers.html#tvb.adapters.analyzers.group_matlab_helper.MatlabAnalyzer">[docs]</a><span class="k">class</span> <span class="nc">MatlabAnalyzer</span><span class="p">(</span><span class="n">ABCAsynchronous</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    MatlabAnalyzer is an adapter for calling arbitrary MATLAB code with</span>
+<span class="sd">    arbitrary data.</span>
 
-    matlab_paths = []
+<span class="sd">    Specific analyzers should derive from this class and implement the</span>
+<span class="sd">    interface and launch methods inherited from Asynchronous Adapter.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    def __init__(self):
-        ABCAsynchronous.__init__(self)
-        self.mlab_exe = cfg.MATLAB_EXECUTABLE
-        self.hex = hex(random.randint(0, 2**32))
-        self.script_name = "script%s" % self.hex
-        self.script_fname = self.script_name + '.m'
-        self.wkspc_name = "wkspc%s" % self.hex
-        self.wkspc_fname = self.wkspc_name + '.mat'
-        self.done_name = "done%s" % self.hex
-        self.done_fname = self.done_name + '.mat'
-        self.log_fname = "log%s" % self.hex
+    <span class="n">matlab_paths</span> <span class="o">=</span> <span class="p">[]</span>
 
-    def _matlab_pre(self):
-        """
-        Called to obtain the pre operation code for MATLAB. Current, we
-        1. add paths to the MATLAB path
-        2. enter a try clause
-        """
-        paths = "".join(["addpath('"+p+"');\n" for p in self.matlab_paths])
-        return paths + "\ntry\n"
 
-    def _matlab_post(self):
-        """
-        Called to obtain the post operation code for MATLAB. Currently, we
-        1. catch exception if one was raised
-        2. set the hexstamp variable in MATLAB
-        3. save all working files
-        """
-        catch = "\ncatch e\nexception%s = e\nend\n" % self.hex
-        if MATLAB in self.mlab_exe:
-            save_clause = "hexstamp = '%s'\nsave %s -V7\nsave %s -V7 hexstamp\nquit"
-        if OCTAVE in self.mlab_exe:
-            save_clause = "hexstamp = '%s'\nsave %s.mat -V7\nsave %s.mat -V7 hexstamp\nquit"
-        return catch + save_clause % (self.hex, self.wkspc_name, self.done_name)
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ABCAsynchronous</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mlab_exe</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MATLAB_EXECUTABLE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hex</span> <span class="o">=</span> <span class="nb">hex</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">32</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script_name</span> <span class="o">=</span> <span class="s">&quot;script</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">hex</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script_fname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">script_name</span> <span class="o">+</span> <span class="s">&#39;.m&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wkspc_name</span> <span class="o">=</span> <span class="s">&quot;wkspc</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">hex</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wkspc_fname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wkspc_name</span> <span class="o">+</span> <span class="s">&#39;.mat&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">done_name</span> <span class="o">=</span> <span class="s">&quot;done</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">hex</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">done_fname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">done_name</span> <span class="o">+</span> <span class="s">&#39;.mat&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_fname</span> <span class="o">=</span> <span class="s">&quot;log</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">hex</span>
 
-<div class="viewcode-block" id="MatlabAnalyzer.launch"><a class="viewcode-back" href="../../../../tvb.adapters.analyzers.html#tvb.adapters.analyzers.group_matlab_helper.MatlabAnalyzer.launch">[docs]</a>    def launch(self, code, data=None, wd=None, cleanup=True):
-        """
-        Analyzers that derive from this adapter and use MATLAB should
-        override this method.
-        """
-        return self.matlab(code, data, cleanup)
+
+    <span class="k">def</span> <span class="nf">_matlab_pre</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called to obtain the pre operation code for MATLAB. Current, we</span>
+<span class="sd">        1. add paths to the MATLAB path</span>
+<span class="sd">        2. enter a try clause</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s">&quot;addpath(&#39;&quot;</span> <span class="o">+</span> <span class="n">p</span> <span class="o">+</span> <span class="s">&quot;&#39;);</span><span class="se">\n</span><span class="s">&quot;</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">matlab_paths</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">paths</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">try</span><span class="se">\n</span><span class="s">&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">_matlab_post</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called to obtain the post operation code for MATLAB. Currently, we</span>
+<span class="sd">        1. catch exception if one was raised</span>
+<span class="sd">        2. set the hexstamp variable in MATLAB</span>
+<span class="sd">        3. save all working files</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">catch</span> <span class="o">=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">catch e</span><span class="se">\n</span><span class="s">exception</span><span class="si">%s</span><span class="s"> = e</span><span class="se">\n</span><span class="s">end</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">hex</span>
+        <span class="n">save_clause</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">MATLAB</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlab_exe</span><span class="p">:</span>
+            <span class="n">save_clause</span> <span class="o">=</span> <span class="s">&quot;hexstamp = &#39;</span><span class="si">%s</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">save </span><span class="si">%s</span><span class="s"> -V7</span><span class="se">\n</span><span class="s">save </span><span class="si">%s</span><span class="s"> -V7 hexstamp</span><span class="se">\n</span><span class="s">quit&quot;</span>
+        <span class="k">if</span> <span class="n">OCTAVE</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlab_exe</span><span class="p">:</span>
+            <span class="n">save_clause</span> <span class="o">=</span> <span class="s">&quot;hexstamp = &#39;</span><span class="si">%s</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">save </span><span class="si">%s</span><span class="s">.mat -V7</span><span class="se">\n</span><span class="s">save </span><span class="si">%s</span><span class="s">.mat -V7 hexstamp</span><span class="se">\n</span><span class="s">quit&quot;</span>
+        <span class="k">return</span> <span class="n">catch</span> <span class="o">+</span> <span class="n">save_clause</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wkspc_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">done_name</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="MatlabAnalyzer.launch"><a class="viewcode-back" href="../../../../tvb.adapters.analyzers.html#tvb.adapters.analyzers.group_matlab_helper.MatlabAnalyzer.launch">[docs]</a>    <span class="k">def</span> <span class="nf">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">wd</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">cleanup</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Analyzers that derive from this adapter and use MATLAB should</span>
+<span class="sd">        override this method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">matlab</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">)</span>
+
 </div>
-<div class="viewcode-block" id="MatlabAnalyzer.cleanup"><a class="viewcode-back" href="../../../../tvb.adapters.analyzers.html#tvb.adapters.analyzers.group_matlab_helper.MatlabAnalyzer.cleanup">[docs]</a>    def cleanup(self):
-        """
-        Make sure Matlab is closed after execution.
-        """
-        time.sleep(0.5) # wait for MATLAB to close
-        for file_ref in [self.script_fname, self.wkspc_fname,
-                         self.done_fname, self.log_fname]:
-            try:
-                os.remove(file_ref)
-            except Exception, _:
-                pass
+<div class="viewcode-block" id="MatlabAnalyzer.cleanup"><a class="viewcode-back" href="../../../../tvb.adapters.analyzers.html#tvb.adapters.analyzers.group_matlab_helper.MatlabAnalyzer.cleanup">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make sure Matlab is closed after execution.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c"># wait for MATLAB to close</span>
+        <span class="k">for</span> <span class="n">file_ref</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">script_fname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wkspc_fname</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">done_fname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_fname</span><span class="p">]:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">file_ref</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
+
 </div>
-<div class="viewcode-block" id="MatlabAnalyzer.add_to_path"><a class="viewcode-back" href="../../../../tvb.adapters.analyzers.html#tvb.adapters.analyzers.group_matlab_helper.MatlabAnalyzer.add_to_path">[docs]</a>    def add_to_path(self, path_to_add):
-        """
-        Add a path to the list of paths that will be added to the path
-        in the MATLAB session
-        """
-        self.matlab_paths.append(path_to_add)
+<div class="viewcode-block" id="MatlabAnalyzer.add_to_path"><a class="viewcode-back" href="../../../../tvb.adapters.analyzers.html#tvb.adapters.analyzers.group_matlab_helper.MatlabAnalyzer.add_to_path">[docs]</a>    <span class="k">def</span> <span class="nf">add_to_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_to_add</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a path to the list of paths that will be added to the path</span>
+<span class="sd">        in the MATLAB session</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matlab_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path_to_add</span><span class="p">)</span>
+
 </div>
-<div class="viewcode-block" id="MatlabAnalyzer.matlab"><a class="viewcode-back" href="../../../../tvb.adapters.analyzers.html#tvb.adapters.analyzers.group_matlab_helper.MatlabAnalyzer.matlab">[docs]</a>    def matlab(self, code, data=None, work_dir=None, cleanup=True):
-        """
-        method matlab takes as arguments:
+<div class="viewcode-block" id="MatlabAnalyzer.matlab"><a class="viewcode-back" href="../../../../tvb.adapters.analyzers.html#tvb.adapters.analyzers.group_matlab_helper.MatlabAnalyzer.matlab">[docs]</a>    <span class="k">def</span> <span class="nf">matlab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">work_dir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">cleanup</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        method matlab takes as arguments:</span>
 
-            code: MATLAB code in a string
-            data: a dict of data that scipy.io.savemat knows how to deal with
-            work_dir: working directory to be used by MATLAB
-            cleanup: set to False to keep files
+<span class="sd">            code: MATLAB code in a string</span>
+<span class="sd">            data: a dict of data that scipy.io.savemat knows how to deal with</span>
+<span class="sd">            work_dir: working directory to be used by MATLAB</span>
+<span class="sd">            cleanup: set to False to keep files</span>
 
-        and returns a tuple:
+<span class="sd">        and returns a tuple:</span>
 
-            [0] string of code exec'd by MATLAB
-            [1] string of log produced by MATLAB
-            [2] dict of data from MATLAB's workspace
-        """
-        wdir = tempfile.tempdir or os.getcwd()
-        os.chdir(wdir)
-        os.chdir(work_dir or os.getcwd())
+<span class="sd">            [0] string of code exec&#39;d by MATLAB</span>
+<span class="sd">            [1] string of log produced by MATLAB</span>
+<span class="sd">            [2] dict of data from MATLAB&#39;s workspace</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">wdir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">tempdir</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">wdir</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">work_dir</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
 
-        pre, post = self._matlab_pre(), self._matlab_post()
-        code = ("\nsuccess%s = 0\n" + code + "\nsuccess%s = 1\n") % (self.hex, self.hex)
+        <span class="n">pre</span><span class="p">,</span> <span class="n">post</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matlab_pre</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matlab_post</span><span class="p">()</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">success</span><span class="si">%s</span><span class="s"> = 0</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">+</span> <span class="n">code</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">success</span><span class="si">%s</span><span class="s"> = 1</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hex</span><span class="p">)</span>
 
-        if data:
-            pre += "\nload %s\n" % self.wkspc_name
-            savemat(self.wkspc_fname, data, format="5")
-        with open(self.script_fname,'w') as file_data:
-            file_data.write(pre + code + post)
+        <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">pre</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">load </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">wkspc_name</span>
+            <span class="n">savemat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wkspc_fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s">&quot;5&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">script_fname</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_data</span><span class="p">:</span>
+            <span class="n">file_data</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pre</span> <span class="o">+</span> <span class="n">code</span> <span class="o">+</span> <span class="n">post</span><span class="p">)</span>
 
-        os.system(matlab_cmd(self.mlab_exe, self.script_name, self.log_fname))
-        while not os.path.exists(self.done_fname):
-            time.sleep(0.1)
+        <span class="n">matlab_cmd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mlab_exe</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">script_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_fname</span><span class="p">)</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">done_fname</span><span class="p">):</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
 
-        with open(self.log_fname, 'r') as file_data:
-            logtext = file_data.read()
-        retdata = loadmat(self.wkspc_fname, squeeze_me=True)
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_fname</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_data</span><span class="p">:</span>
+            <span class="n">logtext</span> <span class="o">=</span> <span class="n">file_data</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">retdata</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wkspc_fname</span><span class="p">,</span> <span class="n">squeeze_me</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
-        if cleanup: self.cleanup()
-        return pre + code + post, logtext, retdata
-</div>
-    @classmethod
-<div class="viewcode-block" id="MatlabAnalyzer.scrape_mfile"><a class="viewcode-back" href="../../../../tvb.adapters.analyzers.html#tvb.adapters.analyzers.group_matlab_helper.MatlabAnalyzer.scrape_mfile">[docs]</a>    def scrape_mfile(filename):
-        """
-        MatlabAnalyzer.scrape_mfile takes an absolute filename (i.e. 
-        no expansion is done), analyzes the file and returns a dictionary
-        of information about the corresponding MATLAB function: 
-
-            ret{'docs' : docstring of the MATLAB function 
-
-                'args' : list of argument names to the MATLAB function or 
-                         None if the function takes no arguments
-
-                'rets' : list of function's results' names or None if the 
-                         function produces no results
-        """
-
-        # helper functions to clean strings
-        re_keep = lambda m, r: m.group()[:re.match(r, m.group()).end()]
-        re_del = lambda m, r: m.group()[re.match(r, m.group()).end():]
-
-        with open(filename) as fd:
-            src = fd.read()
-        
-        # grab the docstring first
-        docs = re.search('(^%.*\n)+', src, re.MULTILINE).group()
-
-        # grab the function signature
-        sig = re.match('.*function.*', src)
-
-        # if we don't have one return None
-        if not sig:
-            return None
-
-        # get the text
-        sig = sig.group()
-
-        # remove 'function' from string
-        fn = re.match('\s*function\s*', src)
-        sig1 = sig[fn.end():]
-
-        # get outputs, either 'A=foo' or '[A,B] = foo'
-        lhs = re.match('\w+\s*=|\[.+\]\s*=', sig1)
-        outs = re_keep(lhs, '\w+|\[.+\]')[1:-1].split() if lhs else None
-        sig2 = sig1[lhs.end():]
-
-        # get function name
-        rhs = re.match('\s*\w+', sig2)
-        fname = re_del(rhs, '\s*')
-        sig3 = sig2[rhs.end():]
-
-        # get arguments if they exist
-        rhs = re.match('.*\(.+\)', sig3)
-        ins = rhs.group()[1:-1].split(',') if rhs else None
-
-        return {'args': ins, 'rets': outs, 'docs': docs}
-
-
-
-   </div></div>
-</pre>
+        <span class="k">if</span> <span class="n">cleanup</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">pre</span> <span class="o">+</span> <span class="n">code</span> <span class="o">+</span> <span class="n">post</span><span class="p">,</span> <span class="n">logtext</span><span class="p">,</span> <span class="n">retdata</span>
+</pre></div></div></div>
 
           </div>
         </div>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../../search.html" method="get">
@@ -291,13 +255,13 @@ from tvb.core.adapters.abcadapter import ABCAsynchronous
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

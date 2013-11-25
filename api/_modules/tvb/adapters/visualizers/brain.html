@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.adapters.visualizers.brain &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.adapters.visualizers.brain &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../index.html" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -49,314 +48,403 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for tvb.adapters.visualizers.brain</h1><pre>
-# -*- coding: utf-8 -*-
-#
-#
-# TheVirtualBrain-Framework Package. This package holds all Data Management, and 
-# Web-UI helpful to run brain-simulations. To use it, you also need do download
-# TheVirtualBrain-Scientific Package (for simulators). See content of the
-# documentation-folder for more details. See also http://www.thevirtualbrain.org
-#
-# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
-#
-# This program is free software; you can redistribute it and/or modify it under 
-# the terms of the GNU General Public License version 2 as published by the Free
-# Software Foundation. This program is distributed in the hope that it will be
-# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
-# License for more details. You should have received a copy of the GNU General 
-# Public License along with this program; if not, you can download it here
-# http://www.gnu.org/licenses/old-licenses/gpl-2.0
-#
-#
-"""
-.. moduleauthor:: Ionel Ortelecan &lt;ionel.ortelecan@codemart.ro&gt;
-.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;
-.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;
-"""
+  <h1>Source code for tvb.adapters.visualizers.brain</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
 
-import json
-import numpy
-from tvb.adapters.visualizers.eeg_monitor import EegMonitor
-from tvb.basic.filters.chain import FilterChain
-from tvb.core.entities.storage import dao
-from tvb.core.adapters.abcdisplayer import ABCDisplayer
-from tvb.datatypes.surfaces import RegionMapping, SkinAir, EEGCap, FaceSurface
-from tvb.datatypes.time_series import TimeSeries, TimeSeriesSurface, TimeSeriesEEG
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Ionel Ortelecan &lt;ionel.ortelecan@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">tvb.adapters.visualizers.eeg_monitor</span> <span class="kn">import</span> <span class="n">EegMonitor</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.filters.chain</span> <span class="kn">import</span> <span class="n">FilterChain</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.storage</span> <span class="kn">import</span> <span class="n">dao</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.abcdisplayer</span> <span class="kn">import</span> <span class="n">ABCDisplayer</span>
+<span class="kn">from</span> <span class="nn">tvb.datatypes.surfaces</span> <span class="kn">import</span> <span class="n">RegionMapping</span><span class="p">,</span> <span class="n">EEGCap</span><span class="p">,</span> <span class="n">FaceSurface</span>
+<span class="kn">from</span> <span class="nn">tvb.datatypes.time_series</span> <span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesSurface</span><span class="p">,</span> <span class="n">TimeSeriesSEEG</span>
 
 
-MAX_MEASURE_POINTS_LENGTH = 235
+<span class="n">MAX_MEASURE_POINTS_LENGTH</span> <span class="o">=</span> <span class="mi">235</span>
 
 
-<div class="viewcode-block" id="BrainViewer"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainViewer">[docs]</a>class BrainViewer(ABCDisplayer):
-    """
-    Interface between the 3D view of the Brain Cortical Surface and TVB framework. 
-    This viewer will build the required parameter dictionary that will be sent to the HTML / JS for further processing, 
-    having as end result a brain surface plus activity that will be displayed in 3D.
-    """
-    _ui_name = "Brain Activity Visualizer"
-    PAGE_SIZE = 500
+
+<div class="viewcode-block" id="BrainViewer"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainViewer">[docs]</a><span class="k">class</span> <span class="nc">BrainViewer</span><span class="p">(</span><span class="n">ABCDisplayer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interface between the 3D view of the Brain Cortical Surface and TVB framework. </span>
+<span class="sd">    This viewer will build the required parameter dictionary that will be sent to the HTML / JS for further processing, </span>
+<span class="sd">    having as end result a brain surface plus activity that will be displayed in 3D.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_ui_name</span> <span class="o">=</span> <span class="s">&quot;Brain Activity Visualizer&quot;</span>
+    <span class="n">PAGE_SIZE</span> <span class="o">=</span> <span class="mi">500</span>
+
+
+<div class="viewcode-block" id="BrainViewer.get_input_tree"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainViewer.get_input_tree">[docs]</a>    <span class="k">def</span> <span class="nf">get_input_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;time_series&#39;</span><span class="p">,</span> <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Time Series (Region or Surface)&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="s">&#39;required&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+                 <span class="s">&#39;conditions&#39;</span><span class="p">:</span> <span class="n">FilterChain</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="n">FilterChain</span><span class="o">.</span><span class="n">datatype</span> <span class="o">+</span> <span class="s">&#39;.type&#39;</span><span class="p">,</span>
+                                                   <span class="n">FilterChain</span><span class="o">.</span><span class="n">datatype</span> <span class="o">+</span> <span class="s">&#39;._nr_dimensions&#39;</span><span class="p">],</span>
+                                           <span class="n">operations</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;in&quot;</span><span class="p">,</span> <span class="s">&quot;==&quot;</span><span class="p">],</span>
+                                           <span class="n">values</span><span class="o">=</span><span class="p">[[</span><span class="s">&#39;TimeSeriesRegion&#39;</span><span class="p">,</span> <span class="s">&#39;TimeSeriesSurface&#39;</span><span class="p">],</span> <span class="mi">4</span><span class="p">]),</span>
+                 <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Depending on the simulation length and your browser capabilities, you might experience&#39;</span>
+                                <span class="s">&#39; after multiple runs, browser crashes. In such cases, it is recommended to empty the&#39;</span>
+                                <span class="s">&#39; browser cache and try again. Sorry for the inconvenience.&#39;</span><span class="p">}]</span>
+
+</div>
+<div class="viewcode-block" id="BrainViewer.get_required_memory_size"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainViewer.get_required_memory_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_required_memory_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_series</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the required memory to run this algorithm.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">overall_shape</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">read_data_shape</span><span class="p">()</span>
+        <span class="c">#Assume one page doesn&#39;t get &#39;dumped&#39; in time and maybe two consecutive pages will be in the same </span>
+        <span class="c">#time in memory.</span>
+        <span class="n">used_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">overall_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PAGE_SIZE</span> <span class="o">*</span> <span class="mf">2.0</span><span class="p">),</span> <span class="n">overall_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">overall_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">overall_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="n">input_size</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">used_shape</span><span class="p">)</span> <span class="o">*</span> <span class="mf">8.0</span>
+        <span class="k">return</span> <span class="n">input_size</span>
+
+</div>
+<div class="viewcode-block" id="BrainViewer.launch"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainViewer.launch">[docs]</a>    <span class="k">def</span> <span class="nf">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_series</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Build visualizer&#39;s page. &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_parameters</span><span class="p">(</span><span class="n">time_series</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_display_result</span><span class="p">(</span><span class="s">&quot;brain/view&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">controlPage</span><span class="o">=</span><span class="s">&quot;brain/controls&quot;</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="BrainViewer.generate_preview"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainViewer.generate_preview">[docs]</a>    <span class="k">def</span> <span class="nf">generate_preview</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_series</span><span class="p">,</span> <span class="n">figure_size</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Generate the preview for the burst page &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_preview_parameters</span><span class="p">(</span><span class="n">time_series</span><span class="p">)</span>
+        <span class="n">normalization_factor</span> <span class="o">=</span> <span class="n">figure_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">800</span>
+        <span class="k">if</span> <span class="n">figure_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">600</span> <span class="o">&lt;</span> <span class="n">normalization_factor</span><span class="p">:</span>
+            <span class="n">normalization_factor</span> <span class="o">=</span> <span class="n">figure_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">600</span>
+        <span class="n">params</span><span class="p">[</span><span class="s">&#39;width&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">figure_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">normalization_factor</span>
+        <span class="n">params</span><span class="p">[</span><span class="s">&#39;height&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">figure_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">normalization_factor</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_display_result</span><span class="p">(</span><span class="s">&quot;brain/portlet_preview&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="nb">dict</span><span class="p">())</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">_prepare_surface_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_series</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepares the urls from which the client may read the data needed for drawing the surface.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">one_to_one_map</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">time_series</span><span class="p">,</span> <span class="n">TimeSeriesSurface</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">one_to_one_map</span><span class="p">:</span>
+            <span class="n">region_map</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_generic_entity</span><span class="p">(</span><span class="n">RegionMapping</span><span class="p">,</span> <span class="n">time_series</span><span class="o">.</span><span class="n">connectivity</span><span class="o">.</span><span class="n">gid</span><span class="p">,</span> <span class="s">&#39;_connectivity&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">region_map</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;No Mapping Surface found for display!&quot;</span><span class="p">)</span>
+            <span class="n">region_map</span> <span class="o">=</span> <span class="n">region_map</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">surface</span> <span class="o">=</span> <span class="n">region_map</span><span class="o">.</span><span class="n">surface</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">region_map</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PAGE_SIZE</span> <span class="o">/=</span> <span class="mi">10</span>
+            <span class="n">surface</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">surface</span>
+
+        <span class="k">if</span> <span class="n">surface</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;No not-none Mapping Surface found for display!&quot;</span><span class="p">)</span>
+
+        <span class="n">url_vertices</span><span class="p">,</span> <span class="n">url_normals</span><span class="p">,</span> <span class="n">url_lines</span><span class="p">,</span> <span class="n">url_triangles</span><span class="p">,</span> <span class="n">alphas</span><span class="p">,</span> <span class="n">alphas_indices</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">get_urls_for_rendering</span><span class="p">(</span>
+            <span class="bp">True</span><span class="p">,</span> <span class="n">region_map</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">one_to_one_map</span><span class="p">,</span> <span class="n">url_vertices</span><span class="p">,</span> <span class="n">url_normals</span><span class="p">,</span> <span class="n">url_lines</span><span class="p">,</span> <span class="n">url_triangles</span><span class="p">,</span> <span class="n">alphas</span><span class="p">,</span> <span class="n">alphas_indices</span>
     
-<div class="viewcode-block" id="BrainViewer.get_input_tree"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainViewer.get_input_tree">[docs]</a>    def get_input_tree(self):
-        return [{'name': 'time_series', 'label': 'Time Series (Region or Surface)',
-                 'type': TimeSeries, 'required': True,
-                 'conditions': FilterChain(fields = [FilterChain.datatype + '.type', FilterChain.datatype + '._nr_dimensions'], 
-                                      operations = ["in", "=="], values = [['TimeSeriesRegion', 'TimeSeriesSurface'], 4]),
-                 'description' : 'Depending on the simulation length, and your browser capabilities, you might '
-                 'experience, after multiple runs, browser crashes. In such cases, it is recommended to use to '
-                 'empty the cache and try again. Sorry for the inconvenience.'}]
+    
+    <span class="k">def</span> <span class="nf">_get_url_for_region_boundaries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_series</span><span class="p">):</span>
+        <span class="n">one_to_one_map</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">time_series</span><span class="p">,</span> <span class="n">TimeSeriesSurface</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">one_to_one_map</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">time_series</span><span class="p">,</span> <span class="s">&#39;connectivity&#39;</span><span class="p">):</span>
+            <span class="n">region_map</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_generic_entity</span><span class="p">(</span><span class="n">RegionMapping</span><span class="p">,</span> <span class="n">time_series</span><span class="o">.</span><span class="n">connectivity</span><span class="o">.</span><span class="n">gid</span><span class="p">,</span> <span class="s">&#39;_connectivity&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">region_map</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;No Mapping Surface found for display!&quot;</span><span class="p">)</span>
+            <span class="n">region_map</span> <span class="o">=</span> <span class="n">region_map</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">surface</span> <span class="o">=</span> <span class="n">region_map</span><span class="o">.</span><span class="n">surface</span>
+            <span class="k">return</span> <span class="n">surface</span><span class="o">.</span><span class="n">get_url_for_region_boundaries</span><span class="p">(</span><span class="n">region_map</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;&#39;</span>
+
+
+<div class="viewcode-block" id="BrainViewer.compute_preview_parameters"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainViewer.compute_preview_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">compute_preview_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_series</span><span class="p">):</span>
+
+        <span class="n">one_to_one_map</span><span class="p">,</span> <span class="n">url_vertices</span><span class="p">,</span> <span class="n">url_normals</span><span class="p">,</span> <span class="n">url_lines</span><span class="p">,</span> <span class="n">url_triangles</span><span class="p">,</span> \
+            <span class="n">alphas</span><span class="p">,</span> <span class="n">alphas_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_surface_urls</span><span class="p">(</span><span class="n">time_series</span><span class="p">)</span>
+
+        <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">measure_points_no</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retrieve_measure_points</span><span class="p">(</span><span class="n">time_series</span><span class="p">)</span>
+        <span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">get_min_max_values</span><span class="p">()</span>
+        <span class="n">legend_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_legend_labels</span><span class="p">(</span><span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">urlVertices</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">url_vertices</span><span class="p">),</span> <span class="n">urlTriangles</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">url_triangles</span><span class="p">),</span>
+                    <span class="n">urlLines</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">url_lines</span><span class="p">),</span> <span class="n">urlNormals</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">url_normals</span><span class="p">),</span>
+                    <span class="n">alphas</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">alphas</span><span class="p">),</span> <span class="n">alphas_indices</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">alphas_indices</span><span class="p">),</span>
+                    <span class="n">base_activity_url</span><span class="o">=</span><span class="n">ABCDisplayer</span><span class="o">.</span><span class="n">VISUALIZERS_URL_PREFIX</span> <span class="o">+</span> <span class="n">time_series</span><span class="o">.</span><span class="n">gid</span><span class="p">,</span>
+                    <span class="n">isOneToOneMapping</span><span class="o">=</span><span class="n">one_to_one_map</span><span class="p">,</span> <span class="n">minActivity</span><span class="o">=</span><span class="n">min_val</span><span class="p">,</span> <span class="n">maxActivity</span><span class="o">=</span><span class="n">max_val</span><span class="p">,</span>
+                    <span class="n">minActivityLabels</span><span class="o">=</span><span class="n">legend_labels</span><span class="p">,</span> <span class="n">noOfMeasurePoints</span><span class="o">=</span><span class="n">measure_points_no</span><span class="p">)</span>
+
 </div>
-<div class="viewcode-block" id="BrainViewer.get_required_memory_size"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainViewer.get_required_memory_size">[docs]</a>    def get_required_memory_size(self, time_series):
-        """
-        Return the required memory to run this algorithm.
-        """
-        overall_shape = time_series.read_data_shape()
-        #Assume one page doesn't get 'dumped' in time and maybe two consecutive pages will be in the same 
-        #time in memory.
-        used_shape = (overall_shape[0] / (self.PAGE_SIZE * 2.0), overall_shape[1], overall_shape[2], overall_shape[3])
-        input_size = numpy.prod(used_shape) * 8.0
-        return input_size
-       </div>
-<div class="viewcode-block" id="BrainViewer.launch"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainViewer.launch">[docs]</a>    def launch(self, time_series): 
-        """ Build visualizer's page. """
-        params = self.compute_parameters(time_series)
-        params[self.EXPORTABLE_FIGURE] = True
-        return self.build_display_result("brain/view", params, pages = dict(controlPage="brain/controls"))
-    </div>
-<div class="viewcode-block" id="BrainViewer.generate_preview"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainViewer.generate_preview">[docs]</a>    def generate_preview(self, time_series, figure_size=None):
-        """ Generate the preview for the burst page """
-        params = self.compute_preview_parameters(time_series)
-        normalization_factor = figure_size[0] / 800
-        if figure_size[1] / 600 &lt; normalization_factor:
-            normalization_factor = figure_size[1] / 600
-        params['width'] = figure_size[0] * normalization_factor
-        params['height'] = figure_size[1] * normalization_factor
-        return self.build_display_result("brain/portlet_preview", params, pages = dict())
+<div class="viewcode-block" id="BrainViewer.compute_parameters"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainViewer.compute_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">compute_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_series</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the required parameter dictionary for the HTML/JS viewer.</span>
+
+<span class="sd">        :rtype: `dict`</span>
+<span class="sd">        :raises Exception: when</span>
+<span class="sd">                    * number of measure points exceeds the maximum allowed</span>
+<span class="sd">                    * a Face object cannot be found in database</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">one_to_one_map</span><span class="p">,</span> <span class="n">url_vertices</span><span class="p">,</span> <span class="n">url_normals</span><span class="p">,</span> <span class="n">url_lines</span><span class="p">,</span> <span class="n">url_triangles</span><span class="p">,</span> \
+            <span class="n">alphas</span><span class="p">,</span> <span class="n">alphas_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_surface_urls</span><span class="p">(</span><span class="n">time_series</span><span class="p">)</span>
+
+        <span class="n">measure_points</span><span class="p">,</span> <span class="n">measure_points_labels</span><span class="p">,</span> <span class="n">measure_points_no</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retrieve_measure_points</span><span class="p">(</span><span class="n">time_series</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">one_to_one_map</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">measure_points_no</span> <span class="o">&gt;</span> <span class="n">MAX_MEASURE_POINTS_LENGTH</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Max number of measure points &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">MAX_MEASURE_POINTS_LENGTH</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; exceeded.&quot;</span><span class="p">)</span>
+
+        <span class="n">base_activity_url</span><span class="p">,</span> <span class="n">time_urls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_data_slices</span><span class="p">(</span><span class="n">time_series</span><span class="p">)</span>
+        <span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">get_min_max_values</span><span class="p">()</span>
+        <span class="n">legend_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_legend_labels</span><span class="p">(</span><span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">)</span>
+
+        <span class="n">face_surface</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_generic_entity</span><span class="p">(</span><span class="n">FaceSurface</span><span class="p">,</span> <span class="s">&quot;FaceSurface&quot;</span><span class="p">,</span> <span class="s">&quot;type&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">face_surface</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;No face object found in database.&quot;</span><span class="p">)</span>
+        <span class="n">face_vertices</span><span class="p">,</span> <span class="n">face_normals</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">face_triangles</span> <span class="o">=</span> <span class="n">face_surface</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_urls_for_rendering</span><span class="p">()</span>
+        <span class="n">face_object</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([</span><span class="n">face_vertices</span><span class="p">,</span> <span class="n">face_normals</span><span class="p">,</span> <span class="n">face_triangles</span><span class="p">])</span>
+
+        <span class="n">data_shape</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">read_data_shape</span><span class="p">()</span>
+        <span class="n">state_variables</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">labels_dimensions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">time_series</span><span class="o">.</span><span class="n">labels_ordering</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[])</span>
+
+        <span class="n">boundary_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_for_region_boundaries</span><span class="p">(</span><span class="n">time_series</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&quot;Cerebral Activity&quot;</span><span class="p">,</span> <span class="n">isOneToOneMapping</span><span class="o">=</span><span class="n">one_to_one_map</span><span class="p">,</span>
+                    <span class="n">urlVertices</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">url_vertices</span><span class="p">),</span> <span class="n">urlTriangles</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">url_triangles</span><span class="p">),</span> 
+                    <span class="n">urlLines</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">url_lines</span><span class="p">),</span> <span class="n">urlNormals</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">url_normals</span><span class="p">),</span> 
+                    <span class="n">urlMeasurePointsLabels</span><span class="o">=</span><span class="n">measure_points_labels</span><span class="p">,</span> <span class="n">measure_points</span><span class="o">=</span><span class="n">measure_points</span><span class="p">,</span> 
+                    <span class="n">noOfMeasurePoints</span><span class="o">=</span><span class="n">measure_points_no</span><span class="p">,</span> <span class="n">alphas</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">alphas</span><span class="p">),</span> 
+                    <span class="n">alphas_indices</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">alphas_indices</span><span class="p">),</span> <span class="n">base_activity_url</span><span class="o">=</span><span class="n">base_activity_url</span><span class="p">,</span>
+                    <span class="n">time</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">time_urls</span><span class="p">),</span> <span class="n">minActivity</span><span class="o">=</span><span class="n">min_val</span><span class="p">,</span> <span class="n">maxActivity</span><span class="o">=</span><span class="n">max_val</span><span class="p">,</span> 
+                    <span class="n">minActivityLabels</span><span class="o">=</span><span class="n">legend_labels</span><span class="p">,</span> <span class="n">labelsStateVar</span><span class="o">=</span><span class="n">state_variables</span><span class="p">,</span> <span class="n">labelsModes</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">data_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span> 
+                    <span class="n">extended_view</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">shelfObject</span><span class="o">=</span><span class="n">face_object</span><span class="p">,</span> <span class="n">time_series</span><span class="o">=</span><span class="n">time_series</span><span class="p">,</span> <span class="n">pageSize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">PAGE_SIZE</span><span class="p">,</span> 
+                    <span class="n">boundary_url</span><span class="o">=</span><span class="n">boundary_url</span><span class="p">)</span>
+
 </div>
-    def _prepare_surface_urls(self, time_series):
-        """
-        Prepares the urls from which the client may read the data needed for drawing the surface.
-        """
-        one_to_one_map = isinstance(time_series, TimeSeriesSurface)
-        if not one_to_one_map:
-            region_map = dao.get_generic_entity(RegionMapping, time_series.connectivity.gid, '_connectivity')
-            if len(region_map) &lt; 1:
-                raise Exception("No Mapping Surface found for display!")
-            region_map = region_map[0]
-            surface = region_map.surface
-        else:
-            region_map = None
-            self.PAGE_SIZE = self.PAGE_SIZE / 10
-            surface = time_series.surface
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_prepare_mappings</span><span class="p">(</span><span class="n">mappings_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get full mapping dictionary between the original vertices and multiple slices (for WebGL compatibility).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">prepared_mappings</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">mappings_dict</span><span class="p">:</span>
+            <span class="n">this_mappings</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">vert_map_dict</span> <span class="o">=</span> <span class="n">mappings_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="n">vertices_indexes</span> <span class="o">=</span> <span class="n">vert_map_dict</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">]</span>
+            <span class="n">this_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vertices_indexes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">vertices_indexes</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">vertices_indexes</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">vertices_indexes</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">this_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vertices_indexes</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">vertices_indexes</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">vertices_indexes</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                        <span class="n">this_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+            <span class="n">prepared_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_mappings</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">prepared_mappings</span>
 
-        if surface is None:
-            raise Exception("No not-none Mapping Surface found for display!")
 
-        url_vertices, url_normals, url_triangles, alphas, alphas_indices = surface.get_urls_for_rendering(True, 
-                                                                                                          region_map)
-        return one_to_one_map, url_vertices, url_normals, url_triangles, alphas, alphas_indices
+    <span class="k">def</span> <span class="nf">_retrieve_measure_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_series</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        To be overwritten method, for retrieving the measurement points (region centers, EEG sensors).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">time_series</span><span class="p">,</span> <span class="n">TimeSeriesSurface</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[],</span> <span class="p">[],</span> <span class="mi">0</span>
+        <span class="n">measure_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths2url</span><span class="p">(</span><span class="n">time_series</span><span class="o">.</span><span class="n">connectivity</span><span class="p">,</span> <span class="s">&#39;centres&#39;</span><span class="p">)</span>
+        <span class="n">measure_points_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths2url</span><span class="p">(</span><span class="n">time_series</span><span class="o">.</span><span class="n">connectivity</span><span class="p">,</span> <span class="s">&#39;region_labels&#39;</span><span class="p">)</span>
+        <span class="n">measure_points_no</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">connectivity</span><span class="o">.</span><span class="n">number_of_regions</span>
+        <span class="k">return</span> <span class="n">measure_points</span><span class="p">,</span> <span class="n">measure_points_labels</span><span class="p">,</span> <span class="n">measure_points_no</span>
 
-<div class="viewcode-block" id="BrainViewer.compute_preview_parameters"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainViewer.compute_preview_parameters">[docs]</a>    def compute_preview_parameters(self, time_series):
-        one_to_one_map, url_vertices, url_normals, url_triangles, \
-        alphas, alphas_indices = self._prepare_surface_urls(time_series)
-        _, _, measure_points_no = self._retrieve_measure_points(time_series)
-        time_0_data = time_series.read_data_page(0, 1, None)
-        min_val = numpy.min(time_0_data)
-        max_val = numpy.max(time_0_data)
-        legend_labels = self._compute_legend_labels(min_val, max_val)
-        return dict(isOneToOneMapping = one_to_one_map, urlVertices = json.dumps(url_vertices), urlTriangles = json.dumps(url_triangles),
-                    urlNormals= json.dumps(url_normals), alphas = json.dumps(alphas), alphas_indices = json.dumps(alphas_indices),
-                    base_activity_url = ABCDisplayer.VISUALIZERS_URL_PREFIX + time_series.gid, minActivity = min_val, maxActivity = max_val, 
-                    minActivityLabels = legend_labels, noOfMeasurePoints = measure_points_no, pageSize = 1, nrOfPages = 1)
-        
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_compute_legend_labels</span><span class="p">(</span><span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">,</span> <span class="n">nr_labels</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">min_nr_dec</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute rounded labels for MIN and MAX values such that decimals will show a difference between them.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">min_integer</span><span class="p">,</span> <span class="n">min_decimals</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">min_val</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">max_integer</span><span class="p">,</span> <span class="n">max_decimals</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">max_val</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">min_nr_dec</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">min_decimals</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">min_nr_dec</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">max_decimals</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">min_nr_dec</span><span class="p">:</span>
+            <span class="n">processed_min_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">min_val</span><span class="p">)</span>
+            <span class="n">processed_max_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">max_val</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">min_integer</span> <span class="o">!=</span> <span class="n">max_integer</span><span class="p">:</span>
+            <span class="n">processed_min_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">min_integer</span> <span class="o">+</span> <span class="s">&#39;.&#39;</span> <span class="o">+</span> <span class="n">min_decimals</span><span class="p">[:</span><span class="n">min_nr_dec</span><span class="p">])</span>
+            <span class="n">processed_max_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">max_integer</span> <span class="o">+</span> <span class="s">&#39;.&#39;</span> <span class="o">+</span> <span class="n">max_decimals</span><span class="p">[:</span><span class="n">min_nr_dec</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">min_decimals</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">max_decimals</span><span class="p">)</span> <span class="ow">or</span> <span class="n">val</span> <span class="o">!=</span> <span class="n">max_decimals</span><span class="p">[</span><span class="n">idx</span><span class="p">]:</span>
+                    <span class="k">break</span>
+            <span class="n">processed_min_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">min_integer</span> <span class="o">+</span> <span class="s">&#39;.&#39;</span> <span class="o">+</span> <span class="n">min_decimals</span><span class="p">[:</span><span class="n">idx</span><span class="p">])</span>
+            <span class="n">processed_max_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">max_integer</span> <span class="o">+</span> <span class="s">&#39;.&#39;</span> <span class="o">+</span> <span class="n">max_decimals</span><span class="p">[:</span><span class="n">idx</span><span class="p">])</span>
+        <span class="n">value_diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">processed_max_val</span> <span class="o">-</span> <span class="n">processed_min_val</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">nr_labels</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">inter_values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">processed_min_val</span> <span class="o">+</span> <span class="n">value_diff</span> <span class="o">*</span> <span class="n">i</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">nr_labels</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">processed_max_val</span><span class="p">]</span> <span class="o">+</span> <span class="n">inter_values</span> <span class="o">+</span> <span class="p">[</span><span class="n">processed_min_val</span><span class="p">]</span>
+
+
+    <span class="k">def</span> <span class="nf">_prepare_data_slices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_series</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare data URL for retrieval with slices of timeSeries activity and Time-Line.</span>
+<span class="sd">        :returns: [activity_urls], [timeline_urls]</span>
+<span class="sd">                 Currently timeline_urls has just one value, as on client is loaded entirely anyway.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">overall_shape</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">read_data_shape</span><span class="p">()</span>
+
+        <span class="n">activity_base_url</span> <span class="o">=</span> <span class="n">ABCDisplayer</span><span class="o">.</span><span class="n">VISUALIZERS_URL_PREFIX</span> <span class="o">+</span> <span class="n">time_series</span><span class="o">.</span><span class="n">gid</span>
+        <span class="n">time_urls</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">paths2url</span><span class="p">(</span><span class="n">time_series</span><span class="p">,</span> <span class="s">&#39;read_time_page&#39;</span><span class="p">,</span>
+                                    <span class="n">parameter</span><span class="o">=</span><span class="s">&quot;current_page=0;page_size=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">overall_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))]</span>
+        <span class="k">return</span> <span class="n">activity_base_url</span><span class="p">,</span> <span class="n">time_urls</span>
+
 </div>
-<div class="viewcode-block" id="BrainViewer.compute_parameters"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainViewer.compute_parameters">[docs]</a>    def compute_parameters(self, time_series):
-        """
-        Create the required parameter dictionary for the HTML/JS viewer.
-        """
-        one_to_one_map, url_vertices, url_normals, url_triangles, \
-        alphas, alphas_indices = self._prepare_surface_urls(time_series)
+<div class="viewcode-block" id="BrainEEG"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainEEG">[docs]</a><span class="k">class</span> <span class="nc">BrainEEG</span><span class="p">(</span><span class="n">BrainViewer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Visualizer merging Brain 3D display and EEG lines display.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_ui_name</span> <span class="o">=</span> <span class="s">&quot;Brain EEG Activity in 3D and 2D&quot;</span>
+    <span class="n">_ui_subsection</span> <span class="o">=</span> <span class="s">&quot;brain_eeg&quot;</span>
 
-        measure_points, measure_points_labels, measure_points_no = self._retrieve_measure_points(time_series)
-        if (not one_to_one_map) and (measure_points_no &gt;  MAX_MEASURE_POINTS_LENGTH):
-            raise Exception("Max number of measure points " + str(MAX_MEASURE_POINTS_LENGTH) + " exceeded.")
+<div class="viewcode-block" id="BrainEEG.get_input_tree"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainEEG.get_input_tree">[docs]</a>    <span class="k">def</span> <span class="nf">get_input_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         
-        base_activity_url, time_urls, nr_of_pages = self._prepare_data_slices(time_series)
-        min_val, max_val = time_series.get_min_max_values()
-        legend_labels = self._compute_legend_labels(min_val, max_val)
-        
-        face_surface = dao.get_generic_entity(FaceSurface, "FaceSurface", "type")
-        if len(face_surface) == 0:
-            raise Exception("No face object found in database.")
-        face_vertices, face_normals, face_triangles = face_surface[0].get_urls_for_rendering()
-        face_object = json.dumps([face_vertices, face_normals, face_triangles])
-        
-        data_shape = time_series.read_data_shape()
-        if time_series.labels_ordering and len(time_series.labels_dimensions) &gt;= 1:
-            state_variables = time_series.labels_dimensions.get(time_series.labels_ordering[1], [])
-            if len(state_variables) &lt;= 1:
-                state_variables = []
-        else:
-            state_variables = []
-        
-        return dict(title = "Cerebral Activity", isOneToOneMapping = one_to_one_map,
-                    urlVertices = json.dumps(url_vertices), urlTriangles = json.dumps(url_triangles),
-                    urlNormals= json.dumps(url_normals), urlMeasurePointsLabels=measure_points_labels,
-                    measure_points = measure_points, noOfMeasurePoints = measure_points_no,
-                    alphas = json.dumps(alphas), alphas_indices = json.dumps(alphas_indices),
-                    base_activity_url = base_activity_url, time = json.dumps(time_urls),
-                    minActivity = min_val, maxActivity = max_val, minActivityLabels = legend_labels, 
-                    nrOfStateVar = state_variables, nrOfModes = range(data_shape[3]), extended_view = False, 
-                    shelfObject = face_object, time_series = time_series, pageSize = self.PAGE_SIZE, nrOfPages = nr_of_pages)
+        <span class="k">return</span> <span class="p">[{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;surface_activity&#39;</span><span class="p">,</span> <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Time Series (EEG or MEG)&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="s">&#39;required&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+                 <span class="s">&#39;conditions&#39;</span><span class="p">:</span> <span class="n">FilterChain</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="n">FilterChain</span><span class="o">.</span><span class="n">datatype</span> <span class="o">+</span> <span class="s">&#39;.type&#39;</span><span class="p">],</span>
+                                           <span class="n">operations</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;in&quot;</span><span class="p">],</span>
+                                           <span class="n">values</span><span class="o">=</span><span class="p">[[</span><span class="s">&#39;TimeSeriesEEG&#39;</span><span class="p">,</span> <span class="s">&#39;TimeSeriesMEG&#39;</span><span class="p">]]),</span>
+                 <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Depending on the simulation length and your browser capabilities, you might experience&#39;</span>
+                                <span class="s">&#39; after multiple runs, browser crashes. In such cases, it is recommended to empty the&#39;</span>
+                                <span class="s">&#39; browser cache and try again. Sorry for the inconvenience.&#39;</span><span class="p">},</span>
+                <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;eeg_cap&#39;</span><span class="p">,</span> <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;EEG Cap&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">EEGCap</span><span class="p">,</span> <span class="s">&#39;required&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+                 <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;The EEG Cap surface on which to display the results!&#39;</span><span class="p">}]</span>
         
         </div>
-    @staticmethod
-    def _prepare_mappings(mappings_dict):
-        """
-        Get full mapping dictionary between the original vertices and multiple slices (for WebGL compatibility).
-        """
-        prepared_mappings = []
-        for key in mappings_dict:
-            this_mappings = []
-            vert_map_dict = mappings_dict[key]
-            vertices_indexes = vert_map_dict['indices']
-            this_mappings.append(vertices_indexes[0].tolist())
-            for i in range(1, len(vertices_indexes)):
-                if vertices_indexes[i][0] == vertices_indexes[i][1]:
-                    this_mappings.append(vertices_indexes[i][0])
-                else:
-                    for index in range(vertices_indexes[i][0], vertices_indexes[i][1] + 1):
-                        this_mappings.append(index)
-            prepared_mappings.append(this_mappings)
-        return prepared_mappings
+    <span class="k">def</span> <span class="nf">_retrieve_measure_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface_activity</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overwrite, and compute sensors positions after mapping or skin surface of unit-vectors</span>
+
+<span class="sd">        :returns: measure points, measure points labels, measure points number</span>
+<span class="sd">        :rtype: tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">measure_points</span><span class="p">,</span> <span class="n">measure_points_no</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;eeg_cap&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">eeg_cap</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">cap_eeg</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_generic_entity</span><span class="p">(</span><span class="n">EEGCap</span><span class="p">,</span> <span class="s">&quot;EEGCap&quot;</span><span class="p">,</span> <span class="s">&quot;type&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cap_eeg</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">measure_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths2url</span><span class="p">(</span><span class="n">surface_activity</span><span class="o">.</span><span class="n">sensors</span><span class="p">,</span> <span class="s">&#39;locations&#39;</span><span class="p">)</span>
+                <span class="n">measure_points_no</span> <span class="o">=</span> <span class="n">surface_activity</span><span class="o">.</span><span class="n">sensors</span><span class="o">.</span><span class="n">number_of_sensors</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">eeg_cap</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">eeg_cap</span> <span class="o">=</span> <span class="n">cap_eeg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">eeg_cap</span><span class="p">:</span>
+            <span class="n">sensor_locations</span> <span class="o">=</span> <span class="n">surface_activity</span><span class="o">.</span><span class="n">sensors</span><span class="o">.</span><span class="n">sensors_to_surface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eeg_cap</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">measure_points</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">sensor_locations</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+            <span class="n">measure_points_no</span> <span class="o">=</span> <span class="o">-</span> <span class="n">surface_activity</span><span class="o">.</span><span class="n">sensors</span><span class="o">.</span><span class="n">number_of_sensors</span>
+
+        <span class="n">measure_points_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths2url</span><span class="p">(</span><span class="n">surface_activity</span><span class="o">.</span><span class="n">sensors</span><span class="p">,</span> <span class="s">&#39;labels&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">measure_points</span><span class="p">,</span> <span class="n">measure_points_labels</span><span class="p">,</span> <span class="n">measure_points_no</span>
 
 
-    def _retrieve_measure_points(self, time_series):
-        """
-        To be overwritten method, for retrieving the measurement points (region centers, EEG sensors).
-        """
-        if isinstance(time_series, TimeSeriesSurface):
-            return [], [], 0
-        measure_points = self.paths2url(time_series.connectivity, 'centres')
-        measure_points_labels = self.paths2url(time_series.connectivity, 'region_labels')
-        measure_points_no = time_series.connectivity.number_of_regions
-        return measure_points, measure_points_labels, measure_points_no
-    
-
-    @staticmethod
-    def _compute_legend_labels(min_val, max_val, nr_labels= 5, min_nr_dec= 3):
-        """
-        Compute rounded labels for MIN and MAX values such that decimals will show a difference between them.
-        """
-        min_integer, min_decimals = str(min_val).split('.')
-        max_integer, max_decimals = str(max_val).split('.')
-        idx = min_nr_dec
-        if (len(min_decimals) &lt; min_nr_dec or len(max_decimals) &lt; min_nr_dec):
-            processed_min_val = float(min_val)
-            processed_max_val = float(max_val)
-        elif (min_integer != max_integer):
-            processed_min_val = float(min_integer + '.' + min_decimals[:min_nr_dec])
-            processed_max_val = float(max_integer + '.' + max_decimals[:min_nr_dec])
-        else:
-            for idx, val in enumerate(min_decimals): 
-                if idx &lt; len(max_decimals) or val != max_decimals[idx]:
-                    break
-            processed_min_val = float(min_integer + '.' + min_decimals[:idx])
-            processed_max_val = float(max_integer + '.' + max_decimals[:idx])
-        value_diff = (processed_max_val - processed_min_val) / (nr_labels + 1)
-        inter_values = [round(processed_min_val + value_diff * i, idx) for i in reversed(range(1, (nr_labels+1)))]
-        return [processed_max_val] + inter_values + [processed_min_val]
-      
-      
-    def _prepare_data_slices(self, time_series): 
-        """
-        Prepare data URL for retrieval with slices of timeSeries activity and Time-Line.
-        :return: [activity_urls], [timeline_urls] 
-                 Currently timeline_urls has just one value, as on client is loaded entirely anyway.
-        """
-        overall_shape = time_series.read_data_shape()
-        total_pages = overall_shape[0] / self.PAGE_SIZE
-        if overall_shape[0] % self.PAGE_SIZE &gt; 0:
-            total_pages += 1
-            
-        activity_base_url = ABCDisplayer.VISUALIZERS_URL_PREFIX + time_series.gid
-        time_urls = [self.paths2url(time_series, 'read_time_page',
-                                    parameter="current_page=0;page_size=" + str(overall_shape[0]))]
-        return activity_base_url, time_urls, total_pages     
-
+<div class="viewcode-block" id="BrainEEG.launch"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainEEG.launch">[docs]</a>    <span class="k">def</span> <span class="nf">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface_activity</span><span class="p">,</span> <span class="n">eeg_cap</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overwrite Brain Visualizer launch and extend functionality,</span>
+<span class="sd">        by adding a Monitor set of parameters near.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eeg_cap</span> <span class="o">=</span> <span class="n">eeg_cap</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">BrainViewer</span><span class="o">.</span><span class="n">compute_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface_activity</span><span class="p">)</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">EegMonitor</span><span class="p">()</span><span class="o">.</span><span class="n">compute_parameters</span><span class="p">(</span><span class="n">surface_activity</span><span class="p">))</span>
+        <span class="n">params</span><span class="p">[</span><span class="s">&#39;extended_view&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">params</span><span class="p">[</span><span class="s">&#39;isOneToOneMapping&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">params</span><span class="p">[</span><span class="s">&#39;brainViewerTemplate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;view.html&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_display_result</span><span class="p">(</span><span class="s">&quot;brain/extendedview&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span>
+                                         <span class="n">pages</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">controlPage</span><span class="o">=</span><span class="s">&quot;brain/extendedcontrols&quot;</span><span class="p">,</span>
+                                                    <span class="n">channelsPage</span><span class="o">=</span><span class="s">&quot;commons/channel_selector.html&quot;</span><span class="p">))</span>
 
 </div>
-<div class="viewcode-block" id="BrainEEG"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainEEG">[docs]</a>class BrainEEG(BrainViewer):
-    """
-    Visualizer merging Brain 3D display and EEG lines display.
-    """
-    _ui_name = "Brain Activity with EEG lines"
+    <span class="k">def</span> <span class="nf">_prepare_surface_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_series</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepares the urls from which the client may read the data needed for drawing the surface.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">one_to_one_map</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">eeg_cap</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">eeg_cap</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_generic_entity</span><span class="p">(</span><span class="n">EEGCap</span><span class="p">,</span> <span class="s">&quot;EEGCap&quot;</span><span class="p">,</span> <span class="s">&quot;type&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">eeg_cap</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;No EEG Cap Surface found for display!&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">eeg_cap</span> <span class="o">=</span> <span class="n">eeg_cap</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">url_vertices</span><span class="p">,</span> <span class="n">url_normals</span><span class="p">,</span> <span class="n">url_lines</span><span class="p">,</span> <span class="n">url_triangles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eeg_cap</span><span class="o">.</span><span class="n">get_urls_for_rendering</span><span class="p">()</span>
+        <span class="n">alphas</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">alphas_indices</span> <span class="o">=</span> <span class="p">[]</span>
 
-<div class="viewcode-block" id="BrainEEG.get_input_tree"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainEEG.get_input_tree">[docs]</a>    def get_input_tree(self):
-        return [{'name': 'surface_activity', 'label': 'EEG activity',
-                 'type': TimeSeriesEEG, 'required': True,
-                 'description' : 'Results after EEG Monitor are expected!'},
-                {'name': 'eeg_cap', 'label': 'EEG Cap',
-                 'type': EEGCap, 'required': False,
-                 'description' : 'The EEG Cap surface on which to display the results!'}]
+        <span class="k">return</span> <span class="n">one_to_one_map</span><span class="p">,</span> <span class="n">url_vertices</span><span class="p">,</span> <span class="n">url_normals</span><span class="p">,</span> <span class="n">url_lines</span><span class="p">,</span> <span class="n">url_triangles</span><span class="p">,</span> <span class="n">alphas</span><span class="p">,</span> <span class="n">alphas_indices</span>
 
 </div>
-    def _retrieve_measure_points(self, surface_activity):
-        """ Overwrite, and compute sensors positions after mapping or skin surface of unit-vectors"""
-        if not hasattr(self, 'eeg_cap') or self.eeg_cap is None:
-            cap_eeg = dao.get_generic_entity(EEGCap, "EEGCap", "type")
-            if len(cap_eeg) &lt; 1:
-                measure_points = self.paths2url(surface_activity.sensors, 'locations')
-                measure_points_no = surface_activity.sensors.number_of_sensors
-                self.eeg_cap = None
-            else:
-                self.eeg_cap = cap_eeg[0]
-        if self.eeg_cap:
-            sensor_locations = surface_activity.sensors.sensors_to_surface(self.eeg_cap)[1]
-            measure_points = json.dumps(sensor_locations.tolist())
-            measure_points_no = - surface_activity.sensors.number_of_sensors
+<div class="viewcode-block" id="BrainSEEG"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainSEEG">[docs]</a><span class="k">class</span> <span class="nc">BrainSEEG</span><span class="p">(</span><span class="n">BrainEEG</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Visualizer merging Brain 3D display and MEG lines display.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_ui_name</span> <span class="o">=</span> <span class="s">&quot;Brain SEEG Activity in 3D and 2D&quot;</span>
+    <span class="n">_ui_subsection</span> <span class="o">=</span> <span class="s">&quot;brain_seeg&quot;</span>
+
+
+<div class="viewcode-block" id="BrainSEEG.get_input_tree"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainSEEG.get_input_tree">[docs]</a>    <span class="k">def</span> <span class="nf">get_input_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;surface_activity&#39;</span><span class="p">,</span> <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;SEEG activity&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">TimeSeriesSEEG</span><span class="p">,</span> <span class="s">&#39;required&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+                 <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Results after SEEG Monitor are expected!&#39;</span><span class="p">}]</span>
         
-        measure_points_labels = self.paths2url(surface_activity.sensors, 'labels')
-        return measure_points, measure_points_labels, measure_points_no
+    </div>
+    <span class="k">def</span> <span class="nf">_retrieve_measure_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface_activity</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overwrite, and compute sensors positions after mapping or skin surface of unit-vectors</span>
 
-
-<div class="viewcode-block" id="BrainEEG.launch"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainEEG.launch">[docs]</a>    def launch(self, surface_activity, eeg_cap = None):
-        """
-        Overwrite Brain Visualizer launch and extend functionality,
-        by adding a Monitor set of parameters near.
-        """
-        self.eeg_cap = eeg_cap
-        params = BrainViewer.compute_parameters(self, surface_activity)
-        params.update(EegMonitor().compute_parameters(surface_activity))
-        params['extended_view'] = True
-        params['isOneToOneMapping'] = False
-        return self.build_display_result("brain/extendedview", params, 
-                                         pages = dict(controlPage="brain/extendedcontrols",
-                                                      channelsPage="commons/channel_selector.html"))
-
-</div>
-    def _prepare_surface_urls(self, time_series):
-        one_to_one_map = False
-        if self.eeg_cap is None:
-            eeg_cap = dao.get_generic_entity(EEGCap, "EEGCap", "type")
-            if len(eeg_cap) &lt; 1:
-                raise Exception("No EEG Cap Surface found for display!")
-            self.eeg_cap = eeg_cap[0]
-        url_vertices, url_normals, url_triangles = self.eeg_cap.get_urls_for_rendering()
-        alphas = []
-        alphas_indices = []
-
-        return one_to_one_map, url_vertices, url_normals, url_triangles, alphas, alphas_indices
-
-            
-        </pre></div>
+<span class="sd">        :returns: measure points, measure points labels, measure points number</span>
+<span class="sd">        :rtype: tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">measure_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths2url</span><span class="p">(</span><span class="n">surface_activity</span><span class="o">.</span><span class="n">sensors</span><span class="p">,</span> <span class="s">&#39;locations&#39;</span><span class="p">)</span>
+        <span class="n">measure_points_no</span> <span class="o">=</span> <span class="n">surface_activity</span><span class="o">.</span><span class="n">sensors</span><span class="o">.</span><span class="n">number_of_sensors</span>
+        <span class="n">measure_points_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths2url</span><span class="p">(</span><span class="n">surface_activity</span><span class="o">.</span><span class="n">sensors</span><span class="p">,</span> <span class="s">&#39;labels&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">measure_points</span><span class="p">,</span> <span class="n">measure_points_labels</span><span class="p">,</span> <span class="n">measure_points_no</span>
+    
+    
+<div class="viewcode-block" id="BrainSEEG.launch"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.brain.BrainSEEG.launch">[docs]</a>    <span class="k">def</span> <span class="nf">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface_activity</span><span class="p">,</span> <span class="n">eeg_cap</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">result_params</span> <span class="o">=</span> <span class="n">BrainEEG</span><span class="o">.</span><span class="n">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface_activity</span><span class="p">)</span>
+        <span class="n">result_params</span><span class="p">[</span><span class="s">&#39;brainViewerTemplate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;seeg_view.html&quot;</span>
+        <span class="c"># Mark as None since we only display shelf face and no point to load these as well</span>
+        <span class="n">result_params</span><span class="p">[</span><span class="s">&#39;urlVertices&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">result_params</span><span class="p">[</span><span class="s">&#39;isSEEG&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="n">result_params</span>
+        </div></div>
+</pre></div>
 
           </div>
         </div>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../../search.html" method="get">
@@ -383,13 +471,13 @@ MAX_MEASURE_POINTS_LENGTH = 235
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

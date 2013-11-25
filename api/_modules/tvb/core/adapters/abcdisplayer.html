@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.core.adapters.abcdisplayer &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.core.adapters.abcdisplayer &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../index.html" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -70,6 +69,15 @@
 <span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
 <span class="c">#</span>
 <span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -79,7 +87,7 @@
 <span class="kn">import</span> <span class="nn">pylab</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span> <span class="k">as</span> <span class="n">config</span>
-<span class="kn">from</span> <span class="nn">tvb.core.utils</span> <span class="kn">import</span> <span class="n">synchronized</span>
+<span class="kn">from</span> <span class="nn">tvb.core.decorators</span> <span class="kn">import</span> <span class="n">synchronized</span>
 <span class="kn">from</span> <span class="nn">tvb.core.adapters.abcadapter</span> <span class="kn">import</span> <span class="n">ABCSynchronous</span>
 <span class="kn">from</span> <span class="nn">tvb.core.adapters.exceptions</span> <span class="kn">import</span> <span class="n">LaunchException</span>
 <span class="kn">from</span> <span class="nn">tvb.core.entities.storage</span> <span class="kn">import</span> <span class="n">dao</span>
@@ -99,7 +107,6 @@
     <span class="n">PARAM_FIGURE_SIZE</span> <span class="o">=</span> <span class="s">&#39;figure_size&#39;</span>
     <span class="n">VISUALIZERS_ROOT</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
     <span class="n">VISUALIZERS_URL_PREFIX</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
-    <span class="n">EXPORTABLE_FIGURE</span> <span class="o">=</span> <span class="s">&#39;figure_exportable&#39;</span>
      
      
 <div class="viewcode-block" id="ABCDisplayer.get_output"><a class="viewcode-back" href="../../../../tvb.core.adapters.html#tvb.core.adapters.abcdisplayer.ABCDisplayer.get_output">[docs]</a>    <span class="k">def</span> <span class="nf">get_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -162,8 +169,7 @@
             <span class="n">parameters</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="n">parameters</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_CONTENT</span><span class="p">]</span> <span class="o">=</span> <span class="n">template</span>
         <span class="n">parameters</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_IS_ADAPTER</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">EXPORTABLE_FIGURE</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">:</span>
-            <span class="n">parameters</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">EXPORTABLE_FIGURE</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+
         <span class="k">return</span> <span class="n">parameters</span>
 
 </div>
@@ -270,14 +276,13 @@
             <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
             
         <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_create_new_figure</span><span class="p">(</span><span class="n">figsize</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_new_figure</span><span class="p">(</span><span class="n">figsize</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span> 
         
         <span class="n">parameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ui_name</span><span class="p">,</span> <span class="n">figureNumber</span><span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="n">showFullToolbar</span><span class="o">=</span> <span class="n">show_full_toolbar</span><span class="p">,</span>
                           <span class="n">serverIp</span><span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">SERVER_IP</span><span class="p">,</span> <span class="n">serverPort</span><span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">MPLH5_SERVER_PORT</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">EXPORTABLE_FIGURE</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">:</span>
-            <span class="n">parameters</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">EXPORTABLE_FIGURE</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_display_result</span><span class="p">(</span><span class="s">&quot;mplh5/figure&quot;</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
 
 </div>
@@ -286,7 +291,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        synchronized method to avoid creating the same figure number.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">figure</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="n">figsize</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pylab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="n">figsize</span><span class="p">)</span>
 </pre></div></div>
 
           </div>
@@ -294,6 +299,9 @@
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../../search.html" method="get">
@@ -320,13 +328,13 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

@@ -1,0 +1,419 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.services.user_service &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.services.user_service</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Service layer for USER entities. </span>
+<span class="sd">   </span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+<span class="kn">from</span> <span class="nn">hashlib</span> <span class="kn">import</span> <span class="n">md5</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">stack</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span> <span class="k">as</span> <span class="n">cfg</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">tvb.core.decorators</span> <span class="kn">import</span> <span class="n">synchronized</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities</span> <span class="kn">import</span> <span class="n">model</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.storage</span> <span class="kn">import</span> <span class="n">dao</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.file.files_update_manager</span> <span class="kn">import</span> <span class="n">FilesUpdateManager</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services</span> <span class="kn">import</span> <span class="n">email_sender</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.exceptions</span> <span class="kn">import</span> <span class="n">UsernameException</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.settings_service</span> <span class="kn">import</span> <span class="n">SettingsService</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.event_handlers</span> <span class="kn">import</span> <span class="n">handle_event</span>
+
+
+<span class="n">FROM_ADDRESS</span> <span class="o">=</span> <span class="s">&#39;donotreply@thevirtualbrain.org&#39;</span>
+<span class="n">SUBJECT_REGISTER</span> <span class="o">=</span> <span class="s">&#39;[TVB] Registration Confirmation&#39;</span>
+<span class="n">SUBJECT_VALIDATE</span> <span class="o">=</span> <span class="s">&#39;[TVB] Account validated&#39;</span>
+<span class="n">SUBJECT_RECOVERY</span> <span class="o">=</span> <span class="s">&#39;[TVB] Recover password&#39;</span>
+<span class="n">TEXT_RECOVERY</span> <span class="o">=</span> <span class="s">&#39;A new password was generated for you. Please login with </span><span class="se">\</span>
+<span class="s">the below password and change it to one you can easily remember as soon as </span><span class="se">\</span>
+<span class="s">possible.</span><span class="se">\n</span><span class="s"> Thank you.</span><span class="se">\n\n</span><span class="s"> Password: </span><span class="si">%s</span><span class="s">&#39;</span>
+<span class="n">TEXT_DISPLAY</span> <span class="o">=</span> <span class="s">&quot;Thank you! Please check your email for further details!&quot;</span>
+<span class="n">TEXT_CREATE</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;,</span><span class="se">\n\n</span><span class="s">Your registration has been notified to the administrators &#39;</span>
+               <span class="o">+</span> <span class="s">&#39;of The Virtual Brain Project; you will receive an mail as &#39;</span>
+               <span class="o">+</span> <span class="s">&#39;soon as the administrator has validated your registration.&#39;</span>
+               <span class="o">+</span> <span class="s">&#39; </span><span class="se">\n\n</span><span class="s">Thank you for registering!</span><span class="se">\n</span><span class="s">TVB Team&#39;</span><span class="p">)</span>
+<span class="n">TEXT_CREATE_TO_ADMIN</span> <span class="o">=</span> <span class="s">&#39;New member requires validation. Go to this url to validate &#39;</span>
+<span class="n">TEXT_VALIDATED</span> <span class="o">=</span> <span class="s">&#39;,</span><span class="se">\n\n</span><span class="s">Your registration has been validated by TVB Administrator, Please proceed with the login at &#39;</span>
+<span class="n">KEY_USERNAME</span> <span class="o">=</span> <span class="s">&quot;username&quot;</span>
+<span class="n">KEY_PASSWORD</span> <span class="o">=</span> <span class="s">&quot;password&quot;</span>
+<span class="n">KEY_EMAIL</span> <span class="o">=</span> <span class="s">&quot;email&quot;</span>
+<span class="n">KEY_ROLE</span> <span class="o">=</span> <span class="s">&quot;role&quot;</span>
+<span class="n">KEY_COMMENT</span> <span class="o">=</span> <span class="s">&quot;comment&quot;</span>
+<span class="n">DEFAULT_PASS_LENGTH</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">USERS_PAGE_SIZE</span> <span class="o">=</span> <span class="mi">7</span>
+<span class="n">FILE_UPGRADE_LOCK</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+
+
+<div class="viewcode-block" id="UserService"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.user_service.UserService">[docs]</a><span class="k">class</span> <span class="nc">UserService</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    CRUD methods for USER entities are here.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">USER_ROLES</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">USER_ROLES</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="UserService.create_user"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.user_service.UserService.create_user">[docs]</a>    <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">password2</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                    <span class="n">role</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">email_msg</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">validated</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Service Layer for creating a new user.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#Basic fields validation.</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">username</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">username</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UsernameException</span><span class="p">(</span><span class="s">&quot;Empty UserName!&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">password</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">password</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UsernameException</span><span class="p">(</span><span class="s">&quot;Empty password!&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">password2</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">password2</span> <span class="o">=</span> <span class="n">password</span>
+        <span class="k">if</span> <span class="n">password</span> <span class="o">!=</span> <span class="n">password2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UsernameException</span><span class="p">(</span><span class="s">&quot;Passwords do not match!&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">user_validated</span> <span class="o">=</span> <span class="p">(</span><span class="n">role</span> <span class="o">==</span> <span class="s">&#39;ADMINISTRATOR&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">validated</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">User</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">user_validated</span><span class="p">,</span> <span class="n">role</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">email_msg</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">email_msg</span> <span class="o">=</span> <span class="s">&#39;Hello &#39;</span> <span class="o">+</span> <span class="n">username</span> <span class="o">+</span> <span class="n">TEXT_CREATE</span>
+            <span class="n">admin_msg</span> <span class="o">=</span> <span class="p">(</span><span class="n">TEXT_CREATE_TO_ADMIN</span> <span class="o">+</span> <span class="n">username</span> <span class="o">+</span> <span class="s">&#39; :</span><span class="se">\n</span><span class="s"> &#39;</span> <span class="o">+</span> <span class="n">cfg</span><span class="o">.</span><span class="n">BASE_URL</span> <span class="o">+</span>
+                         <span class="s">&#39;user/validate/&#39;</span> <span class="o">+</span> <span class="n">username</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n\n</span><span class="s">&quot;&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Registering user &quot;</span> <span class="o">+</span> <span class="n">username</span> <span class="o">+</span> <span class="s">&quot; !&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">role</span> <span class="o">!=</span> <span class="s">&#39;ADMINISTRATOR&#39;</span> <span class="ow">and</span> <span class="n">email</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">admins</span> <span class="o">=</span> <span class="n">UserService</span><span class="o">.</span><span class="n">get_administrators</span><span class="p">()</span>
+                <span class="n">admin</span> <span class="o">=</span> <span class="n">admins</span><span class="p">[</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">admins</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+                <span class="k">if</span> <span class="n">admin</span><span class="o">.</span><span class="n">email</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">email</span> <span class="o">!=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">DEFAULT_ADMIN_EMAIL</span> <span class="ow">or</span>
+                                                <span class="n">cfg</span><span class="o">.</span><span class="n">SERVER_IP</span> <span class="o">!=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">LOCALHOST</span><span class="p">):</span>
+                    <span class="c"># Do not send validation email in case default admin email</span>
+                    <span class="c"># remained unchanged but TVB in locally deployed....</span>
+                    <span class="n">email_sender</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">FROM_ADDRESS</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="n">SUBJECT_REGISTER</span><span class="p">,</span> <span class="n">admin_msg</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Email sent to:&quot;</span> <span class="o">+</span> <span class="n">admin</span><span class="o">.</span><span class="n">email</span> <span class="o">+</span> <span class="s">&quot; for validating user:&quot;</span> <span class="o">+</span> <span class="n">username</span> <span class="o">+</span> <span class="s">&quot; !&quot;</span><span class="p">)</span>
+                <span class="n">email_sender</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">FROM_ADDRESS</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">SUBJECT_REGISTER</span><span class="p">,</span> <span class="n">email_msg</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Email sent to:&quot;</span> <span class="o">+</span> <span class="n">email</span> <span class="o">+</span> <span class="s">&quot; for notifying new user:&quot;</span> <span class="o">+</span> <span class="n">username</span> <span class="o">+</span> <span class="s">&quot; !&quot;</span><span class="p">)</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">SettingsService</span><span class="o">.</span><span class="n">is_first_run</span><span class="p">():</span>
+                <span class="n">handle_event</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">stack</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]]),</span> <span class="n">user</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">TEXT_DISPLAY</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Could not create user!&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">UsernameException</span><span class="p">(</span><span class="n">excep</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="UserService.reset_password"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.user_service.UserService.reset_password">[docs]</a>    <span class="k">def</span> <span class="nf">reset_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Service Layer for resetting a password.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">KEY_USERNAME</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">KEY_USERNAME</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UsernameException</span><span class="p">(</span><span class="s">&quot;Empty UserName!&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">KEY_EMAIL</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">KEY_EMAIL</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UsernameException</span><span class="p">(</span><span class="s">&quot;Empty Email!&quot;</span><span class="p">)</span>
+
+        <span class="n">old_pass</span><span class="p">,</span> <span class="n">user</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">user_name</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">KEY_USERNAME</span><span class="p">]</span>
+            <span class="n">email</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">KEY_EMAIL</span><span class="p">]</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_user_by_name_email</span><span class="p">(</span><span class="n">user_name</span><span class="p">,</span> <span class="n">email</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">UsernameException</span><span class="p">(</span><span class="s">&quot;Given credentials don&#39;t match!&quot;</span><span class="p">)</span>
+
+            <span class="n">old_pass</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">password</span>
+            <span class="n">new_pass</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">chr</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">48</span><span class="p">,</span> <span class="mi">122</span><span class="p">))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">DEFAULT_PASS_LENGTH</span><span class="p">))</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">md5</span><span class="p">(</span><span class="n">new_pass</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edit_user</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">old_pass</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Setting new password for user &quot;</span> <span class="o">+</span> <span class="n">user_name</span> <span class="o">+</span> <span class="s">&quot; !&quot;</span><span class="p">)</span>
+            <span class="n">email_sender</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">FROM_ADDRESS</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">SUBJECT_RECOVERY</span><span class="p">,</span> <span class="n">TEXT_RECOVERY</span> <span class="o">%</span> <span class="p">(</span><span class="n">new_pass</span><span class="p">,))</span>
+            <span class="k">return</span> <span class="n">TEXT_DISPLAY</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">old_pass</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">old_pass</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">user</span><span class="p">:</span>
+                <span class="n">user</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">old_pass</span>
+                <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Could not change user password!&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">UsernameException</span><span class="p">(</span><span class="n">excep</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="UserService.is_username_valid"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.user_service.UserService.is_username_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_username_valid</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Service layer for checking if a given UserName is unique or not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">users_no</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">count_users_for_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">users_no</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+</div>
+<div class="viewcode-block" id="UserService.validate_user"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.user_service.UserService.validate_user">[docs]</a>    <span class="k">def</span> <span class="nf">validate_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">user_id</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Service layer for editing a user and validating the account.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">user_id</span><span class="p">:</span>
+                <span class="n">user</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_user_by_id</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">user</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_user_by_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">user</span><span class="o">.</span><span class="n">validated</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;UserName not found or already validated:&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">False</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">validated</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Sending validation email for userName=&quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s">&quot; to address=&quot;</span> <span class="o">+</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
+            <span class="n">email_sender</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">FROM_ADDRESS</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="n">SUBJECT_VALIDATE</span><span class="p">,</span>
+                              <span class="s">&quot;Hello &quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="n">TEXT_VALIDATED</span> <span class="o">+</span> <span class="n">cfg</span><span class="o">.</span><span class="n">BASE_URL</span> <span class="o">+</span> <span class="s">&quot;user/&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;User:&quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s">&quot; was validated successfully&quot;</span> <span class="o">+</span> <span class="s">&quot; and notification email sent!&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;Could not validate user:&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;WARNING : &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">excep</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="UserService.check_login"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.user_service.UserService.check_login">[docs]</a>    <span class="k">def</span> <span class="nf">check_login</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Service layer to check if given UserName and Password are according to DB.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_user_by_name</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">password</span> <span class="o">==</span> <span class="n">md5</span><span class="p">(</span><span class="n">password</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">validated</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">user</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+</div>
+<div class="viewcode-block" id="UserService.get_users_for_project"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.user_service.UserService.get_users_for_project">[docs]</a>    <span class="k">def</span> <span class="nf">get_users_for_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_name</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return tuple: (All Users except the project administrator, Project Members).</span>
+<span class="sd">        Parameter &quot;user_name&quot; is the current user. </span>
+<span class="sd">        Parameter &quot;user_name&quot; is used for new projects (project_id is None). </span>
+<span class="sd">        When &quot;project_id&quot; not None, parameter &quot;user_name&quot; is ignored.       </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">admin_name</span> <span class="o">=</span> <span class="n">user_name</span>
+            <span class="k">if</span> <span class="n">project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">project</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_project_by_id</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">project</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">admin_name</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">administrator</span><span class="o">.</span><span class="n">username</span>
+            <span class="n">all_users</span><span class="p">,</span> <span class="n">total_pages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_all_users</span><span class="p">(</span><span class="n">admin_name</span><span class="p">,</span> <span class="n">page</span><span class="p">)</span>
+            <span class="n">members</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_members_of_project</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">all_users</span><span class="p">,</span> <span class="n">members</span><span class="p">,</span> <span class="n">total_pages</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Invalid userName or project identifier&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">UsernameException</span><span class="p">(</span><span class="n">excep</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="UserService.retrieve_all_users"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.user_service.UserService.retrieve_all_users">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve_all_users</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">current_page</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return all users from the database except the given user</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start_idx</span> <span class="o">=</span> <span class="n">USERS_PAGE_SIZE</span> <span class="o">*</span> <span class="p">(</span><span class="n">current_page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_all_users</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">is_count</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">end_idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">USERS_PAGE_SIZE</span> <span class="k">if</span> <span class="n">total</span> <span class="o">&gt;=</span> <span class="n">start_idx</span> <span class="o">+</span> <span class="n">USERS_PAGE_SIZE</span> <span class="k">else</span> <span class="n">total</span> <span class="o">-</span> <span class="n">start_idx</span><span class="p">)</span>
+        <span class="n">user_list</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_all_users</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">start_idx</span><span class="p">,</span> <span class="n">end_idx</span><span class="p">)</span>
+        <span class="n">pages_no</span> <span class="o">=</span> <span class="n">total</span> <span class="o">//</span> <span class="n">USERS_PAGE_SIZE</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="n">total</span> <span class="o">%</span> <span class="n">USERS_PAGE_SIZE</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">user_list</span><span class="p">,</span> <span class="n">pages_no</span>
+
+</div>
+<div class="viewcode-block" id="UserService.edit_user"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.user_service.UserService.edit_user">[docs]</a>    <span class="k">def</span> <span class="nf">edit_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edited_user</span><span class="p">,</span> <span class="n">old_password</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve a user by and id, then modify it&#39;s role and validate status.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">edited_user</span><span class="o">.</span><span class="n">validated</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">validate_user</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="n">edited_user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_user_by_id</span><span class="p">(</span><span class="n">edited_user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">role</span> <span class="o">=</span> <span class="n">edited_user</span><span class="o">.</span><span class="n">role</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">validated</span> <span class="o">=</span> <span class="n">edited_user</span><span class="o">.</span><span class="n">validated</span>
+        <span class="k">if</span> <span class="n">old_password</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">password</span> <span class="o">==</span> <span class="n">old_password</span><span class="p">:</span>
+                <span class="n">user</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">edited_user</span><span class="o">.</span><span class="n">password</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">UsernameException</span><span class="p">(</span><span class="s">&quot;Invalid old password!&quot;</span><span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">email</span> <span class="o">=</span> <span class="n">edited_user</span><span class="o">.</span><span class="n">email</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">edited_user</span><span class="o">.</span><span class="n">preferences</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">preferences</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">is_administrator</span><span class="p">():</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">update_config_file</span><span class="p">({</span><span class="n">SettingsService</span><span class="o">.</span><span class="n">KEY_ADMIN_EMAIL</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">,</span>
+                                    <span class="n">SettingsService</span><span class="o">.</span><span class="n">KEY_ADMIN_PWD</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">password</span><span class="p">})</span>
+
+</div>
+<div class="viewcode-block" id="UserService.delete_user"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.user_service.UserService.delete_user">[docs]</a>    <span class="k">def</span> <span class="nf">delete_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Delete a user with a given ID. </span>
+<span class="sd">        Return True when successfully, or False.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">dao</span><span class="o">.</span><span class="n">delete_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="UserService.get_administrators"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.user_service.UserService.get_administrators">[docs]</a>    <span class="k">def</span> <span class="nf">get_administrators</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve system administrators.</span>
+<span class="sd">        Will be used for sending emails, for example.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_administrators</span><span class="p">()</span>
+
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="UserService.save_project_to_user"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.user_service.UserService.save_project_to_user">[docs]</a>    <span class="k">def</span> <span class="nf">save_project_to_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Mark for current user that the given project is the last one selected.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_user_by_id</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">selected_project</span> <span class="o">=</span> <span class="n">project_id</span>
+        <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="UserService.get_user_by_id"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.user_service.UserService.get_user_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_user_by_id</span><span class="p">(</span><span class="n">user_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves a user by its id.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_user_by_id</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+
+</div>
+    <span class="nd">@synchronized</span><span class="p">(</span><span class="n">FILE_UPGRADE_LOCK</span><span class="p">)</span>
+<div class="viewcode-block" id="UserService.upgrade_file_storage"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.user_service.UserService.upgrade_file_storage">[docs]</a>    <span class="k">def</span> <span class="nf">upgrade_file_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For the given user upgrade all DataType files storage.</span>
+<span class="sd">        </span>
+<span class="sd">        :returns: a two entry tuple (status, message) where status is a boolean that is True in case the upgrade</span>
+<span class="sd">             was successful for all DataTypes and False otherwise, and message is a status update message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">DATA_CHECKED_TO_VERSION</span> <span class="o">&lt;</span> <span class="n">cfg</span><span class="o">.</span><span class="n">DATA_VERSION</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Starting to upgrade all DataType file storage.&quot;</span><span class="p">)</span>
+            <span class="n">status</span><span class="p">,</span> <span class="n">message</span> <span class="o">=</span> <span class="n">FilesUpdateManager</span><span class="p">()</span><span class="o">.</span><span class="n">upgrade_all_files_from_storage</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">status</span><span class="p">,</span> <span class="n">message</span>
+         
+            </div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

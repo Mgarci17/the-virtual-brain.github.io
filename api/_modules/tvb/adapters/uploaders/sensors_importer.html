@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.adapters.uploaders.sensors_importer &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.adapters.uploaders.sensors_importer &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../index.html" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -49,131 +48,154 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for tvb.adapters.uploaders.sensors_importer</h1><pre>
-# -*- coding: utf-8 -*-
-#
-#
-# TheVirtualBrain-Framework Package. This package holds all Data Management, and 
-# Web-UI helpful to run brain-simulations. To use it, you also need do download
-# TheVirtualBrain-Scientific Package (for simulators). See content of the
-# documentation-folder for more details. See also http://www.thevirtualbrain.org
-#
-# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
-#
-# This program is free software; you can redistribute it and/or modify it under 
-# the terms of the GNU General Public License version 2 as published by the Free
-# Software Foundation. This program is distributed in the hope that it will be
-# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
-# License for more details. You should have received a copy of the GNU General 
-# Public License along with this program; if not, you can download it here
-# http://www.gnu.org/licenses/old-licenses/gpl-2.0
-#
-#
+  <h1>Source code for tvb.adapters.uploaders.sensors_importer</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
 
-"""
-Created on Mar 13, 2012
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Mar 13, 2012</span>
 
-.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;
-"""
-import numpy
-from tvb.core import utils
-from tvb.datatypes.sensors import Sensors, SensorsEEG, SensorsMEG, SensorsInternal
-from tvb.core.adapters.abcadapter import ABCSynchronous
-from tvb.core.adapters.exceptions import LaunchException
-from tvb.basic.traits.util import read_list_data
-from tvb.basic.logger.builder import get_logger
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">tvb.core</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">tvb.datatypes.sensors</span> <span class="kn">import</span> <span class="n">Sensors</span><span class="p">,</span> <span class="n">SensorsEEG</span><span class="p">,</span> <span class="n">SensorsMEG</span><span class="p">,</span> <span class="n">SensorsInternal</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.abcadapter</span> <span class="kn">import</span> <span class="n">ABCSynchronous</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.exceptions</span> <span class="kn">import</span> <span class="n">LaunchException</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.traits.util</span> <span class="kn">import</span> <span class="n">read_list_data</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
 
 
-<div class="viewcode-block" id="Sensors_Importer"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.sensors_importer.Sensors_Importer">[docs]</a>class Sensors_Importer(ABCSynchronous):
-    """
-    Upload Sensors from a TXT file.
-    """ 
-    _ui_name = "Sensors"
-    _ui_subsection = "sensors_importer"
-    _ui_description = "Import Sensor locations from TXT or BZ2"
+<div class="viewcode-block" id="Sensors_Importer"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.sensors_importer.Sensors_Importer">[docs]</a><span class="k">class</span> <span class="nc">Sensors_Importer</span><span class="p">(</span><span class="n">ABCSynchronous</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Upload Sensors from a TXT file.</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    <span class="n">_ui_name</span> <span class="o">=</span> <span class="s">&quot;Sensors&quot;</span>
+    <span class="n">_ui_subsection</span> <span class="o">=</span> <span class="s">&quot;sensors_importer&quot;</span>
+    <span class="n">_ui_description</span> <span class="o">=</span> <span class="s">&quot;Import Sensor locations from TXT or BZ2&quot;</span>
 
-    EEG_SENSORS = "EEG Sensors"
-    MEG_SENSORS = "MEG sensors"
-    INTERNAL_SENSORS = "Internal Sensors"
+    <span class="n">EEG_SENSORS</span> <span class="o">=</span> <span class="s">&quot;EEG Sensors&quot;</span>
+    <span class="n">MEG_SENSORS</span> <span class="o">=</span> <span class="s">&quot;MEG sensors&quot;</span>
+    <span class="n">INTERNAL_SENSORS</span> <span class="o">=</span> <span class="s">&quot;Internal Sensors&quot;</span>
          
-    def __init__(self):
-        ABCSynchronous.__init__(self)
-        self.logger = get_logger(self.__class__.__module__)
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ABCSynchronous</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Sensors_Importer.get_input_tree"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.sensors_importer.Sensors_Importer.get_input_tree">[docs]</a>    def get_input_tree(self):
-        """
-        Define input parameters for this importer.
-        """
-        return [{'name': 'sensors_file', 'type': 'upload', 'required_type':'txt', 
-                 'label': 'Please upload sensors file (txt or bz2 format)', 'required': True,
-                 'description': 'Expected a text/bz2 file containing sensor measurements.' },
+<div class="viewcode-block" id="Sensors_Importer.get_input_tree"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.sensors_importer.Sensors_Importer.get_input_tree">[docs]</a>    <span class="k">def</span> <span class="nf">get_input_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Define input parameters for this importer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;sensors_file&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;upload&#39;</span><span class="p">,</span> <span class="s">&#39;required_type&#39;</span><span class="p">:</span><span class="s">&#39;txt&#39;</span><span class="p">,</span> 
+                 <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Please upload sensors file (txt or bz2 format)&#39;</span><span class="p">,</span> <span class="s">&#39;required&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+                 <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Expected a text/bz2 file containing sensor measurements.&#39;</span> <span class="p">},</span>
                 
-                {'name': 'sensors_type', 'type': 'select', 
-                 'label': 'Sensors type: ', 'required': True,
-                 'options': [{'name':self.EEG_SENSORS,'value': self.EEG_SENSORS},
-                             {'name':self.MEG_SENSORS,'value': self.MEG_SENSORS},
-                             {'name':self.INTERNAL_SENSORS,'value': self.INTERNAL_SENSORS}]
-                 },
-                ]
+                <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;sensors_type&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;select&#39;</span><span class="p">,</span> 
+                 <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Sensors type: &#39;</span><span class="p">,</span> <span class="s">&#39;required&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+                 <span class="s">&#39;options&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">EEG_SENSORS</span><span class="p">,</span><span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">EEG_SENSORS</span><span class="p">},</span>
+                             <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">MEG_SENSORS</span><span class="p">,</span><span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">MEG_SENSORS</span><span class="p">},</span>
+                             <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">INTERNAL_SENSORS</span><span class="p">,</span><span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">INTERNAL_SENSORS</span><span class="p">}]</span>
+                 <span class="p">},</span>
+                <span class="p">]</span>
                              </div>
-<div class="viewcode-block" id="Sensors_Importer.get_output"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.sensors_importer.Sensors_Importer.get_output">[docs]</a>    def get_output(self):
-        return [Sensors]
+<div class="viewcode-block" id="Sensors_Importer.get_output"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.sensors_importer.Sensors_Importer.get_output">[docs]</a>    <span class="k">def</span> <span class="nf">get_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Sensors</span><span class="p">]</span>
 </div>
-<div class="viewcode-block" id="Sensors_Importer.get_required_memory_size"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.sensors_importer.Sensors_Importer.get_required_memory_size">[docs]</a>    def get_required_memory_size(self, **kwargs):
-        """
-        Return the required memory to run this algorithm.
-        """
-        # Don't know how much memory is needed.
-        return -1
+<div class="viewcode-block" id="Sensors_Importer.get_required_memory_size"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.sensors_importer.Sensors_Importer.get_required_memory_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_required_memory_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the required memory to run this algorithm.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Don&#39;t know how much memory is needed.</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
     </div>
-<div class="viewcode-block" id="Sensors_Importer.get_required_disk_size"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.sensors_importer.Sensors_Importer.get_required_disk_size">[docs]</a>    def get_required_disk_size(self, **kwargs):
-        """
-        Returns the required disk size to be able to run the adapter.
-        """
-        return 0
+<div class="viewcode-block" id="Sensors_Importer.get_required_disk_size"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.sensors_importer.Sensors_Importer.get_required_disk_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_required_disk_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the required disk size to be able to run the adapter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">0</span>
     </div>
-<div class="viewcode-block" id="Sensors_Importer.launch"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.sensors_importer.Sensors_Importer.launch">[docs]</a>    def launch(self, sensors_file, sensors_type):
-        """
-        Created required sensors from the uploaded file.
-        """
-        if sensors_file is None:
-            raise LaunchException ("Please select sensors file which contains data to import")
-        sensors_inst = None
+<div class="viewcode-block" id="Sensors_Importer.launch"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.sensors_importer.Sensors_Importer.launch">[docs]</a>    <span class="k">def</span> <span class="nf">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensors_file</span><span class="p">,</span> <span class="n">sensors_type</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates required sensors from the uploaded file.</span>
+
+<span class="sd">        :param sensors_file: the file containing sensor data</span>
+<span class="sd">        :param sensors_type: a string from &quot;EEG Sensors&quot;, &quot;MEG sensors&quot;, &quot;Internal Sensors&quot;</span>
+
+<span class="sd">        :returns: a list of sensors instances of the specified type</span>
+
+<span class="sd">        :raises LaunchException: when</span>
+<span class="sd">                    * no sensors_file specified</span>
+<span class="sd">                    * sensors_type is invalid (not one of the mentioned options)</span>
+<span class="sd">                    * sensors_type is &quot;MEG sensors&quot; and no orientation is specified</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">sensors_file</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">LaunchException</span> <span class="p">(</span><span class="s">&quot;Please select sensors file which contains data to import&quot;</span><span class="p">)</span>
+        <span class="n">sensors_inst</span> <span class="o">=</span> <span class="bp">None</span>
         
-        self.logger.debug("Create sensors instance")
-        if sensors_type == self.EEG_SENSORS:
-            sensors_inst = SensorsEEG()
-        elif sensors_type == self.MEG_SENSORS:
-            sensors_inst = SensorsMEG()
-        elif sensors_type == self.INTERNAL_SENSORS:
-            sensors_inst = SensorsInternal()
-        else:
-            exception_str = "Could not determine sensors type (selected option %s)" % sensors_type
-            raise LaunchException(exception_str)
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Create sensors instance&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sensors_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">EEG_SENSORS</span><span class="p">:</span>
+            <span class="n">sensors_inst</span> <span class="o">=</span> <span class="n">SensorsEEG</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">sensors_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">MEG_SENSORS</span><span class="p">:</span>
+            <span class="n">sensors_inst</span> <span class="o">=</span> <span class="n">SensorsMEG</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">sensors_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">INTERNAL_SENSORS</span><span class="p">:</span>
+            <span class="n">sensors_inst</span> <span class="o">=</span> <span class="n">SensorsInternal</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">exception_str</span> <span class="o">=</span> <span class="s">&quot;Could not determine sensors type (selected option </span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="n">sensors_type</span>
+            <span class="k">raise</span> <span class="n">LaunchException</span><span class="p">(</span><span class="n">exception_str</span><span class="p">)</span>
             
-        sensors_inst.storage_path = self.storage_path
+        <span class="n">sensors_inst</span><span class="o">.</span><span class="n">storage_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span>
         
-        sensors_inst.locations = read_list_data(sensors_file, usecols=[1,2,3])
-        sensors_inst.labels = read_list_data(sensors_file, dtype=numpy.str, usecols=[0])
+        <span class="n">sensors_inst</span><span class="o">.</span><span class="n">locations</span> <span class="o">=</span> <span class="n">read_list_data</span><span class="p">(</span><span class="n">sensors_file</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+        <span class="n">sensors_inst</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">read_list_data</span><span class="p">(</span><span class="n">sensors_file</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">str</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         
-        if isinstance(sensors_inst, SensorsMEG):
-            try:
-                sensors_inst.orientations = read_list_data(sensors_file, usecols=[4,5,6])
-            except IndexError:
-                raise LaunchException("Uploaded file does not contains sensors orientation.")
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sensors_inst</span><span class="p">,</span> <span class="n">SensorsMEG</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">sensors_inst</span><span class="o">.</span><span class="n">orientations</span> <span class="o">=</span> <span class="n">read_list_data</span><span class="p">(</span><span class="n">sensors_file</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">LaunchException</span><span class="p">(</span><span class="s">&quot;Uploaded file does not contains sensors orientation.&quot;</span><span class="p">)</span>
          
-        self.logger.debug("Sensors instance ready to be stored")
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Sensors instance ready to be stored&quot;</span><span class="p">)</span>
         
-        return [sensors_inst]
+        <span class="k">return</span> <span class="p">[</span><span class="n">sensors_inst</span><span class="p">]</span>
     
-    </pre></div></div>
+    </div></div>
+</pre></div>
 
           </div>
         </div>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../../search.html" method="get">
@@ -200,13 +222,13 @@ from tvb.basic.logger.builder import get_logger
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

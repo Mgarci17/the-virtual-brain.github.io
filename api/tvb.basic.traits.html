@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title> &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>traits Package &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '1.0.4',
+        URL_ROOT:    './',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,10 +24,11 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="index.html" />
-    <link rel="up" title="" href="tvb.basic.html" />
-    <link rel="next" title="" href="tvb.datatypes.html" />
-    <link rel="prev" title="" href="tvb.basic.logger.html" /> 
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="index.html" />
+    <link rel="up" title="basic Package" href="tvb.basic.html" />
+    <link rel="next" title="datatypes Package" href="tvb.datatypes.html" />
+    <link rel="prev" title="logger Package" href="tvb.basic.logger.html" /> 
   </head>
   <body>
     <div class="related">
@@ -42,14 +41,14 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="tvb.datatypes.html" title=""
+          <a href="tvb.datatypes.html" title="datatypes Package"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="tvb.basic.logger.html" title=""
+          <a href="tvb.basic.logger.html" title="logger Package"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
-          <li><a href="tvb.html" ></a> &raquo;</li>
-          <li><a href="tvb.basic.html" accesskey="U"></a> &raquo;</li> 
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">tvb</span></tt> Package</a> &raquo;</li>
+          <li><a href="tvb.basic.html" accesskey="U"><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">basic</span></tt> Package</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -58,17 +57,91 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="logo">
-<h1><a class="reference external" href="http://www.thevirtualbrain.org"><div align="top" class="align-top"><img alt="The Virtual Brain Project" height="148" src="_images/evil_tvb_logo_transparent.svg" /></div>
-</a><a class="headerlink" href="#logo" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="traits-package">
-<h2>traits Package<a class="headerlink" href="#traits-package" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="module-tvb.basic.traits">
+<span id="traits-package"></span><h1><tt class="xref py py-mod docutils literal"><span class="pre">traits</span></tt> Package<a class="headerlink" href="#module-tvb.basic.traits" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="traits-metadata-module">
+<h2>Traits metadata module<a class="headerlink" href="#traits-metadata-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="introduction">
+<h3>introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h3>
+<p>The problem is that various classes have members whose properties we want to
+annotate in a way that does not affect the execution of the class algorithms
+but that exposes an API to pull out this info for a user interface and
+documentation. It should be readable for the programmers as well. We refer to
+an annotated/propertied member as a trait.</p>
+<p>Consider the following class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Point</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">x</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="gp">... </span>    <span class="n">y</span> <span class="o">=</span> <span class="mf">0.0</span>
+</pre></div>
+</div>
+<p>If you want to present this data to the user, you may want to label each
+attribute of the Point with more than just &#8216;x&#8217; or &#8216;y&#8217;, or you want to check
+that if the user creates a Point, the values have the right type (here, we
+assume the type of 0.0 means floating point), and if you want to store the
+instances of Point in a data base, each one needs a unique id. These pieces of
+information need to be put somewhere, and the best place to put it is in the
+attribute declaration, for example,</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Point</span><span class="p">(</span><span class="n">Type</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">x</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s">&#39;horizontal position&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">y</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s">&#39;vertical position&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here, the type of each attribute is explicit, and a documentation string
+is provided, <em>all in the same attribute declaration</em>, and this co-location
+of information makes it easier to maintain, and elsewhere in the program,
+this information can be accessed programmatically to generate user interfaces,
+serialize data, validate data, etc. Additionally, all classes&#8217; docstrings
+will have Traits information automatically added:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">Point</span><span class="o">.</span><span class="n">__doc__</span>
+<span class="go">Traited class Point</span>
+<span class="go">    x: horizontal position, type float</span>
+<span class="go">    y: vertical position, type float</span>
+</pre></div>
+</div>
+<p>The Traits package allows us to write classes like the one above by using a
+metaclass to customize the class creation. In brief, when Python reads a class
+definition the Trait metaclass has access to all the attribute declarations,
+and it will place a dictionary of all the data provided in the declarations on
+the class.  When the classes are instantiated and used, the Trait attributes
+behave exactly like their values, such that class methods do not need to know
+they are accessing Trait attributes. For more details, see <cite>traits.core</cite>.</p>
+</div>
+<div class="section" id="package-modules">
+<h3>package modules<a class="headerlink" href="#package-modules" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><dl class="docutils">
+<dt>core            Provides the core of Traits, a metaclass and class that</dt>
+<dd>implement the reflection/annotation that Traits allows.</dd>
+<dt>types_basic     Provides basic predefined types as well as the Type that</dt>
+<dd>should be inherited from when making new Types</dd>
+</dl>
+<p>data_readers    Means to load data from files, in console mode.</p>
+<dl class="docutils">
+<dt>traited_interface  Provides recursive interfaces classes that are data</dt>
+<dd>descriptors, i.e. when placed on classes, they compute
+the full description of the class and it&#8217;s Traited
+attributes.</dd>
+</dl>
+<p>util            Utility functions and classes.</p>
+</div></blockquote>
+<div class="section" id="automatic-class-documentation">
+<h4>automatic class documentation<a class="headerlink" href="#automatic-class-documentation" title="Permalink to this headline">¶</a></h4>
+<p>Classes that subclass Type (or subclasses of MetaType) have their docstrings
+automatically augmented by the repr() of each attribute which is a Type. This
+allows one to find the trait documentation both in SPhinx and at the console.</p>
+</div>
+</div>
+<div class="section" id="references">
+<h3>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h3>
+<p>Suggested reading is <a class="reference external" href="http://www.python.org/download/releases/2.2.3/descrintro/">Unifying Types and Classes</a> and th <a class="reference external" href="http://docs.python.org/reference/datamodel.html">Python data model</a>.</p>
+</div>
+</div>
 <div class="section" id="module-tvb.basic.traits.core">
-<span id="core-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">core</span></tt> Module<a class="headerlink" href="#module-tvb.basic.traits.core" title="Permalink to this headline">¶</a></h3>
+<span id="core-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">core</span></tt> Module<a class="headerlink" href="#module-tvb.basic.traits.core" title="Permalink to this headline">¶</a></h2>
 <p>All problems in computer science can be solved by another layer of
 indirection, except for the problem of too many layers of indirection.</p>
 <div class="section" id="traits-overview">
-<h4>Traits overview<a class="headerlink" href="#traits-overview" title="Permalink to this headline">¶</a></h4>
+<h3>Traits overview<a class="headerlink" href="#traits-overview" title="Permalink to this headline">¶</a></h3>
 <p>Traits classes are separated into two modules:</p>
 <dl class="docutils">
 <dt>core:</dt>
@@ -76,13 +149,19 @@ indirection, except for the problem of too many layers of indirection.</p>
 MetaType            base class for traited class creation
 Type                base traited class</dd>
 <dt>mapped:</dt>
-<dd>MappedType          basic class for traited class mapped to db
-<a href="#id1"><span class="problematic" id="id2">*</span></a>(Type)             traits mapped to columns
-<a href="#id3"><span class="problematic" id="id4">*</span></a>(MappedType)       traits mapped to column(foreignkey) -&gt; table</dd>
+<dd><dl class="first last docutils">
+<dt>MappedType             basic class for traited class mapped to db</dt>
+<dd><ul class="first last simple">
+<li>(Type)             traits mapped to columns</li>
+<li>(MappedType)       traits mapped to column(foreignkey) -&gt; table</li>
+</ul>
+</dd>
+</dl>
+</dd>
 </dl>
 </div>
 <div class="section" id="traits-metadata">
-<h4>Traits metadata<a class="headerlink" href="#traits-metadata" title="Permalink to this headline">¶</a></h4>
+<h3>Traits metadata<a class="headerlink" href="#traits-metadata" title="Permalink to this headline">¶</a></h3>
 <p>While the traits of a class can be declared nearly arbitrarily, there are
 intrinsic pieces of information in the meta-data required to make the traits
 system work:</p>
@@ -206,7 +285,7 @@ instance __init__.</p>
 </div>
 </div>
 <div class="section" id="module-tvb.basic.traits.data_readers">
-<span id="data-readers-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">data_readers</span></tt> Module<a class="headerlink" href="#module-tvb.basic.traits.data_readers" title="Permalink to this headline">¶</a></h3>
+<span id="data-readers-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">data_readers</span></tt> Module<a class="headerlink" href="#module-tvb.basic.traits.data_readers" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="tvb.basic.traits.data_readers.File">
 <em class="property">class </em><tt class="descclassname">tvb.basic.traits.data_readers.</tt><tt class="descname">File</tt><big>(</big><em>folder_path</em>, <em>file_name=None</em><big>)</big><a class="reference internal" href="_modules/tvb/basic/traits/data_readers.html#File"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.basic.traits.data_readers.File" title="Permalink to this definition">¶</a></dt>
@@ -253,7 +332,7 @@ On a table, this is the method calls we want to persist in references.</p>
 
 </div>
 <div class="section" id="module-tvb.basic.traits.exceptions">
-<span id="exceptions-module"></span><h3><a class="reference external" href="http://docs.python.org/library/exceptions.html#exceptions" title="(in Python v2.7)"><tt class="xref py py-mod docutils literal"><span class="pre">exceptions</span></tt></a> Module<a class="headerlink" href="#module-tvb.basic.traits.exceptions" title="Permalink to this headline">¶</a></h3>
+<span id="exceptions-module"></span><h2><a class="reference external" href="http://docs.python.org/library/exceptions.html#exceptions" title="(in Python v2.7)"><tt class="xref py py-mod docutils literal"><span class="pre">exceptions</span></tt></a> Module<a class="headerlink" href="#module-tvb.basic.traits.exceptions" title="Permalink to this headline">¶</a></h2>
 <dl class="exception">
 <dt id="tvb.basic.traits.exceptions.MissingEntityException">
 <em class="property">exception </em><tt class="descclassname">tvb.basic.traits.exceptions.</tt><tt class="descname">MissingEntityException</tt><big>(</big><em>message</em><big>)</big><a class="reference internal" href="_modules/tvb/basic/traits/exceptions.html#MissingEntityException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.basic.traits.exceptions.MissingEntityException" title="Permalink to this definition">¶</a></dt>
@@ -287,7 +366,7 @@ validation before storing it into DB.</p>
 
 </div>
 <div class="section" id="module-tvb.basic.traits.parameters_factory">
-<span id="parameters-factory-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">parameters_factory</span></tt> Module<a class="headerlink" href="#module-tvb.basic.traits.parameters_factory" title="Permalink to this headline">¶</a></h3>
+<span id="parameters-factory-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">parameters_factory</span></tt> Module<a class="headerlink" href="#module-tvb.basic.traits.parameters_factory" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="tvb.basic.traits.parameters_factory.get_traited_instance_for_name">
 <tt class="descclassname">tvb.basic.traits.parameters_factory.</tt><tt class="descname">get_traited_instance_for_name</tt><big>(</big><em>class_name</em>, <em>parent_class</em>, <em>params_dictionary</em><big>)</big><a class="reference internal" href="_modules/tvb/basic/traits/parameters_factory.html#get_traited_instance_for_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.basic.traits.parameters_factory.get_traited_instance_for_name" title="Permalink to this definition">¶</a></dt>
@@ -302,7 +381,7 @@ validation before storing it into DB.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Class instanciated corresponding to the given name (e.g. FHN() )</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Class instantiated corresponding to the given name (e.g. FHN() )</p>
 </td>
 </tr>
 </tbody>
@@ -318,8 +397,7 @@ validation before storing it into DB.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>parent_class</strong> &#8211; SuperClass, to return valid sub-classes of this (e.g. Model).</td>
 </tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Return {class_name:</th></tr>
-<tr><td>&nbsp;</td><td class="field-body">sub_class_instance}
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">{class_name: sub_class_instance}
 e.g. {&#8216;WilsonCowan&#8217;: WilsonCowan, ....}</td>
 </tr>
 </tbody>
@@ -328,19 +406,27 @@ e.g. {&#8216;WilsonCowan&#8217;: WilsonCowan, ....}</td>
 
 </div>
 <div class="section" id="module-tvb.basic.traits.traited_interface">
-<span id="traited-interface-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">traited_interface</span></tt> Module<a class="headerlink" href="#module-tvb.basic.traits.traited_interface" title="Permalink to this headline">¶</a></h3>
+<span id="traited-interface-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">traited_interface</span></tt> Module<a class="headerlink" href="#module-tvb.basic.traits.traited_interface" title="Permalink to this headline">¶</a></h2>
 <p>Generate Dictionary required by the Framework to generate UI from it.
 Returned dictionary will be generated from  traited definition of attributes.</p>
-<dl class="attribute">
+<dl class="class">
 <dt id="tvb.basic.traits.traited_interface.TraitedInterfaceGenerator">
-<tt class="descclassname">tvb.basic.traits.traited_interface.</tt><tt class="descname">TraitedInterfaceGenerator</tt><a class="reference internal" href="_modules/tvb/basic/traits/traited_interface.html#TraitedInterfaceGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.basic.traits.traited_interface.TraitedInterfaceGenerator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases class for interface reading and dumping. As a data descriptor, when 
+<em class="property">class </em><tt class="descclassname">tvb.basic.traits.traited_interface.</tt><tt class="descname">TraitedInterfaceGenerator</tt><a class="reference internal" href="_modules/tvb/basic/traits/traited_interface.html#TraitedInterfaceGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.basic.traits.traited_interface.TraitedInterfaceGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Bases class for interface reading and dumping. As a data descriptor, when 
 it is an attribute of the class it will compute a dictionary and return it.</p>
+<dl class="staticmethod">
+<dt id="tvb.basic.traits.traited_interface.TraitedInterfaceGenerator.label">
+<em class="property">static </em><tt class="descname">label</tt><big>(</big><em>text</em><big>)</big><a class="reference internal" href="_modules/tvb/basic/traits/traited_interface.html#TraitedInterfaceGenerator.label"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.basic.traits.traited_interface.TraitedInterfaceGenerator.label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create suitable UI label given text.
+Enforce starts with upper-case.</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
 <div class="section" id="module-tvb.basic.traits.types_basic">
-<span id="types-basic-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">types_basic</span></tt> Module<a class="headerlink" href="#module-tvb.basic.traits.types_basic" title="Permalink to this headline">¶</a></h3>
+<span id="types-basic-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">types_basic</span></tt> Module<a class="headerlink" href="#module-tvb.basic.traits.types_basic" title="Permalink to this headline">¶</a></h2>
 <p>This module describes the simple of traited attributes one might needs on a class.</p>
 <p>If your subclass should be mapped to a database table (true for most entities
 that will be reused), use MappedType as superclass.</p>
@@ -438,6 +524,14 @@ but these values can be obtained by converting to a list</p>
 <span class="go">2.0</span>
 </pre></div>
 </div>
+<dl class="docutils">
+<dt>NOTE: That&#8217;s not true. It yields</dt>
+<dd>1.0
+2.0
+3.0</dd>
+</dl>
+<p>NOTE: the step has to be explicitly set to 0 if we want to use base. 
+Otherwise it takes the default value.</p>
 <p><strong>traits on this class:</strong></p>
 <blockquote>
 <div><dl class="docutils">
@@ -514,13 +608,13 @@ python types (containers)</p>
 
 </div>
 <div class="section" id="module-tvb.basic.traits.types_mapped">
-<span id="types-mapped-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">types_mapped</span></tt> Module<a class="headerlink" href="#module-tvb.basic.traits.types_mapped" title="Permalink to this headline">¶</a></h3>
+<span id="types-mapped-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">types_mapped</span></tt> Module<a class="headerlink" href="#module-tvb.basic.traits.types_mapped" title="Permalink to this headline">¶</a></h2>
 <p>Initialize MappedType base class, based on current environment:
 - when environment is stand-alone scientific library, use MappedTypeLight
 - when TVB-Framework is also present: use MappedType with SQL-Alchemy dependency.</p>
 </div>
 <div class="section" id="module-tvb.basic.traits.types_mapped_light">
-<span id="types-mapped-light-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">types_mapped_light</span></tt> Module<a class="headerlink" href="#module-tvb.basic.traits.types_mapped_light" title="Permalink to this headline">¶</a></h3>
+<span id="types-mapped-light-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">types_mapped_light</span></tt> Module<a class="headerlink" href="#module-tvb.basic.traits.types_mapped_light" title="Permalink to this headline">¶</a></h2>
 <p>Mapped super-classes are defined here.</p>
 <p>Important:</p>
 <ul class="simple">
@@ -573,7 +667,7 @@ Will require storage in File Structure.</p>
 
 </div>
 <div class="section" id="module-tvb.basic.traits.util">
-<span id="util-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">util</span></tt> Module<a class="headerlink" href="#module-tvb.basic.traits.util" title="Permalink to this headline">¶</a></h3>
+<span id="util-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">util</span></tt> Module<a class="headerlink" href="#module-tvb.basic.traits.util" title="Permalink to this headline">¶</a></h2>
 <p>All the little functions that make life nicer in the Traits package.</p>
 <dl class="class">
 <dt id="tvb.basic.traits.util.Args">
@@ -583,19 +677,13 @@ Will require storage in File Structure.</p>
 <dl class="attribute">
 <dt id="tvb.basic.traits.util.Args.kwd">
 <tt class="descname">kwd</tt><a class="headerlink" href="#tvb.basic.traits.util.Args.kwd" title="Permalink to this definition">¶</a></dt>
-<dd><p>itemgetter(item, ...) &#8211;&gt; itemgetter object</p>
-<p>Return a callable object that fetches the given item(s) from its operand.
-After, f=itemgetter(2), the call f(r) returns r[2].
-After, g=itemgetter(2,5,3), the call g(r) returns (r[2], r[5], r[3])</p>
+<dd><p>Alias for field number 1</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="tvb.basic.traits.util.Args.pos">
 <tt class="descname">pos</tt><a class="headerlink" href="#tvb.basic.traits.util.Args.pos" title="Permalink to this definition">¶</a></dt>
-<dd><p>itemgetter(item, ...) &#8211;&gt; itemgetter object</p>
-<p>Return a callable object that fetches the given item(s) from its operand.
-After, f=itemgetter(2), the call f(r) returns r[2].
-After, g=itemgetter(2,5,3), the call g(r) returns (r[2], r[5], r[3])</p>
+<dd><p>Alias for field number 0</p>
 </dd></dl>
 
 </dd></dl>
@@ -656,7 +744,6 @@ return a string representation of that value.</p>
 
 </div>
 </div>
-</div>
 
 
           </div>
@@ -664,10 +751,21 @@ return a string representation of that value.</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#"></a><ul>
-<li><a class="reference internal" href="#traits-package">traits Package</a><ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">traits</span></tt> Package</a><ul>
+<li><a class="reference internal" href="#traits-metadata-module">Traits metadata module</a><ul>
+<li><a class="reference internal" href="#introduction">introduction</a></li>
+<li><a class="reference internal" href="#package-modules">package modules</a><ul>
+<li><a class="reference internal" href="#automatic-class-documentation">automatic class documentation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-tvb.basic.traits.core"><tt class="docutils literal"><span class="pre">core</span></tt> Module</a><ul>
 <li><a class="reference internal" href="#traits-overview">Traits overview</a></li>
 <li><a class="reference internal" href="#traits-metadata">Traits metadata</a></li>
@@ -684,15 +782,13 @@ return a string representation of that value.</p>
 </ul>
 </li>
 </ul>
-</li>
-</ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="tvb.basic.logger.html"
-                        title="previous chapter"></a></p>
+                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">logger</span></tt> Package</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="tvb.datatypes.html"
-                        title="next chapter"></a></p>
+                        title="next chapter"><tt class="docutils literal"><span class="pre">datatypes</span></tt> Package</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/tvb.basic.traits.txt"
@@ -725,19 +821,19 @@ return a string representation of that value.</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="tvb.datatypes.html" title=""
+          <a href="tvb.datatypes.html" title="datatypes Package"
              >next</a> |</li>
         <li class="right" >
-          <a href="tvb.basic.logger.html" title=""
+          <a href="tvb.basic.logger.html" title="logger Package"
              >previous</a> |</li>
-        <li><a href="index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
-          <li><a href="tvb.html" ></a> &raquo;</li>
-          <li><a href="tvb.basic.html" ></a> &raquo;</li> 
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">tvb</span></tt> Package</a> &raquo;</li>
+          <li><a href="tvb.basic.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">basic</span></tt> Package</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

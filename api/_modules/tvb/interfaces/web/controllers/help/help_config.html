@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.interfaces.web.controllers.help.help_config &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.interfaces.web.controllers.help.help_config &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../../../index.html" />
+    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../../index.html" />
     <link rel="up" title="Module code" href="../../../../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -49,165 +48,178 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for tvb.interfaces.web.controllers.help.help_config</h1><pre>
-# -*- coding: utf-8 -*-
-#
-#
-# TheVirtualBrain-Framework Package. This package holds all Data Management, and 
-# Web-UI helpful to run brain-simulations. To use it, you also need do download
-# TheVirtualBrain-Scientific Package (for simulators). See content of the
-# documentation-folder for more details. See also http://www.thevirtualbrain.org
-#
-# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
-#
-# This program is free software; you can redistribute it and/or modify it under 
-# the terms of the GNU General Public License version 2 as published by the Free
-# Software Foundation. This program is distributed in the hope that it will be
-# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
-# License for more details. You should have received a copy of the GNU General 
-# Public License along with this program; if not, you can download it here
-# http://www.gnu.org/licenses/old-licenses/gpl-2.0
-#
-#
-"""
-This module should contain all configurations necessary by help mechanism to
-display correct online-help page for a given section/subsection/page.
+  <h1>Source code for tvb.interfaces.web.controllers.help.help_config</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
 
-.. moduleauthor:: Calin Pavel
-"""
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module should contain all configurations necessary by help mechanism to</span>
+<span class="sd">display correct online-help page for a given section/subsection/page.</span>
 
-from tvb.basic.logger.builder import get_logger
-from tvb.interfaces.web.structure import WebStructure
+<span class="sd">.. moduleauthor:: Lia Domide  &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Calin Pavel &lt;calin.pavel@cidemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.structure</span> <span class="kn">import</span> <span class="n">WebStructure</span>
 
 
-<div class="viewcode-block" id="HelpConfig"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.help.html#tvb.interfaces.web.controllers.help.help_config.HelpConfig">[docs]</a>class HelpConfig:
-    """
-    This class contains details that allows mapping of section + subsection pair 
-    to correct online-help page/paragraph.
-    """
-    
-    MAIN_HELP_PAGE = "UserGuide-UI.html"
-    ANALYZE_HELP_PAGE = "UserGuide-UI_Analyze.html"
-    BURST_HELP_PAGE = "UserGuide-UI_Simulator.html"
-    CONNECTIVITY_HELP_PAGE = "UserGuide-UI_Connectivity.html"
-    PROJECT_HELP_PAGE = "UserGuide-UI_Project.html"
-    STIMULUS_HELP_PAGE = "UserGuide-UI_Stimulus.html"
-    USER_HELP_PAGE = "UserGuide-UI_User.html"
-    
-    HELP_PAGE_PATH = "/static/help"
-    
-    def __init__(self):
-        self.logger = get_logger(self.__class__.__module__)
-        self._mappings = {}
-        self._load_mappings()
-    
-    def _load_mappings(self):
-        """
-        Here we map section + subsection to help page + paragraph
-        """
-        # Add mappings for root sections
-        self._add_mapping(WebStructure.SECTION_USER, None, self.USER_HELP_PAGE, None)
-        self._add_mapping(WebStructure.SECTION_PROJECT, None, self.PROJECT_HELP_PAGE, None)
-        self._add_mapping(WebStructure.SECTION_BURST, None, self.BURST_HELP_PAGE, None)
-        self._add_mapping(WebStructure.SECTION_ANALYZE, None, self.ANALYZE_HELP_PAGE, None)
-        self._add_mapping(WebStructure.SECTION_STIMULUS, None, self.STIMULUS_HELP_PAGE, None)
-        self._add_mapping(WebStructure.SECTION_CONNECTIVITY, None, self.CONNECTIVITY_HELP_PAGE, None)
-        
-        # Add mappings for USER subsections
-        self._add_mapping(WebStructure.SECTION_USER, WebStructure.SUB_SECTION_LOGIN, self.USER_HELP_PAGE, None)
-        self._add_mapping(WebStructure.SECTION_USER, WebStructure.SUB_SECTION_ACCOUNT, self.USER_HELP_PAGE, None)
-        
-        # Add mappings for PROJECT subsections
-        self._add_mapping(WebStructure.SECTION_PROJECT, WebStructure.SUB_SECTION_OPERATIONS, self.PROJECT_HELP_PAGE, "operations")
-        self._add_mapping(WebStructure.SECTION_PROJECT, WebStructure.SUB_SECTION_DATA_STRUCTURE, self.PROJECT_HELP_PAGE, "data-structure")
-        self._add_mapping(WebStructure.SECTION_PROJECT, WebStructure.SUB_SECTION_LIST_PROJECTS, self.PROJECT_HELP_PAGE, "view-all-projects")
-        self._add_mapping(WebStructure.SECTION_PROJECT, WebStructure.SUB_SECTION_PROPERTIES_PROJECT, self.PROJECT_HELP_PAGE, "basic-properties")
-        self._add_mapping(WebStructure.SECTION_PROJECT, WebStructure.SUB_SECTION_FIGURES, self.PROJECT_HELP_PAGE, "image-archive")
-        self._add_mapping(WebStructure.SECTION_PROJECT, WebStructure.SUB_SECTION_PIPELINE, self.PROJECT_HELP_PAGE, None)
-    
-        # Add mappings for BURST subsections
-        self._add_mapping(WebStructure.SECTION_BURST, WebStructure.SUB_SECTION_BURST, self.BURST_HELP_PAGE, None)    
-        self._add_mapping(WebStructure.SECTION_BURST, WebStructure.SUB_SECTION_MODEL_REGIONS, self.BURST_HELP_PAGE, "region-based-simulations")    
-        self._add_mapping(WebStructure.SECTION_BURST, WebStructure.SUB_SECTION_MODEL_SURFACE, self.BURST_HELP_PAGE, "surface-based-simulations")    
-    
-        # Add mappings for ANALYZE subsections
-        self._add_mapping(WebStructure.SECTION_ANALYZE, WebStructure.SUB_SECTION_ANALYZE_1, self.ANALYZE_HELP_PAGE, None)
-        self._add_mapping(WebStructure.SECTION_ANALYZE, WebStructure.SUB_SECTION_ANALYZE_2, self.ANALYZE_HELP_PAGE, None)
-        self._add_mapping(WebStructure.SECTION_ANALYZE, WebStructure.SUB_SECTION_ANALYZE_3, self.ANALYZE_HELP_PAGE, None)
-        self._add_mapping(WebStructure.SECTION_ANALYZE, WebStructure.SUB_SECTION_ANALYZE_4, self.ANALYZE_HELP_PAGE, None)
-        self._add_mapping(WebStructure.SECTION_ANALYZE, WebStructure.SUB_SECTION_ANALYZE_5, self.ANALYZE_HELP_PAGE, None)
-        self._add_mapping(WebStructure.SECTION_ANALYZE, WebStructure.SUB_SECTION_ANALYZE_6, self.ANALYZE_HELP_PAGE, None)
-        self._add_mapping(WebStructure.SECTION_ANALYZE, WebStructure.SUB_SECTION_ANALYZE_7, self.ANALYZE_HELP_PAGE, None)
-        self._add_mapping(WebStructure.SECTION_ANALYZE, WebStructure.SUB_SECTION_ANALYZE_8, self.ANALYZE_HELP_PAGE, None)
-        self._add_mapping(WebStructure.SECTION_ANALYZE, WebStructure.SUB_SECTION_ANALYZE_9, self.ANALYZE_HELP_PAGE, None)
-        self._add_mapping(WebStructure.SECTION_ANALYZE, WebStructure.SUB_SECTION_ANALYZE_10, self.ANALYZE_HELP_PAGE, None)
-        self._add_mapping(WebStructure.SECTION_ANALYZE, WebStructure.SUB_SECTION_ANALYZE_11, self.ANALYZE_HELP_PAGE, None)
-        self._add_mapping(WebStructure.SECTION_ANALYZE, WebStructure.SUB_SECTION_ANALYZE_12, self.ANALYZE_HELP_PAGE, None)
-        self._add_mapping(WebStructure.SECTION_ANALYZE, WebStructure.SUB_SECTION_ANALYZE_13, self.ANALYZE_HELP_PAGE, None)
-        self._add_mapping(WebStructure.SECTION_ANALYZE, WebStructure.SUB_SECTION_ANALYZE_14, self.ANALYZE_HELP_PAGE, None)
-        
-        # Add mappings for STIMULUS subsections
-        self._add_mapping(WebStructure.SECTION_STIMULUS, WebStructure.SUB_SECTION_STIMULUS_SURFACE, self.STIMULUS_HELP_PAGE, "region-level-stimulus")
-        self._add_mapping(WebStructure.SECTION_STIMULUS, WebStructure.SUB_SECTION_STIMULUS_REGION, self.STIMULUS_HELP_PAGE, "surface-level-stimulus")
-        
-        # Add mappings for CONNECTIVITY subsections
-        self._add_mapping(WebStructure.SECTION_CONNECTIVITY, WebStructure.SUB_SECTION_CONNECTIVITY, self.CONNECTIVITY_HELP_PAGE, "long-range-connectivity")
-        self._add_mapping(WebStructure.SECTION_CONNECTIVITY, WebStructure.SUB_SECTION_LOCAL_CONNECTIVITY, self.CONNECTIVITY_HELP_PAGE, "local-connectivity")
-        
-    def _add_mapping(self, section, subsection, page, paragraph):
-        """
-        This adds to main mapping structure an entry for:
-        :param section: section for which to get help 
-        :param subsection: subsection for which to get help (can be None)
-        :param page: name of the help page corresponding to this section
-        :param paragraph: id of the DIV / paragraph containing details about section/subsection (can be None
-        """
-        if section is None:
-            raise Exception("Please provide section for which to add online-help.")
-        if page is None:
-            raise Exception("Please provide page where to find online-help.")
-        
-        key = self._generate_key(section, subsection)
-        self._mappings[key] = (page + "#" + paragraph) if paragraph is not None else page
-    
-    def _generate_key(self, section, subsection):
-        """
-        Generates an unique key for section, subsection
-        """
-        return (section + "_" + subsection) if subsection is not None else section
-    
-<div class="viewcode-block" id="HelpConfig.get_help_url"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.help.html#tvb.interfaces.web.controllers.help.help_config.HelpConfig.get_help_url">[docs]</a>    def get_help_url(self, section, subsection):
-        """
-        This method returns the URL for the online help page&amp;paragraph corresponding
-        to given section and subsection. 
-        """
-        if section is None:
-            # If no section provided, show to user MAIN page.
-            return self.HELP_PAGE_PATH + "/" + self.MAIN_HELP_PAGE
-        
-        key = self._generate_key(section, subsection)
-        
-        # Check if there is a mapping for this section/subsection combination.
-        if self._mappings.has_key(key): 
-            return self.HELP_PAGE_PATH + "/" + self._mappings[key]
-        else:
-            self.logger.warn("There is no help mapping for section: %s and subsection: %s"%(section, subsection))
-            
-            # If no mapping found for pair section/subsection, try to find for section
-            sect_key = self._generate_key(section, None)
-            if self._mappings.has_key(sect_key):
-                return self.HELP_PAGE_PATH + "/" + self._mappings[sect_key]
-            else: 
-                self.logger.warn("and also there is no help mapping for section: %s."%section)
-                # If not found, show to user MAIN page.
-                return self.HELP_PAGE_PATH + "/" + self.MAIN_HELP_PAGE</pre></div></div>
+
+<div class="viewcode-block" id="HelpConfig"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.help.html#tvb.interfaces.web.controllers.help.help_config.HelpConfig">[docs]</a><span class="k">class</span> <span class="nc">HelpConfig</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class contains details that allows mapping of section + subsection pair </span>
+<span class="sd">    to correct online-help page/paragraph.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">MAIN_HELP_PAGE</span> <span class="o">=</span> <span class="s">&quot;UserGuide-UI.html&quot;</span>
+    <span class="n">ANALYZE_HELP_PAGE</span> <span class="o">=</span> <span class="s">&quot;UserGuide-UI_Analyze.html&quot;</span>
+    <span class="n">BURST_HELP_PAGE</span> <span class="o">=</span> <span class="s">&quot;UserGuide-UI_Simulator.html&quot;</span>
+    <span class="n">CONNECTIVITY_HELP_PAGE</span> <span class="o">=</span> <span class="s">&quot;UserGuide-UI_Connectivity.html&quot;</span>
+    <span class="n">PROJECT_HELP_PAGE</span> <span class="o">=</span> <span class="s">&quot;UserGuide-UI_Project.html&quot;</span>
+    <span class="n">STIMULUS_HELP_PAGE</span> <span class="o">=</span> <span class="s">&quot;UserGuide-UI_Stimulus.html&quot;</span>
+    <span class="n">USER_HELP_PAGE</span> <span class="o">=</span> <span class="s">&quot;UserGuide-UI_User.html&quot;</span>
+
+    <span class="n">HELP_PAGE_PATH</span> <span class="o">=</span> <span class="s">&quot;/statichelp&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mappings</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_mappings</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">_load_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Here we map section + subsection to help page + paragraph</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Add mappings for root sections</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_USER</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">USER_HELP_PAGE</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_PROJECT</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">PROJECT_HELP_PAGE</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_BURST</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">BURST_HELP_PAGE</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_ANALYZE</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ANALYZE_HELP_PAGE</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_STIMULUS</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">STIMULUS_HELP_PAGE</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_CONNECTIVITY</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CONNECTIVITY_HELP_PAGE</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+        <span class="c"># Add mappings for USER subsections</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_USER</span><span class="p">,</span> <span class="n">WebStructure</span><span class="o">.</span><span class="n">SUB_SECTION_LOGIN</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">USER_HELP_PAGE</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_USER</span><span class="p">,</span> <span class="n">WebStructure</span><span class="o">.</span><span class="n">SUB_SECTION_ACCOUNT</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">USER_HELP_PAGE</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+        <span class="c"># Add mappings for PROJECT subsections</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_PROJECT</span><span class="p">,</span> <span class="n">WebStructure</span><span class="o">.</span><span class="n">SUB_SECTION_OPERATIONS</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">PROJECT_HELP_PAGE</span><span class="p">,</span> <span class="s">&quot;operations&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_PROJECT</span><span class="p">,</span> <span class="n">WebStructure</span><span class="o">.</span><span class="n">SUB_SECTION_DATA_STRUCTURE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">PROJECT_HELP_PAGE</span><span class="p">,</span> <span class="s">&quot;data-structure&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_PROJECT</span><span class="p">,</span> <span class="n">WebStructure</span><span class="o">.</span><span class="n">SUB_SECTION_LIST_PROJECTS</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">PROJECT_HELP_PAGE</span><span class="p">,</span> <span class="s">&quot;view-all-projects&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_PROJECT</span><span class="p">,</span> <span class="n">WebStructure</span><span class="o">.</span><span class="n">SUB_SECTION_PROPERTIES_PROJECT</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">PROJECT_HELP_PAGE</span><span class="p">,</span> <span class="s">&quot;basic-properties&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_PROJECT</span><span class="p">,</span> <span class="n">WebStructure</span><span class="o">.</span><span class="n">SUB_SECTION_FIGURES</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">PROJECT_HELP_PAGE</span><span class="p">,</span> <span class="s">&quot;image-archive&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_PROJECT</span><span class="p">,</span> <span class="n">WebStructure</span><span class="o">.</span><span class="n">SUB_SECTION_PIPELINE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">PROJECT_HELP_PAGE</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">subsection</span><span class="p">,</span> <span class="n">paragraph</span> <span class="ow">in</span> <span class="n">WebStructure</span><span class="o">.</span><span class="n">VISUALIZERS_ONLINE_HELP_SHORTCUTS</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_PROJECT</span><span class="p">,</span> <span class="n">subsection</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">PROJECT_HELP_PAGE</span><span class="p">,</span> <span class="n">paragraph</span><span class="p">)</span>
+
+        <span class="c"># Add mappings for BURST subsections</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_BURST</span><span class="p">,</span> <span class="n">WebStructure</span><span class="o">.</span><span class="n">SUB_SECTION_BURST</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">BURST_HELP_PAGE</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_BURST</span><span class="p">,</span> <span class="n">WebStructure</span><span class="o">.</span><span class="n">SUB_SECTION_MODEL_REGIONS</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">BURST_HELP_PAGE</span><span class="p">,</span> <span class="s">&quot;region-based-simulations&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_BURST</span><span class="p">,</span> <span class="n">WebStructure</span><span class="o">.</span><span class="n">SUB_SECTION_MODEL_SURFACE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">BURST_HELP_PAGE</span><span class="p">,</span> <span class="s">&quot;surface-based-simulations&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">subsection</span><span class="p">,</span> <span class="n">paragraph</span> <span class="ow">in</span> <span class="n">WebStructure</span><span class="o">.</span><span class="n">VISUALIZERS_ONLINE_HELP_SHORTCUTS</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_BURST</span><span class="p">,</span> <span class="n">subsection</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">BURST_HELP_PAGE</span><span class="p">,</span> <span class="n">paragraph</span><span class="p">)</span>
+
+        <span class="c"># Add mappings for ANALYZE subsections</span>
+        <span class="k">for</span> <span class="n">subsection</span><span class="p">,</span> <span class="n">paragraph</span> <span class="ow">in</span> <span class="n">WebStructure</span><span class="o">.</span><span class="n">ANALYZERS_ONLINE_HELP_SHORTCUTS</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_ANALYZE</span><span class="p">,</span> <span class="n">subsection</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ANALYZE_HELP_PAGE</span><span class="p">,</span> <span class="n">paragraph</span><span class="p">)</span>
+
+        <span class="c"># Add mappings for STIMULUS subsections</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_STIMULUS</span><span class="p">,</span> <span class="n">WebStructure</span><span class="o">.</span><span class="n">SUB_SECTION_STIMULUS_SURFACE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">STIMULUS_HELP_PAGE</span><span class="p">,</span> <span class="s">&quot;region-level-stimulus&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_STIMULUS</span><span class="p">,</span> <span class="n">WebStructure</span><span class="o">.</span><span class="n">SUB_SECTION_STIMULUS_REGION</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">STIMULUS_HELP_PAGE</span><span class="p">,</span> <span class="s">&quot;surface-level-stimulus&quot;</span><span class="p">)</span>
+
+        <span class="c"># Add mappings for CONNECTIVITY subsections</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_CONNECTIVITY</span><span class="p">,</span> <span class="n">WebStructure</span><span class="o">.</span><span class="n">SUB_SECTION_CONNECTIVITY</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CONNECTIVITY_HELP_PAGE</span><span class="p">,</span> <span class="s">&quot;long-range-connectivity&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mapping</span><span class="p">(</span><span class="n">WebStructure</span><span class="o">.</span><span class="n">SECTION_CONNECTIVITY</span><span class="p">,</span> <span class="n">WebStructure</span><span class="o">.</span><span class="n">SUB_SECTION_LOCAL_CONNECTIVITY</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CONNECTIVITY_HELP_PAGE</span><span class="p">,</span> <span class="s">&quot;local-connectivity&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_add_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">subsection</span><span class="p">,</span> <span class="n">page</span><span class="p">,</span> <span class="n">paragraph</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This adds to main mapping structure an entry for:</span>
+<span class="sd">        :param section: section for which to get help </span>
+<span class="sd">        :param subsection: subsection for which to get help (can be None)</span>
+<span class="sd">        :param page: name of the help page corresponding to this section</span>
+<span class="sd">        :param paragraph: id of the DIV / paragraph containing details about section/subsection (can be None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">section</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Please provide section for which to add online-help.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">page</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Please provide page where to find online-help.&quot;</span><span class="p">)</span>
+
+        <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_key</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">subsection</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mappings</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">page</span> <span class="o">+</span> <span class="s">&quot;#&quot;</span> <span class="o">+</span> <span class="n">paragraph</span><span class="p">)</span> <span class="k">if</span> <span class="n">paragraph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">page</span>
+
+
+    <span class="k">def</span> <span class="nf">_generate_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">subsection</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates an unique key for section, subsection</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">section</span> <span class="o">+</span> <span class="s">&quot;_&quot;</span> <span class="o">+</span> <span class="n">subsection</span><span class="p">)</span> <span class="k">if</span> <span class="n">subsection</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">section</span>
+
+
+<div class="viewcode-block" id="HelpConfig.get_help_url"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.help.html#tvb.interfaces.web.controllers.help.help_config.HelpConfig.get_help_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_help_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">subsection</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method returns the URL for the online help page&amp;paragraph corresponding</span>
+<span class="sd">        to given section and subsection. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">section</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c"># If no section provided, show to user MAIN page.</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">HELP_PAGE_PATH</span> <span class="o">+</span> <span class="s">&quot;/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAIN_HELP_PAGE</span>
+
+        <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_key</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">subsection</span><span class="p">)</span>
+
+        <span class="c"># Check if there is a mapping for this section/subsection combination.</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mappings</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">HELP_PAGE_PATH</span> <span class="o">+</span> <span class="s">&quot;/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mappings</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;There is no help mapping for section: </span><span class="si">%s</span><span class="s"> and subsection: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">subsection</span><span class="p">))</span>
+
+            <span class="c"># If no mapping found for pair section/subsection, try to find for section</span>
+            <span class="n">sect_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_key</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sect_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mappings</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">HELP_PAGE_PATH</span> <span class="o">+</span> <span class="s">&quot;/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mappings</span><span class="p">[</span><span class="n">sect_key</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;and also there is no help mapping for section: </span><span class="si">%s</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="n">section</span><span class="p">)</span>
+                <span class="c"># If not found, show to user MAIN page.</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">HELP_PAGE_PATH</span> <span class="o">+</span> <span class="s">&quot;/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAIN_HELP_PAGE</span>
+</pre></div></div></div>
 
           </div>
         </div>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../../index.html">
+              <img class="logo" src="../../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../../../../search.html" method="get">
@@ -234,13 +246,13 @@ from tvb.interfaces.web.structure import WebStructure
         <li class="right" >
           <a href="../../../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

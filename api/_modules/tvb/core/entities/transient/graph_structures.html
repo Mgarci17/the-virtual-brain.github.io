@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.core.entities.transient.graph_structures &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.core.entities.transient.graph_structures &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../../index.html" />
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../index.html" />
     <link rel="up" title="Module code" href="../../../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -49,427 +48,436 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for tvb.core.entities.transient.graph_structures</h1><pre>
-# -*- coding: utf-8 -*-
-#
-#
-# TheVirtualBrain-Framework Package. This package holds all Data Management, and 
-# Web-UI helpful to run brain-simulations. To use it, you also need do download
-# TheVirtualBrain-Scientific Package (for simulators). See content of the
-# documentation-folder for more details. See also http://www.thevirtualbrain.org
-#
-# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
-#
-# This program is free software; you can redistribute it and/or modify it under 
-# the terms of the GNU General Public License version 2 as published by the Free
-# Software Foundation. This program is distributed in the hope that it will be
-# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
-# License for more details. You should have received a copy of the GNU General 
-# Public License along with this program; if not, you can download it here
-# http://www.gnu.org/licenses/old-licenses/gpl-2.0
-#
-#
-"""
-.. moduleauthor:: Ionel Ortelecan &lt;ionel.ortelecan@codemart.ro&gt;
-"""
+  <h1>Source code for tvb.core.entities.transient.graph_structures</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Ionel Ortelecan &lt;ionel.ortelecan@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
-from tvb.core.entities.storage import dao 
+<span class="kn">from</span> <span class="nn">tvb.core.entities.storage</span> <span class="kn">import</span> <span class="n">dao</span> 
 
-MAX_SHAPE_SIZE = 50
-MIN_SHAPE_SIZE = 10
+<span class="n">MAX_SHAPE_SIZE</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">MIN_SHAPE_SIZE</span> <span class="o">=</span> <span class="mi">10</span>
 
-NODE_OPERATION_GROUP_TYPE = "operationGroup"
-NODE_OPERATION_TYPE = "operation"
-NODE_DATATYPE_TYPE = "datatype"
+<span class="n">NODE_OPERATION_GROUP_TYPE</span> <span class="o">=</span> <span class="s">&quot;operationGroup&quot;</span>
+<span class="n">NODE_OPERATION_TYPE</span> <span class="o">=</span> <span class="s">&quot;operation&quot;</span>
+<span class="n">NODE_DATATYPE_TYPE</span> <span class="o">=</span> <span class="s">&quot;datatype&quot;</span>
 
-DATATYPE_GROUP_SHAPE = "circlesGroup"
-DATATYPE_SHAPE = "circle"
-DATATYPE_SHAPE_COLOR = "#83548B"
-OPERATION_SHAPE = "square"
-OPERATION_SHAPE_COLOR = "#660033"
-OPERATION_GROUP_SHAPE = "squaresGroup"
-OPERATION_GROUP_SHAPE_COLOR = "#660033"
+<span class="n">DATATYPE_GROUP_SHAPE</span> <span class="o">=</span> <span class="s">&quot;circlesGroup&quot;</span>
+<span class="n">DATATYPE_SHAPE</span> <span class="o">=</span> <span class="s">&quot;circle&quot;</span>
+<span class="n">DATATYPE_SHAPE_COLOR</span> <span class="o">=</span> <span class="s">&quot;#83548B&quot;</span>
+<span class="n">OPERATION_SHAPE</span> <span class="o">=</span> <span class="s">&quot;square&quot;</span>
+<span class="n">OPERATION_SHAPE_COLOR</span> <span class="o">=</span> <span class="s">&quot;#660033&quot;</span>
+<span class="n">OPERATION_GROUP_SHAPE</span> <span class="o">=</span> <span class="s">&quot;squaresGroup&quot;</span>
+<span class="n">OPERATION_GROUP_SHAPE_COLOR</span> <span class="o">=</span> <span class="s">&quot;#660033&quot;</span>
 
-DT_INPUTS_KEY = "dt_inputs"
-PARENT_OP_KEY = "parent_op"
-DT_OUTPUTS_KEY = "dt_outputs"
-OP_INPUTS_KEY = "op_inputs"
-
-
-<div class="viewcode-block" id="NodeData"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.NodeData">[docs]</a>class NodeData():
-    """
-    Contains the data that will be set on each node.
-    """
-    shape_size = None
-    shape_color = None
-    shape_type = None
-    #aditional data
-    dataType = None
-    entity_id = None
-    subtitle = None
-
-    def __init__(self, shape_size, shape_color, shape_type, dataType, entity_id, subtitle):
-        self.shape_size = shape_size
-        self.shape_color = shape_color
-        self.shape_type = shape_type
-        self.dataType = dataType
-        self.entity_id = entity_id
-        self.subtitle = subtitle
+<span class="n">DT_INPUTS_KEY</span> <span class="o">=</span> <span class="s">&quot;dt_inputs&quot;</span>
+<span class="n">PARENT_OP_KEY</span> <span class="o">=</span> <span class="s">&quot;parent_op&quot;</span>
+<span class="n">DT_OUTPUTS_KEY</span> <span class="o">=</span> <span class="s">&quot;dt_outputs&quot;</span>
+<span class="n">OP_INPUTS_KEY</span> <span class="o">=</span> <span class="s">&quot;op_inputs&quot;</span>
 
 
-<div class="viewcode-block" id="NodeData.to_json"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.NodeData.to_json">[docs]</a>    def to_json(self):
-        """
-        Returns the JSON representation of this NodeData.
-        """
-        json = "{"
-        json += "  \"$dim\": \"" + str(self.shape_size) + "\""
-        json += ", \"$color\": \"" + self.shape_color + "\""
-        json += ", \"$type\": \"" + self.shape_type + "\""
-        json += ", \"dataType\": \"" + self.dataType + "\""
-        json += ", \"entity_id\": \"" + str(self.entity_id) +"\""
-        json += ", \"subtitle\": \"" + str(self.subtitle) + "\""
-        json += "}"
-        return json
+<div class="viewcode-block" id="NodeData"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.NodeData">[docs]</a><span class="k">class</span> <span class="nc">NodeData</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Contains the data that will be set on each node.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">shape_size</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">shape_color</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">shape_type</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="c">#aditional data</span>
+    <span class="n">dataType</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">entity_id</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">subtitle</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape_size</span><span class="p">,</span> <span class="n">shape_color</span><span class="p">,</span> <span class="n">shape_type</span><span class="p">,</span> <span class="n">dataType</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">subtitle</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape_size</span> <span class="o">=</span> <span class="n">shape_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape_color</span> <span class="o">=</span> <span class="n">shape_color</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape_type</span> <span class="o">=</span> <span class="n">shape_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataType</span> <span class="o">=</span> <span class="n">dataType</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entity_id</span> <span class="o">=</span> <span class="n">entity_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subtitle</span> <span class="o">=</span> <span class="n">subtitle</span>
 
 
-
-</div></div>
-<div class="viewcode-block" id="NodeStructure"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.NodeStructure">[docs]</a>class NodeStructure():
-    """
-    Define the structure of a graph node.
-
-    id - the graph node id. It is set to an entity GID.
-    name - the name of the node
-    data - it should be an instance of NodeData or None
-    adjacencies - a list of graph nodes IDs
-    selected - True if this node is the selected one.
-    """
-    id = None
-    name = None
-    data = None
-    adjacencies = []
-    selected = False
-
-
-    def __init__(self, node_id, node_name):
-        self.id = node_id
-        self.name = node_name
-
-
-    def __create_adjacencies_json(self):
-        """
-        Creates the adjacencies for this node.
-        """
-        if not len(self.adjacencies):
-            return "[]"
-        json = "["
-        for i in range(len(self.adjacencies)):
-            if i:
-                json += ","
-            json += "{"
-            json += "  \"nodeFrom\": \"" + str(self.id) + "\""
-            json += ", \"nodeTo\": \"" + str(self.adjacencies[i]) + "\""
-            json += ", \"data\": {}"
-            json += "}"
-        json += "]"
-        return json
-
-
-<div class="viewcode-block" id="NodeStructure.to_json"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.NodeStructure.to_json">[docs]</a>    def to_json(self):
-        """
-        Returns the JSON representation of this node.
-        """
-        json = "{"
-        json += "  \"id\": \"" + str(self.id) + "\""
-        json += ", \"name\":\"" + str(self.name) + "\""
-
-        json += ", \"data\":"
-        if self.data is not None:
-            json += self.data.to_json()
-        else:
-            json += "{}"
-
-        json += ", \"adjacencies\": " + self.__create_adjacencies_json()
-
-        json += "}"
-        return json
-
-
-</div></div>
-<div class="viewcode-block" id="DatatypeNodeStructure"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.DatatypeNodeStructure">[docs]</a>class DatatypeNodeStructure(NodeStructure):
-    """
-    This class knows how to create a NodeStructure for a given DataType.
-    """
-    def __init__(self, datatype_gid):
-        NodeStructure.__init__(self, datatype_gid, "")
-
-        datatype_shape = DATATYPE_SHAPE
-        if dao.is_datatype_group(datatype_gid):
-            datatype_shape = DATATYPE_GROUP_SHAPE
-        datatype = dao.get_datatype_by_gid(datatype_gid)
-
-        node_data = NodeData(MAX_SHAPE_SIZE, DATATYPE_SHAPE_COLOR, datatype_shape,
-                             NODE_DATATYPE_TYPE, datatype.id, datatype.display_name)
-
-        self.name = str(datatype.type)
-        self.data = node_data
-
-
-</div>
-<div class="viewcode-block" id="OperationNodeStructure"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.OperationNodeStructure">[docs]</a>class OperationNodeStructure(NodeStructure):
-    """
-    This class knows how to create a NodeStructure for a given Operation.
-    """
-    def __init__(self, operation_gid):
-        NodeStructure.__init__(self, operation_gid, "")
-
-        operation = dao.get_operation_by_gid(operation_gid)
-        algo = dao.get_algorithm_by_id(operation.fk_from_algo)
-        node_data = NodeData(MAX_SHAPE_SIZE, OPERATION_SHAPE_COLOR, OPERATION_SHAPE,
-                             NODE_OPERATION_TYPE, operation.id, str(operation.start_date))
-
-        self.name = algo.name
-        self.data = node_data
-
-
-</div>
-<div class="viewcode-block" id="OperationGroupNodeStructure"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.OperationGroupNodeStructure">[docs]</a>class OperationGroupNodeStructure(NodeStructure):
-    """
-    This class knows how to create a NodeStructure for a given OperationGroup.
-    """
-    def __init__(self, operation_group_gid):
-        NodeStructure.__init__(self, operation_group_gid, "")
-
-        group = dao.get_operationgroup_by_gid(operation_group_gid)
-        operation = dao.get_operations_in_group(group.id, only_first_operation=True)
-        algo = dao.get_algorithm_by_id(operation.fk_from_algo)
-        node_data = NodeData(MAX_SHAPE_SIZE, OPERATION_GROUP_SHAPE_COLOR, OPERATION_GROUP_SHAPE,
-                             NODE_OPERATION_GROUP_TYPE, group.id, str(operation.start_date))
-
-        self.name = algo.name
-        self.data = node_data
-
-
-</div>
-<div class="viewcode-block" id="GraphBranch"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.GraphBranch">[docs]</a>class GraphBranch():
-    """
-    Class used for representing a branch of the graph.
-    If we have executed more than one upload operation than the graph
-    will have more branches, one for each of those operations.
-
-    dt_inputs, parent_op, dt_outputs, op_inputs - should be lists of NodeStructure instances.
-
-    A branch will have the following structure::
-
-                            dt_input ... dt_input
-                                \\         /
-                                 \\       /
-                                 parent_op
-                                  /       \\
-                                /          \\
-                            dt_output ... dt_output(if selected)
-                                               /         \\
-                                             /            \\
-                                          op_input ... op_input
-    
-    """
-    dt_inputs = []
-    parent_op = []
-    dt_outputs = []
-    op_inputs = []
-
-
-    def __init__(self, dt_inputs, parent_op, dt_outputs, op_inputs):
-        self.dt_inputs = dt_inputs
-        self.parent_op = parent_op
-        self.dt_outputs = dt_outputs
-        self.op_inputs = op_inputs
-
-
-<div class="viewcode-block" id="GraphBranch.get_branch_levels"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.GraphBranch.get_branch_levels">[docs]</a>    def get_branch_levels(self):
-        return {DT_INPUTS_KEY: self.dt_inputs, PARENT_OP_KEY: self.parent_op,
-                DT_OUTPUTS_KEY: self.dt_outputs, OP_INPUTS_KEY: self.op_inputs}
+<div class="viewcode-block" id="NodeData.to_json"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.NodeData.to_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the JSON representation of this NodeData.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">json</span> <span class="o">=</span> <span class="s">&quot;{&quot;</span>
+        <span class="n">json</span> <span class="o">+=</span> <span class="s">&quot;  </span><span class="se">\&quot;</span><span class="s">$dim</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape_size</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">&quot;</span>
+        <span class="n">json</span> <span class="o">+=</span> <span class="s">&quot;, </span><span class="se">\&quot;</span><span class="s">$color</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape_color</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">&quot;</span>
+        <span class="n">json</span> <span class="o">+=</span> <span class="s">&quot;, </span><span class="se">\&quot;</span><span class="s">$type</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape_type</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">&quot;</span>
+        <span class="n">json</span> <span class="o">+=</span> <span class="s">&quot;, </span><span class="se">\&quot;</span><span class="s">dataType</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataType</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">&quot;</span>
+        <span class="n">json</span> <span class="o">+=</span> <span class="s">&quot;, </span><span class="se">\&quot;</span><span class="s">entity_id</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">entity_id</span><span class="p">)</span> <span class="o">+</span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">&quot;</span>
+        <span class="n">json</span> <span class="o">+=</span> <span class="s">&quot;, </span><span class="se">\&quot;</span><span class="s">subtitle</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subtitle</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">&quot;</span>
+        <span class="n">json</span> <span class="o">+=</span> <span class="s">&quot;}&quot;</span>
+        <span class="k">return</span> <span class="n">json</span>
 
 
 
 </div></div>
-<div class="viewcode-block" id="GraphStructure"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.GraphStructure">[docs]</a>class GraphStructure():
-    """
-    This class contains information for the entire graph.
+<div class="viewcode-block" id="NodeStructure"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.NodeStructure">[docs]</a><span class="k">class</span> <span class="nc">NodeStructure</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Define the structure of a graph node.</span>
 
-    graph_branches - represents a list of GraphBranch
-    """
-
-    graph_branches = []
-
-    def __init__(self, graph_branches):
-        self.graph_branches = graph_branches
-        self._set_shapes_size()
-        self._set_adjacencies()
-
-
-<div class="viewcode-block" id="GraphStructure.to_json"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.GraphStructure.to_json">[docs]</a>    def to_json(self):
-        """
-        Returns the json representation of the graph.
-        """
-        fake_root_adjacencies = []
-        for branch in self.graph_branches:
-            branch_levels = branch.get_branch_levels()
-            if len(branch_levels[DT_INPUTS_KEY]):
-                fake_root_adjacencies.extend(self._get_nodes_ids(branch_levels[DT_INPUTS_KEY]))
-            else:
-                fake_root_adjacencies.extend(self._get_nodes_ids(branch_levels[PARENT_OP_KEY]))
-
-        final_json = "["
-        final_json += self._create_fake_root(fake_root_adjacencies).to_json()
-        for branch in self.graph_branches:
-            branch_levels = branch.get_branch_levels()
-            #todo: refactor
-            for node in branch_levels[DT_INPUTS_KEY]:
-                final_json += "," + node.to_json()
-            for node in branch_levels[PARENT_OP_KEY]:
-                final_json += "," + node.to_json()
-            for node in branch_levels[DT_OUTPUTS_KEY]:
-                final_json += "," + node.to_json()
-            for node in branch_levels[OP_INPUTS_KEY]:
-                final_json += "," + node.to_json()
-
-        final_json += "]"
-        return final_json
-
-</div>
-    def _set_adjacencies(self):
-        """
-        Sets adjacencies for the entire graph.
-        """
-        for branch in self.graph_branches:
-            branch_levels = branch.get_branch_levels()
-
-            parent_ops_ids = self._get_nodes_ids(branch_levels[PARENT_OP_KEY])
-            dt_outputs_ids = self._get_nodes_ids(branch_levels[DT_OUTPUTS_KEY])
-            op_inputs_ids = self._get_nodes_ids(branch_levels[OP_INPUTS_KEY])
-
-            self.__set_nodes_adjacencies(branch_levels[DT_INPUTS_KEY], parent_ops_ids)
-            self.__set_nodes_adjacencies(branch_levels[PARENT_OP_KEY], dt_outputs_ids)
-            self.__set_nodes_adjacencies(branch_levels[DT_OUTPUTS_KEY], op_inputs_ids, True)
+<span class="sd">    id - the graph node id. It is set to an entity GID.</span>
+<span class="sd">    name - the name of the node</span>
+<span class="sd">    data - it should be an instance of NodeData or None</span>
+<span class="sd">    adjacencies - a list of graph nodes IDs</span>
+<span class="sd">    selected - True if this node is the selected one.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">adjacencies</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">selected</span> <span class="o">=</span> <span class="bp">False</span>
 
 
-    @staticmethod
-    def __set_nodes_adjacencies(list_of_nodes, adjacencies, 
-                                only_for_selected_node = False):
-        """
-        Sets adjacencies for a list of nodes.
-        """
-        if only_for_selected_node:
-            for node in list_of_nodes:
-                if node.selected:
-                    node.adjacencies = adjacencies
-                else:
-                    node.adjacencies = []
-        else:
-            for node in list_of_nodes:
-                node.adjacencies = adjacencies
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">node_name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">node_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">node_name</span>
 
 
-    def _set_shapes_size(self):
-        """
-        Sets the correct size for each node from this graph.
-        """
-        no_of_dt_inputs = 0
-        no_of_parent_op = 0
-        no_of_dt_outputs = 0
-        no_of_op_inputs = 0
-        for branch in self.graph_branches:
-            branch_levels = branch.get_branch_levels()
-
-            no_of_dt_inputs += len(branch_levels[DT_INPUTS_KEY])
-            no_of_parent_op += len(branch_levels[PARENT_OP_KEY])
-            no_of_dt_outputs += len(branch_levels[DT_OUTPUTS_KEY])
-            no_of_op_inputs += len(branch_levels[OP_INPUTS_KEY])
-
-        dt_input_size = self._compute_shape_size(no_of_dt_inputs)
-        parent_op_size = self._compute_shape_size(no_of_parent_op)
-        dt_output_size = self._compute_shape_size(no_of_dt_outputs)
-        op_input = self._compute_shape_size(no_of_op_inputs)
-
-        for branch in self.graph_branches:
-            branch_levels = branch.get_branch_levels()
-
-            self.__set_nodes_size(branch_levels[DT_INPUTS_KEY], dt_input_size)
-            self.__set_nodes_size(branch_levels[PARENT_OP_KEY], parent_op_size)
-            self.__set_nodes_size(branch_levels[DT_OUTPUTS_KEY], dt_output_size)
-            self.__set_nodes_size(branch_levels[OP_INPUTS_KEY], op_input)
+    <span class="k">def</span> <span class="nf">__create_adjacencies_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates the adjacencies for this node.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adjacencies</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s">&quot;[]&quot;</span>
+        <span class="n">json</span> <span class="o">=</span> <span class="s">&quot;[&quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">adjacency</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adjacencies</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span><span class="p">:</span>
+                <span class="n">json</span> <span class="o">+=</span> <span class="s">&quot;,&quot;</span>
+            <span class="n">json</span> <span class="o">+=</span> <span class="s">&quot;{&quot;</span>
+            <span class="n">json</span> <span class="o">+=</span> <span class="s">&quot;  </span><span class="se">\&quot;</span><span class="s">nodeFrom</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">&quot;</span>
+            <span class="n">json</span> <span class="o">+=</span> <span class="s">&quot;, </span><span class="se">\&quot;</span><span class="s">nodeTo</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">adjacency</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">&quot;</span>
+            <span class="n">json</span> <span class="o">+=</span> <span class="s">&quot;, </span><span class="se">\&quot;</span><span class="s">data</span><span class="se">\&quot;</span><span class="s">: {}&quot;</span>
+            <span class="n">json</span> <span class="o">+=</span> <span class="s">&quot;}&quot;</span>
+        <span class="n">json</span> <span class="o">+=</span> <span class="s">&quot;]&quot;</span>
+        <span class="k">return</span> <span class="n">json</span>
 
 
-    @staticmethod
-    def __set_nodes_size(list_of_nodes, shape_size):
-        """
-        Sets the size for each node from the given list of nodes.
-        """
-        if not len(list_of_nodes):
-            return
+<div class="viewcode-block" id="NodeStructure.to_json"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.NodeStructure.to_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the JSON representation of this node.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">json</span> <span class="o">=</span> <span class="s">&quot;{&quot;</span>
+        <span class="n">json</span> <span class="o">+=</span> <span class="s">&quot;  </span><span class="se">\&quot;</span><span class="s">id</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">&quot;</span>
+        <span class="n">json</span> <span class="o">+=</span> <span class="s">&quot;, </span><span class="se">\&quot;</span><span class="s">name</span><span class="se">\&quot;</span><span class="s">:</span><span class="se">\&quot;</span><span class="s">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">&quot;</span>
 
-        for node in list_of_nodes:
-            if node.data is None:
-                continue
-            node.data.shape_size = shape_size
+        <span class="n">json</span> <span class="o">+=</span> <span class="s">&quot;, </span><span class="se">\&quot;</span><span class="s">data</span><span class="se">\&quot;</span><span class="s">:&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">json</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">json</span> <span class="o">+=</span> <span class="s">&quot;{}&quot;</span>
 
+        <span class="n">json</span> <span class="o">+=</span> <span class="s">&quot;, </span><span class="se">\&quot;</span><span class="s">adjacencies</span><span class="se">\&quot;</span><span class="s">: &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__create_adjacencies_json</span><span class="p">()</span>
 
-    @staticmethod
-    def _get_nodes_ids(list_of_nodes):
-        """Compute IDs for nodes"""
-        nodes_ids = []
-        for node in list_of_nodes:
-            nodes_ids.append(node.id)
-        return nodes_ids
+        <span class="n">json</span> <span class="o">+=</span> <span class="s">&quot;}&quot;</span>
+        <span class="k">return</span> <span class="n">json</span>
 
 
-    @staticmethod
-    def _compute_shape_size(no_of_elements):
-        """
-        no_of_elements - represents the number of nodes that are displayed on a certain level
+</div></div>
+<div class="viewcode-block" id="DatatypeNodeStructure"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.DatatypeNodeStructure">[docs]</a><span class="k">class</span> <span class="nc">DatatypeNodeStructure</span><span class="p">(</span><span class="n">NodeStructure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class knows how to create a NodeStructure for a given DataType.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datatype_gid</span><span class="p">):</span>
+        <span class="n">NodeStructure</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datatype_gid</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
 
-        We consider that the canvas width is 1000px. With a size of 50 the max number
-        of shapes that may be displayed into the canvas are 9 (=&gt; 111px per shape).
+        <span class="n">datatype_shape</span> <span class="o">=</span> <span class="n">DATATYPE_SHAPE</span>
+        <span class="k">if</span> <span class="n">dao</span><span class="o">.</span><span class="n">is_datatype_group</span><span class="p">(</span><span class="n">datatype_gid</span><span class="p">):</span>
+            <span class="n">datatype_shape</span> <span class="o">=</span> <span class="n">DATATYPE_GROUP_SHAPE</span>
+        <span class="n">datatype</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_datatype_by_gid</span><span class="p">(</span><span class="n">datatype_gid</span><span class="p">)</span>
 
-        max_shape_size = 50 points &lt;=&gt; 111px
-        min_shape_size = 10 points &lt;=&gt; 20px
+        <span class="n">node_data</span> <span class="o">=</span> <span class="n">NodeData</span><span class="p">(</span><span class="n">MAX_SHAPE_SIZE</span><span class="p">,</span> <span class="n">DATATYPE_SHAPE_COLOR</span><span class="p">,</span> <span class="n">datatype_shape</span><span class="p">,</span>
+                             <span class="n">NODE_DATATYPE_TYPE</span><span class="p">,</span> <span class="n">datatype</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">datatype</span><span class="o">.</span><span class="n">display_name</span><span class="p">)</span>
 
-        1 point &lt;=&gt; 2px =&gt; shape_size = (canvas_width) / [(no_of_nodes + 1) * 2]
-        """
-
-        if not no_of_elements:
-            return MAX_SHAPE_SIZE
-
-        shape_size = 1000 / ((no_of_elements + 1) * 2)
-        if shape_size &gt; MAX_SHAPE_SIZE:
-            return MAX_SHAPE_SIZE
-        elif shape_size &lt; MIN_SHAPE_SIZE:
-            return MIN_SHAPE_SIZE
-        else:
-            return shape_size
-
-
-    @staticmethod
-    def _create_fake_root(adjacencies_nodes):
-        """In case no root exists, create one, for JS limitations"""
-        node_data = NodeData(7, DATATYPE_SHAPE_COLOR, DATATYPE_SHAPE, 
-                             NODE_DATATYPE_TYPE, "fakeRootNode", "Fake root")
-        fake_root = NodeStructure("fakeRootNode", "fakeRootNode")
-        fake_root.data = node_data
-        fake_root.adjacencies = adjacencies_nodes
-        return fake_root
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datatype</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">node_data</span>
 
 
 </div>
-</pre>
+<div class="viewcode-block" id="OperationNodeStructure"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.OperationNodeStructure">[docs]</a><span class="k">class</span> <span class="nc">OperationNodeStructure</span><span class="p">(</span><span class="n">NodeStructure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class knows how to create a NodeStructure for a given Operation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation_gid</span><span class="p">):</span>
+        <span class="n">NodeStructure</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation_gid</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="n">operation</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operation_by_gid</span><span class="p">(</span><span class="n">operation_gid</span><span class="p">)</span>
+        <span class="n">algo</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_algorithm_by_id</span><span class="p">(</span><span class="n">operation</span><span class="o">.</span><span class="n">fk_from_algo</span><span class="p">)</span>
+        <span class="n">node_data</span> <span class="o">=</span> <span class="n">NodeData</span><span class="p">(</span><span class="n">MAX_SHAPE_SIZE</span><span class="p">,</span> <span class="n">OPERATION_SHAPE_COLOR</span><span class="p">,</span> <span class="n">OPERATION_SHAPE</span><span class="p">,</span>
+                             <span class="n">NODE_OPERATION_TYPE</span><span class="p">,</span> <span class="n">operation</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">operation</span><span class="o">.</span><span class="n">start_date</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">algo</span><span class="o">.</span><span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">node_data</span>
+
+
+</div>
+<div class="viewcode-block" id="OperationGroupNodeStructure"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.OperationGroupNodeStructure">[docs]</a><span class="k">class</span> <span class="nc">OperationGroupNodeStructure</span><span class="p">(</span><span class="n">NodeStructure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class knows how to create a NodeStructure for a given OperationGroup.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation_group_gid</span><span class="p">):</span>
+        <span class="n">NodeStructure</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation_group_gid</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="n">group</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operationgroup_by_gid</span><span class="p">(</span><span class="n">operation_group_gid</span><span class="p">)</span>
+        <span class="n">operation</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operations_in_group</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">only_first_operation</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">algo</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_algorithm_by_id</span><span class="p">(</span><span class="n">operation</span><span class="o">.</span><span class="n">fk_from_algo</span><span class="p">)</span>
+        <span class="n">node_data</span> <span class="o">=</span> <span class="n">NodeData</span><span class="p">(</span><span class="n">MAX_SHAPE_SIZE</span><span class="p">,</span> <span class="n">OPERATION_GROUP_SHAPE_COLOR</span><span class="p">,</span> <span class="n">OPERATION_GROUP_SHAPE</span><span class="p">,</span>
+                             <span class="n">NODE_OPERATION_GROUP_TYPE</span><span class="p">,</span> <span class="n">group</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">operation</span><span class="o">.</span><span class="n">start_date</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">algo</span><span class="o">.</span><span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">node_data</span>
+
+
+</div>
+<div class="viewcode-block" id="GraphBranch"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.GraphBranch">[docs]</a><span class="k">class</span> <span class="nc">GraphBranch</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class used for representing a branch of the graph.</span>
+<span class="sd">    If we have executed more than one upload operation than the graph</span>
+<span class="sd">    will have more branches, one for each of those operations.</span>
+
+<span class="sd">    dt_inputs, parent_op, dt_outputs, op_inputs - should be lists of NodeStructure instances.</span>
+
+<span class="sd">    A branch will have the following structure::</span>
+
+<span class="sd">                            dt_input ... dt_input</span>
+<span class="sd">                                \\         /</span>
+<span class="sd">                                 \\       /</span>
+<span class="sd">                                 parent_op</span>
+<span class="sd">                                  /       \\</span>
+<span class="sd">                                /          \\</span>
+<span class="sd">                            dt_output ... dt_output(if selected)</span>
+<span class="sd">                                               /         \\</span>
+<span class="sd">                                             /            \\</span>
+<span class="sd">                                          op_input ... op_input</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dt_inputs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">parent_op</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">dt_outputs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">op_inputs</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt_inputs</span><span class="p">,</span> <span class="n">parent_op</span><span class="p">,</span> <span class="n">dt_outputs</span><span class="p">,</span> <span class="n">op_inputs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt_inputs</span> <span class="o">=</span> <span class="n">dt_inputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent_op</span> <span class="o">=</span> <span class="n">parent_op</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt_outputs</span> <span class="o">=</span> <span class="n">dt_outputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">op_inputs</span> <span class="o">=</span> <span class="n">op_inputs</span>
+
+
+<div class="viewcode-block" id="GraphBranch.get_branch_levels"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.GraphBranch.get_branch_levels">[docs]</a>    <span class="k">def</span> <span class="nf">get_branch_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">DT_INPUTS_KEY</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_inputs</span><span class="p">,</span> <span class="n">PARENT_OP_KEY</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent_op</span><span class="p">,</span>
+                <span class="n">DT_OUTPUTS_KEY</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_outputs</span><span class="p">,</span> <span class="n">OP_INPUTS_KEY</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">op_inputs</span><span class="p">}</span>
+
+
+
+</div></div>
+<div class="viewcode-block" id="GraphStructure"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.GraphStructure">[docs]</a><span class="k">class</span> <span class="nc">GraphStructure</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class contains information for the entire graph.</span>
+
+<span class="sd">    graph_branches - represents a list of GraphBranch</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">graph_branches</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph_branches</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph_branches</span> <span class="o">=</span> <span class="n">graph_branches</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_shapes_size</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_adjacencies</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="GraphStructure.to_json"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.graph_structures.GraphStructure.to_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the json representation of the graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fake_root_adjacencies</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_branches</span><span class="p">:</span>
+            <span class="n">branch_levels</span> <span class="o">=</span> <span class="n">branch</span><span class="o">.</span><span class="n">get_branch_levels</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">branch_levels</span><span class="p">[</span><span class="n">DT_INPUTS_KEY</span><span class="p">]):</span>
+                <span class="n">fake_root_adjacencies</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_nodes_ids</span><span class="p">(</span><span class="n">branch_levels</span><span class="p">[</span><span class="n">DT_INPUTS_KEY</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fake_root_adjacencies</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_nodes_ids</span><span class="p">(</span><span class="n">branch_levels</span><span class="p">[</span><span class="n">PARENT_OP_KEY</span><span class="p">]))</span>
+
+        <span class="n">final_json</span> <span class="o">=</span> <span class="s">&quot;[&quot;</span>
+        <span class="n">final_json</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_fake_root</span><span class="p">(</span><span class="n">fake_root_adjacencies</span><span class="p">)</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_branches</span><span class="p">:</span>
+            <span class="n">branch_levels</span> <span class="o">=</span> <span class="n">branch</span><span class="o">.</span><span class="n">get_branch_levels</span><span class="p">()</span>
+            <span class="c">#todo: refactor</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">branch_levels</span><span class="p">[</span><span class="n">DT_INPUTS_KEY</span><span class="p">]:</span>
+                <span class="n">final_json</span> <span class="o">+=</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="n">node</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">branch_levels</span><span class="p">[</span><span class="n">PARENT_OP_KEY</span><span class="p">]:</span>
+                <span class="n">final_json</span> <span class="o">+=</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="n">node</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">branch_levels</span><span class="p">[</span><span class="n">DT_OUTPUTS_KEY</span><span class="p">]:</span>
+                <span class="n">final_json</span> <span class="o">+=</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="n">node</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">branch_levels</span><span class="p">[</span><span class="n">OP_INPUTS_KEY</span><span class="p">]:</span>
+                <span class="n">final_json</span> <span class="o">+=</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="n">node</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+
+        <span class="n">final_json</span> <span class="o">+=</span> <span class="s">&quot;]&quot;</span>
+        <span class="k">return</span> <span class="n">final_json</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">_set_adjacencies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets adjacencies for the entire graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_branches</span><span class="p">:</span>
+            <span class="n">branch_levels</span> <span class="o">=</span> <span class="n">branch</span><span class="o">.</span><span class="n">get_branch_levels</span><span class="p">()</span>
+
+            <span class="n">parent_ops_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_nodes_ids</span><span class="p">(</span><span class="n">branch_levels</span><span class="p">[</span><span class="n">PARENT_OP_KEY</span><span class="p">])</span>
+            <span class="n">dt_outputs_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_nodes_ids</span><span class="p">(</span><span class="n">branch_levels</span><span class="p">[</span><span class="n">DT_OUTPUTS_KEY</span><span class="p">])</span>
+            <span class="n">op_inputs_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_nodes_ids</span><span class="p">(</span><span class="n">branch_levels</span><span class="p">[</span><span class="n">OP_INPUTS_KEY</span><span class="p">])</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">__set_nodes_adjacencies</span><span class="p">(</span><span class="n">branch_levels</span><span class="p">[</span><span class="n">DT_INPUTS_KEY</span><span class="p">],</span> <span class="n">parent_ops_ids</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__set_nodes_adjacencies</span><span class="p">(</span><span class="n">branch_levels</span><span class="p">[</span><span class="n">PARENT_OP_KEY</span><span class="p">],</span> <span class="n">dt_outputs_ids</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__set_nodes_adjacencies</span><span class="p">(</span><span class="n">branch_levels</span><span class="p">[</span><span class="n">DT_OUTPUTS_KEY</span><span class="p">],</span> <span class="n">op_inputs_ids</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__set_nodes_adjacencies</span><span class="p">(</span><span class="n">list_of_nodes</span><span class="p">,</span> <span class="n">adjacencies</span><span class="p">,</span> 
+                                <span class="n">only_for_selected_node</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets adjacencies for a list of nodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">only_for_selected_node</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">list_of_nodes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">selected</span><span class="p">:</span>
+                    <span class="n">node</span><span class="o">.</span><span class="n">adjacencies</span> <span class="o">=</span> <span class="n">adjacencies</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">node</span><span class="o">.</span><span class="n">adjacencies</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">list_of_nodes</span><span class="p">:</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">adjacencies</span> <span class="o">=</span> <span class="n">adjacencies</span>
+
+
+    <span class="k">def</span> <span class="nf">_set_shapes_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the correct size for each node from this graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">no_of_dt_inputs</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">no_of_parent_op</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">no_of_dt_outputs</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">no_of_op_inputs</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_branches</span><span class="p">:</span>
+            <span class="n">branch_levels</span> <span class="o">=</span> <span class="n">branch</span><span class="o">.</span><span class="n">get_branch_levels</span><span class="p">()</span>
+
+            <span class="n">no_of_dt_inputs</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">branch_levels</span><span class="p">[</span><span class="n">DT_INPUTS_KEY</span><span class="p">])</span>
+            <span class="n">no_of_parent_op</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">branch_levels</span><span class="p">[</span><span class="n">PARENT_OP_KEY</span><span class="p">])</span>
+            <span class="n">no_of_dt_outputs</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">branch_levels</span><span class="p">[</span><span class="n">DT_OUTPUTS_KEY</span><span class="p">])</span>
+            <span class="n">no_of_op_inputs</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">branch_levels</span><span class="p">[</span><span class="n">OP_INPUTS_KEY</span><span class="p">])</span>
+
+        <span class="n">dt_input_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_shape_size</span><span class="p">(</span><span class="n">no_of_dt_inputs</span><span class="p">)</span>
+        <span class="n">parent_op_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_shape_size</span><span class="p">(</span><span class="n">no_of_parent_op</span><span class="p">)</span>
+        <span class="n">dt_output_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_shape_size</span><span class="p">(</span><span class="n">no_of_dt_outputs</span><span class="p">)</span>
+        <span class="n">op_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_shape_size</span><span class="p">(</span><span class="n">no_of_op_inputs</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_branches</span><span class="p">:</span>
+            <span class="n">branch_levels</span> <span class="o">=</span> <span class="n">branch</span><span class="o">.</span><span class="n">get_branch_levels</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">__set_nodes_size</span><span class="p">(</span><span class="n">branch_levels</span><span class="p">[</span><span class="n">DT_INPUTS_KEY</span><span class="p">],</span> <span class="n">dt_input_size</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__set_nodes_size</span><span class="p">(</span><span class="n">branch_levels</span><span class="p">[</span><span class="n">PARENT_OP_KEY</span><span class="p">],</span> <span class="n">parent_op_size</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__set_nodes_size</span><span class="p">(</span><span class="n">branch_levels</span><span class="p">[</span><span class="n">DT_OUTPUTS_KEY</span><span class="p">],</span> <span class="n">dt_output_size</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__set_nodes_size</span><span class="p">(</span><span class="n">branch_levels</span><span class="p">[</span><span class="n">OP_INPUTS_KEY</span><span class="p">],</span> <span class="n">op_input</span><span class="p">)</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__set_nodes_size</span><span class="p">(</span><span class="n">list_of_nodes</span><span class="p">,</span> <span class="n">shape_size</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the size for each node from the given list of nodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_of_nodes</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">list_of_nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape_size</span> <span class="o">=</span> <span class="n">shape_size</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_nodes_ids</span><span class="p">(</span><span class="n">list_of_nodes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute IDs for nodes&quot;&quot;&quot;</span>
+        <span class="n">nodes_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">list_of_nodes</span><span class="p">:</span>
+            <span class="n">nodes_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">nodes_ids</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_compute_shape_size</span><span class="p">(</span><span class="n">no_of_elements</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        no_of_elements - represents the number of nodes that are displayed on a certain level</span>
+
+<span class="sd">        We consider that the canvas width is 1000px. With a size of 50 the max number</span>
+<span class="sd">        of shapes that may be displayed into the canvas are 9 (=&gt; 111px per shape).</span>
+
+<span class="sd">        max_shape_size = 50 points &lt;=&gt; 111px</span>
+<span class="sd">        min_shape_size = 10 points &lt;=&gt; 20px</span>
+
+<span class="sd">        1 point &lt;=&gt; 2px =&gt; shape_size = (canvas_width) / [(no_of_nodes + 1) * 2]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">no_of_elements</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">MAX_SHAPE_SIZE</span>
+
+        <span class="n">shape_size</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">/</span> <span class="p">((</span><span class="n">no_of_elements</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">shape_size</span> <span class="o">&gt;</span> <span class="n">MAX_SHAPE_SIZE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">MAX_SHAPE_SIZE</span>
+        <span class="k">elif</span> <span class="n">shape_size</span> <span class="o">&lt;</span> <span class="n">MIN_SHAPE_SIZE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">MIN_SHAPE_SIZE</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">shape_size</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_create_fake_root</span><span class="p">(</span><span class="n">adjacencies_nodes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;In case no root exists, create one, for JS limitations&quot;&quot;&quot;</span>
+        <span class="n">node_data</span> <span class="o">=</span> <span class="n">NodeData</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="n">DATATYPE_SHAPE_COLOR</span><span class="p">,</span> <span class="n">DATATYPE_SHAPE</span><span class="p">,</span> 
+                             <span class="n">NODE_DATATYPE_TYPE</span><span class="p">,</span> <span class="s">&quot;fakeRootNode&quot;</span><span class="p">,</span> <span class="s">&quot;Fake root&quot;</span><span class="p">)</span>
+        <span class="n">fake_root</span> <span class="o">=</span> <span class="n">NodeStructure</span><span class="p">(</span><span class="s">&quot;fakeRootNode&quot;</span><span class="p">,</span> <span class="s">&quot;fakeRootNode&quot;</span><span class="p">)</span>
+        <span class="n">fake_root</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">node_data</span>
+        <span class="n">fake_root</span><span class="o">.</span><span class="n">adjacencies</span> <span class="o">=</span> <span class="n">adjacencies_nodes</span>
+        <span class="k">return</span> <span class="n">fake_root</span>
+</pre></div></div>
 
           </div>
         </div>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../../../search.html" method="get">
@@ -496,13 +504,13 @@ OP_INPUTS_KEY = "op_inputs"
         <li class="right" >
           <a href="../../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

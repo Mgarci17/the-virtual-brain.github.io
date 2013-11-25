@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.datatypes.patterns_scientific &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.datatypes.patterns_scientific &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../index.html" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -70,15 +69,22 @@
 <span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
 <span class="c">#</span>
 <span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">Scientific methods for the Pattern datatypes.</span>
+<span class="sd">Scientific methods for the Pattern DataTypes.</span>
 
 <span class="sd">.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="c">#TODO: Need configure methods for space and time...</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span>
 <span class="kn">import</span> <span class="nn">tvb.datatypes.patterns_data</span> <span class="kn">as</span> <span class="nn">patterns_data</span>
@@ -88,10 +94,9 @@
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 
 
-<span class="c">#TODO: UGLY, figure out a better way...</span>
 <div class="viewcode-block" id="SpatioTemporalCall"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.patterns_scientific.SpatioTemporalCall">[docs]</a><span class="k">class</span> <span class="nc">SpatioTemporalCall</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A call method to be added to Spatiotemporal classes</span>
+<span class="sd">    A call method to be added to all Spatio- Temporal classes</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     
@@ -106,31 +111,26 @@
 <span class="sd">        simulation where the current simulation time point is retrieved.</span>
 <span class="sd">        </span>
 <span class="sd">        Called without any arguments, by default a big array representing the </span>
-<span class="sd">        entire spatiotemporal pattern is returned. While this may be useful for</span>
-<span class="sd">        visualisation, say of region level spatiotemporal patterns, care should</span>
+<span class="sd">        entire spatio-temporal pattern is returned. While this may be useful for</span>
+<span class="sd">        visualisation, say of region level spatio-temporal patterns, care should</span>
 <span class="sd">        be taken as when surfaces are considered the returned array can be</span>
 <span class="sd">        potentially quite large.</span>
-<span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c">#NOTE: Ugly, should be a better way...</span>
-        <span class="k">if</span> <span class="p">((</span><span class="n">temporal_indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">spatial_indices</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)):</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_pattern</span> <span class="o">*</span>
-                       <span class="bp">self</span><span class="o">.</span><span class="n">temporal_pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">temporal_indices</span><span class="p">])</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">temporal_indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">spatial_indices</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">):</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_pattern</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">temporal_pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">temporal_indices</span><span class="p">])</span>
         
-        <span class="k">elif</span> <span class="p">((</span><span class="n">temporal_indices</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">spatial_indices</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)):</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">temporal_indices</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">spatial_indices</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">):</span>
             <span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_pattern</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">temporal_pattern</span>
         
-        <span class="k">elif</span> <span class="p">((</span><span class="n">temporal_indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">spatial_indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)):</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_pattern</span><span class="p">[</span><span class="n">spatial_indices</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span>
-                       <span class="bp">self</span><span class="o">.</span><span class="n">temporal_pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">temporal_indices</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">temporal_indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">spatial_indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">):</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_pattern</span><span class="p">[</span><span class="n">spatial_indices</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">temporal_pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">temporal_indices</span><span class="p">])</span>
         
-        <span class="k">elif</span> <span class="p">((</span><span class="n">temporal_indices</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">spatial_indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)):</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_pattern</span><span class="p">[</span><span class="n">spatial_indices</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span>
-                       <span class="bp">self</span><span class="o">.</span><span class="n">temporal_pattern</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">temporal_indices</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">spatial_indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">):</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_pattern</span><span class="p">[</span><span class="n">spatial_indices</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">temporal_pattern</span><span class="p">)</span>
         
         <span class="k">else</span><span class="p">:</span>
             <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: Well, that shouldn&#39;t be possible...&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
-        
         <span class="k">return</span> <span class="n">pattern</span>
 
 
@@ -141,16 +141,14 @@
     <span class="n">_spatial_pattern</span> <span class="o">=</span> <span class="bp">None</span>
     <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
 
-    
+
     <span class="k">def</span> <span class="nf">_find_summary_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Gather scientifically interesting summary information from an instance</span>
-<span class="sd">        of this datatype.</span>
+<span class="sd">        Gather scientifically interesting summary information from an instance of this DataType.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;Type&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">}</span>
-        <span class="n">summary</span><span class="p">[</span><span class="s">&quot;Spatial equation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="c">#TODO: SHould probably grab doc from equation, ie the mathematical representation.</span>
-        <span class="n">summary</span><span class="p">[</span><span class="s">&quot;Spatial parameters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">parameters</span>
-        <span class="k">return</span> <span class="n">summary</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&quot;Type&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span>
+                <span class="s">&quot;Spatial equation&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span>
+                <span class="s">&quot;Spatial parameters&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">parameters</span><span class="p">}</span>
     
     <span class="c">#--------------------------- spatial_pattern ------------------------------#</span>
     <span class="k">def</span> <span class="nf">_get_spatial_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -162,19 +160,12 @@
     <span class="k">def</span> <span class="nf">_set_spatial_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Generate a discrete representation of the spatial pattern.</span>
-<span class="sd">        </span>
-<span class="sd">        The argument x represents a distance, or effective distance, for each </span>
-<span class="sd">        node in the space.</span>
-<span class="sd">        </span>
+<span class="sd">        The argument x represents a distance, or effective distance, for each node in the space.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
         <span class="bp">self</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">x</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">_spatial_pattern</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span>
-                                          <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spatial_pattern</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
     
-    <span class="n">spatial_pattern</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_spatial_pattern</span><span class="p">,</span>
-                               <span class="n">fset</span><span class="o">=</span><span class="n">_set_spatial_pattern</span><span class="p">)</span>
+    <span class="n">spatial_pattern</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_spatial_pattern</span><span class="p">,</span> <span class="n">fset</span><span class="o">=</span><span class="n">_set_spatial_pattern</span><span class="p">)</span>
     <span class="c">#--------------------------------------------------------------------------#</span>
 
 
@@ -186,18 +177,16 @@
 <span class="sd">        Depending on equations used and interpretation distance can be an actual</span>
 <span class="sd">        physical distance, on a surface,  geodesic distance (along the surface) </span>
 <span class="sd">        away for some focal point, or a per node weighting...</span>
-<span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">util</span><span class="o">.</span><span class="n">log_debug_array</span><span class="p">(</span><span class="n">LOG</span><span class="p">,</span> <span class="n">distance</span><span class="p">,</span> <span class="s">&quot;distance&quot;</span><span class="p">)</span>
         <span class="c">#Set the discrete representation of space.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">space</span> <span class="o">=</span> <span class="n">distance</span>
-        <span class="c">#</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">spatial_pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">space</span>
+
 
 </div>
 <div class="viewcode-block" id="SpatioTemporalPatternScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.patterns_scientific.SpatioTemporalPatternScientific">[docs]</a><span class="k">class</span> <span class="nc">SpatioTemporalPatternScientific</span><span class="p">(</span><span class="n">patterns_data</span><span class="o">.</span><span class="n">SpatioTemporalPatternData</span><span class="p">,</span>
-                                      <span class="n">SpatialPatternScientific</span><span class="p">,</span>
-                                      <span class="n">SpatioTemporalCall</span><span class="p">):</span>
+                                      <span class="n">SpatialPatternScientific</span><span class="p">,</span> <span class="n">SpatioTemporalCall</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class exists to add scientific methods to SpatioTemporalPatternData.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -209,7 +198,7 @@
     <span class="k">def</span> <span class="nf">_find_summary_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Extend the base class&#39;s summary dictionary. &quot;&quot;&quot;</span>
         <span class="n">summary</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">SpatioTemporalPatternScientific</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_find_summary_info</span><span class="p">()</span>
-        <span class="n">summary</span><span class="p">[</span><span class="s">&quot;Temporal equation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">temporal</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="c">#TODO: SHould probably grab doc from equation, ie the mathematical representation.</span>
+        <span class="n">summary</span><span class="p">[</span><span class="s">&quot;Temporal equation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">temporal</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
         <span class="n">summary</span><span class="p">[</span><span class="s">&quot;Temporal parameters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">temporal</span><span class="o">.</span><span class="n">parameters</span>
         <span class="k">return</span> <span class="n">summary</span>
 
@@ -225,72 +214,29 @@
     <span class="k">def</span> <span class="nf">_set_temporal_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a discrete representation of the temporal pattern.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">temporal</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">t</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_temporal_pattern</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temporal</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
 
-    <span class="n">temporal_pattern</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_temporal_pattern</span><span class="p">,</span>
-                                <span class="n">fset</span><span class="o">=</span><span class="n">_set_temporal_pattern</span><span class="p">)</span>
+    <span class="n">temporal_pattern</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_temporal_pattern</span><span class="p">,</span> <span class="n">fset</span><span class="o">=</span><span class="n">_set_temporal_pattern</span><span class="p">)</span>
     <span class="c">#--------------------------------------------------------------------------#</span>
 
 
     <span class="k">def</span> <span class="nf">configure_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stores the time vector, physical units (ms), as an attribute of the</span>
-<span class="sd">        spatiotemporal pattern and uses it to generate the temporal pattern</span>
+<span class="sd">        spatio-temporal pattern and uses it to generate the temporal pattern</span>
 <span class="sd">        vector.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c">#Set the discrete representation of time.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">temporal_pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
     
-    
-<span class="c">#    def __call__(self, temporal_indices=None, spatial_indices=None):</span>
-<span class="c">#        &quot;&quot;&quot;</span>
-<span class="c">#        The temporal pattern vector, set by the configure_time method, is </span>
-<span class="c">#        combined with the spatial pattern vector, set by the configure_space </span>
-<span class="c">#        method, to form a spatiotemporal pattern.</span>
-<span class="c">#        </span>
-<span class="c">#        Called with a single time index as an argument, the spatial pattern at </span>
-<span class="c">#        that point in time is returned. This is the standard usage within a </span>
-<span class="c">#        simulation where the current simulation time point is retrieved.</span>
-<span class="c">#        </span>
-<span class="c">#        Called without any arguments, by default a big array representing the </span>
-<span class="c">#        entire spatiotemporal pattern is returned. While this may be useful for</span>
-<span class="c">#        visualisation, say of region level spatiotemporal patterns, care should</span>
-<span class="c">#        be taken as when surfaces are considered the returned array can be</span>
-<span class="c">#        potentially quite large.</span>
-<span class="c">#        </span>
-<span class="c">#        &quot;&quot;&quot;</span>
-<span class="c">#        #NOTE: Ugly, should be a better way...</span>
-<span class="c">#        if ((temporal_indices is not None) and (spatial_indices is None)):</span>
-<span class="c">#            pattern = (self.spatial_pattern *</span>
-<span class="c">#                       self.temporal_pattern[0, temporal_indices])</span>
-<span class="c">#        </span>
-<span class="c">#        elif ((temporal_indices is None) and (spatial_indices is None)):</span>
-<span class="c">#            pattern = self.spatial_pattern * self.temporal_pattern</span>
-<span class="c">#        </span>
-<span class="c">#        elif ((temporal_indices is not None) and (spatial_indices is not None)):</span>
-<span class="c">#            pattern = (self.spatial_pattern[spatial_indices, 0] *</span>
-<span class="c">#                       self.temporal_pattern[0, temporal_indices])</span>
-<span class="c">#        </span>
-<span class="c">#        elif ((temporal_indices is None) and (spatial_indices is not None)):</span>
-<span class="c">#            pattern = (self.spatial_pattern[spatial_indices, 0] *</span>
-<span class="c">#                       self.temporal_pattern)</span>
-<span class="c">#        </span>
-<span class="c">#        else:</span>
-<span class="c">#            LOG.error(&quot;%s: Well, that shouldn&#39;t be possible...&quot; % repr(self))</span>
-<span class="c">#        </span>
-<span class="c">#        return pattern</span>
 
 </div>
-<div class="viewcode-block" id="StimuliRegionScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.patterns_scientific.StimuliRegionScientific">[docs]</a><span class="k">class</span> <span class="nc">StimuliRegionScientific</span><span class="p">(</span><span class="n">patterns_data</span><span class="o">.</span><span class="n">StimuliRegionData</span><span class="p">,</span>
-                              <span class="n">SpatioTemporalPatternScientific</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; This class exists to add scientific methods to StimuliRegionData. &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="StimuliRegionScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.patterns_scientific.StimuliRegionScientific">[docs]</a><span class="k">class</span> <span class="nc">StimuliRegionScientific</span><span class="p">(</span><span class="n">patterns_data</span><span class="o">.</span><span class="n">StimuliRegionData</span><span class="p">,</span> <span class="n">SpatioTemporalPatternScientific</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class exists to add scientific methods to StimuliRegionData.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">weight_array</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -298,34 +244,38 @@
 <span class="sd">        Wrap weight List into a Numpy array, as it is requested by the simulator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">)[:,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
-    
-    <span class="k">def</span> <span class="nf">configure_space</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region_mapping</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+
+
+    <span class="k">def</span> <span class="nf">configure_space</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region_mapping</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do necessary preparations in order to use this stimulus. </span>
 <span class="sd">        NOTE: this was previously done in simulator configure_stimuli() method.</span>
 <span class="sd">        It no needs to be used in stimulus viewer also.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">region_mapping</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">region_mapping</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="c">#TODO: smooth at surface region boundaries</span>
-            <span class="c">#import pdb; pdb.set_trace()</span>
             <span class="n">distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_array</span><span class="p">[</span><span class="n">region_mapping</span><span class="p">,</span> <span class="p">:]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_array</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">StimuliRegionScientific</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">configure_space</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
 
-</div>
-<div class="viewcode-block" id="StimuliSurfaceScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.patterns_scientific.StimuliSurfaceScientific">[docs]</a><span class="k">class</span> <span class="nc">StimuliSurfaceScientific</span><span class="p">(</span><span class="n">patterns_data</span><span class="o">.</span><span class="n">StimuliSurfaceData</span><span class="p">,</span>
-                                <span class="n">SpatioTemporalPatternScientific</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; This class exists to add scientific methods to StimuliSurfaceData. &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">configure_space</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region_mapping</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+</div>
+<div class="viewcode-block" id="StimuliSurfaceScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.patterns_scientific.StimuliSurfaceScientific">[docs]</a><span class="k">class</span> <span class="nc">StimuliSurfaceScientific</span><span class="p">(</span><span class="n">patterns_data</span><span class="o">.</span><span class="n">StimuliSurfaceData</span><span class="p">,</span> <span class="n">SpatioTemporalPatternScientific</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class exists to add scientific methods to StimuliSurfaceData.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">configure_space</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region_mapping</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do necessary preparations in order to use this stimulus. </span>
 <span class="sd">        NOTE: this was previously done in simulator configure_stimuli() method.</span>
 <span class="sd">        It no needs to be used in stimulus viewer also.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">dis_shp</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">number_of_vertices</span><span class="p">,</span> <span class="c">#TODO: When this was in Simulator it was number of nodes, using surface vertices breaks surface simulations which include non-cortical regions.</span>
-                   <span class="n">numpy</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">focal_points_surface</span><span class="p">))</span>
+        <span class="n">dis_shp</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">number_of_vertices</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">focal_points_surface</span><span class="p">))</span>
+        <span class="c"># TODO: When this was in Simulator it was number of nodes, using surface vertices</span>
+        <span class="c"># breaks surface simulations which include non-cortical regions.</span>
+
         <span class="n">distance</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">dis_shp</span><span class="p">)</span>
         <span class="n">k</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="k">for</span> <span class="n">focal_point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">focal_points_surface</span><span class="p">:</span>
@@ -334,60 +284,23 @@
             <span class="n">distance</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">geodesic_distance</span><span class="p">(</span><span class="n">foci</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">StimuliSurfaceScientific</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">configure_space</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
 
+
 </div>
-<div class="viewcode-block" id="SpatialPatternVolumeScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.patterns_scientific.SpatialPatternVolumeScientific">[docs]</a><span class="k">class</span> <span class="nc">SpatialPatternVolumeScientific</span><span class="p">(</span><span class="n">patterns_data</span><span class="o">.</span><span class="n">SpatialPatternVolumeData</span><span class="p">,</span>
-                                     <span class="n">SpatialPatternScientific</span><span class="p">):</span>
+<div class="viewcode-block" id="SpatialPatternVolumeScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.patterns_scientific.SpatialPatternVolumeScientific">[docs]</a><span class="k">class</span> <span class="nc">SpatialPatternVolumeScientific</span><span class="p">(</span><span class="n">patterns_data</span><span class="o">.</span><span class="n">SpatialPatternVolumeData</span><span class="p">,</span> <span class="n">SpatialPatternScientific</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class exists to add scientific methods to SpatialPatternVolumeData.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span>
-
-
-<span class="c">#class ParameterVariationRegionScientific(</span>
-<span class="c">#    patterns_data.ParameterVariationRegionData,</span>
-<span class="c">#    SpatialPatternRegionScientific):</span>
-<span class="c">#    &quot;&quot;&quot;</span>
-<span class="c">#    This class exists to add scientific methods to ParameterVariationRegionData.</span>
-<span class="c">#    &quot;&quot;&quot;</span>
-<span class="c">#</span>
-<span class="c">#</span>
-<span class="c">#    def __call__(self, parameter_value=1.0): #distance,</span>
-<span class="c">#        &quot;&quot;&quot;</span>
-<span class="c">#        Override the __call__ in SpatiotemporalPatterns to, for the time being,</span>
-<span class="c">#        restrict paramter variations to being spatial.</span>
-<span class="c">#</span>
-<span class="c">#        &quot;&quot;&quot;</span>
-<span class="c">#</span>
-<span class="c">#        spatialised_parameter = parameter_value * (1.0 + self.spatial_pattern)</span>
-<span class="c">#</span>
-<span class="c">#        return spatialised_parameter</span>
-
-
-<span class="c">#class ParameterVariationSurfaceScientific(</span>
-<span class="c">#    patterns_data.ParameterVariationSurfaceData,</span>
-<span class="c">#    SpatialPatternSurfaceScientific):</span>
-<span class="c">#    &quot;&quot;&quot;</span>
-<span class="c">#    This class exists to add scientific methods to ParameterVariationSurfaceData.</span>
-<span class="c">#    &quot;&quot;&quot;</span>
-<span class="c">#</span>
-<span class="c">#</span>
-<span class="c">#    def __call__(self, parameter_value=1.0): #distance,</span>
-<span class="c">#        &quot;&quot;&quot;</span>
-<span class="c">#        Override the __call__ in SpatiotemporalPatterns to, for the time being,</span>
-<span class="c">#        restrict paramter variations to being spatial.</span>
-<span class="c">#</span>
-<span class="c">#        &quot;&quot;&quot;</span>
-<span class="c">#</span>
-<span class="c">#        spatialised_parameter = parameter_value * (1.0 + self.spatial_pattern)</span>
-<span class="c">#</span>
-<span class="c">#        return spatialised_parameter</span></div>
-</pre></div>
+</pre></div></div>
 
           </div>
         </div>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../search.html" method="get">
@@ -414,13 +327,13 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.services.dti_pipeline_service &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.services.dti_pipeline_service</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Commands with remove machine are grouped here.</span>
+
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">import</span> <span class="nn">thread</span>
+<span class="kn">import</span> <span class="nn">demo_data.connectivity</span> <span class="kn">as</span> <span class="nn">demo_root</span>
+<span class="kn">import</span> <span class="nn">tvb.core.utils</span> <span class="kn">as</span> <span class="nn">utils</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.traits.util</span> <span class="kn">import</span> <span class="n">read_list_data</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.file.files_helper</span> <span class="kn">import</span> <span class="n">FilesHelper</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.flow_service</span> <span class="kn">import</span> <span class="n">FlowService</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.exceptions</span> <span class="kn">import</span> <span class="n">ConnectException</span>
+
+
+
+<div class="viewcode-block" id="DTIPipelineService"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.dti_pipeline_service.DTIPipelineService">[docs]</a><span class="k">class</span> <span class="nc">DTIPipelineService</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Service for basic localMachine - remoteMachine communication.</span>
+<span class="sd">    It requires a remoteIP and remoteUsername.</span>
+<span class="sd">    !!! The machines need to be setup in a way that SSH and SCP can function without asking for a password!!!</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">REMOTE_COPY</span> <span class="o">=</span> <span class="s">&quot;scp </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">@</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s">&quot;</span>
+    <span class="n">REMOTE_COPY_REVERSE</span> <span class="o">=</span> <span class="s">&quot;scp </span><span class="si">%s</span><span class="s">@</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span>
+    <span class="n">REMOTE_COMMAND</span> <span class="o">=</span> <span class="s">&#39;ssh </span><span class="si">%s</span><span class="s">@</span><span class="si">%s</span><span class="s"> &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span>
+    
+    <span class="n">DTI_PIPELINE_COMMAND</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;cd /home/erin/processing/; &quot;</span>
+                            <span class="s">&quot;./pipeline_start --dst </span><span class="si">%s</span><span class="s"> --seg </span><span class="si">%s</span><span class="s"> --sid 42 --pevX </span><span class="si">%s</span><span class="s"> --pevY </span><span class="si">%s</span><span class="s"> --pevZ </span><span class="si">%s</span><span class="s"> &quot;</span>
+                            <span class="s">&quot;--img </span><span class="si">%s</span><span class="s"> --fa </span><span class="si">%s</span><span class="s"> --md </span><span class="si">%s</span><span class="s"> --wm 3 --gm 4 --threads </span><span class="si">%d</span><span class="s">&quot;</span><span class="p">)</span>
+    
+    <span class="n">CONNECTIVITY_IMPORTER</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;tvb.adapters.uploaders.zip_connectivity_importer&quot;</span><span class="p">,</span> <span class="s">&quot;ZIPConnectivityImporter&quot;</span><span class="p">]</span>
+    
+    <span class="n">FILE_NODES_ORDER</span> <span class="o">=</span> <span class="s">&quot;dti_pipeline_regions.txt&quot;</span>
+    <span class="n">CONNECTIVITY_DEFAULT</span> <span class="o">=</span> <span class="s">&quot;connectivity_regions_96.zip&quot;</span>
+    <span class="n">WEIGHTS_FILE</span> <span class="o">=</span> <span class="s">&quot;weights.txt&quot;</span>
+    <span class="n">TRACT_FILE</span> <span class="o">=</span> <span class="s">&quot;tract_lengths.txt&quot;</span>
+    <span class="n">REMOTE_WEIGHTS_FILE</span> <span class="o">=</span> <span class="s">&quot;_ConnectionCapacityMatrix.csv&quot;</span>
+    <span class="n">REMOTE_TRACT_FILE</span> <span class="o">=</span> <span class="s">&quot;_ConnectionDistanceMatrix.csv&quot;</span>
+    
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remote_machine</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">remote_user</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param remote_machine: IP for the remote machine</span>
+<span class="sd">        :param remote_user: Username valid on remote_machine. No further password should be needed for connecting.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remote_machine</span> <span class="o">=</span> <span class="n">remote_machine</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remote_user</span> <span class="o">=</span> <span class="n">remote_user</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flow_service</span> <span class="o">=</span> <span class="n">FlowService</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span> <span class="o">=</span> <span class="n">FilesHelper</span><span class="p">()</span>
+        
+        <span class="n">folder_default_data</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">demo_root</span><span class="o">.</span><span class="n">__file__</span><span class="p">)</span>
+        <span class="n">file_order</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder_default_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FILE_NODES_ORDER</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expected_nodes_order</span> <span class="o">=</span> <span class="n">read_list_data</span><span class="p">(</span><span class="n">file_order</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        
+        <span class="n">zip_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder_default_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CONNECTIVITY_DEFAULT</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">zip_path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">zip_path</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">ConnectException</span><span class="p">(</span><span class="s">&quot;Could not find default Connectivity for the pipeline! &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">zip_path</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_connectivity_zip_path</span> <span class="o">=</span> <span class="n">zip_path</span>
+        
+    
+    <span class="k">def</span> <span class="nf">_copy_file_remote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local_path</span><span class="p">,</span> <span class="n">remote_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copy one file from local machine to remote machine.</span>
+<span class="sd">        </span>
+<span class="sd">        :param local_path: valid file path on local machine</span>
+<span class="sd">        :param remote_path: valid remote folder with write access, to SCP local file there.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">REMOTE_COPY</span> <span class="o">%</span> <span class="p">(</span><span class="n">local_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">remote_user</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">remote_machine</span><span class="p">,</span> <span class="n">remote_path</span><span class="p">)</span>
+            <span class="c"># self.logger.debug(&quot;Executing: &quot; + command)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ConnectException</span><span class="p">(</span><span class="s">&quot;Could not copy file remote!! &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">local_path</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; - &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">remote_path</span><span class="p">),</span> <span class="n">excep</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">_copy_file_from_remote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remote_path</span><span class="p">,</span> <span class="n">local_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copy file from a remote machine to local machine.</span>
+<span class="sd">        </span>
+<span class="sd">        :param remote_path: valid file path on a remote machine.</span>
+<span class="sd">        :param local_path: valid local folder, or non-existing file-name, where to copy remote file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">REMOTE_COPY_REVERSE</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remote_user</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">remote_machine</span><span class="p">,</span> <span class="n">remote_path</span><span class="p">,</span> <span class="n">local_path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Executing: &quot;</span> <span class="o">+</span> <span class="n">command</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">local_path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">local_path</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">local_path</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">local_path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">local_path</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">local_path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">remote_path</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">raise</span> <span class="n">ConnectException</span><span class="p">(</span><span class="s">&quot;File was not copy!!!&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">remote_path</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; - &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">local_path</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ConnectException</span><span class="p">(</span><span class="s">&quot;Could not copy file!! &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">remote_path</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; - &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">local_path</span><span class="p">),</span> <span class="n">excep</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">_execute_remote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remote_command</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute command on a remote machine and wait for the command to finish.</span>
+<span class="sd">        </span>
+<span class="sd">        :param remote_command: String representing command to be executed remote. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">filled_command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">REMOTE_COMMAND</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remote_user</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">remote_machine</span><span class="p">,</span> <span class="n">remote_command</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Executing remote: &quot;</span> <span class="o">+</span> <span class="n">filled_command</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">filled_command</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ConnectException</span><span class="p">(</span><span class="s">&quot;Could not execute command remote!! &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">remote_command</span><span class="p">),</span> <span class="n">excep</span><span class="p">)</span>
+        
+    
+    <span class="k">def</span> <span class="nf">_process_csv_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csv_file</span><span class="p">,</span> <span class="n">result_file</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read a CSV file, arrange rows/columns in the correct order,</span>
+<span class="sd">        to obtain Weight/Tract TXT files in TVB compatible format.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">file_point</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">csv_file</span><span class="p">)</span>
+        <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">file_point</span><span class="p">)</span>
+
+        <span class="c">## Index of the current row (from 1 to the number of nodes + 2; as we have a header line):</span>
+        <span class="n">row_number</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">connectivity_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expected_nodes_order</span><span class="p">)</span>
+        <span class="n">expected_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">connectivity_size</span><span class="p">)]</span>
+        <span class="n">result_conn</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">connectivity_size</span><span class="p">)]</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
+            <span class="n">row_number</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">!=</span> <span class="n">connectivity_size</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Invalid Connectivity Row size! </span><span class="si">%d</span><span class="s"> != </span><span class="si">%d</span><span class="s"> at row </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">),</span> <span class="n">connectivity_size</span><span class="p">,</span> <span class="n">row_number</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">ConnectException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">row_number</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">connectivity_size</span><span class="p">):</span>
+                    <span class="n">found</span> <span class="o">=</span> <span class="bp">False</span>
+                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">connectivity_size</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_nodes_order</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+                            <span class="n">expected_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">j</span>
+                            <span class="n">found</span> <span class="o">=</span> <span class="bp">True</span>
+                            <span class="k">break</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
+                        <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Incompatible Title Row </span><span class="si">%d</span><span class="s"> with expected labels </span><span class="si">%s</span><span class="s"> </span><span class="se">\n</span><span class="s"> </span><span class="si">%s</span><span class="s"> &quot;</span>
+                        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expected_nodes_order</span><span class="p">))</span>
+                        <span class="k">raise</span> <span class="n">ConnectException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">continue</span>
+                
+            <span class="n">new_row</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">connectivity_size</span><span class="p">)]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">connectivity_size</span><span class="p">):</span>
+                <span class="n">new_row</span><span class="p">[</span><span class="n">expected_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+
+            <span class="n">result_conn</span><span class="p">[</span><span class="n">expected_indices</span><span class="p">[</span><span class="n">row_number</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">new_row</span>
+            
+        <span class="k">if</span> <span class="n">row_number</span> <span class="o">!=</span> <span class="n">connectivity_size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConnectException</span><span class="p">(</span><span class="s">&quot;Invalid Connectivity size! </span><span class="si">%d</span><span class="s"> != </span><span class="si">%d</span><span class="s"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">row_number</span><span class="p">,</span> <span class="n">connectivity_size</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Written Connectivity file of size &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result_conn</span><span class="p">)))</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">store_list_data</span><span class="p">(</span><span class="n">result_conn</span><span class="p">,</span> <span class="n">result_file</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">csv_file</span><span class="p">),</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="n">file_point</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">csv_file</span><span class="p">)</span>
+        
+     
+    <span class="k">def</span> <span class="nf">_process_input_zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zip_arch</span><span class="p">,</span> <span class="n">result_folder</span><span class="p">,</span> <span class="n">remote_prefix</span><span class="p">,</span> 
+                           <span class="n">file_name_base</span><span class="p">,</span> <span class="n">expected_pairs</span><span class="p">,</span> <span class="n">fix_number</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read entries in uploaded ZIP.</span>
+<span class="sd">        Raise Exception in case pairs HDR/IMG are not matched or number &quot;expected_pairs&quot; is not met.</span>
+<span class="sd">        :returns: string with HDR list (to be passed to DTI pipeline).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">hdr_files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="n">zip_arch</span><span class="o">.</span><span class="n">namelist</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">file_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">file_name_base</span><span class="p">)</span> <span class="ow">or</span> <span class="n">file_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">file_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&quot;.hdr&quot;</span><span class="p">):</span>
+                <span class="n">pair_img</span> <span class="o">=</span> <span class="n">file_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;.hdr&quot;</span><span class="p">,</span> <span class="s">&quot;.img&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">pair_img</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">zip_arch</span><span class="o">.</span><span class="n">namelist</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="n">ConnectException</span><span class="p">(</span><span class="s">&quot;Could not find pair for HDR file :&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_name</span><span class="p">))</span>
+                
+                <span class="n">new_file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result_folder</span><span class="p">,</span> <span class="n">file_name_base</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hdr_files</span><span class="p">))</span> <span class="o">+</span> <span class="s">&quot;.hdr&quot;</span><span class="p">)</span>
+                <span class="n">src</span> <span class="o">=</span> <span class="n">zip_arch</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s">&#39;rU&#39;</span><span class="p">)</span>
+                <span class="n">FilesHelper</span><span class="o">.</span><span class="n">copy_file</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">new_file_name</span><span class="p">)</span>
+                <span class="n">hdr_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">remote_prefix</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">new_file_name</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+                <span class="n">new_file_name</span> <span class="o">=</span> <span class="n">new_file_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;.hdr&quot;</span><span class="p">,</span> <span class="s">&quot;.img&quot;</span><span class="p">)</span>
+                <span class="n">src</span> <span class="o">=</span> <span class="n">zip_arch</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">pair_img</span><span class="p">,</span> <span class="s">&#39;rU&#39;</span><span class="p">)</span>
+                <span class="n">FilesHelper</span><span class="o">.</span><span class="n">copy_file</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">new_file_name</span><span class="p">)</span>
+                
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">file_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&quot;.img&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Ignored file :&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_name</span><span class="p">))</span>
+            
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hdr_files</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">expected_pairs</span> <span class="ow">or</span> <span class="p">(</span><span class="n">fix_number</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">hdr_files</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">expected_pairs</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ConnectException</span><span class="p">(</span><span class="s">&quot;Invalid number of files:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hdr_files</span><span class="p">))</span> <span class="o">+</span>
+                                   <span class="s">&quot; expected:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">expected_pairs</span><span class="p">))</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">hdr_name</span> <span class="ow">in</span> <span class="n">hdr_files</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="n">hdr_name</span> <span class="o">+</span> <span class="s">&quot; &quot;</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+
+    <span class="k">def</span> <span class="nf">_gather_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_user</span><span class="p">,</span> <span class="n">current_project</span><span class="p">,</span> <span class="n">result_matrix1</span><span class="p">,</span> <span class="n">result_matrix2</span><span class="p">,</span> 
+                        <span class="n">temp_output_folder</span><span class="p">,</span> <span class="n">zip_output</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gather results, and launch final operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">### Gather resulting files</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span><span class="o">.</span><span class="n">unpack_zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_connectivity_zip_path</span><span class="p">,</span> <span class="n">temp_output_folder</span><span class="p">)</span>
+        <span class="n">result_matrix1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_copy_file_from_remote</span><span class="p">(</span><span class="n">result_matrix1</span><span class="p">,</span> <span class="n">temp_output_folder</span><span class="p">)</span>
+        <span class="n">result_matrix2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_copy_file_from_remote</span><span class="p">(</span><span class="n">result_matrix2</span><span class="p">,</span> <span class="n">temp_output_folder</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_process_csv_file</span><span class="p">(</span><span class="n">result_matrix1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">WEIGHTS_FILE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_process_csv_file</span><span class="p">(</span><span class="n">result_matrix2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">TRACT_FILE</span><span class="p">)</span>
+        <span class="c">### Pack all results in a single ZIP file</span>
+        <span class="n">zip_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span><span class="o">.</span><span class="n">zip_folder</span><span class="p">(</span><span class="n">zip_output</span><span class="p">,</span> <span class="n">temp_output_folder</span><span class="p">)</span>
+        
+        <span class="c">### Run Connectivity importer from ZIP</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_service</span><span class="o">.</span><span class="n">get_algorithm_by_module_and_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CONNECTIVITY_IMPORTER</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
+                                                                    <span class="bp">self</span><span class="o">.</span><span class="n">CONNECTIVITY_IMPORTER</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">adapter_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_service</span><span class="o">.</span><span class="n">build_adapter_instance</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flow_service</span><span class="o">.</span><span class="n">fire_operation</span><span class="p">(</span><span class="n">adapter_instance</span><span class="p">,</span> <span class="n">current_user</span><span class="p">,</span> <span class="n">current_project</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">uploaded</span><span class="o">=</span><span class="n">zip_output</span><span class="p">)</span>
+                    
+                                                               
+     
+<div class="viewcode-block" id="DTIPipelineService.fire_pipeline"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.dti_pipeline_service.DTIPipelineService.fire_pipeline">[docs]</a>    <span class="k">def</span> <span class="nf">fire_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dti_scans</span><span class="p">,</span> <span class="n">current_project</span><span class="p">,</span> <span class="n">current_user</span><span class="p">,</span> <span class="n">number_of_threads</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fire Pipeline execution as a distinct thread.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">thread</span><span class="o">.</span><span class="n">start_new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_internal_pipeline_thread</span><span class="p">,</span> <span class="p">(</span><span class="n">dti_scans</span><span class="p">,</span> <span class="n">current_project</span><span class="p">,</span> <span class="n">current_user</span><span class="p">,</span> <span class="n">number_of_threads</span><span class="p">))</span>
+        
+        </div>
+    <span class="k">def</span> <span class="nf">_internal_pipeline_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dti_scans</span><span class="p">,</span> <span class="n">current_project</span><span class="p">,</span> <span class="n">current_user</span><span class="p">,</span> <span class="n">number_of_th</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Actual Fire Pipeline execution remotely.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">### Prepare file-names</span>
+        <span class="n">uq_identifier</span> <span class="o">=</span> <span class="s">&quot;TVB_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">generate_guid</span><span class="p">())</span>
+        <span class="n">temp_input_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TVBSettings</span><span class="o">.</span><span class="n">TVB_TEMP_FOLDER</span><span class="p">,</span> <span class="s">&quot;IN_PIPELINE_&quot;</span> <span class="o">+</span> <span class="n">uq_identifier</span><span class="p">)</span>
+        <span class="n">temp_output_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TVBSettings</span><span class="o">.</span><span class="n">TVB_TEMP_FOLDER</span><span class="p">,</span> <span class="s">&quot;OUT_PIPELINE_&quot;</span> <span class="o">+</span> <span class="n">uq_identifier</span><span class="p">)</span>
+        <span class="n">zip_output</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TVBSettings</span><span class="o">.</span><span class="n">TVB_TEMP_FOLDER</span><span class="p">,</span> <span class="s">&quot;Connectivity&quot;</span> <span class="o">+</span> <span class="n">uq_identifier</span> <span class="o">+</span> <span class="s">&quot;.zip&quot;</span><span class="p">)</span>
+        
+        <span class="n">remote_input_folder</span> <span class="o">=</span> <span class="s">&quot;/home/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">remote_user</span> <span class="o">+</span> <span class="s">&quot;/processing/INPUT_&quot;</span> <span class="o">+</span> <span class="n">uq_identifier</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span>
+        <span class="n">remote_output_folder</span> <span class="o">=</span> <span class="s">&quot;/home/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">remote_user</span> <span class="o">+</span> <span class="s">&quot;/processing/&quot;</span> <span class="o">+</span> <span class="n">uq_identifier</span>
+        <span class="n">result_matrix1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">remote_output_folder</span><span class="p">,</span> <span class="n">uq_identifier</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">REMOTE_WEIGHTS_FILE</span><span class="p">)</span>
+        <span class="n">result_matrix2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">remote_output_folder</span><span class="p">,</span> <span class="n">uq_identifier</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">REMOTE_TRACT_FILE</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_execute_remote</span><span class="p">(</span><span class="s">&quot;rm -R -f &quot;</span> <span class="o">+</span> <span class="n">remote_input_folder</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_execute_remote</span><span class="p">(</span><span class="s">&quot;mkdir &quot;</span> <span class="o">+</span> <span class="n">remote_input_folder</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_execute_remote</span><span class="p">(</span><span class="s">&quot;rm -R -f &quot;</span> <span class="o">+</span> <span class="n">remote_output_folder</span><span class="p">)</span>
+        
+        <span class="c">### Prepare and Copy required Input Files on the DTI remote machine.</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">temp_input_folder</span><span class="p">)</span>
+        <span class="n">prefix_files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">remote_input_folder</span><span class="p">))[</span><span class="mi">1</span><span class="p">]</span>
+        
+        <span class="n">zip_arch</span> <span class="o">=</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">dti_scans</span><span class="p">)</span>
+        <span class="n">dti_scans</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_input_zip</span><span class="p">(</span><span class="n">zip_arch</span><span class="p">,</span> <span class="n">temp_input_folder</span><span class="p">,</span> <span class="n">prefix_files</span><span class="p">,</span> <span class="s">&quot;Scans&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="n">dti_ev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_input_zip</span><span class="p">(</span><span class="n">zip_arch</span><span class="p">,</span> <span class="n">temp_input_folder</span><span class="p">,</span> <span class="n">prefix_files</span><span class="p">,</span> <span class="s">&quot;EigenVectors&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">dti_fa</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_input_zip</span><span class="p">(</span><span class="n">zip_arch</span><span class="p">,</span> <span class="n">temp_input_folder</span><span class="p">,</span> <span class="n">prefix_files</span><span class="p">,</span> <span class="s">&quot;FA&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">dti_md</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_input_zip</span><span class="p">(</span><span class="n">zip_arch</span><span class="p">,</span> <span class="n">temp_input_folder</span><span class="p">,</span> <span class="n">prefix_files</span><span class="p">,</span> <span class="s">&quot;MD&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">dti_seg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_input_zip</span><span class="p">(</span><span class="n">zip_arch</span><span class="p">,</span> <span class="n">temp_input_folder</span><span class="p">,</span> <span class="n">prefix_files</span><span class="p">,</span> <span class="s">&quot;Seg2DTI&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">local_name</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">temp_input_folder</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_copy_file_remote</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp_input_folder</span><span class="p">,</span> <span class="n">local_name</span><span class="p">),</span> 
+                                   <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">remote_input_folder</span><span class="p">,</span> <span class="n">local_name</span><span class="p">))</span>
+            
+        <span class="c">### Execute remote DTI Pipeline command.</span>
+        <span class="n">dti_ev</span> <span class="o">=</span> <span class="n">dti_ev</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">)</span>
+        <span class="n">remote_command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DTI_PIPELINE_COMMAND</span> <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">remote_output_folder</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dti_seg</span><span class="p">,</span> <span class="n">dti_ev</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
+                                                      <span class="n">dti_ev</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dti_ev</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">dti_scans</span><span class="p">,</span> <span class="n">dti_fa</span><span class="p">,</span> <span class="n">dti_md</span><span class="p">,</span> <span class="n">number_of_th</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_execute_remote</span><span class="p">(</span><span class="n">remote_command</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gather_results</span><span class="p">(</span><span class="n">current_user</span><span class="p">,</span> <span class="n">current_project</span><span class="p">,</span> <span class="n">result_matrix1</span><span class="p">,</span> <span class="n">result_matrix2</span><span class="p">,</span> 
+                             <span class="n">temp_output_folder</span><span class="p">,</span> <span class="n">zip_output</span><span class="p">)</span>
+        <span class="c">### Clean left-over files</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span><span class="o">.</span><span class="n">remove_folder</span><span class="p">(</span><span class="n">temp_output_folder</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span><span class="o">.</span><span class="n">remove_folder</span><span class="p">(</span><span class="n">temp_input_folder</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">zip_output</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_execute_remote</span><span class="p">(</span><span class="s">&quot;rm -R -f &quot;</span> <span class="o">+</span> <span class="n">remote_input_folder</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_execute_remote</span><span class="p">(</span><span class="s">&quot;rm -R -f &quot;</span> <span class="o">+</span> <span class="n">remote_output_folder</span><span class="p">)</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

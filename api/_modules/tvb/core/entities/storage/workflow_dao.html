@@ -1,0 +1,432 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.entities.storage.workflow_dao &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../index.html" />
+    <link rel="up" title="tvb.core.entities.storage" href="../storage.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../storage.html" accesskey="U">tvb.core.entities.storage</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.entities.storage.workflow_dao</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">DAO layer for WorkFlow and Burst entities.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">func</span> <span class="k">as</span> <span class="n">func</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm.exc</span> <span class="kn">import</span> <span class="n">NoResultFound</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.sql.expression</span> <span class="kn">import</span> <span class="n">desc</span><span class="p">,</span> <span class="n">not_</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities</span> <span class="kn">import</span> <span class="n">model</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.storage.root_dao</span> <span class="kn">import</span> <span class="n">RootDAO</span>
+
+
+<div class="viewcode-block" id="WorkflowDAO"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.workflow_dao.WorkflowDAO">[docs]</a><span class="k">class</span> <span class="nc">WorkflowDAO</span><span class="p">(</span><span class="n">RootDAO</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    DAO layer for WorkFlow and Burst entities.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="WorkflowDAO.get_non_validated_entities"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.workflow_dao.WorkflowDAO.get_non_validated_entities">[docs]</a>    <span class="k">def</span> <span class="nf">get_non_validated_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reference_time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a list of all categories, portlets and algorithm groups that were not found valid since the reference_time.</span>
+<span class="sd">        Used in initializer on each start to filter out any entities that for some reason became invalid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">algo_groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmGroup</span>
+                                        <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmGroup</span><span class="o">.</span><span class="n">last_introspection_check</span> <span class="o">&lt;</span> <span class="n">reference_time</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="n">categories</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmCategory</span>
+                                        <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmCategory</span><span class="o">.</span><span class="n">last_introspection_check</span><span class="o">&lt;</span><span class="n">reference_time</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="n">portlets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Portlet</span>
+                                        <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Portlet</span><span class="o">.</span><span class="n">last_introspection_check</span> <span class="o">&lt;</span> <span class="n">reference_time</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="n">all_invalid_entities</span> <span class="o">=</span> <span class="n">algo_groups</span> <span class="o">+</span> <span class="n">categories</span> <span class="o">+</span> <span class="n">portlets</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="n">all_invalid_entities</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">all_invalid_entities</span>
+
+</div>
+<div class="viewcode-block" id="WorkflowDAO.get_bursts_for_project"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.workflow_dao.WorkflowDAO.get_bursts_for_project">[docs]</a>    <span class="k">def</span> <span class="nf">get_bursts_for_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">page_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">page_end</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get latest 50 BurstConfiguration entities for the current project&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">bursts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">BurstConfiguration</span>
+                                        <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">fk_project</span><span class="o">=</span><span class="n">project_id</span>
+                                                    <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">desc</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">BurstConfiguration</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">count</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">bursts</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">page_end</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">bursts</span> <span class="o">=</span> <span class="n">bursts</span><span class="o">.</span><span class="n">offset</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">page_start</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">page_end</span><span class="p">)</span>
+
+            <span class="n">bursts</span> <span class="o">=</span> <span class="n">bursts</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="n">bursts</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">bursts</span>
+
+</div>
+<div class="viewcode-block" id="WorkflowDAO.get_max_burst_id"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.workflow_dao.WorkflowDAO.get_max_burst_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_max_burst_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the maximum of the currently stored burst IDs to be used as the new burst name.</span>
+<span class="sd">        This is not a thread-safe value, but we use it just for a label.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">max_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">BurstConfiguration</span><span class="o">.</span><span class="n">id</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">max_id</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="n">max_id</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+
+</div>
+<div class="viewcode-block" id="WorkflowDAO.count_bursts_with_name"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.workflow_dao.WorkflowDAO.count_bursts_with_name">[docs]</a>    <span class="k">def</span> <span class="nf">count_bursts_with_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">burst_name</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the number of burst already named &#39;custom_b%&#39; and NOT &#39;custom_b%_%&#39; in current project.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">BurstConfiguration</span>
+                                       <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">fk_project</span><span class="o">=</span><span class="n">project_id</span>
+                                       <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">BurstConfiguration</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">like</span><span class="p">(</span><span class="n">burst_name</span> <span class="o">+</span> <span class="s">&#39;%&#39;</span><span class="p">)</span>
+                                       <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">not_</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">BurstConfiguration</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">like</span><span class="p">(</span><span class="n">burst_name</span> <span class="o">+</span> <span class="s">&#39;/_%/_%&#39;</span><span class="p">,</span>
+                                                                                        <span class="n">escape</span><span class="o">=</span><span class="s">&#39;/&#39;</span><span class="p">))</span>
+                                       <span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">count</span>
+
+</div>
+<div class="viewcode-block" id="WorkflowDAO.get_burst_by_id"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.workflow_dao.WorkflowDAO.get_burst_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_burst_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">burst_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the BurstConfiguration entity with the given id&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">burst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">BurstConfiguration</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">burst_id</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="n">burst</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">burst</span>
+
+</div>
+<div class="viewcode-block" id="WorkflowDAO.get_visualization_steps"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.workflow_dao.WorkflowDAO.get_visualization_steps">[docs]</a>    <span class="k">def</span> <span class="nf">get_visualization_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve all the visualization steps for a workflow.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">WorkflowStepView</span>
+                                        <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">WorkflowStepView</span><span class="o">.</span><span class="n">fk_workflow</span> <span class="o">==</span> <span class="n">workflow_id</span>
+                                        <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">WorkflowStepView</span><span class="o">.</span><span class="n">tab_index</span><span class="p">,</span>
+                                                   <span class="n">model</span><span class="o">.</span><span class="n">WorkflowStepView</span><span class="o">.</span><span class="n">index_in_tab</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+</div>
+<div class="viewcode-block" id="WorkflowDAO.get_workflow_steps"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.workflow_dao.WorkflowDAO.get_workflow_steps">[docs]</a>    <span class="k">def</span> <span class="nf">get_workflow_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve all the simulation/analyzers steps for a workflow.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c"># Also check that index is non-negative to preserve backwards</span>
+            <span class="c"># compatibility to versions &lt; 1.0.2.</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">WorkflowStep</span>
+                                        <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">WorkflowStep</span><span class="o">.</span><span class="n">fk_workflow</span> <span class="o">==</span> <span class="n">workflow_id</span>
+                                        <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">WorkflowStep</span><span class="o">.</span><span class="n">step_index</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span>
+                                        <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">WorkflowStep</span><span class="o">.</span><span class="n">step_index</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+</div>
+<div class="viewcode-block" id="WorkflowDAO.get_workflows_for_burst"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.workflow_dao.WorkflowDAO.get_workflows_for_burst">[docs]</a>    <span class="k">def</span> <span class="nf">get_workflows_for_burst</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">burst_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns all the workflows that were launched for this burst id&quot;&quot;&quot;</span>
+        <span class="n">workflows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">workflows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Workflow</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">fk_burst</span><span class="o">=</span><span class="n">burst_id</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">workflows</span>
+
+</div>
+<div class="viewcode-block" id="WorkflowDAO.get_workflow_by_id"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.workflow_dao.WorkflowDAO.get_workflow_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_workflow_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;&quot;Returns the workflow instance with the given id&quot;&quot;&quot;</span>
+        <span class="n">workflow</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">workflow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Workflow</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">workflow_id</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">workflow</span>
+
+</div>
+<div class="viewcode-block" id="WorkflowDAO.get_workflow_step_by_step_index"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.workflow_dao.WorkflowDAO.get_workflow_step_by_step_index">[docs]</a>    <span class="k">def</span> <span class="nf">get_workflow_step_by_step_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow_id</span><span class="p">,</span> <span class="n">step_index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :returns: orkflowStep entity of None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">WorkflowStep</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">fk_workflow</span><span class="o">=</span><span class="n">workflow_id</span><span class="p">,</span>
+                                                                    <span class="n">step_index</span><span class="o">=</span><span class="n">step_index</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">NoResultFound</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;No step found for workflow_id=</span><span class="si">%s</span><span class="s"> and step_index=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">workflow_id</span><span class="p">,</span> <span class="n">step_index</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">step</span>
+
+</div>
+<div class="viewcode-block" id="WorkflowDAO.get_workflow_steps_for_position"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.workflow_dao.WorkflowDAO.get_workflow_steps_for_position">[docs]</a>    <span class="k">def</span> <span class="nf">get_workflow_steps_for_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow_id</span><span class="p">,</span> <span class="n">tab_index</span><span class="p">,</span> <span class="n">index_in_tab</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve a list of analyzers corresponding to current cell in the portlets grid.</span>
+<span class="sd">        Will be used for deciding the interface.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">WorkflowStep</span>
+                                       <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">fk_workflow</span><span class="o">=</span><span class="n">workflow_id</span><span class="p">,</span>
+                                                   <span class="n">tab_index</span><span class="o">=</span><span class="n">tab_index</span><span class="p">,</span> <span class="n">index_in_tab</span><span class="o">=</span><span class="n">index_in_tab</span>
+                                       <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">WorkflowStep</span><span class="o">.</span><span class="n">step_index</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">steps</span>
+
+</div>
+<div class="viewcode-block" id="WorkflowDAO.get_configured_portlets_for_id"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.workflow_dao.WorkflowDAO.get_configured_portlets_for_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_configured_portlets_for_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">portlet_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the workflow steps that were generated from the portlet given by portlet_id.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">wf_steps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">wf_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">WorkflowStepView</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">fk_portlet</span><span class="o">=</span><span class="n">portlet_id</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">wf_steps</span>
+
+</div>
+<div class="viewcode-block" id="WorkflowDAO.get_workflow_step_for_operation"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.workflow_dao.WorkflowDAO.get_workflow_step_for_operation">[docs]</a>    <span class="k">def</span> <span class="nf">get_workflow_step_for_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the executed workflow step from which resulted</span>
+<span class="sd">        the operation with the given id &#39;operation_id&#39;.</span>
+<span class="sd">        Returns None if there is no such executed workflow step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">WorkflowStep</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">fk_operation</span><span class="o">=</span><span class="n">operation_id</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">NoResultFound</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;No step found for operation_id=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">operation_id</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">step</span>
+
+</div>
+<div class="viewcode-block" id="WorkflowDAO.get_available_portlets"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.workflow_dao.WorkflowDAO.get_available_portlets">[docs]</a>    <span class="k">def</span> <span class="nf">get_available_portlets</span><span class="p">(</span><span class="bp">self</span><span class="p">,):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all the stored portlets form the db.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">portlets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">portlets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Portlet</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Portlet</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">portlets</span>
+
+</div>
+<div class="viewcode-block" id="WorkflowDAO.get_portlet_by_identifier"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.workflow_dao.WorkflowDAO.get_portlet_by_identifier">[docs]</a>    <span class="k">def</span> <span class="nf">get_portlet_by_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">portlet_identifier</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given an identifer retieve the portlet that corresponds to it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">portlet</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">portlet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Portlet</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">algorithm_identifier</span><span class="o">=</span><span class="n">portlet_identifier</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">NoResultFound</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;No portlet found with id=</span><span class="si">%s</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="n">portlet_identifier</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">portlet</span>
+
+</div>
+<div class="viewcode-block" id="WorkflowDAO.get_portlet_by_id"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.workflow_dao.WorkflowDAO.get_portlet_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_portlet_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">portlet_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given an portlet id retieve the portlet entity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">portlet</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">portlet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Portlet</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">portlet_id</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">portlet</span>
+
+</div>
+<div class="viewcode-block" id="WorkflowDAO.get_workflow_for_operation_id"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.workflow_dao.WorkflowDAO.get_workflow_for_operation_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_workflow_for_operation_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the workflow from which operation_id was generated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">workflow</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">workflow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Workflow</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">WorkflowStep</span>
+                                          <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">WorkflowStep</span><span class="o">.</span><span class="n">fk_operation</span> <span class="o">==</span> <span class="n">operation_id</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">NoResultFound</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Operation with id=</span><span class="si">%s</span><span class="s"> was not generated from any workflow.&quot;</span> <span class="o">%</span> <span class="n">operation_id</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">workflow</span>
+
+</div>
+<div class="viewcode-block" id="WorkflowDAO.get_burst_for_operation_id"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.workflow_dao.WorkflowDAO.get_burst_for_operation_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_burst_for_operation_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the burst for which this operation was created.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">burst</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">burst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">BurstConfiguration</span>
+                                       <span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Workflow</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">Workflow</span><span class="o">.</span><span class="n">fk_burst</span><span class="o">==</span><span class="n">model</span><span class="o">.</span><span class="n">BurstConfiguration</span><span class="o">.</span><span class="n">id</span>
+                                       <span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">WorkflowStep</span>
+                                       <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">WorkflowStep</span><span class="o">.</span><span class="n">fk_operation</span><span class="o">==</span><span class="n">operation_id</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">NoResultFound</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;No burst found for operation id = </span><span class="si">%s</span><span class="s">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">operation_id</span><span class="p">,))</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">burst</span>
+
+</div>
+<div class="viewcode-block" id="WorkflowDAO.get_all_datatypes_in_burst"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.workflow_dao.WorkflowDAO.get_all_datatypes_in_burst">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_datatypes_in_burst</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">burst_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all dataTypes in burst</span>
+<span class="sd">        </span>
+<span class="sd">        :param burst_id BurstConfiguration Identifier.</span>
+<span class="sd">        :returns: list dataType GIDs or empty list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">DataTypeGroup</span><span class="p">,</span>
+                           <span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">DataTypeGroup</span><span class="o">.</span><span class="n">fk_from_operation</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">id</span>
+                           <span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">WorkflowStep</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">WorkflowStep</span><span class="o">.</span><span class="n">fk_operation</span>
+                           <span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Workflow</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Workflow</span><span class="o">.</span><span class="n">fk_burst</span> <span class="o">==</span> <span class="n">burst_id</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="n">datatypes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">DataType</span>
+                                      <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">DataType</span><span class="o">.</span><span class="n">fk_parent_burst</span> <span class="o">==</span> <span class="n">burst_id</span>
+                                      <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">DataType</span><span class="o">.</span><span class="n">fk_datatype_group</span> <span class="o">==</span> <span class="bp">None</span>
+                                      <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">DataType</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">EXCEPTION_DATATYPE_GROUP</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">datatypes</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">result</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../storage.html" >tvb.core.entities.storage</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

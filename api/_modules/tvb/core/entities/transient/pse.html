@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.core.entities.transient.pse &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.core.entities.transient.pse &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../../index.html" />
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../index.html" />
     <link rel="up" title="Module code" href="../../../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -49,311 +48,325 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for tvb.core.entities.transient.pse</h1><pre>
-# -*- coding: utf-8 -*-
-#
-#
-# TheVirtualBrain-Framework Package. This package holds all Data Management, and 
-# Web-UI helpful to run brain-simulations. To use it, you also need do download
-# TheVirtualBrain-Scientific Package (for simulators). See content of the
-# documentation-folder for more details. See also http://www.thevirtualbrain.org
-#
-# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
-#
-# This program is free software; you can redistribute it and/or modify it under 
-# the terms of the GNU General Public License version 2 as published by the Free
-# Software Foundation. This program is distributed in the hope that it will be
-# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
-# License for more details. You should have received a copy of the GNU General 
-# Public License along with this program; if not, you can download it here
-# http://www.gnu.org/licenses/old-licenses/gpl-2.0
-#
-#
+  <h1>Source code for tvb.core.entities.transient.pse</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
 
-"""
-.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;
-.. moduleauthor:: Ionel Ortelecan &lt;ionel.ortelecan@codemart.ro&gt;
-.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Ionel Ortelecan &lt;ionel.ortelecan@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
 
-Data for Parameter Space Exploration view will be defined here.
-The purpose of this entities is to be used in Genshi UI, or for populating visualizer.
-"""
+<span class="sd">Data for Parameter Space Exploration view will be defined here.</span>
+<span class="sd">The purpose of this entities is to be used in Genshi UI, or for populating visualizer.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
-import sys
-import json
-import math
-from tvb.basic.config.settings import EnhancedDictionary
-from tvb.core.entities import model
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">EnhancedDictionary</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities</span> <span class="kn">import</span> <span class="n">model</span>
 
 
-<div class="viewcode-block" id="ContextPSE"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.pse.ContextPSE">[docs]</a>class ContextPSE(EnhancedDictionary):
-    """
-    Entity used for filling a PSE visualizer.
-    """
-    KEY_GID = "Gid"
-    KEY_NODE_TYPE = "dataType"
-    KEY_OPERATION_ID = "operationId"
-    KEY_TOOLTIP = "tooltip"
+<div class="viewcode-block" id="ContextDiscretePSE"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.pse.ContextDiscretePSE">[docs]</a><span class="k">class</span> <span class="nc">ContextDiscretePSE</span><span class="p">(</span><span class="n">EnhancedDictionary</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Entity used for filling a PSE visualizer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">KEY_GID</span> <span class="o">=</span> <span class="s">&quot;Gid&quot;</span>
+    <span class="n">KEY_NODE_TYPE</span> <span class="o">=</span> <span class="s">&quot;dataType&quot;</span>
+    <span class="n">KEY_OPERATION_ID</span> <span class="o">=</span> <span class="s">&quot;operationId&quot;</span>
+    <span class="n">KEY_TOOLTIP</span> <span class="o">=</span> <span class="s">&quot;tooltip&quot;</span>
+    <span class="n">LINE_SEPARATOR</span> <span class="o">=</span> <span class="s">&quot;&lt;br/&gt;&quot;</span>
     
     
-    def __init__(self, datatype_group_id, labels_x, labels_y, color_metric, size_metric):
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datatype_group_gid</span><span class="p">,</span> <span class="n">labels_x</span><span class="p">,</span> <span class="n">labels_y</span><span class="p">,</span> <span class="n">color_metric</span><span class="p">,</span> <span class="n">size_metric</span><span class="p">,</span> <span class="n">back_page</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ContextDiscretePSE</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datatype_group_gid</span> <span class="o">=</span> <span class="n">datatype_group_gid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_color</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="o">.</span><span class="n">max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_color</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="o">.</span><span class="n">min</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_shape_size_weight</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="o">.</span><span class="n">max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_shape_size_weight</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="o">.</span><span class="n">min</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_started_ops</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s">&#39;started&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_x</span> <span class="o">=</span> <span class="n">labels_x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_y</span> <span class="o">=</span> <span class="n">labels_y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">series_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">available_metrics</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datatypes_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">color_metric</span> <span class="o">=</span> <span class="n">color_metric</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size_metric</span> <span class="o">=</span> <span class="n">size_metric</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pse_back_page</span> <span class="o">=</span> <span class="n">back_page</span>
+    
         
-        self.group_id = datatype_group_id
-        self.min_color = sys.float_info.max
-        self.max_color = sys.float_info.min
-        self.min_shape_size_weight = sys.float_info.max
-        self.max_shape_size_weight = sys.float_info.min
-        self.has_started_ops = False
-        self.status = 'started'
-        self.labels_x = labels_x
-        self.labels_y = labels_y
-        self.series_array, self.data, self.available_metrics = [], [], []
-        self.datatypes_dict = {}
-        self.color_metric = color_metric
-        self.size_metric = size_metric
-    
-        
-<div class="viewcode-block" id="ContextPSE.prepare_individual_jsons"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.pse.ContextPSE.prepare_individual_jsons">[docs]</a>    def prepare_individual_jsons(self):
-        """
-        Apply JSON.dumps on all attributes which can not be passes as they are towards UI.
-        """
-        self.labels_x = json.dumps(self.labels_x)
-        self.labels_y = json.dumps(self.labels_y)
-        self.data = json.dumps(self.data)
-        self.min_color = json.dumps(self.min_color)
-        self.max_color = json.dumps(self.max_color)
+<div class="viewcode-block" id="ContextDiscretePSE.prepare_individual_jsons"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.pse.ContextDiscretePSE.prepare_individual_jsons">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_individual_jsons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply JSON.dumps on all attributes which can not be passes as they are towards UI.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_x</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels_x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_y</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels_y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
     
     </div>
-<div class="viewcode-block" id="ContextPSE.prepare_full_json"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.pse.ContextPSE.prepare_full_json">[docs]</a>    def prepare_full_json(self):
-        """
-        Apply JSON.dumps on full dictionary.
-        """
-        return json.dumps(self)
+<div class="viewcode-block" id="ContextDiscretePSE.prepare_full_json"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.pse.ContextDiscretePSE.prepare_full_json">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_full_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply JSON.dumps on full dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    
+</div>
+<div class="viewcode-block" id="ContextDiscretePSE.build_node_info"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.pse.ContextDiscretePSE.build_node_info">[docs]</a>    <span class="k">def</span> <span class="nf">build_node_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span> <span class="n">datatype</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build a dictionary with all the required information to be displayed for a given node.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">node_info</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">operation</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">STATUS_FINISHED</span> <span class="ow">and</span> <span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c">### Prepare attributes to be able to show overlay and launch further analysis.</span>
+            <span class="n">node_info</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_GID</span><span class="p">]</span> <span class="o">=</span> <span class="n">datatype</span><span class="o">.</span><span class="n">gid</span>
+            <span class="n">node_info</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_NODE_TYPE</span><span class="p">]</span> <span class="o">=</span> <span class="n">datatype</span><span class="o">.</span><span class="n">type</span>
+            <span class="n">node_info</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_OPERATION_ID</span><span class="p">]</span> <span class="o">=</span> <span class="n">operation</span><span class="o">.</span><span class="n">id</span>
+            <span class="c">### Prepare tooltip for quick display.</span>
+            <span class="n">datatype_tooltip</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s">&quot;Operation id: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">operation</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">LINE_SEPARATOR</span> <span class="o">+</span>
+                                   <span class="s">&quot;Datatype gid: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">datatype</span><span class="o">.</span><span class="n">gid</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">LINE_SEPARATOR</span> <span class="o">+</span>
+                                   <span class="s">&quot;Datatype type: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">datatype</span><span class="o">.</span><span class="n">type</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">LINE_SEPARATOR</span> <span class="o">+</span>
+                                   <span class="s">&quot;Datatype subject: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">datatype</span><span class="o">.</span><span class="n">subject</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">LINE_SEPARATOR</span> <span class="o">+</span>
+                                   <span class="s">&quot;Datatype invalid: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">datatype</span><span class="o">.</span><span class="n">invalid</span><span class="p">))</span>
+            <span class="c">### Add scientific report to the quick details.</span>
+            <span class="k">if</span> <span class="n">datatype</span><span class="o">.</span><span class="n">summary_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">datatype</span><span class="o">.</span><span class="n">summary_info</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                    <span class="n">datatype_tooltip</span> <span class="o">=</span> <span class="n">datatype_tooltip</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">LINE_SEPARATOR</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">node_info</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_TOOLTIP</span><span class="p">]</span> <span class="o">=</span> <span class="n">datatype_tooltip</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">node_info</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_TOOLTIP</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;No result available. Operation is in status: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">operation</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">node_info</span>
     
     </div>
-    @staticmethod
-<div class="viewcode-block" id="ContextPSE.build_node_info"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.pse.ContextPSE.build_node_info">[docs]</a>    def build_node_info(operation, datatype):
-        """
-        Build a dictionary with all the required informations to be displayed for a given node.
-        """
-        node_info = {}
-        if operation.status == model.STATUS_FINISHED and datatype is not None:
-            ### Prepare attributes to be able to show overlay and launch further analysis.
-            node_info[ContextPSE.KEY_GID] = datatype.gid
-            node_info[ContextPSE.KEY_NODE_TYPE] = datatype.type
-            node_info[ContextPSE.KEY_OPERATION_ID] = operation.id
-            ### Prepare tooltip for quick display.
-            datatype_tooltip = str("Operation id: " + str(operation.id) +
-                                   "&lt;br/&gt;Datatype gid: " + str(datatype.gid) +
-                                   "&lt;br/&gt;Datatype type: " + str(datatype.type) +
-                                   "&lt;br/&gt;Datatype subject: " + str(datatype.subject) +
-                                   "&lt;br/&gt;Datatype invalid: " + str(datatype.invalid))
-            ### Add scientific report to the quick details.
-            if datatype.summary_info is not None:
-                for key, value in datatype.summary_info.iteritems():
-                    datatype_tooltip = datatype_tooltip + "&lt;br/&gt;" + str(key) + ": " + str(value)
-            node_info[ContextPSE.KEY_TOOLTIP] = datatype_tooltip
-        else:
-            node_info[ContextPSE.KEY_TOOLTIP] = "No result available. Operation is in status: %s" % (operation.status)
-        return node_info
-    
-    </div>
-<div class="viewcode-block" id="ContextPSE.prepare_metrics_datatype"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.pse.ContextPSE.prepare_metrics_datatype">[docs]</a>    def prepare_metrics_datatype(self, measures, datatype):
-        """
-        Update attribute self.datatypes_dict with metric values for this DataType.
-        """
-        dt_info = {}
-        if (measures is not None and len(measures) &gt; 0):
-            measure = measures[0]
-            self.available_metrics = measure.metrics.keys()
-            # As default we have the first two metrics available is no metrics are passed from the UI
-            if self.color_metric is None and self.size_metric is None:
-                if len(self.available_metrics) &gt;= 1:
-                    self.color_metric = self.available_metrics[0]
-                if len(self.available_metrics) &gt;= 2:
-                    self.size_metric = self.available_metrics[1]
-            if self.color_metric is not None:
-                color_value = measure.metrics[self.color_metric]
-                if color_value &lt; self.min_color:
-                    self.min_color = color_value
-                if color_value &gt; self.max_color:
-                    self.max_color = color_value
-                dt_info[self.color_metric] = color_value
-            if self.size_metric is not None:
-                size_value = measure.metrics[self.size_metric]
-                if size_value &lt; self.min_shape_size_weight:
-                    self.min_shape_size_weight = size_value
-                if size_value &gt; self.max_shape_size_weight:
-                    self.max_shape_size_weight = size_value
-                dt_info[self.size_metric] = size_value
-        self.datatypes_dict[datatype.gid] = dt_info
+<div class="viewcode-block" id="ContextDiscretePSE.prepare_metrics_datatype"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.pse.ContextDiscretePSE.prepare_metrics_datatype">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_metrics_datatype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">measures</span><span class="p">,</span> <span class="n">datatype</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update attribute self.datatypes_dict with metric values for this DataType.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dt_info</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">measures</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">measures</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">measure</span> <span class="o">=</span> <span class="n">measures</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">available_metrics</span> <span class="o">=</span> <span class="n">measure</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+            <span class="c"># As default we have the first two metrics available is no metrics are passed from the UI</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">color_metric</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">size_metric</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">available_metrics</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">color_metric</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">available_metrics</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">available_metrics</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">size_metric</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">available_metrics</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">color_metric</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">color_value</span> <span class="o">=</span> <span class="n">measure</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">color_metric</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">color_value</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_color</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">min_color</span> <span class="o">=</span> <span class="n">color_value</span>
+                <span class="k">if</span> <span class="n">color_value</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_color</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">max_color</span> <span class="o">=</span> <span class="n">color_value</span>
+                <span class="n">dt_info</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">color_metric</span><span class="p">]</span> <span class="o">=</span> <span class="n">color_value</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">size_metric</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">size_value</span> <span class="o">=</span> <span class="n">measure</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">size_metric</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">size_value</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_shape_size_weight</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">min_shape_size_weight</span> <span class="o">=</span> <span class="n">size_value</span>
+                <span class="k">if</span> <span class="n">size_value</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_shape_size_weight</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">max_shape_size_weight</span> <span class="o">=</span> <span class="n">size_value</span>
+                <span class="n">dt_info</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">size_metric</span><span class="p">]</span> <span class="o">=</span> <span class="n">size_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datatypes_dict</span><span class="p">[</span><span class="n">datatype</span><span class="o">.</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="n">dt_info</span>
         
     </div>
-<div class="viewcode-block" id="ContextPSE.fill_object"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.pse.ContextPSE.fill_object">[docs]</a>    def fill_object(self, final_dict):
-        """ Populate current entity with attributes required for visualizer"""
+<div class="viewcode-block" id="ContextDiscretePSE.fill_object"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.pse.ContextDiscretePSE.fill_object">[docs]</a>    <span class="k">def</span> <span class="nf">fill_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">final_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Populate current entity with attributes required for visualizer&quot;&quot;&quot;</span>
         
-        ## Make sure that current form on MIN/MAX attributes is consistent
-        ## MIN and MAX  should not be equal, to get a division by 0 (on their difference) after this step.
-        if self.min_shape_size_weight == self.max_shape_size_weight:
-            self.max_shape_size_weight += 1
-        if self.min_color == self.max_color:
-            self.max_color += 1
+        <span class="c">## Make sure that current form on MIN/MAX attributes is consistent</span>
+        <span class="c">## MIN and MAX  should not be equal, to get a division by 0 (on their difference) after this step.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_shape_size_weight</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_shape_size_weight</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_shape_size_weight</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_color</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_color</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_color</span> <span class="o">+=</span> <span class="mi">1</span>
             
-        all_series = []
-        for i in range(len(self.labels_x)):
-            for j in range(len(self.labels_y)):
-                key_1 = self.labels_x[i]
-                key_2 = self.labels_y[j]
-                datatype_gid = None
-                if self.KEY_GID in final_dict[key_1][key_2]:
-                    #This means the operation was finished
-                    datatype_gid = final_dict[key_1][key_2][self.KEY_GID]
-                series_data = [[i, j]]
-                color_weight, shape_type_1 = self.__get_color_weight(self.datatypes_dict, datatype_gid, 
-                                                                     self.color_metric)
-                if shape_type_1 != None and datatype_gid != None:
-                    final_dict[key_1][key_2][self.KEY_TOOLTIP] = (final_dict[key_1][key_2][self.KEY_TOOLTIP] +
-                                                                  "&lt;br/&gt; Color metric has NaN values")
-                shape_size, shape_type_2 = self.__get_node_size(self.datatypes_dict, datatype_gid, len(self.labels_x), 
-                                                                len(self.labels_y), self.size_metric)
-                if shape_type_2 != None and datatype_gid != None:
-                    final_dict[key_1][key_2][self.KEY_TOOLTIP] = (final_dict[key_1][key_2][self.KEY_TOOLTIP] 
-                                                                  + "&lt;br/&gt; Size metric has NaN values")
-                #If either of the shape_types is not none use that
-                shape_type = shape_type_1 or shape_type_2
-                series = self.__get_node_json(series_data, shape_type, shape_size)
-                final_dict[key_1][key_2]['color_weight'] = color_weight
-                all_series.append(series)
+        <span class="n">all_series</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key_1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels_x</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">key_2</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels_y</span><span class="p">):</span>
+                <span class="n">datatype_gid</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">KEY_GID</span> <span class="ow">in</span> <span class="n">final_dict</span><span class="p">[</span><span class="n">key_1</span><span class="p">][</span><span class="n">key_2</span><span class="p">]:</span>
+                    <span class="c">#This means the operation was finished</span>
+                    <span class="n">datatype_gid</span> <span class="o">=</span> <span class="n">final_dict</span><span class="p">[</span><span class="n">key_1</span><span class="p">][</span><span class="n">key_2</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_GID</span><span class="p">]</span>
+                <span class="n">series_data</span> <span class="o">=</span> <span class="p">[[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]]</span>
+                <span class="n">color_weight</span><span class="p">,</span> <span class="n">shape_type_1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_color_weight</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datatypes_dict</span><span class="p">,</span> <span class="n">datatype_gid</span><span class="p">,</span> 
+                                                                     <span class="bp">self</span><span class="o">.</span><span class="n">color_metric</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">shape_type_1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">datatype_gid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">):</span>
+                    <span class="n">final_dict</span><span class="p">[</span><span class="n">key_1</span><span class="p">][</span><span class="n">key_2</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_TOOLTIP</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">final_dict</span><span class="p">[</span><span class="n">key_1</span><span class="p">][</span><span class="n">key_2</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_TOOLTIP</span><span class="p">]</span> <span class="o">+</span>
+                                                                  <span class="bp">self</span><span class="o">.</span><span class="n">LINE_SEPARATOR</span> <span class="o">+</span> <span class="s">&quot; Color metric has NaN values&quot;</span><span class="p">)</span>
+                <span class="n">shape_size</span><span class="p">,</span> <span class="n">shape_type_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_node_size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datatypes_dict</span><span class="p">,</span> <span class="n">datatype_gid</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels_x</span><span class="p">),</span> 
+                                                                <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels_y</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">size_metric</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">shape_type_2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">datatype_gid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">):</span>
+                    <span class="n">final_dict</span><span class="p">[</span><span class="n">key_1</span><span class="p">][</span><span class="n">key_2</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_TOOLTIP</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">final_dict</span><span class="p">[</span><span class="n">key_1</span><span class="p">][</span><span class="n">key_2</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_TOOLTIP</span><span class="p">]</span> <span class="o">+</span>
+                                                                  <span class="bp">self</span><span class="o">.</span><span class="n">LINE_SEPARATOR</span> <span class="o">+</span> <span class="s">&quot; Size metric has NaN values&quot;</span><span class="p">)</span>
+                <span class="c">#If either of the shape_types is not none use that</span>
+                <span class="n">shape_type</span> <span class="o">=</span> <span class="n">shape_type_1</span> <span class="ow">or</span> <span class="n">shape_type_2</span>
+                <span class="n">series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_node_json</span><span class="p">(</span><span class="n">series_data</span><span class="p">,</span> <span class="n">shape_type</span><span class="p">,</span> <span class="n">shape_size</span><span class="p">)</span>
+                <span class="n">final_dict</span><span class="p">[</span><span class="n">key_1</span><span class="p">][</span><span class="n">key_2</span><span class="p">][</span><span class="s">&#39;color_weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">color_weight</span>
+                <span class="n">all_series</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
 
-        #each shape from the UI corresponds to a dataType. In this matrix we
-        #keep information about those dataTypes.
-        matrix = []
-        for i in range(len(self.labels_x)):
-            matrix.append([])
-            for y_label in self.labels_y:
-                matrix[i].append(final_dict[self.labels_x[i]][y_label])
+        <span class="c">#each shape from the UI corresponds to a dataType. In this matrix we</span>
+        <span class="c">#keep information about those dataTypes.</span>
+        <span class="n">matrix</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x_label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels_x</span><span class="p">):</span>
+            <span class="n">matrix</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+            <span class="k">for</span> <span class="n">y_label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels_y</span><span class="p">:</span>
+                <span class="n">matrix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">final_dict</span><span class="p">[</span><span class="n">x_label</span><span class="p">][</span><span class="n">y_label</span><span class="p">])</span>
         
-        self.data = matrix
-        self.series_array = self.__build_series_json(all_series)
-        self.status = 'started' if self.has_started_ops else 'finished'
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">matrix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">series_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__build_series_json</span><span class="p">(</span><span class="n">all_series</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s">&#39;started&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_started_ops</span> <span class="k">else</span> <span class="s">&#39;finished&#39;</span>
         
         </div>
-    @staticmethod
-    def __build_series_json(list_of_series):
-        """ Given a list with all the data points, build the final FLOT JSON. """
-        final_json = "["
-        for i in range(len(list_of_series)):
-            if i:
-                final_json += ","
-            final_json += list_of_series[i]
-        final_json += "]"
-        return final_json
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__build_series_json</span><span class="p">(</span><span class="n">list_of_series</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Given a list with all the data points, build the final FLOT JSON. &quot;&quot;&quot;</span>
+        <span class="n">final_json</span> <span class="o">=</span> <span class="s">&quot;[&quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">list_of_series</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span><span class="p">:</span>
+                <span class="n">final_json</span> <span class="o">+=</span> <span class="s">&quot;,&quot;</span>
+            <span class="n">final_json</span> <span class="o">+=</span> <span class="n">value</span>
+        <span class="n">final_json</span> <span class="o">+=</span> <span class="s">&quot;]&quot;</span>
+        <span class="k">return</span> <span class="n">final_json</span>
     
     
-    @staticmethod
-    def __get_node_json(data, symbol, radius):
-        """
-        For each data point entry, build the FLOT specific JSON.
-        """
-        series = "{\"data\": " + json.dumps(data) + ","
-        series += "\"points\": {"
-        if symbol is not None:
-            series += "\"symbol\": \"" + symbol + "\", "
-        series += "\"radius\": " + str(radius) + "}"
-        series += "}"
-        return series
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__get_node_json</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">symbol</span><span class="p">,</span> <span class="n">radius</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For each data point entry, build the FLOT specific JSON.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">series</span> <span class="o">=</span> <span class="s">&#39;{&quot;data&quot;: &#39;</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;, &quot;points&quot;: {&#39;</span>
+        <span class="k">if</span> <span class="n">symbol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">series</span> <span class="o">+=</span> <span class="s">&#39;&quot;symbol&quot;: &quot;&#39;</span> <span class="o">+</span> <span class="n">symbol</span> <span class="o">+</span> <span class="s">&#39;&quot;, &#39;</span>
+        <span class="n">series</span> <span class="o">+=</span> <span class="s">&#39;&quot;radius&quot;: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">radius</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;} }&#39;</span>
+        <span class="k">return</span> <span class="n">series</span>
 
 
-    @staticmethod
-    def __get_color_weight(datatype_indexes, datatype_gid, metric):
-        """
-        Returns the color weight of the shape used for representing the dataType with id
-        equal to 'datatype_id'.
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__get_color_weight</span><span class="p">(</span><span class="n">datatype_indexes</span><span class="p">,</span> <span class="n">datatype_gid</span><span class="p">,</span> <span class="n">metric</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the color weight of the shape used for representing the dataType with id equal to &#39;datatype_id&#39;.</span>
 
-        datatype_indexes -  a dictionary which contains as keys a dataType GID and as values
-                            the index corresponding to the dataType into the list of
-                            dataTypes resulted from the same operation group
-        datatype_gid - It should exists into the 'datatype_indexes' dictionary.
-        colors_array - an array of weights.
-        """
-        if datatype_gid is None:
-            return 0, "cross"
-        node_info = datatype_indexes[datatype_gid]
-        valid_metric = True
-        if metric in node_info:
-            try:
-                if math.isnan(float(node_info[metric])) or math.isinf(float(node_info[metric])):
-                    valid_metric = False
-            except ValueError, _:
-                valid_metric = False
-            if valid_metric:
-                return node_info[metric], None
-            else:
-                return 0, "cross"
-        return 0, None
+<span class="sd">        :param: datatype_indexes -  a dictionary which contains as keys a dataType GID and as values</span>
+<span class="sd">                            the index corresponding to the dataType into the list of</span>
+<span class="sd">                            dataTypes resulted from the same operation group</span>
+<span class="sd">        :param: datatype_gid - It should exists into the &#39;datatype_indexes&#39; dictionary.</span>
+<span class="sd">        :param: metric - current metric key.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">datatype_gid</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&quot;cross&quot;</span>
+        <span class="n">node_info</span> <span class="o">=</span> <span class="n">datatype_indexes</span><span class="p">[</span><span class="n">datatype_gid</span><span class="p">]</span>
+        <span class="n">valid_metric</span> <span class="o">=</span> <span class="bp">True</span>
 
-
-    def __get_node_size(self, datatype_indexes, datatype_gid, range1_length, range2_length, metric):
-        """
-        Computes the size of the shape used for representing the dataType with GID given.
-
-        :param: datatype_indexes -  a dictionary which contains as keys a daTatype GID and as values
-                            the index corresponding to the dataType into the list of
-                            dataTypes resulted from the same operation group
-        :param: datatype_gid - It should exists into the 'datatype_indexes' dict.
-        
-        """
-        min_size, max_size = self.__get_boundaries(range1_length, range2_length)
-        if datatype_gid is None:
-            return max_size / 2.0, "cross"
-        node_info = datatype_indexes[datatype_gid]
-        if metric in node_info:
-            valid_metric = True
-            try:
-                if math.isnan(float(node_info[metric])) or math.isinf(float(node_info[metric])):
-                    valid_metric = False
-            except ValueError, _:
-                valid_metric = False
-            if valid_metric:
-                shape_weight = node_info[metric]
-                return (min_size + ((shape_weight - self.min_shape_size_weight) / float((self.max_shape_size_weight 
-                                            - self.min_shape_size_weight))) * (max_size - min_size)), None
-            else:
-                return max_size / 2.0, "cross"
-        return max_size / 2.0, None
+        <span class="k">if</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">node_info</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">node_info</span><span class="p">[</span><span class="n">metric</span><span class="p">]))</span> <span class="ow">or</span> <span class="n">math</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">node_info</span><span class="p">[</span><span class="n">metric</span><span class="p">])):</span>
+                    <span class="n">valid_metric</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span>
+                <span class="n">valid_metric</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="n">valid_metric</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">node_info</span><span class="p">[</span><span class="n">metric</span><span class="p">],</span> <span class="bp">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&quot;cross&quot;</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">None</span>
 
 
-    @staticmethod
-    def __get_boundaries(range1_length, range2_length):
-        """
-        Returns the MIN and the max values of the interval from
-        which may be set the size of a certain shape.
-        """
-        #the arrays 'intervals' and 'values' should have the same size
-        intervals = [0, 3, 5, 8, 10, 20, 30, 40, 50, 60, 90, 110, 120]
-        values = [(10, 50), (10, 40), (10, 33), (8, 25), (5, 15), (4, 10),
-                  (3, 8), (2, 6), (2, 5), (1, 4), (1, 3), (1, 2), (1, 2)]
+    <span class="k">def</span> <span class="nf">__get_node_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datatype_indexes</span><span class="p">,</span> <span class="n">datatype_gid</span><span class="p">,</span> <span class="n">range1_length</span><span class="p">,</span> <span class="n">range2_length</span><span class="p">,</span> <span class="n">metric</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the size of the shape used for representing the dataType with GID given.</span>
 
-        max_length = max([range1_length, range2_length])
-        if max_length &lt;= intervals[0]:
-            return values[0]
-        elif max_length &gt;= intervals[len(intervals) - 1]:
-            return values[len(values) - 1]
-        else:
-            for i in range(len(intervals)):
-                if max_length &lt;= intervals[i]:
-                    return values[i - 1]    
+<span class="sd">        :param: datatype_indexes -  a dictionary which contains as keys a daTatype GID and as values</span>
+<span class="sd">                            the index corresponding to the dataType into the list of</span>
+<span class="sd">                            dataTypes resulted from the same operation group</span>
+<span class="sd">        :param: datatype_gid - It should exists into the &#39;datatype_indexes&#39; dict.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">min_size</span><span class="p">,</span> <span class="n">max_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_boundaries</span><span class="p">(</span><span class="n">range1_length</span><span class="p">,</span> <span class="n">range2_length</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">datatype_gid</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">max_size</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s">&quot;cross&quot;</span>
+        <span class="n">node_info</span> <span class="o">=</span> <span class="n">datatype_indexes</span><span class="p">[</span><span class="n">datatype_gid</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">node_info</span><span class="p">:</span>
+            <span class="n">valid_metric</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">node_info</span><span class="p">[</span><span class="n">metric</span><span class="p">]))</span> <span class="ow">or</span> <span class="n">math</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">node_info</span><span class="p">[</span><span class="n">metric</span><span class="p">])):</span>
+                    <span class="n">valid_metric</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span>
+                <span class="n">valid_metric</span> <span class="o">=</span> <span class="bp">False</span>
+
+            <span class="k">if</span> <span class="n">valid_metric</span><span class="p">:</span>
+                <span class="n">shape_weight</span> <span class="o">=</span> <span class="n">node_info</span><span class="p">[</span><span class="n">metric</span><span class="p">]</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">min_size</span> <span class="o">+</span> <span class="p">((</span><span class="n">shape_weight</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_shape_size_weight</span><span class="p">)</span> <span class="o">/</span>
+                                    <span class="nb">float</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">max_shape_size_weight</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_shape_size_weight</span><span class="p">)))</span> <span class="o">*</span>
+                        <span class="p">(</span><span class="n">max_size</span> <span class="o">-</span> <span class="n">min_size</span><span class="p">)),</span> <span class="bp">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">max_size</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s">&quot;cross&quot;</span>
+        <span class="k">return</span> <span class="n">max_size</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="bp">None</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__get_boundaries</span><span class="p">(</span><span class="n">range1_length</span><span class="p">,</span> <span class="n">range2_length</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the MIN and the max values of the interval from</span>
+<span class="sd">        which may be set the size of a certain shape.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#the arrays &#39;intervals&#39; and &#39;values&#39; should have the same size</span>
+        <span class="n">intervals</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">110</span><span class="p">,</span> <span class="mi">120</span><span class="p">]</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">33</span><span class="p">),</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+                  <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span>
+
+        <span class="n">max_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">range1_length</span><span class="p">,</span> <span class="n">range2_length</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">max_length</span> <span class="o">&lt;=</span> <span class="n">intervals</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">max_length</span> <span class="o">&gt;=</span> <span class="n">intervals</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">intervals</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">values</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">interval</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">intervals</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">max_length</span> <span class="o">&lt;=</span> <span class="n">interval</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">values</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>    
        
        
         
-        </pre></div>
+        </div>
+</pre></div>
 
           </div>
         </div>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../../../search.html" method="get">
@@ -380,13 +393,13 @@ from tvb.core.entities import model
         <li class="right" >
           <a href="../../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

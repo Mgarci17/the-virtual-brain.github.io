@@ -1,0 +1,711 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.entities.storage.operation_dao &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../index.html" />
+    <link rel="up" title="tvb.core.entities.storage" href="../storage.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../storage.html" accesskey="U">tvb.core.entities.storage</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.entities.storage.operation_dao</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">DAO operations related to Algorithms and User Operations are defined here.</span>
+<span class="sd"> </span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">or_</span><span class="p">,</span> <span class="n">and_</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">func</span> <span class="k">as</span> <span class="n">func</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm.exc</span> <span class="kn">import</span> <span class="n">NoResultFound</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.sql.expression</span> <span class="kn">import</span> <span class="n">case</span> <span class="k">as</span> <span class="n">case_</span><span class="p">,</span> <span class="n">desc</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities</span> <span class="kn">import</span> <span class="n">model</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.storage.root_dao</span> <span class="kn">import</span> <span class="n">RootDAO</span>
+
+
+
+<div class="viewcode-block" id="OperationDAO"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO">[docs]</a><span class="k">class</span> <span class="nc">OperationDAO</span><span class="p">(</span><span class="n">RootDAO</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    OPERATION RELATED METHODS</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="OperationDAO.get_operation_by_id"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_operation_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_operation_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve OPERATION entity for a given Identifier.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">operation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">operation_id</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="n">operation</span><span class="o">.</span><span class="n">project</span>
+            <span class="n">operation</span><span class="o">.</span><span class="n">operation_group</span>
+            <span class="n">operation</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">algo_group</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="n">operation</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">operation</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.get_operation_by_gid"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_operation_by_gid">[docs]</a>    <span class="k">def</span> <span class="nf">get_operation_by_gid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation_gid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve OPERATION entity for a given gid.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">operation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">gid</span><span class="o">=</span><span class="n">operation_gid</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="n">operation</span><span class="o">.</span><span class="n">project</span>
+            <span class="n">operation</span><span class="o">.</span><span class="n">operation_group</span>
+            <span class="n">operation</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">algo_group</span><span class="o">.</span><span class="n">group_category</span>
+            <span class="k">return</span> <span class="n">operation</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.get_all_operations_for_uploaders"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_all_operations_for_uploaders">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_operations_for_uploaders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns all finished upload operations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Algorithm</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                                        <span class="n">model</span><span class="o">.</span><span class="n">AlgorithmGroup</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmCategory</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                                        <span class="n">model</span><span class="o">.</span><span class="n">AlgorithmCategory</span><span class="o">.</span><span class="n">rawinput</span> <span class="o">==</span> <span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                                        <span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">fk_launched_in</span> <span class="o">==</span> <span class="n">project_id</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                                        <span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">STATUS_FINISHED</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.is_upload_operation"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.is_upload_operation">[docs]</a>    <span class="k">def</span> <span class="nf">is_upload_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation_gid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns True only if the operation with the given gid is an upload operation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Algorithm</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                                        <span class="n">model</span><span class="o">.</span><span class="n">AlgorithmGroup</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmCategory</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                                        <span class="n">model</span><span class="o">.</span><span class="n">AlgorithmCategory</span><span class="o">.</span><span class="n">rawinput</span> <span class="o">==</span> <span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                                        <span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">gid</span> <span class="o">==</span> <span class="n">operation_gid</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">result</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.count_resulted_datatypes"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.count_resulted_datatypes">[docs]</a>    <span class="k">def</span> <span class="nf">count_resulted_datatypes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the number of resulted datatypes from the specified operation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">DataType</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">fk_from_operation</span><span class="o">=</span><span class="n">operation_id</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.get_operation_process_for_operation"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_operation_process_for_operation">[docs]</a>    <span class="k">def</span> <span class="nf">get_operation_process_for_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the OperationProcessIdentifier for this operation id.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">OperationProcessIdentifier</span>
+                                        <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">OperationProcessIdentifier</span><span class="o">.</span><span class="n">fk_from_operation</span> <span class="o">==</span> <span class="n">operation_id</span>
+                                                 <span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">NoResultFound</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;No operation process found for operation id=</span><span class="si">%s</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">operation_id</span><span class="p">),))</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.get_operations_in_group"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_operations_in_group">[docs]</a>    <span class="k">def</span> <span class="nf">get_operations_in_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation_group_id</span><span class="p">,</span> <span class="n">is_count</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                                <span class="n">only_first_operation</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">only_gids</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve OPERATION entities for a given group.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">only_gids</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">gid</span><span class="p">)</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">fk_operation_group</span><span class="o">=</span><span class="n">operation_group_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_count</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">only_first_operation</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.compute_disk_size_for_started_ops"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.compute_disk_size_for_started_ops">[docs]</a>    <span class="k">def</span> <span class="nf">compute_disk_size_for_started_ops</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get all the disk space that should be reserved for the started operations of this user. &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">expected_hdd_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">result_disk_size</span><span class="p">)</span>
+                                                   <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">fk_launched_by</span> <span class="o">==</span> <span class="n">user_id</span>
+                                                   <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">STATUS_STARTED</span><span class="p">)</span><span class="o">.</span><span class="n">scalar</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="n">expected_hdd_size</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">expected_hdd_size</span> <span class="ow">or</span> <span class="mi">0</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.get_filtered_operations"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_filtered_operations">[docs]</a>    <span class="k">def</span> <span class="nf">get_filtered_operations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proj_id</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">page_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">page_end</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">is_count</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve Operations for a given project, filtered from UI.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="n">func</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+                                       <span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="n">func</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">fk_operation_group</span><span class="p">),</span>
+                                       <span class="n">func</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">fk_from_algo</span><span class="p">),</span> <span class="n">func</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">method_name</span><span class="p">),</span>
+                                       <span class="n">func</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">fk_launched_by</span><span class="p">),</span>
+                                       <span class="n">func</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">create_date</span><span class="p">),</span> <span class="n">func</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">start_date</span><span class="p">),</span>
+                                       <span class="n">func</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">completion_date</span><span class="p">),</span>
+                                       <span class="n">func</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">status</span><span class="p">),</span> <span class="n">func</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">additional_info</span><span class="p">),</span>
+                                       <span class="n">func</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">case_</span><span class="p">([(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">visible</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span> <span class="n">else_</span><span class="o">=</span><span class="mi">0</span><span class="p">)),</span>
+                                       <span class="n">func</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">user_group</span><span class="p">),</span>
+                                       <span class="n">func</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">gid</span><span class="p">)</span>
+                                <span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Algorithm</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmGroup</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmCategory</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">filters</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">filters</span><span class="o">.</span><span class="n">fields</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">filters</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">fk_launched_in</span> <span class="o">==</span> <span class="n">proj_id</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">filter_string</span> <span class="o">=</span> <span class="n">filters</span><span class="o">.</span><span class="n">get_sql_filter_equivalent</span><span class="p">()</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">fk_launched_in</span> <span class="o">==</span> <span class="n">proj_id</span><span class="p">)</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">filter_string</span><span class="p">))</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">case_</span><span class="p">([(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">fk_operation_group</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
+                                           <span class="o">-</span> <span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">fk_operation_group</span><span class="p">)],</span> <span class="n">else_</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+                                   <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">desc</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">id</span><span class="p">)))</span>
+
+            <span class="k">if</span> <span class="n">is_count</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">offset</span><span class="p">(</span><span class="n">page_start</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">page_end</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">is_count</span> <span class="k">else</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.get_results_for_operation"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_results_for_operation">[docs]</a>    <span class="k">def</span> <span class="nf">get_results_for_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation_id</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve DataTypes entities, resulted after executing an operation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">DataType</span>
+                                       <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">fk_from_operation</span><span class="o">=</span><span class="n">operation_id</span>
+                                       <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">and_</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">DataType</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">EXCEPTION_DATATYPE_GROUP</span><span class="p">,</span>
+                                                     <span class="n">model</span><span class="o">.</span><span class="n">DataType</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">EXCEPTION_DATATYPE_SIMULATION</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">filters</span><span class="p">:</span>
+                <span class="n">filter_str</span> <span class="o">=</span> <span class="n">filters</span><span class="o">.</span><span class="n">get_sql_filter_equivalent</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">filter_str</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">filter_str</span><span class="p">))</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">DataType</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.get_operations_for_datatype"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_operations_for_datatype">[docs]</a>    <span class="k">def</span> <span class="nf">get_operations_for_datatype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datatype_gid</span><span class="p">,</span> <span class="n">only_relevant</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">only_in_groups</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns all the operations which uses as an input parameter</span>
+<span class="sd">        the dataType with the specified GID.</span>
+<span class="sd">        If the flag only_relevant is True than only the relevant operations will be returned.</span>
+<span class="sd">    </span>
+<span class="sd">        If only_in_groups is True than this method will return only the operations that are part</span>
+<span class="sd">        from an operation group, otherwise it will return only the operations that are NOT part of an operation group.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                                <span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">like</span><span class="p">(</span><span class="s">&#39;%&#39;</span> <span class="o">+</span> <span class="n">datatype_gid</span> <span class="o">+</span> <span class="s">&#39;%&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                                <span class="n">model</span><span class="o">.</span><span class="n">Algorithm</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmGroup</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmCategory</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                                <span class="n">or_</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmCategory</span><span class="o">.</span><span class="n">display</span> <span class="o">==</span> <span class="bp">False</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">method_name</span> <span class="o">!=</span> <span class="s">&#39;launch&#39;</span><span class="p">))</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_visibility_and_group_filters</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">only_relevant</span><span class="p">,</span> <span class="n">only_in_groups</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.get_operations_for_datatype_group"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_operations_for_datatype_group">[docs]</a>    <span class="k">def</span> <span class="nf">get_operations_for_datatype_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datatype_group_id</span><span class="p">,</span> <span class="n">only_relevant</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">only_in_groups</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns all the operations which uses as an input parameter a datatype from the given DataTypeGroup.</span>
+<span class="sd">        If the flag only_relevant is True than only the relevant operations will be returned.</span>
+<span class="sd">    </span>
+<span class="sd">        If only_in_groups is True than this method will return only the operations that are</span>
+<span class="sd">        part from an operation group, otherwise it will return only the operations that</span>
+<span class="sd">        are NOT part of an operation group.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">model</span><span class="o">.</span><span class="n">DataType</span><span class="o">.</span><span class="n">fk_datatype_group</span> <span class="o">==</span> <span class="n">datatype_group_id</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">like</span><span class="p">(</span><span class="s">&#39;%&#39;</span> <span class="o">+</span> <span class="n">model</span><span class="o">.</span><span class="n">DataType</span><span class="o">.</span><span class="n">gid</span> <span class="o">+</span> <span class="s">&#39;%&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">model</span><span class="o">.</span><span class="n">Algorithm</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmGroup</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmCategory</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">or_</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmCategory</span><span class="o">.</span><span class="n">display</span> <span class="o">==</span> <span class="bp">False</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">method_name</span> <span class="o">!=</span> <span class="s">&#39;launch&#39;</span><span class="p">))</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_visibility_and_group_filters</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">only_relevant</span><span class="p">,</span> <span class="n">only_in_groups</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.get_operations_in_burst"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_operations_in_burst">[docs]</a>    <span class="k">def</span> <span class="nf">get_operations_in_burst</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">burst_id</span><span class="p">,</span> <span class="n">is_count</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list with all the operations generated by a given burst. </span>
+<span class="sd">        These need to be removed when the burst is deleted.</span>
+<span class="sd">        :param: is_count When True, a counter of the filtered operations is returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span>
+                                    <span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">WorkflowStep</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">WorkflowStep</span><span class="o">.</span><span class="n">fk_operation</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">id</span>
+                                    <span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Workflow</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">Workflow</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">WorkflowStep</span><span class="o">.</span><span class="n">fk_workflow</span>
+                                    <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Workflow</span><span class="o">.</span><span class="n">fk_burst</span> <span class="o">==</span> <span class="n">burst_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_count</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_count</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+</div>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_apply_visibility_and_group_filters</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">only_relevant</span><span class="p">,</span> <span class="n">only_in_groups</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Used for applying filters on the given query.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">only_relevant</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">visible</span> <span class="o">==</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">only_in_groups</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">fk_operation_group</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">fk_operation_group</span> <span class="o">==</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">query</span>
+
+
+<div class="viewcode-block" id="OperationDAO.set_operation_and_group_visibility"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.set_operation_and_group_visibility">[docs]</a>    <span class="k">def</span> <span class="nf">set_operation_and_group_visibility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_gid</span><span class="p">,</span> <span class="n">is_visible</span><span class="p">,</span> <span class="n">is_operation_group</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the operation visibility.</span>
+<span class="sd">    </span>
+<span class="sd">        If &#39;is_operation_group&#39; is True than this method will change the visibility for all</span>
+<span class="sd">        the operation from the OperationGroup with the GID field equal to &#39;entity_gid&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_operation_group</span><span class="p">:</span>
+                <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_operationgroup_by_gid</span><span class="p">(</span><span class="n">entity_gid</span><span class="p">)</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">fk_operation_group</span> <span class="o">==</span> <span class="n">group</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">gid</span> <span class="o">==</span> <span class="n">entity_gid</span><span class="p">)</span>
+            <span class="n">query</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&quot;visible&quot;</span><span class="p">:</span> <span class="n">is_visible</span><span class="p">})</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.get_figures_for_operation"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_figures_for_operation">[docs]</a>    <span class="k">def</span> <span class="nf">get_figures_for_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve Figure entities, resulted after executing an operation.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">ResultFigure</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">fk_from_operation</span><span class="o">=</span><span class="n">operation_id</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">figure</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                <span class="n">figure</span><span class="o">.</span><span class="n">project</span>
+                <span class="n">figure</span><span class="o">.</span><span class="n">operation</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.get_operationgroup_by_gid"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_operationgroup_by_gid">[docs]</a>    <span class="k">def</span> <span class="nf">get_operationgroup_by_gid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve by GID&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">OperationGroup</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">gid</span><span class="o">=</span><span class="n">gid</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.get_operationgroup_by_id"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_operationgroup_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_operationgroup_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op_group_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve by ID&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">OperationGroup</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">op_group_id</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+
+    <span class="c">#</span>
+    <span class="c">#CATEGORY RELATED METHODS</span>
+    <span class="c">#</span>
+</div>
+<div class="viewcode-block" id="OperationDAO.get_algorithm_categories"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_algorithm_categories">[docs]</a>    <span class="k">def</span> <span class="nf">get_algorithm_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve all existent categories of Algorithms.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">categories</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmCategory</span><span class="p">)</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span>
+                <span class="n">model</span><span class="o">.</span><span class="n">AlgorithmCategory</span><span class="o">.</span><span class="n">displayname</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="n">categories</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">categories</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.get_uploader_categories"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_uploader_categories">[docs]</a>    <span class="k">def</span> <span class="nf">get_uploader_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve categories with raw_input = true&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmCategory</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">rawinput</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.get_raw_categories"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_raw_categories">[docs]</a>    <span class="k">def</span> <span class="nf">get_raw_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve categories with raw_input = true&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmCategory</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">defaultdatastate</span><span class="o">=</span><span class="s">&#39;RAW_DATA&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.get_visualisers_categories"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_visualisers_categories">[docs]</a>    <span class="k">def</span> <span class="nf">get_visualisers_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve categories with display = true&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmCategory</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">display</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.get_launchable_categories"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_launchable_categories">[docs]</a>    <span class="k">def</span> <span class="nf">get_launchable_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elimin_viewers</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve categories with display = true&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmCategory</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">launchable</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">elimin_viewers</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">display</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.get_category_by_id"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_category_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_category_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">categ_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve category with given id&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmCategory</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">categ_id</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.filter_category"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.filter_category">[docs]</a>    <span class="k">def</span> <span class="nf">filter_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">displayname</span><span class="p">,</span> <span class="n">rawinput</span><span class="p">,</span> <span class="n">display</span><span class="p">,</span> <span class="n">launchable</span><span class="p">,</span> <span class="n">order_nr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve category with given id&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmCategory</span>
+                                        <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">displayname</span><span class="o">=</span><span class="n">displayname</span>
+                                        <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">rawinput</span><span class="o">=</span><span class="n">rawinput</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">display</span><span class="o">=</span><span class="n">display</span>
+                                        <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">launchable</span><span class="o">=</span><span class="n">launchable</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">order_nr</span><span class="o">=</span><span class="n">order_nr</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="n">NoResultFound</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+
+    <span class="c">#</span>
+    <span class="c">#GROUP RELATED METHODS</span>
+    <span class="c">#</span>
+</div>
+<div class="viewcode-block" id="OperationDAO.get_algo_group_by_id"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_algo_group_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_algo_group_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve GROUP entity by Identifier.&quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmGroup</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">group_id</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">group_category</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.find_group"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.find_group">[docs]</a>    <span class="k">def</span> <span class="nf">find_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">init_parameter</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve Group entity, by module and class name from DB.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">init_parameter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmGroup</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">module</span><span class="p">,</span>
+                                                                            <span class="n">classname</span><span class="o">=</span><span class="n">class_name</span><span class="p">,</span>
+                                                                            <span class="n">init_parameter</span><span class="o">=</span><span class="n">init_parameter</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmGroup</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">module</span><span class="p">,</span> <span class="n">classname</span><span class="o">=</span><span class="n">class_name</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.get_apliable_algo_groups"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_apliable_algo_groups">[docs]</a>    <span class="k">def</span> <span class="nf">get_apliable_algo_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datatype</span><span class="p">,</span> <span class="n">launch_categ</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve a list of algorithms in a given category with a given dataType</span>
+<span class="sd">        as required input.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">groups_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmGroup</span>
+                                             <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmGroup</span><span class="o">.</span><span class="n">fk_category</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">launch_categ</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="n">groups_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">one_group</span> <span class="ow">in</span> <span class="n">groups_list</span><span class="p">:</span>
+            <span class="n">algos_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">algo</span> <span class="k">for</span> <span class="n">algo</span> <span class="ow">in</span> <span class="n">one_group</span><span class="o">.</span><span class="n">algorithms</span> <span class="k">if</span> <span class="n">algo</span><span class="o">.</span><span class="n">required_datatype</span> <span class="o">==</span> <span class="n">datatype</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">algos_list</span><span class="p">:</span>
+                <span class="n">one_group</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="n">algos_list</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">one_group</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.get_groups_by_categories"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_groups_by_categories">[docs]</a>    <span class="k">def</span> <span class="nf">get_groups_by_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">categories</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve a list of algorithm groups in a given category.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">algos_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmGroup</span>
+                                            <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmGroup</span><span class="o">.</span><span class="n">fk_category</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span>
+                                                     <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AlgorithmGroup</span><span class="o">.</span><span class="n">displayname</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="n">algos_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">algos_list</span>
+
+
+    <span class="c">#</span>
+    <span class="c"># ALGORITHM RELATED METHODS</span>
+    <span class="c">#</span>
+</div>
+<div class="viewcode-block" id="OperationDAO.get_algorithm_by_id"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_algorithm_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_algorithm_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">algorithm_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve ALGORITHM entity by Identifier.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Algorithm</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">algorithm_id</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">algo_group</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">algo_group</span><span class="o">.</span><span class="n">group_category</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.get_algorithm_by_group"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_algorithm_by_group">[docs]</a>    <span class="k">def</span> <span class="nf">get_algorithm_by_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_id</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve an algorithm for a given group_id and an identifier&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ident</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+                <span class="n">algo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Algorithm</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">fk_algo_group</span><span class="o">=</span><span class="n">group_id</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">algo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Algorithm</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">fk_algo_group</span><span class="o">=</span><span class="n">group_id</span>
+                                                                     <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">identifier</span><span class="o">=</span><span class="n">ident</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="n">algo</span><span class="o">.</span><span class="n">algo_group</span>
+            <span class="n">algo</span><span class="o">.</span><span class="n">algo_group</span><span class="o">.</span><span class="n">group_category</span>
+            <span class="k">return</span> <span class="n">algo</span>
+        <span class="k">except</span> <span class="n">NoResultFound</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+
+    <span class="c">#</span>
+    <span class="c"># RESULT FIGURE RELATED CODE</span>
+    <span class="c">#</span>
+</div>
+<div class="viewcode-block" id="OperationDAO.load_figure"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.load_figure">[docs]</a>    <span class="k">def</span> <span class="nf">load_figure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Load a figure with all it&#39;s lazy load fields to have all required </span>
+<span class="sd">        info available. &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">figure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">ResultFigure</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">figure_id</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="n">figure</span><span class="o">.</span><span class="n">project</span>
+            <span class="n">figure</span><span class="o">.</span><span class="n">operation</span>
+            <span class="k">return</span> <span class="n">figure</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+</div>
+<div class="viewcode-block" id="OperationDAO.get_previews"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.operation_dao.OperationDAO.get_previews">[docs]</a>    <span class="k">def</span> <span class="nf">get_previews</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">selected_session_name</span><span class="o">=</span><span class="s">&#39;all_sessions&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method returns a tuple of 2 elements. The first element represents a dictionary</span>
+<span class="sd">        of form {&#39;$session_name&#39;: [list_of_figures]}. This dictionary contains data only for the selected self.session.</span>
+<span class="sd">        If the selected session is &#39;all_sessions&#39; than it will contain data for all the sessions.</span>
+<span class="sd">        The second element of the returned tuple is a dictionary of form</span>
+<span class="sd">        {&#39;$session_name&#39;: $no_of_figures_in_this_session, ...}.</span>
+<span class="sd">        This dictionary contains information about all the sessions.</span>
+<span class="sd">    </span>
+<span class="sd">        selected_session_name - represents the name of the session for which you</span>
+<span class="sd">                                want to obtain the stored figures.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">previews_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_previews_info</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">selected_session_name</span> <span class="o">==</span> <span class="s">&#39;all_sessions&#39;</span><span class="p">:</span>
+                <span class="n">session_names</span> <span class="o">=</span> <span class="n">previews_info</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                <span class="n">session_names</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">session_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">selected_session_name</span><span class="p">]</span>
+
+            <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">session_name</span> <span class="ow">in</span> <span class="n">session_names</span><span class="p">:</span>
+                <span class="n">figures_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">ResultFigure</span>
+                                                    <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">fk_for_user</span><span class="o">=</span><span class="n">user_id</span>
+                                                    <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">fk_in_project</span><span class="o">=</span><span class="n">project_id</span>
+                                                    <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">session_name</span><span class="o">=</span><span class="n">session_name</span>
+                                                    <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">ResultFigure</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+                <span class="c"># Force loading of project and operation - needed to compute image path</span>
+                <span class="k">for</span> <span class="n">figure</span> <span class="ow">in</span> <span class="n">figures_list</span><span class="p">:</span>
+                    <span class="n">figure</span><span class="o">.</span><span class="n">project</span>
+                    <span class="n">figure</span><span class="o">.</span><span class="n">operation</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">session_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">figures_list</span>
+            <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">previews_info</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{}</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">_get_previews_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dictionary of form: {$session_name: $no_of_images_in_this_session, ...}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">session_items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">ResultFigure</span><span class="o">.</span><span class="n">session_name</span><span class="p">,</span>
+                                               <span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">ResultFigure</span><span class="o">.</span><span class="n">session_name</span><span class="p">)</span>
+                                               <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">fk_for_user</span><span class="o">=</span><span class="n">user_id</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">fk_in_project</span><span class="o">=</span><span class="n">project_id</span>
+                                               <span class="p">)</span><span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">ResultFigure</span><span class="o">.</span><span class="n">session_name</span>
+                                               <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">ResultFigure</span><span class="o">.</span><span class="n">session_name</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">session_items</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{}</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../storage.html" >tvb.core.entities.storage</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

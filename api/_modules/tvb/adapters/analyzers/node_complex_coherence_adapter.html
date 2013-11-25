@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.adapters.analyzers.node_complex_coherence_adapter &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.adapters.analyzers.node_complex_coherence_adapter &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../index.html" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -70,6 +69,15 @@
 <span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
 <span class="c">#</span>
 <span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Adapter that uses the traits module to generate interfaces for FFT Analyzer.</span>
@@ -96,8 +104,8 @@
     <span class="sd">&quot;&quot;&quot; TVB adapter for calling the NodeComplexCoherence algorithm. &quot;&quot;&quot;</span>
     
     <span class="n">_ui_name</span> <span class="o">=</span> <span class="s">&quot;Complex Coherence of Nodes&quot;</span>
-    <span class="n">_ui_description</span> <span class="o">=</span> <span class="s">&quot;Compute the node complex coherence for a TimeSeries input DataType.&quot;</span>
-    <span class="n">_ui_subsection</span> <span class="o">=</span> <span class="s">&quot;coherence&quot;</span>
+    <span class="n">_ui_description</span> <span class="o">=</span> <span class="s">&quot;Compute the node complex (imaginary) coherence for a TimeSeries input DataType.&quot;</span>
+    <span class="n">_ui_subsection</span> <span class="o">=</span> <span class="s">&quot;complexcoherence&quot;</span>
     
     
 <div class="viewcode-block" id="NodeComplexCoherenceAdapter.get_input_tree"><a class="viewcode-back" href="../../../../tvb.adapters.analyzers.html#tvb.adapters.analyzers.node_complex_coherence_adapter.NodeComplexCoherenceAdapter.get_input_tree">[docs]</a>    <span class="k">def</span> <span class="nf">get_input_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -111,11 +119,8 @@
         <span class="n">tree</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">interface</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">INTERFACE_ATTRIBUTES</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">tree</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">node</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;time_series&#39;</span><span class="p">:</span>
-                <span class="n">node</span><span class="p">[</span><span class="s">&#39;conditions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterChain</span><span class="p">(</span>
-                                     <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">FilterChain</span><span class="o">.</span><span class="n">datatype</span> <span class="o">+</span> <span class="s">&#39;._nr_dimensions&#39;</span><span class="p">],</span> 
-                                     <span class="n">operations</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;==&quot;</span><span class="p">],</span> 
-                                     <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">])</span>
-                                            
+                <span class="n">node</span><span class="p">[</span><span class="s">&#39;conditions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterChain</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="n">FilterChain</span><span class="o">.</span><span class="n">datatype</span> <span class="o">+</span> <span class="s">&#39;._nr_dimensions&#39;</span><span class="p">],</span>
+                                                 <span class="n">operations</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;==&quot;</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">tree</span>
     
     </div>
@@ -146,18 +151,17 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">used_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">read_data_shape</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">result_size</span><span class="p">(</span><span class="n">used_shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">max_freq</span><span class="p">,</span>
-                                                 <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">epoch_length</span><span class="p">,</span>
-                                                 <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">segment_length</span><span class="p">,</span>
-                                                 <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">segment_shift</span><span class="p">,</span>
-                                                 <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">sample_period</span><span class="p">,</span>
-                                                 <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">zeropad</span><span class="p">,</span>
-                                                 <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">average_segments</span><span class="p">)</span> <span class="o">*</span> <span class="n">TVBSettings</span><span class="o">.</span><span class="n">MAGIC_NUMBER</span> <span class="o">/</span> <span class="mi">8</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">10</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">epoch_length</span><span class="p">,</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">segment_length</span><span class="p">,</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">segment_shift</span><span class="p">,</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">sample_period</span><span class="p">,</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">zeropad</span><span class="p">,</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">average_segments</span><span class="p">)</span> <span class="o">*</span> <span class="n">TVBSettings</span><span class="o">.</span><span class="n">MAGIC_NUMBER</span> <span class="o">/</span> <span class="mi">8</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">10</span>
         
         </div>
 <div class="viewcode-block" id="NodeComplexCoherenceAdapter.configure"><a class="viewcode-back" href="../../../../tvb.adapters.analyzers.html#tvb.adapters.analyzers.node_complex_coherence_adapter.NodeComplexCoherenceAdapter.configure">[docs]</a>    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_series</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Do any configuration needed before launching and create an instance of</span>
-<span class="sd">        the algorithm.</span>
+<span class="sd">        Do any configuration needed before launching and create an instance of the algorithm.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">read_data_shape</span><span class="p">()</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;time_series shape is </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">shape</span><span class="p">)))</span>
@@ -170,12 +174,14 @@
 <div class="viewcode-block" id="NodeComplexCoherenceAdapter.launch"><a class="viewcode-back" href="../../../../tvb.adapters.analyzers.html#tvb.adapters.analyzers.node_complex_coherence_adapter.NodeComplexCoherenceAdapter.launch">[docs]</a>    <span class="k">def</span> <span class="nf">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_series</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Launch algorithm and build results.</span>
+
+<span class="sd">        :returns: the `ComplexCoherenceSpectrum` built with the given time-series</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">read_data_shape</span><span class="p">()</span>
         
         <span class="c">##------- Prepare a ComplexCoherenceSpectrum object for result -------##</span>
-        <span class="n">spectra</span> <span class="o">=</span> <span class="n">ComplexCoherenceSpectrum</span><span class="p">(</span><span class="n">source</span> <span class="o">=</span> <span class="n">time_series</span><span class="p">,</span>
-                                           <span class="n">storage_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span><span class="p">)</span>
+        <span class="n">spectra</span> <span class="o">=</span> <span class="n">ComplexCoherenceSpectrum</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">time_series</span><span class="p">,</span>
+                                           <span class="n">storage_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span><span class="p">)</span>
         
         <span class="c">##------------------- NOTE: Assumes 4D TimeSeries. -------------------##</span>
         <span class="n">node_slice</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">slice</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">slice</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="nb">slice</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">])]</span>
@@ -210,6 +216,9 @@
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../../search.html" method="get">
@@ -236,13 +245,13 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

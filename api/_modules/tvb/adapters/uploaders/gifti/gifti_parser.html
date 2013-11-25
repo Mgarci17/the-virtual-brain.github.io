@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.adapters.uploaders.gifti.gifti_parser &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.adapters.uploaders.gifti.gifti_parser &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../../index.html" />
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../index.html" />
     <link rel="up" title="Module code" href="../../../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -49,182 +48,194 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for tvb.adapters.uploaders.gifti.gifti_parser</h1><pre>
-# -*- coding: utf-8 -*-
-#
-#
-# TheVirtualBrain-Framework Package. This package holds all Data Management, and 
-# Web-UI helpful to run brain-simulations. To use it, you also need do download
-# TheVirtualBrain-Scientific Package (for simulators). See content of the
-# documentation-folder for more details. See also http://www.thevirtualbrain.org
-#
-# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
-#
-# This program is free software; you can redistribute it and/or modify it under 
-# the terms of the GNU General Public License version 2 as published by the Free
-# Software Foundation. This program is distributed in the hope that it will be
-# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
-# License for more details. You should have received a copy of the GNU General 
-# Public License along with this program; if not, you can download it here
-# http://www.gnu.org/licenses/old-licenses/gpl-2.0
-#
-#
-"""
-.. moduleauthor:: Calin Pavel &lt;calin.pavel@codemart.ro&gt;
-"""
-import os
-from nibabel.nifti1 import intent_codes, data_type_codes
-import nibabel.gifti.giftiio as giftiio
-from tvb.core.adapters.exceptions import ParseException
-from tvb.basic.logger.builder import get_logger
-from tvb.datatypes.surfaces import CorticalSurface, SkinAir
-from tvb.datatypes.time_series import TimeSeriesSurface
+  <h1>Source code for tvb.adapters.uploaders.gifti.gifti_parser</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Calin Pavel &lt;calin.pavel@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">nibabel.nifti1</span> <span class="kn">import</span> <span class="n">intent_codes</span><span class="p">,</span> <span class="n">data_type_codes</span>
+<span class="kn">import</span> <span class="nn">nibabel.gifti.giftiio</span> <span class="kn">as</span> <span class="nn">giftiio</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.exceptions</span> <span class="kn">import</span> <span class="n">ParseException</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">tvb.datatypes.surfaces</span> <span class="kn">import</span> <span class="n">CorticalSurface</span><span class="p">,</span> <span class="n">SkinAir</span>
+<span class="kn">from</span> <span class="nn">tvb.datatypes.time_series</span> <span class="kn">import</span> <span class="n">TimeSeriesSurface</span>
 
 
 
-<div class="viewcode-block" id="GIFTIParser"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti_parser.GIFTIParser">[docs]</a>class GIFTIParser():
-    """
-        This class reads content of a GIFTI file and builds / returns a Surface instance 
-        filled with details.
-    """
-    UNIQUE_ID_ATTR = "UniqueID"
-    SUBJECT_ATTR = "SubjectID"
-    ASP_ATTR = "AnatomicalStructurePrimary"
-    DATE_ATTR = "Date"
-    DESCRIPTION_ATTR = "Description"
-    NAME_ATTR = "Name"
-    TIME_STEP_ATTR = "TimeStep"
+<div class="viewcode-block" id="GIFTIParser"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti_parser.GIFTIParser">[docs]</a><span class="k">class</span> <span class="nc">GIFTIParser</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This class reads content of a GIFTI file and builds / returns a Surface instance </span>
+<span class="sd">        filled with details.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">UNIQUE_ID_ATTR</span> <span class="o">=</span> <span class="s">&quot;UniqueID&quot;</span>
+    <span class="n">SUBJECT_ATTR</span> <span class="o">=</span> <span class="s">&quot;SubjectID&quot;</span>
+    <span class="n">ASP_ATTR</span> <span class="o">=</span> <span class="s">&quot;AnatomicalStructurePrimary&quot;</span>
+    <span class="n">DATE_ATTR</span> <span class="o">=</span> <span class="s">&quot;Date&quot;</span>
+    <span class="n">DESCRIPTION_ATTR</span> <span class="o">=</span> <span class="s">&quot;Description&quot;</span>
+    <span class="n">NAME_ATTR</span> <span class="o">=</span> <span class="s">&quot;Name&quot;</span>
+    <span class="n">TIME_STEP_ATTR</span> <span class="o">=</span> <span class="s">&quot;TimeStep&quot;</span>
     
-    def __init__(self, storage_path, operation_id):
-        self.logger = get_logger(__name__)
-        self.storage_path = storage_path
-        self.operation_id = operation_id
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage_path</span><span class="p">,</span> <span class="n">operation_id</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span> <span class="o">=</span> <span class="n">storage_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operation_id</span> <span class="o">=</span> <span class="n">operation_id</span>
         
-<div class="viewcode-block" id="GIFTIParser.parse"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti_parser.GIFTIParser.parse">[docs]</a>    def parse(self, data_file):
-        """
-            Parse NIFTI file and returns TimeSeries for it. 
-        """
-        self.logger.debug("Start to parse GIFTI file: %s"%data_file)
-        if data_file is None:
-            raise ParseException ("Please select GIFTI file which contains data to import")
-        if not os.path.exists(data_file):
-            raise ParseException ("Provided file %s does not exists"%data_file)
-        try:
-            gifti_image = giftiio.read(data_file)
-            self.logger.debug("File parsed successfully")
-        except Exception, excep:
-            self.logger.exception(excep)
-            msg = "File: %s does not have a valid GIFTI format." % data_file
-            raise ParseException(msg)
+<div class="viewcode-block" id="GIFTIParser.parse"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti_parser.GIFTIParser.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_file</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Parse NIFTI file and returns TimeSeries for it. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Start to parse GIFTI file: </span><span class="si">%s</span><span class="s">&quot;</span><span class="o">%</span><span class="n">data_file</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data_file</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ParseException</span> <span class="p">(</span><span class="s">&quot;Please select GIFTI file which contains data to import&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">data_file</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ParseException</span> <span class="p">(</span><span class="s">&quot;Provided file </span><span class="si">%s</span><span class="s"> does not exists&quot;</span><span class="o">%</span><span class="n">data_file</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">gifti_image</span> <span class="o">=</span> <span class="n">giftiio</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data_file</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;File parsed successfully&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;File: </span><span class="si">%s</span><span class="s"> does not have a valid GIFTI format.&quot;</span> <span class="o">%</span> <span class="n">data_file</span>
+            <span class="k">raise</span> <span class="n">ParseException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         
         
-        # Now try to determine what data is stored in GIFTI file
-        data_arrays = gifti_image.darrays
+        <span class="c"># Now try to determine what data is stored in GIFTI file</span>
+        <span class="n">data_arrays</span> <span class="o">=</span> <span class="n">gifti_image</span><span class="o">.</span><span class="n">darrays</span>
         
-        self.logger.debug("Determine data type stored in GIFTI file")
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Determine data type stored in GIFTI file&quot;</span><span class="p">)</span>
         
-        # First check if it's a surface
-        if (len(data_arrays) == 2 
-            and intent_codes.code["NIFTI_INTENT_POINTSET"] == data_arrays[0].intent
-            and data_type_codes.code["NIFTI_TYPE_FLOAT32"] == data_arrays[0].datatype
-            and intent_codes.code["NIFTI_INTENT_TRIANGLE"] == data_arrays[1].intent
-            and data_type_codes.code["NIFTI_TYPE_INT32"] == data_arrays[1].datatype):
+        <span class="c"># First check if it&#39;s a surface</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_arrays</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> 
+            <span class="ow">and</span> <span class="n">intent_codes</span><span class="o">.</span><span class="n">code</span><span class="p">[</span><span class="s">&quot;NIFTI_INTENT_POINTSET&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">data_arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">intent</span>
+            <span class="ow">and</span> <span class="n">data_type_codes</span><span class="o">.</span><span class="n">code</span><span class="p">[</span><span class="s">&quot;NIFTI_TYPE_FLOAT32&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">data_arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">datatype</span>
+            <span class="ow">and</span> <span class="n">intent_codes</span><span class="o">.</span><span class="n">code</span><span class="p">[</span><span class="s">&quot;NIFTI_INTENT_TRIANGLE&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">data_arrays</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">intent</span>
+            <span class="ow">and</span> <span class="n">data_type_codes</span><span class="o">.</span><span class="n">code</span><span class="p">[</span><span class="s">&quot;NIFTI_TYPE_INT32&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">data_arrays</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">datatype</span><span class="p">):</span>
             
-            # Now try to determine what type of surface we have
-            data_array_meta = data_arrays[0].meta
-            surface = None
-            gid = None
-            subject = None
-            title = None
+            <span class="c"># Now try to determine what type of surface we have</span>
+            <span class="n">data_array_meta</span> <span class="o">=</span> <span class="n">data_arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">meta</span>
+            <span class="n">surface</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">gid</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">subject</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="bp">None</span>
             
-            if (data_array_meta is not None and data_array_meta.data is not None 
-                   and len(data_array_meta.data) &gt; 0):
-                anatomical_structure_primary = None
+            <span class="k">if</span> <span class="p">(</span><span class="n">data_array_meta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">data_array_meta</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> 
+                   <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_array_meta</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">anatomical_structure_primary</span> <span class="o">=</span> <span class="bp">None</span>
                 
-                for meta_pair in data_array_meta.data:
-                    if meta_pair.name == self.ASP_ATTR:
-                        anatomical_structure_primary = meta_pair.value
-                    elif meta_pair.name == self.UNIQUE_ID_ATTR:
-                        gid = meta_pair.value.replace("{", "").replace("}", "")
-                    elif meta_pair.name == self.SUBJECT_ATTR:
-                        subject = meta_pair.value
-                    elif meta_pair.name == self.NAME_ATTR:
-                        title = meta_pair.value
+                <span class="k">for</span> <span class="n">meta_pair</span> <span class="ow">in</span> <span class="n">data_array_meta</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">meta_pair</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">ASP_ATTR</span><span class="p">:</span>
+                        <span class="n">anatomical_structure_primary</span> <span class="o">=</span> <span class="n">meta_pair</span><span class="o">.</span><span class="n">value</span>
+                    <span class="k">elif</span> <span class="n">meta_pair</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">UNIQUE_ID_ATTR</span><span class="p">:</span>
+                        <span class="n">gid</span> <span class="o">=</span> <span class="n">meta_pair</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;{&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;}&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">meta_pair</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">SUBJECT_ATTR</span><span class="p">:</span>
+                        <span class="n">subject</span> <span class="o">=</span> <span class="n">meta_pair</span><span class="o">.</span><span class="n">value</span>
+                    <span class="k">elif</span> <span class="n">meta_pair</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">NAME_ATTR</span><span class="p">:</span>
+                        <span class="n">title</span> <span class="o">=</span> <span class="n">meta_pair</span><span class="o">.</span><span class="n">value</span>
                         
-                # Based on info found in meta create correct surface type
-                if anatomical_structure_primary == "Head":
-                    surface = SkinAir()
-                elif anatomical_structure_primary.startswith("Cortex"):
-                    surface = CorticalSurface()
+                <span class="c"># Based on info found in meta create correct surface type</span>
+                <span class="k">if</span> <span class="n">anatomical_structure_primary</span> <span class="o">==</span> <span class="s">&quot;Head&quot;</span><span class="p">:</span>
+                    <span class="n">surface</span> <span class="o">=</span> <span class="n">SkinAir</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="n">anatomical_structure_primary</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;Cortex&quot;</span><span class="p">):</span>
+                    <span class="n">surface</span> <span class="o">=</span> <span class="n">CorticalSurface</span><span class="p">()</span>
                 
             
-            if surface is None:
-                raise ParseException("Could not determine type of the surface")
+            <span class="k">if</span> <span class="n">surface</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ParseException</span><span class="p">(</span><span class="s">&quot;Could not determine type of the surface&quot;</span><span class="p">)</span>
             
-            # Now fill TVB data type with info
-            if gid is not None:
-                surface.gid = gid
+            <span class="c"># Now fill TVB data type with info</span>
+            <span class="k">if</span> <span class="n">gid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">surface</span><span class="o">.</span><span class="n">gid</span> <span class="o">=</span> <span class="n">gid</span>
             
-            surface.storage_path = self.storage_path
-            surface.set_operation_id(self.operation_id)
+            <span class="n">surface</span><span class="o">.</span><span class="n">storage_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span>
+            <span class="n">surface</span><span class="o">.</span><span class="n">set_operation_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">operation_id</span><span class="p">)</span>
             
-            surface.zero_based_triangles = True
-            surface.vertices = data_arrays[0].data
-            surface.triangles = data_arrays[1].data
+            <span class="n">surface</span><span class="o">.</span><span class="n">zero_based_triangles</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">surface</span><span class="o">.</span><span class="n">vertices</span> <span class="o">=</span> <span class="n">data_arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">surface</span><span class="o">.</span><span class="n">triangles</span> <span class="o">=</span> <span class="n">data_arrays</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
             
-            if subject is not None:
-                surface.subject = subject
-            if title is not None:
-                surface.title = title
+            <span class="k">if</span> <span class="n">subject</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">surface</span><span class="o">.</span><span class="n">subject</span> <span class="o">=</span> <span class="n">subject</span>
+            <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">surface</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
             
-            return surface
+            <span class="k">return</span> <span class="n">surface</span>
         
-        elif(len(data_arrays) &gt; 1 
-            and intent_codes.code["NIFTI_INTENT_TIME_SERIES"] == data_arrays[0].intent
-            and data_type_codes.code["NIFTI_TYPE_FLOAT32"] == data_arrays[0].datatype):
+        <span class="k">elif</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_arrays</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> 
+            <span class="ow">and</span> <span class="n">intent_codes</span><span class="o">.</span><span class="n">code</span><span class="p">[</span><span class="s">&quot;NIFTI_INTENT_TIME_SERIES&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">data_arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">intent</span>
+            <span class="ow">and</span> <span class="n">data_type_codes</span><span class="o">.</span><span class="n">code</span><span class="p">[</span><span class="s">&quot;NIFTI_TYPE_FLOAT32&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">data_arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">datatype</span><span class="p">):</span>
             
-            # Create TVB time series to be filled
-            time_series = TimeSeriesSurface()
-            time_series.storage_path = self.storage_path
-            time_series.set_operation_id(self.operation_id)
-            time_series.start_time = 0.0
-            time_series.sample_period = 1.0
+            <span class="c"># Create TVB time series to be filled</span>
+            <span class="n">time_series</span> <span class="o">=</span> <span class="n">TimeSeriesSurface</span><span class="p">()</span>
+            <span class="n">time_series</span><span class="o">.</span><span class="n">storage_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span>
+            <span class="n">time_series</span><span class="o">.</span><span class="n">set_operation_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">operation_id</span><span class="p">)</span>
+            <span class="n">time_series</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">time_series</span><span class="o">.</span><span class="n">sample_period</span> <span class="o">=</span> <span class="mf">1.0</span>
 
-            # First process first data_array and extract important data from it's metadata            
-            data_array_meta = data_arrays[0].meta
-            if (data_array_meta is not None and data_array_meta.data is not None 
-                   and len(data_array_meta.data) &gt; 0):
-                for meta_pair in data_array_meta.data:
-                    if meta_pair.name == self.UNIQUE_ID_ATTR:
-                        gid = meta_pair.value.replace("{", "").replace("}", "")
-                        if gid is not None and len(gid) &gt; 0:
-                            time_series.gid = gid
-                    elif meta_pair.name == self.SUBJECT_ATTR:
-                        time_series.subject = meta_pair.value
-                    elif meta_pair.name == self.NAME_ATTR:
-                        time_series.title = meta_pair.value
-                    elif meta_pair.name == self.TIME_STEP_ATTR:
-                        time_series.sample_period = float(meta_pair.value)
+            <span class="c"># First process first data_array and extract important data from it&#39;s metadata            </span>
+            <span class="n">data_array_meta</span> <span class="o">=</span> <span class="n">data_arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">meta</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">data_array_meta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">data_array_meta</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> 
+                   <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_array_meta</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">meta_pair</span> <span class="ow">in</span> <span class="n">data_array_meta</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">meta_pair</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">UNIQUE_ID_ATTR</span><span class="p">:</span>
+                        <span class="n">gid</span> <span class="o">=</span> <span class="n">meta_pair</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;{&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;}&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">gid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">time_series</span><span class="o">.</span><span class="n">gid</span> <span class="o">=</span> <span class="n">gid</span>
+                    <span class="k">elif</span> <span class="n">meta_pair</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">SUBJECT_ATTR</span><span class="p">:</span>
+                        <span class="n">time_series</span><span class="o">.</span><span class="n">subject</span> <span class="o">=</span> <span class="n">meta_pair</span><span class="o">.</span><span class="n">value</span>
+                    <span class="k">elif</span> <span class="n">meta_pair</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">NAME_ATTR</span><span class="p">:</span>
+                        <span class="n">time_series</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">meta_pair</span><span class="o">.</span><span class="n">value</span>
+                    <span class="k">elif</span> <span class="n">meta_pair</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">TIME_STEP_ATTR</span><span class="p">:</span>
+                        <span class="n">time_series</span><span class="o">.</span><span class="n">sample_period</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">meta_pair</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
             
             
-            # Now read time series data
-            for i in range(len(data_arrays)):
-                data_array = data_arrays[i]
-                time_series.write_data_slice([data_array.data])
+            <span class="c"># Now read time series data</span>
+            <span class="k">for</span> <span class="n">data_array</span> <span class="ow">in</span> <span class="n">data_arrays</span><span class="p">:</span>
+                <span class="n">time_series</span><span class="o">.</span><span class="n">write_data_slice</span><span class="p">([</span><span class="n">data_array</span><span class="o">.</span><span class="n">data</span><span class="p">])</span>
             
-            # Close file after writing data
-            time_series.close_file()
+            <span class="c"># Close file after writing data</span>
+            <span class="n">time_series</span><span class="o">.</span><span class="n">close_file</span><span class="p">()</span>
             
-            return time_series
-        else:
-            raise ParseException("Could not map data from GIFTI file to a TVB data type")</pre></div></div>
+            <span class="k">return</span> <span class="n">time_series</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ParseException</span><span class="p">(</span><span class="s">&quot;Could not map data from GIFTI file to a TVB data type&quot;</span><span class="p">)</span></div></div>
+</pre></div>
 
           </div>
         </div>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../../../search.html" method="get">
@@ -251,13 +262,13 @@ from tvb.datatypes.time_series import TimeSeriesSurface
         <li class="right" >
           <a href="../../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

@@ -1,0 +1,553 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.services.import_service &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.services.import_service</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Calin Pavel &lt;calin.pavel@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">tvb.config</span> <span class="kn">import</span> <span class="n">ADAPTERS</span>
+<span class="kn">from</span> <span class="nn">cgi</span> <span class="kn">import</span> <span class="n">FieldStorage</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">cherrypy._cpreqbody</span> <span class="kn">import</span> <span class="n">Part</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm.attributes</span> <span class="kn">import</span> <span class="n">manager_of_class</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.exc</span> <span class="kn">import</span> <span class="n">IntegrityError</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span> <span class="k">as</span> <span class="n">cfg</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities</span> <span class="kn">import</span> <span class="n">model</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.storage</span> <span class="kn">import</span> <span class="n">dao</span><span class="p">,</span> <span class="n">transactional</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.model.model_burst</span> <span class="kn">import</span> <span class="n">BURST_INFO_FILE</span><span class="p">,</span> <span class="n">BURSTS_DICT_KEY</span><span class="p">,</span> <span class="n">DT_BURST_MAP</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.exceptions</span> <span class="kn">import</span> <span class="n">ProjectImportException</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.project_service</span> <span class="kn">import</span> <span class="n">ProjectService</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.file.xml_metadata_handlers</span> <span class="kn">import</span> <span class="n">XMLReader</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.file.files_helper</span> <span class="kn">import</span> <span class="n">FilesHelper</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.file.hdf5_storage_manager</span> <span class="kn">import</span> <span class="n">HDF5StorageManager</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.file.files_update_manager</span> <span class="kn">import</span> <span class="n">FilesUpdateManager</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.file.exceptions</span> <span class="kn">import</span> <span class="n">FileStructureException</span><span class="p">,</span> <span class="n">MissingDataSetException</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.transient.burst_export_entities</span> <span class="kn">import</span> <span class="n">BurstInformation</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.transient.structure_entities</span> <span class="kn">import</span> <span class="n">DataTypeMetaData</span>
+
+
+
+<div class="viewcode-block" id="ImportService"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.import_service.ImportService">[docs]</a><span class="k">class</span> <span class="nc">ImportService</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Service for importing TVB entities into system.</span>
+<span class="sd">    It supports TVB exported H5 files as input, but it should also handle H5 files </span>
+<span class="sd">    generated outside of TVB, as long as they respect the same structure.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">files_helper</span> <span class="o">=</span> <span class="n">FilesHelper</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">created_projects</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+    <span class="nd">@transactional</span>
+<div class="viewcode-block" id="ImportService.import_project_structure"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.import_service.ImportService.import_project_structure">[docs]</a>    <span class="k">def</span> <span class="nf">import_project_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uploaded</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute import operations:</span>
+<span class="sd">         </span>
+<span class="sd">        1. check if ZIP or folder </span>
+<span class="sd">        2. find all project nodes</span>
+<span class="sd">        3. for each project node:</span>
+<span class="sd">            - create project</span>
+<span class="sd">            - create all operations</span>
+<span class="sd">            - import all images</span>
+<span class="sd">            - create all dataTypes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">created_projects</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c"># Now we compute the name of the file where to store uploaded project</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">date_str</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%d</span><span class="s">-</span><span class="si">%d</span><span class="s">-</span><span class="si">%d</span><span class="s">_</span><span class="si">%d</span><span class="s">-</span><span class="si">%d</span><span class="s">-</span><span class="si">%d</span><span class="s">_</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span>
+                                             <span class="n">now</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">microsecond</span><span class="p">)</span>
+        <span class="n">uq_name</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">-ImportProject&quot;</span> <span class="o">%</span> <span class="n">date_str</span>
+        <span class="n">uq_file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">TVB_TEMP_FOLDER</span><span class="p">,</span> <span class="n">uq_name</span> <span class="o">+</span> <span class="s">&quot;.zip&quot;</span><span class="p">)</span>
+
+        <span class="n">temp_folder</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">uploaded</span><span class="p">,</span> <span class="n">FieldStorage</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">uploaded</span><span class="p">,</span> <span class="n">Part</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">uploaded</span><span class="o">.</span><span class="n">file</span><span class="p">:</span>
+                    <span class="n">file_obj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">uq_file_name</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">)</span>
+                    <span class="n">file_obj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">uploaded</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+                    <span class="n">file_obj</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">ProjectImportException</span><span class="p">(</span><span class="s">&quot;Please select the archive which contains the project structure.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">uploaded</span><span class="p">,</span> <span class="n">uq_file_name</span><span class="p">)</span>
+
+            <span class="c"># Now compute the name of the folder where to explode uploaded ZIP file</span>
+            <span class="n">temp_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">TVB_TEMP_FOLDER</span><span class="p">,</span> <span class="n">uq_name</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">files_helper</span><span class="o">.</span><span class="n">unpack_zip</span><span class="p">(</span><span class="n">uq_file_name</span><span class="p">,</span> <span class="n">temp_folder</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">FileStructureException</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">ProjectImportException</span><span class="p">(</span><span class="s">&quot;Bad ZIP archive provided. A TVB exported project is expected!&quot;</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_import_project_from_folder</span><span class="p">(</span><span class="n">temp_folder</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Error encountered during import. Deleting projects created during this operation.&quot;</span><span class="p">)</span>
+
+                <span class="c"># Roll back projects created so far</span>
+                <span class="n">project_service</span> <span class="o">=</span> <span class="n">ProjectService</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">created_projects</span><span class="p">:</span>
+                    <span class="n">project_service</span><span class="o">.</span><span class="n">remove_project</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+                <span class="k">raise</span> <span class="n">ProjectImportException</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">excep</span><span class="p">))</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="c"># Now delete uploaded file</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">uq_file_name</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">uq_file_name</span><span class="p">)</span>
+            <span class="c"># Now delete temporary folder where uploaded ZIP was exploded.</span>
+            <span class="k">if</span> <span class="n">temp_folder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">temp_folder</span><span class="p">):</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">temp_folder</span><span class="p">)</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">_import_project_from_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">temp_folder</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process each project from the uploaded pack, to extract names.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">project_roots</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">temp_folder</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">FilesHelper</span><span class="o">.</span><span class="n">TVB_PROJECT_FILE</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="n">project_roots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">project_path</span> <span class="ow">in</span> <span class="n">project_roots</span><span class="p">:</span>
+            <span class="n">project_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__populate_project</span><span class="p">(</span><span class="n">project_path</span><span class="p">)</span>
+
+            <span class="n">bursts_dict</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">dt_mappings_dict</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">bursts_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">project_path</span><span class="p">,</span> <span class="n">BURST_INFO_FILE</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">bursts_file</span><span class="p">):</span>
+                <span class="n">bursts_info_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">bursts_file</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+                <span class="n">bursts_dict</span> <span class="o">=</span> <span class="n">bursts_info_dict</span><span class="p">[</span><span class="n">BURSTS_DICT_KEY</span><span class="p">]</span>
+                <span class="n">dt_mappings_dict</span> <span class="o">=</span> <span class="n">bursts_info_dict</span><span class="p">[</span><span class="n">DT_BURST_MAP</span><span class="p">]</span>
+
+            <span class="c"># Compute the path where to store files of the imported project</span>
+            <span class="n">new_project_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">TVB_STORAGE</span><span class="p">,</span> <span class="n">FilesHelper</span><span class="o">.</span><span class="n">PROJECTS_FOLDER</span><span class="p">,</span> <span class="n">project_entity</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">project_path</span> <span class="o">!=</span> <span class="n">new_project_path</span><span class="p">:</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">project_path</span><span class="p">,</span> <span class="n">new_project_path</span><span class="p">)</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">project_path</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">created_projects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">project_entity</span><span class="p">)</span>
+            <span class="c"># Re-create old bursts, but keep a mapping between the id it has here and the old-id it had</span>
+            <span class="c"># in the project where they were exported, so we can re-add the datatypes to them.</span>
+            <span class="n">burst_ids_mapping</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="c"># Keep a list with all burst that were imported since we will want to also add the workflow</span>
+            <span class="c"># steps after we are finished with importing the operations and datatypes. We need to first</span>
+            <span class="c"># stored bursts since we need to know which new id&#39;s they have for operations parent_burst.</span>
+            <span class="k">if</span> <span class="n">bursts_dict</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">old_burst_id</span> <span class="ow">in</span> <span class="n">bursts_dict</span><span class="p">:</span>
+                    <span class="n">burst_information</span> <span class="o">=</span> <span class="n">BurstInformation</span><span class="o">.</span><span class="n">load_from_dict</span><span class="p">(</span><span class="n">bursts_dict</span><span class="p">[</span><span class="n">old_burst_id</span><span class="p">])</span>
+                    <span class="n">burst_entity</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">BurstConfiguration</span><span class="p">(</span><span class="n">project_entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                    <span class="n">burst_entity</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">burst_information</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                    <span class="n">burst_entity</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">burst_entity</span><span class="p">)</span>
+                    <span class="n">burst_ids_mapping</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">old_burst_id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">burst_entity</span><span class="o">.</span><span class="n">id</span>
+                    <span class="c"># We don&#39;t need the data in dictionary form anymore, so update it with new BurstInformation object</span>
+                    <span class="n">bursts_dict</span><span class="p">[</span><span class="n">old_burst_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">burst_information</span>
+            <span class="c"># Now import project operations</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">import_project_operations</span><span class="p">(</span><span class="n">project_entity</span><span class="p">,</span> <span class="n">new_project_path</span><span class="p">,</span> <span class="n">dt_mappings_dict</span><span class="p">,</span> <span class="n">burst_ids_mapping</span><span class="p">)</span>
+            <span class="c"># Now we can finally import workflow related entities</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">import_workflows</span><span class="p">(</span><span class="n">project_entity</span><span class="p">,</span> <span class="n">bursts_dict</span><span class="p">,</span> <span class="n">burst_ids_mapping</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ImportService.import_workflows"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.import_service.ImportService.import_workflows">[docs]</a>    <span class="k">def</span> <span class="nf">import_workflows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">bursts_dict</span><span class="p">,</span> <span class="n">burst_ids_mapping</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Import the workflow entities for all bursts imported in the project.</span>
+
+<span class="sd">        :param project: the current</span>
+
+<span class="sd">        :param bursts_dict: a dictionary that holds all the required information in order to</span>
+<span class="sd">                            import the bursts from the new project</span>
+
+<span class="sd">        :param burst_ids_mapping: a dictionary of the form {old_burst_id : new_burst_id} so we</span>
+<span class="sd">                                  know what burst to link each workflow to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">burst_id</span> <span class="ow">in</span> <span class="n">bursts_dict</span><span class="p">:</span>
+            <span class="n">workflows_info</span> <span class="o">=</span> <span class="n">bursts_dict</span><span class="p">[</span><span class="n">burst_id</span><span class="p">]</span><span class="o">.</span><span class="n">get_workflows</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">one_wf_info</span> <span class="ow">in</span> <span class="n">workflows_info</span><span class="p">:</span>
+                <span class="c"># Use the new burst id when creating the workflow</span>
+                <span class="n">workflow_entity</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">Workflow</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">burst_ids_mapping</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">burst_id</span><span class="p">)])</span>
+                <span class="n">workflow_entity</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">one_wf_info</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">workflow_entity</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">workflow_entity</span><span class="p">)</span>
+                <span class="n">wf_steps_info</span> <span class="o">=</span> <span class="n">one_wf_info</span><span class="o">.</span><span class="n">get_workflow_steps</span><span class="p">()</span>
+                <span class="n">view_steps_info</span> <span class="o">=</span> <span class="n">one_wf_info</span><span class="o">.</span><span class="n">get_view_steps</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">import_workflow_steps</span><span class="p">(</span><span class="n">workflow_entity</span><span class="p">,</span> <span class="n">wf_steps_info</span><span class="p">,</span> <span class="n">view_steps_info</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="ImportService.import_workflow_steps"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.import_service.ImportService.import_workflow_steps">[docs]</a>    <span class="k">def</span> <span class="nf">import_workflow_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow</span><span class="p">,</span> <span class="n">wf_steps</span><span class="p">,</span> <span class="n">view_steps</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Import all workflow steps for the given workflow. We create both wf_steps and view_steps</span>
+<span class="sd">        in the same method, since if a wf_step has to be omited for some reason, we also need to</span>
+<span class="sd">        omit that view step.</span>
+<span class="sd">        :param workflow: a model.Workflow entity from which we need to add workflow steps</span>
+
+<span class="sd">        :param wf_steps: a list of WorkflowStepInformation entities, from which we will rebuild </span>
+<span class="sd">                         the workflow steps</span>
+
+<span class="sd">        :param view_steps: a list of WorkflowViewStepInformation entities, from which we will </span>
+<span class="sd">                           rebuild the workflow view steps</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">wf_step</span> <span class="ow">in</span> <span class="n">wf_steps</span><span class="p">:</span>
+            <span class="n">algorithm</span> <span class="o">=</span> <span class="n">wf_step</span><span class="o">.</span><span class="n">get_algorithm</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">algorithm</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="c"># The algorithm is invalid for some reason. Just remove also the view step.</span>
+                <span class="n">position</span> <span class="o">=</span> <span class="n">wf_step</span><span class="o">.</span><span class="n">index</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">view_steps</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">index</span><span class="p">()</span> <span class="o">==</span> <span class="n">position</span><span class="p">:</span>
+                        <span class="n">view_steps</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="n">wf_step_entity</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">WorkflowStep</span><span class="p">(</span><span class="n">algorithm</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">wf_step_entity</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">wf_step</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">wf_step_entity</span><span class="o">.</span><span class="n">fk_workflow</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">id</span>
+            <span class="n">wf_step_entity</span><span class="o">.</span><span class="n">fk_operation</span> <span class="o">=</span> <span class="n">wf_step</span><span class="o">.</span><span class="n">get_operagion</span><span class="p">()</span><span class="o">.</span><span class="n">id</span>
+            <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">wf_step_entity</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">view_step</span> <span class="ow">in</span> <span class="n">view_steps</span><span class="p">:</span>
+            <span class="n">algorithm</span> <span class="o">=</span> <span class="n">view_step</span><span class="o">.</span><span class="n">get_algorithm</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">algorithm</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">view_step_entity</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">WorkflowStepView</span><span class="p">(</span><span class="n">algorithm</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">view_step_entity</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">view_step</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">view_step_entity</span><span class="o">.</span><span class="n">fk_workflow</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">id</span>
+            <span class="n">view_step_entity</span><span class="o">.</span><span class="n">fk_portlet</span> <span class="o">=</span> <span class="n">view_step</span><span class="o">.</span><span class="n">get_portlet</span><span class="p">()</span><span class="o">.</span><span class="n">id</span>
+            <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">view_step_entity</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="ImportService.import_project_operations"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.import_service.ImportService.import_project_operations">[docs]</a>    <span class="k">def</span> <span class="nf">import_project_operations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">import_path</span><span class="p">,</span> <span class="n">dt_burst_mappings</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">burst_ids_mapping</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method scans provided folder and identify all operations that needs to be imported</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">burst_ids_mapping</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">burst_ids_mapping</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">dt_burst_mappings</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">dt_burst_mappings</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c"># Identify folders containing operations</span>
+        <span class="n">operations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">import_path</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">FilesHelper</span><span class="o">.</span><span class="n">TVB_OPERARATION_FILE</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="c"># Found an operation folder - append TMP to its name</span>
+                <span class="n">tmp_op_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">root</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">root</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;tmp&#39;</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">tmp_op_folder</span><span class="p">)</span>
+
+                <span class="n">operation_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp_op_folder</span><span class="p">,</span> <span class="n">FilesHelper</span><span class="o">.</span><span class="n">TVB_OPERARATION_FILE</span><span class="p">)</span>
+                <span class="n">operation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__build_operation_from_file</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">operation_file_path</span><span class="p">)</span>
+                <span class="n">operation</span><span class="o">.</span><span class="n">import_file</span> <span class="o">=</span> <span class="n">operation_file_path</span>
+                <span class="n">operations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">operation</span><span class="p">)</span>
+
+        <span class="n">imported_operations</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c"># Now we sort operations by start date, to be sure data dependency is resolved correct</span>
+        <span class="n">operations</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">operations</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">operation</span><span class="p">:</span> <span class="n">operation</span><span class="o">.</span><span class="n">start_date</span><span class="p">)</span>
+
+        <span class="c"># Here we process each operation found</span>
+        <span class="k">for</span> <span class="n">operation</span> <span class="ow">in</span> <span class="n">operations</span><span class="p">:</span>
+            <span class="n">old_operation_folder</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">operation</span><span class="o">.</span><span class="n">import_file</span><span class="p">)</span>
+            <span class="n">operation_entity</span><span class="p">,</span> <span class="n">datatype_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__import_operation</span><span class="p">(</span><span class="n">operation</span><span class="p">)</span>
+
+            <span class="c"># Rename operation folder with the ID of the stored operation </span>
+            <span class="n">new_operation_path</span> <span class="o">=</span> <span class="n">FilesHelper</span><span class="p">()</span><span class="o">.</span><span class="n">get_operation_folder</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">operation_entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">old_operation_folder</span> <span class="o">!=</span> <span class="n">new_operation_path</span><span class="p">:</span>
+                <span class="c"># Delete folder of the new operation, otherwise move will fail</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">new_operation_path</span><span class="p">)</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">old_operation_folder</span><span class="p">,</span> <span class="n">new_operation_path</span><span class="p">)</span>
+
+            <span class="c"># Now process data types for each operation</span>
+            <span class="n">all_datatypes</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">new_operation_path</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">file_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">FilesHelper</span><span class="o">.</span><span class="n">TVB_STORAGE_FILE_EXTENSION</span><span class="p">):</span>
+                    <span class="n">file_update_manager</span> <span class="o">=</span> <span class="n">FilesUpdateManager</span><span class="p">()</span>
+                    <span class="n">file_update_manager</span><span class="o">.</span><span class="n">upgrade_file</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_operation_path</span><span class="p">,</span> <span class="n">file_name</span><span class="p">))</span>
+                    <span class="n">datatype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_datatype_from_file</span><span class="p">(</span><span class="n">new_operation_path</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span>
+                                                            <span class="n">operation_entity</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">datatype_group</span><span class="p">)</span>
+                    <span class="n">all_datatypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datatype</span><span class="p">)</span>
+
+            <span class="c"># Before inserting into DB sort data types by creation date (to solve any dependencies)</span>
+            <span class="n">all_datatypes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">all_datatypes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">datatype</span><span class="p">:</span> <span class="n">datatype</span><span class="o">.</span><span class="n">create_date</span><span class="p">)</span>
+
+            <span class="c"># Now store data types into DB</span>
+            <span class="k">for</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="n">all_datatypes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">datatype</span><span class="o">.</span><span class="n">gid</span> <span class="ow">in</span> <span class="n">dt_burst_mappings</span><span class="p">:</span>
+                    <span class="n">old_burst_id</span> <span class="o">=</span> <span class="n">dt_burst_mappings</span><span class="p">[</span><span class="n">datatype</span><span class="o">.</span><span class="n">gid</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">old_burst_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                        <span class="n">datatype</span><span class="o">.</span><span class="n">fk_parent_burst</span> <span class="o">=</span> <span class="n">burst_ids_mapping</span><span class="p">[</span><span class="n">old_burst_id</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">store_datatype</span><span class="p">(</span><span class="n">datatype</span><span class="p">)</span>
+
+            <span class="c"># Now import all images from current operation</span>
+            <span class="n">images_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">files_helper</span><span class="o">.</span><span class="n">get_images_folder</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">operation_entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">images_root</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">images_root</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">file_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">FilesHelper</span><span class="o">.</span><span class="n">TVB_FILE_EXTENSION</span><span class="p">):</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">__populate_image</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">file_name</span><span class="p">),</span> <span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">operation_entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">imported_operations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">operation_entity</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">imported_operations</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">__populate_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">op_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create and store a image entity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">figure_dict</span> <span class="o">=</span> <span class="n">XMLReader</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span><span class="o">.</span><span class="n">read_metadata</span><span class="p">()</span>
+        <span class="n">new_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">file_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">figure_dict</span><span class="p">[</span><span class="s">&#39;file_path&#39;</span><span class="p">])[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">new_path</span><span class="p">):</span>
+            <span class="n">figure_dict</span><span class="p">[</span><span class="s">&#39;fk_op_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">op_id</span>
+            <span class="n">figure_dict</span><span class="p">[</span><span class="s">&#39;fk_user_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span>
+            <span class="n">figure_dict</span><span class="p">[</span><span class="s">&#39;fk_project_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">project_id</span>
+            <span class="n">figure_entity</span> <span class="o">=</span> <span class="n">manager_of_class</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">ResultFigure</span><span class="p">)</span><span class="o">.</span><span class="n">new_instance</span><span class="p">()</span>
+            <span class="n">figure_entity</span> <span class="o">=</span> <span class="n">figure_entity</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">figure_dict</span><span class="p">)</span>
+            <span class="n">stored_entity</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">figure_entity</span><span class="p">)</span>
+
+            <span class="c"># Update image meta-data with the new details after import </span>
+            <span class="n">figure</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">load_figure</span><span class="p">(</span><span class="n">stored_entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Store imported figure&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">files_helper</span><span class="o">.</span><span class="n">write_image_metadata</span><span class="p">(</span><span class="n">figure</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ImportService.load_datatype_from_file"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.import_service.ImportService.load_datatype_from_file">[docs]</a>    <span class="k">def</span> <span class="nf">load_datatype_from_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage_folder</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">op_id</span><span class="p">,</span> <span class="n">datatype_group</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates an instance of datatype from storage / H5 file </span>
+<span class="sd">        :returns: datatype</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Loading datatType from file: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">file_name</span><span class="p">)</span>
+        <span class="n">storage_manager</span> <span class="o">=</span> <span class="n">HDF5StorageManager</span><span class="p">(</span><span class="n">storage_folder</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+        <span class="n">meta_dictionary</span> <span class="o">=</span> <span class="n">storage_manager</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()</span>
+        <span class="n">meta_structure</span> <span class="o">=</span> <span class="n">DataTypeMetaData</span><span class="p">(</span><span class="n">meta_dictionary</span><span class="p">)</span>
+
+        <span class="c"># Now try to determine class and instantiate it</span>
+        <span class="n">class_name</span> <span class="o">=</span> <span class="n">meta_structure</span><span class="p">[</span><span class="n">DataTypeMetaData</span><span class="o">.</span><span class="n">KEY_CLASS_NAME</span><span class="p">]</span>
+        <span class="n">class_module</span> <span class="o">=</span> <span class="n">meta_structure</span><span class="p">[</span><span class="n">DataTypeMetaData</span><span class="o">.</span><span class="n">KEY_MODULE</span><span class="p">]</span>
+        <span class="n">datatype</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">class_module</span><span class="p">,</span> <span class="nb">globals</span><span class="p">(),</span> <span class="nb">locals</span><span class="p">(),</span> <span class="p">[</span><span class="n">class_name</span><span class="p">])</span>
+        <span class="n">datatype</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s">&quot;datatype.&quot;</span> <span class="o">+</span> <span class="n">class_name</span><span class="p">)</span>
+        <span class="n">type_instance</span> <span class="o">=</span> <span class="n">manager_of_class</span><span class="p">(</span><span class="n">datatype</span><span class="p">)</span><span class="o">.</span><span class="n">new_instance</span><span class="p">()</span>
+
+        <span class="c"># Now we fill data into instance</span>
+        <span class="n">type_instance</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">type_instance</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="n">type_instance</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">type_instance</span><span class="o">.</span><span class="n">__module__</span><span class="p">)</span>
+
+        <span class="c"># Fill instance with meta data</span>
+        <span class="n">type_instance</span><span class="o">.</span><span class="n">load_from_metadata</span><span class="p">(</span><span class="n">meta_dictionary</span><span class="p">)</span>
+
+        <span class="c">#Add all the required attributes</span>
+        <span class="k">if</span> <span class="n">datatype_group</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">type_instance</span><span class="o">.</span><span class="n">fk_datatype_group</span> <span class="o">=</span> <span class="n">datatype_group</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">type_instance</span><span class="o">.</span><span class="n">set_operation_id</span><span class="p">(</span><span class="n">op_id</span><span class="p">)</span>
+
+        <span class="c"># Now move storage file into correct folder if necessary</span>
+        <span class="n">current_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">storage_folder</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+        <span class="n">new_file</span> <span class="o">=</span> <span class="n">type_instance</span><span class="o">.</span><span class="n">get_storage_file_path</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">new_file</span> <span class="o">!=</span> <span class="n">current_file</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">current_file</span><span class="p">,</span> <span class="n">new_file</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">type_instance</span>
+
+</div>
+<div class="viewcode-block" id="ImportService.store_datatype"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.import_service.ImportService.store_datatype">[docs]</a>    <span class="k">def</span> <span class="nf">store_datatype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datatype</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method stores data type into DB&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Store datatype: </span><span class="si">%s</span><span class="s"> with Gid: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">datatype</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">datatype</span><span class="o">.</span><span class="n">gid</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">datatype</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">MissingDataSetException</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Datatype </span><span class="si">%s</span><span class="s"> has missing data and could not be imported properly.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">datatype</span><span class="p">,))</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">datatype</span><span class="o">.</span><span class="n">get_storage_file_path</span><span class="p">())</span>
+        <span class="k">except</span> <span class="n">IntegrityError</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="s">&quot;Could not import data with gid: </span><span class="si">%s</span><span class="s">. There is already a one with &quot;</span> \
+                        <span class="s">&quot;the same name or gid.&quot;</span> <span class="o">%</span> <span class="n">datatype</span><span class="o">.</span><span class="n">gid</span>
+            <span class="c"># Delete file if can&#39;t be imported</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">datatype</span><span class="o">.</span><span class="n">get_storage_file_path</span><span class="p">())</span>
+            <span class="k">raise</span> <span class="n">ProjectImportException</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">__populate_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create and store a Project entity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Creating project from path: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">project_path</span><span class="p">)</span>
+        <span class="n">project_cfg_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">project_path</span><span class="p">,</span> <span class="n">FilesHelper</span><span class="o">.</span><span class="n">TVB_PROJECT_FILE</span><span class="p">)</span>
+
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">XMLReader</span><span class="p">(</span><span class="n">project_cfg_file</span><span class="p">)</span>
+        <span class="n">project_dict</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">read_metadata</span><span class="p">()</span>
+        <span class="n">project_entity</span> <span class="o">=</span> <span class="n">manager_of_class</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Project</span><span class="p">)</span><span class="o">.</span><span class="n">new_instance</span><span class="p">()</span>
+        <span class="n">project_entity</span> <span class="o">=</span> <span class="n">project_entity</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">project_dict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Storing imported project&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">project_entity</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">IntegrityError</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;Could not import project: </span><span class="si">%s</span><span class="s"> with gid: </span><span class="si">%s</span><span class="s">. There is already a &quot;</span>
+                         <span class="s">&quot;project with the same name or gid.&quot;</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="n">project_entity</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">project_entity</span><span class="o">.</span><span class="n">gid</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ProjectImportException</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__build_operation_from_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">operation_file</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create Operation entity from metadata file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">XMLReader</span><span class="p">(</span><span class="n">operation_file</span><span class="p">)</span>
+        <span class="n">operation_dict</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">read_metadata</span><span class="p">()</span>
+        <span class="n">operation_entity</span> <span class="o">=</span> <span class="n">manager_of_class</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="p">)</span><span class="o">.</span><span class="n">new_instance</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">operation_entity</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">operation_dict</span><span class="p">,</span> <span class="n">dao</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">,</span> <span class="n">project</span><span class="o">.</span><span class="n">gid</span><span class="p">)</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__import_operation</span><span class="p">(</span><span class="n">operation_entity</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Store a Operation entity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">operation_entity</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">operation_entity</span><span class="p">)</span>
+        <span class="n">operation_group_id</span> <span class="o">=</span> <span class="n">operation_entity</span><span class="o">.</span><span class="n">fk_operation_group</span>
+        <span class="n">datatype_group</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="n">operation_group_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">datatype_group</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_datatypegroup_by_op_group_id</span><span class="p">(</span><span class="n">operation_group_id</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="c"># If no dataType group present for current op. group, create it.</span>
+                <span class="n">operation_group</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operationgroup_by_id</span><span class="p">(</span><span class="n">operation_group_id</span><span class="p">)</span>
+                <span class="n">datatype_group</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">DataTypeGroup</span><span class="p">(</span><span class="n">operation_group</span><span class="p">,</span> <span class="n">operation_id</span><span class="o">=</span><span class="n">operation_entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="n">datatype_group</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">ADAPTERS</span><span class="p">[</span><span class="s">&#39;Upload&#39;</span><span class="p">][</span><span class="s">&#39;defaultdatastate&#39;</span><span class="p">]</span>
+                <span class="n">datatype_group</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">datatype_group</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">operation_entity</span><span class="p">,</span> <span class="n">datatype_group</span>
+    
+        </div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

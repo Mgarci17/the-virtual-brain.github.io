@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.adapters.uploaders.cff_importer &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.adapters.uploaders.cff_importer &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../index.html" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -49,232 +48,252 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for tvb.adapters.uploaders.cff_importer</h1><pre>
-# -*- coding: utf-8 -*-
-#
-#
-# TheVirtualBrain-Framework Package. This package holds all Data Management, and 
-# Web-UI helpful to run brain-simulations. To use it, you also need do download
-# TheVirtualBrain-Scientific Package (for simulators). See content of the
-# documentation-folder for more details. See also http://www.thevirtualbrain.org
-#
-# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
-#
-# This program is free software; you can redistribute it and/or modify it under 
-# the terms of the GNU General Public License version 2 as published by the Free
-# Software Foundation. This program is distributed in the hope that it will be
-# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
-# License for more details. You should have received a copy of the GNU General 
-# Public License along with this program; if not, you can download it here
-# http://www.gnu.org/licenses/old-licenses/gpl-2.0
-#
-#
-"""
-.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;
-.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;
-"""
-import os
-import sys
-import shutil
-import cStringIO
-from zipfile import ZipFile, ZIP_DEFLATED
-from cfflib import load
-from tempfile import gettempdir
-from tvb.basic.logger.builder import get_logger
-from tvb.core.entities.storage import dao, transactional
-from tvb.core.adapters.abcadapter import ABCSynchronous
-from tvb.adapters.uploaders.gifti.gifti import loadImage
-from tvb.adapters.uploaders.handler_connectivity import networkx2connectivity
-import tvb.adapters.uploaders.handler_surface as handler_surface
-import tvb.adapters.uploaders.constants as ct
-from tvb.core.adapters.exceptions import LaunchException
+  <h1>Source code for tvb.adapters.uploaders.cff_importer</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">cStringIO</span>
+<span class="kn">from</span> <span class="nn">zipfile</span> <span class="kn">import</span> <span class="n">ZipFile</span><span class="p">,</span> <span class="n">ZIP_DEFLATED</span>
+<span class="kn">from</span> <span class="nn">cfflib</span> <span class="kn">import</span> <span class="n">load</span>
+<span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">gettempdir</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.storage</span> <span class="kn">import</span> <span class="n">dao</span><span class="p">,</span> <span class="n">transactional</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.abcadapter</span> <span class="kn">import</span> <span class="n">ABCSynchronous</span>
+<span class="kn">from</span> <span class="nn">tvb.adapters.uploaders.gifti.gifti</span> <span class="kn">import</span> <span class="n">loadImage</span>
+<span class="kn">from</span> <span class="nn">tvb.adapters.uploaders.handler_connectivity</span> <span class="kn">import</span> <span class="n">networkx2connectivity</span>
+<span class="kn">import</span> <span class="nn">tvb.adapters.uploaders.handler_surface</span> <span class="kn">as</span> <span class="nn">handler_surface</span>
+<span class="kn">import</span> <span class="nn">tvb.adapters.uploaders.constants</span> <span class="kn">as</span> <span class="nn">ct</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.exceptions</span> <span class="kn">import</span> <span class="n">LaunchException</span>
 
-LOGGER = get_logger(__name__)        
-    
-<div class="viewcode-block" id="CFF_Importer"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.cff_importer.CFF_Importer">[docs]</a>class CFF_Importer(ABCSynchronous):
-    """
-    Upload Connectivity Matrix from a CFF archive.
-    """ 
-    _ui_name = "CFF"
-    _ui_subsection = "cff_importer"
-    _ui_description = "Import from CFF archive one or multiple datatypes."
-     
-    def __init__(self):
-        ABCSynchronous.__init__(self)
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CFF_Importer.get_input_tree"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.cff_importer.CFF_Importer.get_input_tree">[docs]</a>    def get_input_tree(self):
-        """
-        Define as input parameter, a CFF archive.
-        """
-        return [{'name': 'cff', 'type': 'upload', 'required_type':'cff', 
-                 'label': 'CFF archive', 'required': True,
-                 'description': 'Connectome File Format archive expected, with GraphML, Timeseries or GIFTI inside.' }]
-                             </div>
-<div class="viewcode-block" id="CFF_Importer.get_output"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.cff_importer.CFF_Importer.get_output">[docs]</a>    def get_output(self):
-        return []
-    
-    </div>
-    def _prelaunch(self, operation, uid=None, available_disk_space=0, **kwargs):
-        """
-        Overwrite method in order to return the correct number of stored dataTypes.
-        """
-        self.nr_of_datatypes = 0
-        msg, _ = ABCSynchronous._prelaunch(self, operation, uid=None, **kwargs)
-        return msg, self.nr_of_datatypes
-    
-<div class="viewcode-block" id="CFF_Importer.get_required_memory_size"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.cff_importer.CFF_Importer.get_required_memory_size">[docs]</a>    def get_required_memory_size(self, **kwargs):
-        """
-        Return the required memory to run this algorithm.
-        """
-        # Don't know how much memory is needed.
-        return -1
-    </div>
-<div class="viewcode-block" id="CFF_Importer.get_required_disk_size"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.cff_importer.CFF_Importer.get_required_disk_size">[docs]</a>    def get_required_disk_size(self, **kwargs):
-        """
-        Returns the required disk size to be able to run the adapter. (in kB)
-        """
-        return 0
-    </div>
-    @transactional
-<div class="viewcode-block" id="CFF_Importer.launch"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.cff_importer.CFF_Importer.launch">[docs]</a>    def launch(self, cff):
-        """
-        Process the uploaded CFF and convert read data into our internal DataTypes.
-        """
-        if cff is None:
-            raise LaunchException ("Please select CFF file which contains data to import")
-        
-        # !! CFF does logging by the means of `print` statements. We don't want these
-        # logged to terminal as sys.stdout since we no longer have any control over them
-        # so just buffer everything to a StringIO object and log them after operation is done.
-        try:
-            default_stdout = sys.stdout
-            custom_stdout = cStringIO.StringIO()
-            sys.stdout = custom_stdout
-            
-            conn_obj = load(cff)
-            network = conn_obj.get_connectome_network()
-            surfaces = conn_obj.get_connectome_surface()
-            cdatas = conn_obj.get_connectome_data()
-            
-            warning_message = ""
-            if network:
-                msg = self.__parse_connectome_network(network)
-                if msg is not None:
-                    warning_message += msg
-            if surfaces:
-                msg = self.__parse_connectome_surface(surfaces, cdatas)
-                if msg is not None:
-                    warning_message += msg
-            
-            ####################################################################
-            # !! CFF doesn't delete temporary folders created, 
-            #        so we need to track and delete them manually!!
-            temp_files = []
-            root_folder = gettempdir()
-            for ele in conn_obj.get_all():
-                if hasattr(ele, 'tmpsrc') and os.path.exists(ele.tmpsrc):
-                    full_path = ele.tmpsrc
-                    while (os.path.split(full_path)[0] != root_folder and os.path.split(full_path)[0] != os.sep):
-                        full_path = os.path.split(full_path)[0]
-                    #Get the root parent from the $gettempdir()$
-                    temp_files.append(full_path)
-            conn_obj.close_all()
-            conn_obj._zipfile.close()
-            for ele in temp_files:
-                if os.path.isdir(ele):
-                    shutil.rmtree(ele)
-                elif os.path.isfile(ele):
-                    os.remove(ele)
-            current_op = dao.get_operation_by_id(self.operation_id) 
-            current_op.user_group = conn_obj.get_connectome_meta().title
-            if len(warning_message) &gt; 0:
-                current_op.additional_info = warning_message
-            dao.store_entity(current_op)
-        finally:
-            # Make sure to set sys.stdout back to it's default value so this won't
-            # have any influence on the rest of TVB.
-            print_output = custom_stdout.getvalue()
-            sys.stdout = default_stdout
-            custom_stdout.close()
-            # Now log everything that cfflib2 outputes with `print` statements using TVB logging
-            LOGGER.info("Output from cfflib2 library: %s"%(print_output,))
+
+
+<div class="viewcode-block" id="CFF_Importer"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.cff_importer.CFF_Importer">[docs]</a><span class="k">class</span> <span class="nc">CFF_Importer</span><span class="p">(</span><span class="n">ABCSynchronous</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Upload Connectivity Matrix from a CFF archive.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_ui_name</span> <span class="o">=</span> <span class="s">&quot;CFF&quot;</span>
+    <span class="n">_ui_subsection</span> <span class="o">=</span> <span class="s">&quot;cff_importer&quot;</span>
+    <span class="n">_ui_description</span> <span class="o">=</span> <span class="s">&quot;Import from CFF archive one or multiple datatypes.&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ABCSynchronous</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="CFF_Importer.get_input_tree"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.cff_importer.CFF_Importer.get_input_tree">[docs]</a>    <span class="k">def</span> <span class="nf">get_input_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Define as input parameter, a CFF archive.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;cff&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;upload&#39;</span><span class="p">,</span> <span class="s">&#39;required_type&#39;</span><span class="p">:</span> <span class="s">&#39;cff&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;CFF archive&#39;</span><span class="p">,</span> <span class="s">&#39;required&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+                 <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Connectome File Format archive expected, with GraphML, Timeseries or GIFTI inside.&#39;</span><span class="p">}]</span>
 
 </div>
-    def __parse_connectome_network(self, connectome_network):
-        """
-        Parse data from a NetworkX object and save it in Connectivity DataTypes.
-        """
-        try:
-            for net in connectome_network:
-                conn, uid = networkx2connectivity(net, self.storage_path)
-                self.nr_of_datatypes += 1
-                self._capture_operation_results([conn], uid)
-        except Exception, excep:
-            self.log.warning(excep)
-            self.log.exception(excep)
-            return "Problem when importing Connectivity!! \n"
-
-
-    def __parse_connectome_surface(self, connectome_surface, connectome_data):
-        """
-        Parse data from a CSurface object and save it in our internal Surface DataTypes
-        """
-        try:
-                    
-            for c_surface in connectome_surface:
-                # create a meaningful but unique temporary path to extract
-                tmpdir = os.path.join(gettempdir(), c_surface.parent_cfile.get_unique_cff_name())
-                self.log.debug("Using temporary folder for CFF import:" + tmpdir)
-                _zipfile = ZipFile(c_surface.parent_cfile.src, 'r', ZIP_DEFLATED)
-                gifti_file = _zipfile.extract(c_surface.src, tmpdir)
-                gifti_img = loadImage(gifti_file)
-                surface_meta = gifti_img.meta.get_data_as_dict()
-
-                if ct.SURFACE_CLASS in surface_meta and surface_meta[ct.SURFACE_CLASS] == ct.CLASS_SURFACE:
-                    vertices, normals, triangles = None, None, None
-                    for one_data in connectome_data:
-                        cd_meta = one_data.get_metadata_as_dict()
-                        if (ct.KEY_UID in cd_meta and surface_meta[ct.KEY_UID] == cd_meta[ct.KEY_UID]):
-                            if cd_meta[ct.KEY_ROLE] == ct.ROLE_VERTICES:
-                                vertices = one_data
-                            if cd_meta[ct.KEY_ROLE] == ct.ROLE_NORMALS:
-                                normals = one_data
-                            if cd_meta[ct.KEY_ROLE] == ct.ROLE_TRIANGLES:
-                                triangles = one_data
-                    res, uid = handler_surface.gifti2surface(gifti_img, vertices, normals, 
-                                                             triangles, self.storage_path)
-                    self.nr_of_datatypes += 1
-                    self._capture_operation_results([res], uid)
-                    
-                elif surface_meta[ct.SURFACE_CLASS] == ct.CLASS_CORTEX:
-                    for one_data in connectome_data:
-                        cd_meta = one_data.get_metadata_as_dict()
-                        if (ct.KEY_UID not in cd_meta or surface_meta[ct.KEY_UID] != cd_meta[ct.KEY_UID]):
-                            continue
-                        if cd_meta[ct.KEY_ROLE] == ct.ROLE_REGION_MAP:
-                            res, uid = handler_surface.cdata2region_mapping(one_data, surface_meta, self.storage_path)
-                        if cd_meta[ct.KEY_ROLE] == ct.ROLE_LOCAL_CON:
-                            res, uid = handler_surface.cdata2local_connectivity(one_data, surface_meta, self.storage_path)
-                        if res is not None:
-                            self.nr_of_datatypes += 1
-                            self._capture_operation_results([res], uid)
-
-                if os.path.exists(tmpdir):
-                    shutil.rmtree(tmpdir)
-                    
-        except Exception, excep:
-            self.log.exception(excep)
-            return "Problem when importing Surface (or related attributes: LocalConnectivity/RegionMapping) !! \n"
+<div class="viewcode-block" id="CFF_Importer.get_output"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.cff_importer.CFF_Importer.get_output">[docs]</a>    <span class="k">def</span> <span class="nf">get_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[]</span>
 
 </div>
-</pre>
+    <span class="k">def</span> <span class="nf">_prelaunch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span> <span class="n">uid</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">available_disk_space</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overwrite method in order to return the correct number of stored dataTypes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nr_of_datatypes</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">msg</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ABCSynchronous</span><span class="o">.</span><span class="n">_prelaunch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span> <span class="n">uid</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">msg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nr_of_datatypes</span>
+
+
+<div class="viewcode-block" id="CFF_Importer.get_required_memory_size"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.cff_importer.CFF_Importer.get_required_memory_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_required_memory_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the required memory to run this algorithm.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Don&#39;t know how much memory is needed.</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+</div>
+<div class="viewcode-block" id="CFF_Importer.get_required_disk_size"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.cff_importer.CFF_Importer.get_required_disk_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_required_disk_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the required disk size to be able to run the adapter. (in kB)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+</div>
+    <span class="nd">@transactional</span>
+<div class="viewcode-block" id="CFF_Importer.launch"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.cff_importer.CFF_Importer.launch">[docs]</a>    <span class="k">def</span> <span class="nf">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cff</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process the uploaded CFF and convert read data into our internal DataTypes.</span>
+<span class="sd">        :param cff: CFF uploaded file to process.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">cff</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">LaunchException</span><span class="p">(</span><span class="s">&quot;Please select CFF file which contains data to import&quot;</span><span class="p">)</span>
+
+        <span class="c"># !! CFF does logging by the means of `print` statements. We don&#39;t want these</span>
+        <span class="c"># logged to terminal as sys.stdout since we no longer have any control over them</span>
+        <span class="c"># so just buffer everything to a StringIO object and log them after operation is done.</span>
+        <span class="n">default_stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+        <span class="n">custom_stdout</span> <span class="o">=</span> <span class="n">cStringIO</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">custom_stdout</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">conn_obj</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">cff</span><span class="p">)</span>
+            <span class="n">network</span> <span class="o">=</span> <span class="n">conn_obj</span><span class="o">.</span><span class="n">get_connectome_network</span><span class="p">()</span>
+            <span class="n">surfaces</span> <span class="o">=</span> <span class="n">conn_obj</span><span class="o">.</span><span class="n">get_connectome_surface</span><span class="p">()</span>
+            <span class="n">cdatas</span> <span class="o">=</span> <span class="n">conn_obj</span><span class="o">.</span><span class="n">get_connectome_data</span><span class="p">()</span>
+
+            <span class="n">warning_message</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">network</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parse_connectome_network</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">msg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">warning_message</span> <span class="o">+=</span> <span class="n">msg</span>
+            <span class="k">if</span> <span class="n">surfaces</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parse_connectome_surface</span><span class="p">(</span><span class="n">surfaces</span><span class="p">,</span> <span class="n">cdatas</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">msg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">warning_message</span> <span class="o">+=</span> <span class="n">msg</span>
+
+            <span class="c">####################################################################</span>
+            <span class="c"># !! CFF doesn&#39;t delete temporary folders created, </span>
+            <span class="c">#        so we need to track and delete them manually!!</span>
+            <span class="n">temp_files</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">root_folder</span> <span class="o">=</span> <span class="n">gettempdir</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">conn_obj</span><span class="o">.</span><span class="n">get_all</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ele</span><span class="p">,</span> <span class="s">&#39;tmpsrc&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">ele</span><span class="o">.</span><span class="n">tmpsrc</span><span class="p">):</span>
+                    <span class="n">full_path</span> <span class="o">=</span> <span class="n">ele</span><span class="o">.</span><span class="n">tmpsrc</span>
+                    <span class="k">while</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">full_path</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">root_folder</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">full_path</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">:</span>
+                        <span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">full_path</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="c">#Get the root parent from the $gettempdir()$</span>
+                    <span class="n">temp_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span>
+            <span class="n">conn_obj</span><span class="o">.</span><span class="n">close_all</span><span class="p">()</span>
+            <span class="n">conn_obj</span><span class="o">.</span><span class="n">_zipfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">temp_files</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">ele</span><span class="p">):</span>
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">ele</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">ele</span><span class="p">):</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ele</span><span class="p">)</span>
+            <span class="n">current_op</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operation_by_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">operation_id</span><span class="p">)</span>
+            <span class="n">current_op</span><span class="o">.</span><span class="n">user_group</span> <span class="o">=</span> <span class="n">conn_obj</span><span class="o">.</span><span class="n">get_connectome_meta</span><span class="p">()</span><span class="o">.</span><span class="n">title</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">warning_message</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">current_op</span><span class="o">.</span><span class="n">additional_info</span> <span class="o">=</span> <span class="n">warning_message</span>
+            <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">current_op</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="c"># Make sure to set sys.stdout back to it&#39;s default value so this won&#39;t</span>
+            <span class="c"># have any influence on the rest of TVB.</span>
+            <span class="n">print_output</span> <span class="o">=</span> <span class="n">custom_stdout</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">default_stdout</span>
+            <span class="n">custom_stdout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="c"># Now log everything that cfflib2 outputes with `print` statements using TVB logging</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Output from cfflib2 library: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">print_output</span><span class="p">,))</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">__parse_connectome_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connectome_network</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse data from a NetworkX object and save it in Connectivity DataTypes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">net</span> <span class="ow">in</span> <span class="n">connectome_network</span><span class="p">:</span>
+                <span class="n">conn</span><span class="p">,</span> <span class="n">uid</span> <span class="o">=</span> <span class="n">networkx2connectivity</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nr_of_datatypes</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_capture_operation_results</span><span class="p">([</span><span class="n">conn</span><span class="p">],</span> <span class="n">uid</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s">&quot;Problem when importing Connectivity!! </span><span class="se">\n</span><span class="s">&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">__parse_connectome_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connectome_surface</span><span class="p">,</span> <span class="n">connectome_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse data from a CSurface object and save it in our internal Surface DataTypes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">c_surface</span> <span class="ow">in</span> <span class="n">connectome_surface</span><span class="p">:</span>
+                <span class="c"># create a meaningful but unique temporary path to extract</span>
+                <span class="n">tmpdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gettempdir</span><span class="p">(),</span> <span class="n">c_surface</span><span class="o">.</span><span class="n">parent_cfile</span><span class="o">.</span><span class="n">get_unique_cff_name</span><span class="p">())</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Using temporary folder for CFF import:&quot;</span> <span class="o">+</span> <span class="n">tmpdir</span><span class="p">)</span>
+                <span class="n">_zipfile</span> <span class="o">=</span> <span class="n">ZipFile</span><span class="p">(</span><span class="n">c_surface</span><span class="o">.</span><span class="n">parent_cfile</span><span class="o">.</span><span class="n">src</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">,</span> <span class="n">ZIP_DEFLATED</span><span class="p">)</span>
+                <span class="n">gifti_file</span> <span class="o">=</span> <span class="n">_zipfile</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">c_surface</span><span class="o">.</span><span class="n">src</span><span class="p">,</span> <span class="n">tmpdir</span><span class="p">)</span>
+                <span class="n">gifti_img</span> <span class="o">=</span> <span class="n">loadImage</span><span class="p">(</span><span class="n">gifti_file</span><span class="p">)</span>
+                <span class="n">surface_meta</span> <span class="o">=</span> <span class="n">gifti_img</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">get_data_as_dict</span><span class="p">()</span>
+                <span class="n">res</span><span class="p">,</span> <span class="n">uid</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+
+                <span class="k">if</span> <span class="n">ct</span><span class="o">.</span><span class="n">SURFACE_CLASS</span> <span class="ow">in</span> <span class="n">surface_meta</span> <span class="ow">and</span> <span class="n">surface_meta</span><span class="p">[</span><span class="n">ct</span><span class="o">.</span><span class="n">SURFACE_CLASS</span><span class="p">]</span> <span class="o">==</span> <span class="n">ct</span><span class="o">.</span><span class="n">CLASS_SURFACE</span><span class="p">:</span>
+                    <span class="n">vertices</span><span class="p">,</span> <span class="n">normals</span><span class="p">,</span> <span class="n">triangles</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+                    <span class="k">for</span> <span class="n">one_data</span> <span class="ow">in</span> <span class="n">connectome_data</span><span class="p">:</span>
+                        <span class="n">cd_meta</span> <span class="o">=</span> <span class="n">one_data</span><span class="o">.</span><span class="n">get_metadata_as_dict</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">ct</span><span class="o">.</span><span class="n">KEY_UID</span> <span class="ow">in</span> <span class="n">cd_meta</span> <span class="ow">and</span> <span class="n">surface_meta</span><span class="p">[</span><span class="n">ct</span><span class="o">.</span><span class="n">KEY_UID</span><span class="p">]</span> <span class="o">==</span> <span class="n">cd_meta</span><span class="p">[</span><span class="n">ct</span><span class="o">.</span><span class="n">KEY_UID</span><span class="p">]:</span>
+                            <span class="k">if</span> <span class="n">cd_meta</span><span class="p">[</span><span class="n">ct</span><span class="o">.</span><span class="n">KEY_ROLE</span><span class="p">]</span> <span class="o">==</span> <span class="n">ct</span><span class="o">.</span><span class="n">ROLE_VERTICES</span><span class="p">:</span>
+                                <span class="n">vertices</span> <span class="o">=</span> <span class="n">one_data</span>
+                            <span class="k">if</span> <span class="n">cd_meta</span><span class="p">[</span><span class="n">ct</span><span class="o">.</span><span class="n">KEY_ROLE</span><span class="p">]</span> <span class="o">==</span> <span class="n">ct</span><span class="o">.</span><span class="n">ROLE_NORMALS</span><span class="p">:</span>
+                                <span class="n">normals</span> <span class="o">=</span> <span class="n">one_data</span>
+                            <span class="k">if</span> <span class="n">cd_meta</span><span class="p">[</span><span class="n">ct</span><span class="o">.</span><span class="n">KEY_ROLE</span><span class="p">]</span> <span class="o">==</span> <span class="n">ct</span><span class="o">.</span><span class="n">ROLE_TRIANGLES</span><span class="p">:</span>
+                                <span class="n">triangles</span> <span class="o">=</span> <span class="n">one_data</span>
+                    <span class="n">res</span><span class="p">,</span> <span class="n">uid</span> <span class="o">=</span> <span class="n">handler_surface</span><span class="o">.</span><span class="n">gifti2surface</span><span class="p">(</span><span class="n">gifti_img</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">normals</span><span class="p">,</span>
+                                                             <span class="n">triangles</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">nr_of_datatypes</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_capture_operation_results</span><span class="p">([</span><span class="n">res</span><span class="p">],</span> <span class="n">uid</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">surface_meta</span><span class="p">[</span><span class="n">ct</span><span class="o">.</span><span class="n">SURFACE_CLASS</span><span class="p">]</span> <span class="o">==</span> <span class="n">ct</span><span class="o">.</span><span class="n">CLASS_CORTEX</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">one_data</span> <span class="ow">in</span> <span class="n">connectome_data</span><span class="p">:</span>
+                        <span class="n">cd_meta</span> <span class="o">=</span> <span class="n">one_data</span><span class="o">.</span><span class="n">get_metadata_as_dict</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">ct</span><span class="o">.</span><span class="n">KEY_UID</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cd_meta</span> <span class="ow">or</span> <span class="n">surface_meta</span><span class="p">[</span><span class="n">ct</span><span class="o">.</span><span class="n">KEY_UID</span><span class="p">]</span> <span class="o">!=</span> <span class="n">cd_meta</span><span class="p">[</span><span class="n">ct</span><span class="o">.</span><span class="n">KEY_UID</span><span class="p">]:</span>
+                            <span class="k">continue</span>
+                        <span class="k">if</span> <span class="n">cd_meta</span><span class="p">[</span><span class="n">ct</span><span class="o">.</span><span class="n">KEY_ROLE</span><span class="p">]</span> <span class="o">==</span> <span class="n">ct</span><span class="o">.</span><span class="n">ROLE_REGION_MAP</span><span class="p">:</span>
+                            <span class="n">res</span><span class="p">,</span> <span class="n">uid</span> <span class="o">=</span> <span class="n">handler_surface</span><span class="o">.</span><span class="n">cdata2region_mapping</span><span class="p">(</span><span class="n">one_data</span><span class="p">,</span> <span class="n">surface_meta</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">cd_meta</span><span class="p">[</span><span class="n">ct</span><span class="o">.</span><span class="n">KEY_ROLE</span><span class="p">]</span> <span class="o">==</span> <span class="n">ct</span><span class="o">.</span><span class="n">ROLE_LOCAL_CON</span><span class="p">:</span>
+                            <span class="n">res</span><span class="p">,</span> <span class="n">uid</span> <span class="o">=</span> <span class="n">handler_surface</span><span class="o">.</span><span class="n">cdata2local_connectivity</span><span class="p">(</span><span class="n">one_data</span><span class="p">,</span> <span class="n">surface_meta</span><span class="p">,</span>
+                                                                                <span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">res</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">nr_of_datatypes</span> <span class="o">+=</span> <span class="mi">1</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_capture_operation_results</span><span class="p">([</span><span class="n">res</span><span class="p">],</span> <span class="n">uid</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">):</span>
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s">&quot;Problem when importing Surface (or related attributes: LocalConnectivity/RegionMapping) !! </span><span class="se">\n</span><span class="s">&quot;</span>
+</pre></div></div>
 
           </div>
         </div>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../../search.html" method="get">
@@ -301,13 +320,13 @@ LOGGER = get_logger(__name__)
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

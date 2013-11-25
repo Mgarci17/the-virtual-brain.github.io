@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.adapters.visualizers.eeg_monitor &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.adapters.visualizers.eeg_monitor &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../index.html" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -49,286 +48,313 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for tvb.adapters.visualizers.eeg_monitor</h1><pre>
-# -*- coding: utf-8 -*-
-#
-#
-# TheVirtualBrain-Framework Package. This package holds all Data Management, and 
-# Web-UI helpful to run brain-simulations. To use it, you also need do download
-# TheVirtualBrain-Scientific Package (for simulators). See content of the
-# documentation-folder for more details. See also http://www.thevirtualbrain.org
-#
-# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
-#
-# This program is free software; you can redistribute it and/or modify it under 
-# the terms of the GNU General Public License version 2 as published by the Free
-# Software Foundation. This program is distributed in the hope that it will be
-# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
-# License for more details. You should have received a copy of the GNU General 
-# Public License along with this program; if not, you can download it here
-# http://www.gnu.org/licenses/old-licenses/gpl-2.0
-#
-#
-"""
-.. moduleauthor:: Ionel Ortelecan &lt;ionel.ortelecan@codemart.ro&gt;
-.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;
-.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;
-"""
-import json
-import numpy
-from tvb.core.adapters.abcdisplayer import ABCDisplayer
-from tvb.datatypes.time_series import TimeSeriesEEG
-from tvb.core.adapters.exceptions import LaunchException
+  <h1>Source code for tvb.adapters.visualizers.eeg_monitor</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Ionel Ortelecan &lt;ionel.ortelecan@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.abcdisplayer</span> <span class="kn">import</span> <span class="n">ABCDisplayer</span>
+<span class="kn">from</span> <span class="nn">tvb.datatypes.time_series</span> <span class="kn">import</span> <span class="n">TimeSeriesEEG</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.exceptions</span> <span class="kn">import</span> <span class="n">LaunchException</span>
 
 
-<div class="viewcode-block" id="EegMonitor"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.eeg_monitor.EegMonitor">[docs]</a>class EegMonitor(ABCDisplayer):
-    """
-    This viewer takes as inputs at least one ArrayWrapper and at most 3 
-    ArrayWrappers, and returns the needed parameters for a 2D representation 
-    of the values from these arrays, in EEG form. So far arrays of at most 3
-    dimensions are supported.
-    """
-    has_nan = False
-    _ui_name = "EEG lines Visualizer"
-    _ui_subsection = "eeg"
-    
-    page_size = 4000
-    preview_page_size = 250
-    current_page = 0
 
-<div class="viewcode-block" id="EegMonitor.get_input_tree"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.eeg_monitor.EegMonitor.get_input_tree">[docs]</a>    def get_input_tree(self):
-        """ Accept as input Array of any size"""
-        return [{'name': 'input_data', 'label': 'Input Data', 'required': True,
-                 'type': TimeSeriesEEG, 'description': 'Time series to display.'},
-                {'name': 'data_2', 'label': 'Input Data 2',
-                 'type': TimeSeriesEEG, 'description': 'Time series to display.'},
-                {'name': 'data_3', 'label': 'Input Data 3',
-                 'type': TimeSeriesEEG, 'description': 'Time series to display.'}]
-    
-    </div>
-<div class="viewcode-block" id="EegMonitor.get_required_memory_size"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.eeg_monitor.EegMonitor.get_required_memory_size">[docs]</a>    def get_required_memory_size(self, time_series):
-        """
-        Return the required memory to run this algorithm.
-        """
-        return -1
-       
-</div>
-<div class="viewcode-block" id="EegMonitor.compute_parameters"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.eeg_monitor.EegMonitor.compute_parameters">[docs]</a>    def compute_parameters(self, input_data, data_2 = None, data_3 = None, is_preview=False, selected_dimensions=[0,2]):
-        """ Start the JS visualizer, similar to EEG-lab"""
-        #Convert Original ArrayWrappers into a 2D list.
-        original_timeseries = [input_data]
-        multiple_input = False
-        if data_2 is not None and data_2.gid != input_data.gid and is_preview==False:
-            if data_2.sample_period != input_data.sample_period:
-                raise LaunchException("The two timeseries have different sample periods. You cannot view them simultanously!")
-            original_timeseries.append(data_2)
-            multiple_input = True
-        if (data_3 is not None and data_3.gid != input_data.gid 
-            and (data_2 is None or data_2.gid != data_3.gid) and is_preview==False):
-            if data_3.sample_period != input_data.sample_period:
-                raise LaunchException("Two of the timeseries have different sample periods. You cannot view them simultanously!")
-            original_timeseries.append(data_3)
-            multiple_input = True
-        self.selected_dimensions = selected_dimensions
-        # Compute distance between channels
-        step, translations, channels_per_set = self.compute_required_info(original_timeseries)
+<div class="viewcode-block" id="EegMonitor"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.eeg_monitor.EegMonitor">[docs]</a><span class="k">class</span> <span class="nc">EegMonitor</span><span class="p">(</span><span class="n">ABCDisplayer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This viewer takes as inputs at least one ArrayWrapper and at most 3 </span>
+<span class="sd">    ArrayWrappers, and returns the needed parameters for a 2D representation </span>
+<span class="sd">    of the values from these arrays, in EEG form. So far arrays of at most 3</span>
+<span class="sd">    dimensions are supported.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">has_nan</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">_ui_name</span> <span class="o">=</span> <span class="s">&quot;EEG lines Visualizer&quot;</span>
+    <span class="n">_ui_subsection</span> <span class="o">=</span> <span class="s">&quot;eeg&quot;</span>
 
-        base_urls, page_size, total_pages, time_set_urls = self._get_data_set_urls(original_timeseries, is_preview)
-        # Hardcoded now 1st dimension is time
-        if is_preview == False:
-            max_chunck_length = max([timeseries.read_data_shape()[0] for timeseries in original_timeseries])
-        else:
-            max_chunck_length = min(self.preview_page_size, original_timeseries[0].read_data_shape()[0])
-        no_of_channels, labels, total_time_length, graph_labels, modes, state_vars = self._pre_process(
-                                                                                                       original_timeseries, multiple_input)
-        if is_preview:
-            total_time_length = max_chunck_length
-        # compute how many elements will be visible on the screen
-        points_visible = 500
-        points_visible = min([max_chunck_length, points_visible])
-        parameters = dict(  title = self._get_sub_title(original_timeseries),
-                      labelsForCheckBoxes = labels,
-                      tsModes = modes,
-                      tsStateVars = state_vars,
-                      graphLabels = json.dumps(graph_labels),
-                      noOfChannels = no_of_channels,
-                      translationStep = step, 
-                      normalizedSteps = json.dumps(translations),
-                      nan_value_found = self.has_nan,
-                      baseURLS = json.dumps(base_urls),
-                      pageSize = page_size,
-                      nrOfPages = json.dumps(total_pages),
-                      timeSetPaths= json.dumps(time_set_urls),
-                      channelsPerSet = json.dumps(channels_per_set),
-                      total_length = total_time_length,
-                      longestChannelLength = max_chunck_length,
-                      number_of_visible_points = points_visible,
-                      label_x = self._get_label_x(original_timeseries[0]),
-                      extended_view = False,
-                      entities = original_timeseries,
-                      page_size = min(self.page_size, max_chunck_length))
-        parameters[self.EXPORTABLE_FIGURE] = True
-        return parameters
-        
-    </div>
-<div class="viewcode-block" id="EegMonitor.generate_preview"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.eeg_monitor.EegMonitor.generate_preview">[docs]</a>    def generate_preview(self, input_data, data_2=None, data_3=None, figure_size=None):
-        params = self.compute_parameters(input_data, data_2, data_3, is_preview=True)
-        pages = dict(channelsPage=None)
-        return self.build_display_result("eeg/preview", params, pages)
-    </div>
-<div class="viewcode-block" id="EegMonitor.launch"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.eeg_monitor.EegMonitor.launch">[docs]</a>    def launch(self, input_data, data_2 = None, data_3 = None):
-        """
-        Compute visualizer's page
-        """
-        params = self.compute_parameters(input_data, data_2, data_3)
-        pages = dict(controlPage="eeg/controls",
-                     channelsPage="commons/channel_selector.html")
-        return self.build_display_result("eeg/view", params, pages=pages)
+    <span class="n">page_size</span> <span class="o">=</span> <span class="mi">4000</span>
+    <span class="n">preview_page_size</span> <span class="o">=</span> <span class="mi">250</span>
+    <span class="n">current_page</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+<div class="viewcode-block" id="EegMonitor.get_input_tree"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.eeg_monitor.EegMonitor.get_input_tree">[docs]</a>    <span class="k">def</span> <span class="nf">get_input_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Accept as input Array of any size&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;input_data&#39;</span><span class="p">,</span> <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Input Data&#39;</span><span class="p">,</span> <span class="s">&#39;required&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+                 <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">TimeSeriesEEG</span><span class="p">,</span> <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Time series to display.&#39;</span><span class="p">},</span>
+                <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;data_2&#39;</span><span class="p">,</span> <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Input Data 2&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">TimeSeriesEEG</span><span class="p">,</span> <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Time series to display.&#39;</span><span class="p">},</span>
+                <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;data_3&#39;</span><span class="p">,</span> <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Input Data 3&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">TimeSeriesEEG</span><span class="p">,</span> <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Time series to display.&#39;</span><span class="p">}]</span>
 
 </div>
-    def _pre_process(self, timeseries_list, multiple_inputs):
-        """From input, Compute no of lines and labels."""
-        no_of_lines = 0
-        labels = {}
-        modes = {}
-        state_vars = {}
-        graph_labels = []
-        max_length = 0
-        for timeseries in timeseries_list:
-            current_length, no_of_lines = self._count_channels(timeseries,
-                                                               no_of_lines, labels, modes, state_vars,
-                                                               graph_labels, 
-                                                               multiple_inputs)
-            if current_length &gt; max_length:
-                max_length = current_length
-        return no_of_lines, labels, max_length, graph_labels, modes, state_vars
-
-
-    def _count_channels(self, timeseries, starting_index, labels, modes, state_vars, graph_labels, mult_inp):
-        """
-        For a input array and the labels dictionary, add new entries starting
-         with channels from 'starting index'.
-        """
-        shape = timeseries.read_data_shape()
-        channels = []
-        for j in range(shape[self.selected_dimensions[1]]):
-            if len(timeseries.sensors.labels) &gt; 0:
-                this_label = "[" + str(timeseries.sensors.labels[j]) + "]"
-            else:
-                this_label = "[channel:" + str(j) + "]"
-            if mult_inp:
-                this_label = str(timeseries.id) + '.' + this_label
-            graph_labels.append(this_label)
-            channels.append((this_label, starting_index + j))
-        ts_name = timeseries.display_name + " [id:" + str(timeseries.id) +"]"
-        labels[ts_name] = channels
-        if timeseries.labels_ordering and len(timeseries.labels_dimensions) &gt;= 1:
-            state_vars[ts_name] = timeseries.labels_dimensions.get(timeseries.labels_ordering[1], [])
-            if len(state_vars[ts_name]) &lt;= 1:
-                state_vars[ts_name] = []
-        else:
-            state_vars[ts_name] = []
-        modes[ts_name] = range(shape[3])
-        return shape[0], starting_index + shape[self.selected_dimensions[1]]
-
-
-    @staticmethod
-    def _replace_nan_values(input_data):
-        """ Replace NAN values with a given values"""
-        is_any_value_nan = False
-        if not numpy.isfinite(input_data).all():
-            for idx in range(len(input_data)):
-                input_data[idx] = numpy.nan_to_num(input_data[idx])
-            is_any_value_nan = True
-        return is_any_value_nan
-
-
-<div class="viewcode-block" id="EegMonitor.compute_required_info"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.eeg_monitor.EegMonitor.compute_required_info">[docs]</a>    def compute_required_info(self, list_of_timeseries):
-        """Compute average difference between Max and Min."""
-        step = []
-        translations = []
-        channels_per_set = []
-        for timeseries in list_of_timeseries:
-            data_shape = timeseries.read_data_shape()
-            resulting_shape = []
-            for idx in range(len(data_shape)):
-                if idx in self.selected_dimensions:
-                    resulting_shape.append(data_shape[idx])
-            
-            page_chunk_data = timeseries.read_data_page(self.current_page * self.page_size, (self.current_page + 1) * self.page_size)
-            channels_per_set.append(int(resulting_shape[1]))
-            
-            for idx in range(resulting_shape[1]):
-                self.has_nan = self.has_nan or self._replace_nan_values(page_chunk_data[:, idx])
-                array_max = numpy.max(page_chunk_data[:, idx])
-                array_min = numpy.min(page_chunk_data[:, idx])                        
-                translations.append((array_max + array_min) / 2)
-                if array_max == array_min:
-                    array_max += 1                        
-                step.append(abs(array_max - array_min))
-
-        return max(step), translations, channels_per_set
+<div class="viewcode-block" id="EegMonitor.get_required_memory_size"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.eeg_monitor.EegMonitor.get_required_memory_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_required_memory_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_series</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the required memory to run this algorithm.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
 
 </div>
-    @staticmethod
-    def _get_sub_title(datatype_list):
-        """ Compute sub-title for current page"""
-        sub_title = ""
-        for array_w in datatype_list:
-            if len(sub_title.strip()) &gt; 0:
-                sub_title = sub_title + "_" + array_w.display_name
-            else:
-                sub_title = array_w.display_name
-        return sub_title
+<div class="viewcode-block" id="EegMonitor.compute_parameters"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.eeg_monitor.EegMonitor.compute_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">compute_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">,</span> <span class="n">data_2</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">data_3</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">is_preview</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">selected_dimensions</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start the JS visualizer, similar to EEG-lab</span>
+
+<span class="sd">        :param input_data: Time series to display</span>
+<span class="sd">        :type input_data: `TimeSeriesEEG`</span>
+<span class="sd">        :param data_2: additional input data</span>
+<span class="sd">        :param data_3: additional input data</span>
+
+<span class="sd">        :returns: the needed parameters for a 2D representation</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        :raises LaunchException: when at least two input data parameters are provided and they sample periods differ</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#Convert Original ArrayWrappers into a 2D list.</span>
+        <span class="n">original_timeseries</span> <span class="o">=</span> <span class="p">[</span><span class="n">input_data</span><span class="p">]</span>
+        <span class="n">multiple_input</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="n">error_sample</span> <span class="o">=</span> <span class="s">&quot;The input TimeSeries have different sample periods. You cannot view them in the same time !&quot;</span>
+        <span class="k">if</span> <span class="n">data_2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">data_2</span><span class="o">.</span><span class="n">gid</span> <span class="o">!=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">gid</span> <span class="ow">and</span> <span class="n">is_preview</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data_2</span><span class="o">.</span><span class="n">sample_period</span> <span class="o">!=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">sample_period</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">LaunchException</span><span class="p">(</span><span class="n">error_sample</span><span class="p">)</span>
+            <span class="n">original_timeseries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_2</span><span class="p">)</span>
+            <span class="n">multiple_input</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">data_3</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">data_3</span><span class="o">.</span><span class="n">gid</span> <span class="o">!=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">gid</span>
+                <span class="ow">and</span> <span class="p">(</span><span class="n">data_2</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">data_2</span><span class="o">.</span><span class="n">gid</span> <span class="o">!=</span> <span class="n">data_3</span><span class="o">.</span><span class="n">gid</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_preview</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">data_3</span><span class="o">.</span><span class="n">sample_period</span> <span class="o">!=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">sample_period</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">LaunchException</span><span class="p">(</span><span class="n">error_sample</span><span class="p">)</span>
+            <span class="n">original_timeseries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_3</span><span class="p">)</span>
+            <span class="n">multiple_input</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected_dimensions</span> <span class="o">=</span> <span class="n">selected_dimensions</span>
+        <span class="c"># Compute distance between channels</span>
+        <span class="n">step</span><span class="p">,</span> <span class="n">translations</span><span class="p">,</span> <span class="n">channels_per_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_required_info</span><span class="p">(</span><span class="n">original_timeseries</span><span class="p">)</span>
+
+        <span class="n">base_urls</span><span class="p">,</span> <span class="n">page_size</span><span class="p">,</span> <span class="n">total_pages</span><span class="p">,</span> <span class="n">time_set_urls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_set_urls</span><span class="p">(</span><span class="n">original_timeseries</span><span class="p">,</span> <span class="n">is_preview</span><span class="p">)</span>
+        <span class="c"># Hardcoded now 1st dimension is time</span>
+        <span class="k">if</span> <span class="n">is_preview</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="n">max_chunck_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">timeseries</span><span class="o">.</span><span class="n">read_data_shape</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">timeseries</span> <span class="ow">in</span> <span class="n">original_timeseries</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">max_chunck_length</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preview_page_size</span><span class="p">,</span> <span class="n">original_timeseries</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">read_data_shape</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">no_of_channels</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">total_time_length</span><span class="p">,</span> <span class="n">graph_labels</span><span class="p">,</span> <span class="n">modes</span><span class="p">,</span> <span class="n">state_vars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pre_process</span><span class="p">(</span>
+            <span class="n">original_timeseries</span><span class="p">,</span> <span class="n">multiple_input</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_preview</span><span class="p">:</span>
+            <span class="n">total_time_length</span> <span class="o">=</span> <span class="n">max_chunck_length</span>
+        <span class="c"># compute how many elements will be visible on the screen</span>
+        <span class="n">points_visible</span> <span class="o">=</span> <span class="mi">500</span>
+        <span class="n">points_visible</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">max_chunck_length</span><span class="p">,</span> <span class="n">points_visible</span><span class="p">])</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_sub_title</span><span class="p">(</span><span class="n">original_timeseries</span><span class="p">),</span>
+                          <span class="n">labelsForCheckBoxes</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span>
+                          <span class="n">tsModes</span><span class="o">=</span><span class="n">modes</span><span class="p">,</span>
+                          <span class="n">tsStateVars</span><span class="o">=</span><span class="n">state_vars</span><span class="p">,</span>
+                          <span class="n">graphLabels</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">graph_labels</span><span class="p">),</span>
+                          <span class="n">noOfChannels</span><span class="o">=</span><span class="n">no_of_channels</span><span class="p">,</span>
+                          <span class="n">translationStep</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
+                          <span class="n">normalizedSteps</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">translations</span><span class="p">),</span>
+                          <span class="n">nan_value_found</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">has_nan</span><span class="p">,</span>
+                          <span class="n">baseURLS</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">base_urls</span><span class="p">),</span>
+                          <span class="n">pageSize</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span>
+                          <span class="n">nrOfPages</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">total_pages</span><span class="p">),</span>
+                          <span class="n">timeSetPaths</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">time_set_urls</span><span class="p">),</span>
+                          <span class="n">channelsPerSet</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">channels_per_set</span><span class="p">),</span>
+                          <span class="n">total_length</span><span class="o">=</span><span class="n">total_time_length</span><span class="p">,</span>
+                          <span class="n">longestChannelLength</span><span class="o">=</span><span class="n">max_chunck_length</span><span class="p">,</span>
+                          <span class="n">number_of_visible_points</span><span class="o">=</span><span class="n">points_visible</span><span class="p">,</span>
+                          <span class="n">label_x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_label_x</span><span class="p">(</span><span class="n">original_timeseries</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                          <span class="n">extended_view</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                          <span class="n">entities</span><span class="o">=</span><span class="n">original_timeseries</span><span class="p">,</span>
+                          <span class="n">page_size</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">page_size</span><span class="p">,</span> <span class="n">max_chunck_length</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">parameters</span>
+
+</div>
+<div class="viewcode-block" id="EegMonitor.generate_preview"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.eeg_monitor.EegMonitor.generate_preview">[docs]</a>    <span class="k">def</span> <span class="nf">generate_preview</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">,</span> <span class="n">data_2</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">data_3</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">figure_size</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_parameters</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">data_2</span><span class="p">,</span> <span class="n">data_3</span><span class="p">,</span> <span class="n">is_preview</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">pages</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">channelsPage</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_display_result</span><span class="p">(</span><span class="s">&quot;eeg/preview&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">pages</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="EegMonitor.launch"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.eeg_monitor.EegMonitor.launch">[docs]</a>    <span class="k">def</span> <span class="nf">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">,</span> <span class="n">data_2</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">data_3</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute visualizer&#39;s page</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_parameters</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">data_2</span><span class="p">,</span> <span class="n">data_3</span><span class="p">)</span>
+        <span class="n">pages</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">controlPage</span><span class="o">=</span><span class="s">&quot;eeg/controls&quot;</span><span class="p">,</span> <span class="n">channelsPage</span><span class="o">=</span><span class="s">&quot;commons/channel_selector.html&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_display_result</span><span class="p">(</span><span class="s">&quot;eeg/view&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="n">pages</span><span class="p">)</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">_pre_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeseries_list</span><span class="p">,</span> <span class="n">multiple_inputs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;From input, Compute no of lines and labels.&quot;&quot;&quot;</span>
+        <span class="n">no_of_lines</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">modes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">state_vars</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">graph_labels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">max_length</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">timeseries</span> <span class="ow">in</span> <span class="n">timeseries_list</span><span class="p">:</span>
+            <span class="n">current_length</span><span class="p">,</span> <span class="n">no_of_lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count_channels</span><span class="p">(</span><span class="n">timeseries</span><span class="p">,</span> <span class="n">no_of_lines</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">modes</span><span class="p">,</span> <span class="n">state_vars</span><span class="p">,</span>
+                                                               <span class="n">graph_labels</span><span class="p">,</span> <span class="n">multiple_inputs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">current_length</span> <span class="o">&gt;</span> <span class="n">max_length</span><span class="p">:</span>
+                <span class="n">max_length</span> <span class="o">=</span> <span class="n">current_length</span>
+        <span class="k">return</span> <span class="n">no_of_lines</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">max_length</span><span class="p">,</span> <span class="n">graph_labels</span><span class="p">,</span> <span class="n">modes</span><span class="p">,</span> <span class="n">state_vars</span>
 
 
-    @staticmethod
-    def _get_label_x(original_timeseries):
-        """
-        Compute the label displayed on the x axis
-        """
-        return "Time(" + original_timeseries.sample_period_unit + ")"
+    <span class="k">def</span> <span class="nf">_count_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeseries</span><span class="p">,</span> <span class="n">starting_index</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">modes</span><span class="p">,</span> <span class="n">state_vars</span><span class="p">,</span> <span class="n">graph_labels</span><span class="p">,</span> <span class="n">mult_inp</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For a input array and the labels dictionary, add new entries starting</span>
+<span class="sd">         with channels from &#39;starting index&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">timeseries</span><span class="o">.</span><span class="n">read_data_shape</span><span class="p">()</span>
+        <span class="n">channels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_dimensions</span><span class="p">[</span><span class="mi">1</span><span class="p">]]):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">timeseries</span><span class="o">.</span><span class="n">sensors</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">this_label</span> <span class="o">=</span> <span class="s">&quot;[&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">timeseries</span><span class="o">.</span><span class="n">sensors</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">+</span> <span class="s">&quot;]&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">this_label</span> <span class="o">=</span> <span class="s">&quot;[channel:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;]&quot;</span>
+            <span class="k">if</span> <span class="n">mult_inp</span><span class="p">:</span>
+                <span class="n">this_label</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">timeseries</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;.&#39;</span> <span class="o">+</span> <span class="n">this_label</span>
+            <span class="n">graph_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_label</span><span class="p">)</span>
+            <span class="n">channels</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">this_label</span><span class="p">,</span> <span class="n">starting_index</span> <span class="o">+</span> <span class="n">j</span><span class="p">))</span>
+        <span class="n">ts_name</span> <span class="o">=</span> <span class="n">timeseries</span><span class="o">.</span><span class="n">display_name</span> <span class="o">+</span> <span class="s">&quot; [id:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">timeseries</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;]&quot;</span>
+        <span class="n">labels</span><span class="p">[</span><span class="n">ts_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">channels</span>
+        <span class="n">state_vars</span><span class="p">[</span><span class="n">ts_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">timeseries</span><span class="o">.</span><span class="n">labels_dimensions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeseries</span><span class="o">.</span><span class="n">labels_ordering</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[])</span>
+
+        <span class="n">modes</span><span class="p">[</span><span class="n">ts_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">starting_index</span> <span class="o">+</span> <span class="n">shape</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_dimensions</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
 
 
-    def _get_data_set_urls(self, list_of_timeseries, is_preview=False):
-        """
-        Returns a list of lists. Each list contains the urls to the files
-        containing the data for a certain array wrapper.
-        """
-        base_urls = []
-        time_set_urls = []
-        total_pages_set = []
-        if is_preview == False:
-            page_size = self.page_size
-            for timeseries in list_of_timeseries:
-                overall_shape = timeseries.read_data_shape()
-                total_pages = overall_shape[0] / self.page_size
-                if overall_shape[0] % self.page_size &gt; 0:
-                    total_pages += 1
-                timeline_urls = []
-                for i in range(total_pages):
-                    current_max_size = min((i +1) * self.page_size, overall_shape[0]) - i * self.page_size
-                    params = "current_page="+ str(i) +";page_size=" + str(self.page_size) +";max_size=" + str(current_max_size)
-                    timeline_urls.append(self.paths2url(timeseries, 'read_time_page', parameter=params))
-                base_urls.append(ABCDisplayer.VISUALIZERS_URL_PREFIX + timeseries.gid)
-                time_set_urls.append(timeline_urls)
-                total_pages_set.append(total_pages)
-        else:
-            base_urls.append(ABCDisplayer.VISUALIZERS_URL_PREFIX + list_of_timeseries[0].gid)
-            total_pages_set.append(1)
-            page_size = self.preview_page_size
-            params = "current_page=0;page_size="+str(self.preview_page_size)+";max_size="+str(min(self.preview_page_size, list_of_timeseries[0].read_data_shape()[0]))
-            time_set_urls.append([self.paths2url(list_of_timeseries[0], 'read_time_page', parameter=params)])
-        return base_urls, page_size, total_pages_set, time_set_urls
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_replace_nan_values</span><span class="p">(</span><span class="n">input_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Replace NAN values with a given values&quot;&quot;&quot;</span>
+        <span class="n">is_any_value_nan</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">input_data</span><span class="p">)):</span>
+                <span class="n">input_data</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">input_data</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+            <span class="n">is_any_value_nan</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="n">is_any_value_nan</span>
 
-    </pre></div>
+
+<div class="viewcode-block" id="EegMonitor.compute_required_info"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.eeg_monitor.EegMonitor.compute_required_info">[docs]</a>    <span class="k">def</span> <span class="nf">compute_required_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_of_timeseries</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute average difference between Max and Min.&quot;&quot;&quot;</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">translations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">channels_per_set</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">timeseries</span> <span class="ow">in</span> <span class="n">list_of_timeseries</span><span class="p">:</span>
+            <span class="n">data_shape</span> <span class="o">=</span> <span class="n">timeseries</span><span class="o">.</span><span class="n">read_data_shape</span><span class="p">()</span>
+            <span class="n">resulting_shape</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">shape</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data_shape</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_dimensions</span><span class="p">:</span>
+                    <span class="n">resulting_shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+
+            <span class="n">page_chunk_data</span> <span class="o">=</span> <span class="n">timeseries</span><span class="o">.</span><span class="n">read_data_page</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_page</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_size</span><span class="p">,</span>
+                                                        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_page</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_size</span><span class="p">)</span>
+            <span class="n">channels_per_set</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">resulting_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">resulting_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">has_nan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_nan</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_replace_nan_values</span><span class="p">(</span><span class="n">page_chunk_data</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">])</span>
+                <span class="n">array_max</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">page_chunk_data</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">])</span>
+                <span class="n">array_min</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">page_chunk_data</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">])</span>
+                <span class="n">translations</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">array_max</span> <span class="o">+</span> <span class="n">array_min</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">array_max</span> <span class="o">==</span> <span class="n">array_min</span><span class="p">:</span>
+                    <span class="n">array_max</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">step</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">array_max</span> <span class="o">-</span> <span class="n">array_min</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">step</span><span class="p">),</span> <span class="n">translations</span><span class="p">,</span> <span class="n">channels_per_set</span>
+
+</div>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_sub_title</span><span class="p">(</span><span class="n">datatype_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Compute sub-title for current page&quot;&quot;&quot;</span>
+        <span class="n">sub_title</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">array_w</span> <span class="ow">in</span> <span class="n">datatype_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sub_title</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">sub_title</span> <span class="o">=</span> <span class="n">sub_title</span> <span class="o">+</span> <span class="s">&quot;_&quot;</span> <span class="o">+</span> <span class="n">array_w</span><span class="o">.</span><span class="n">display_name</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sub_title</span> <span class="o">=</span> <span class="n">array_w</span><span class="o">.</span><span class="n">display_name</span>
+        <span class="k">return</span> <span class="n">sub_title</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_label_x</span><span class="p">(</span><span class="n">original_timeseries</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the label displayed on the x axis</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s">&quot;Time(&quot;</span> <span class="o">+</span> <span class="n">original_timeseries</span><span class="o">.</span><span class="n">sample_period_unit</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">_get_data_set_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_of_timeseries</span><span class="p">,</span> <span class="n">is_preview</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of lists. Each list contains the urls to the files</span>
+<span class="sd">        containing the data for a certain array wrapper.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">base_urls</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">time_set_urls</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">total_pages_set</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">is_preview</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="n">page_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_size</span>
+            <span class="k">for</span> <span class="n">timeseries</span> <span class="ow">in</span> <span class="n">list_of_timeseries</span><span class="p">:</span>
+                <span class="n">overall_shape</span> <span class="o">=</span> <span class="n">timeseries</span><span class="o">.</span><span class="n">read_data_shape</span><span class="p">()</span>
+                <span class="n">total_pages</span> <span class="o">=</span> <span class="n">overall_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_size</span>
+                <span class="k">if</span> <span class="n">overall_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">total_pages</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">timeline_urls</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">total_pages</span><span class="p">):</span>
+                    <span class="n">current_max_size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">((</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_size</span><span class="p">,</span> <span class="n">overall_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">i</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_size</span>
+                    <span class="n">params</span> <span class="o">=</span> <span class="s">&quot;current_page=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;;page_size=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">page_size</span><span class="p">)</span> <span class="o">+</span> \
+                             <span class="s">&quot;;max_size=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">current_max_size</span><span class="p">)</span>
+                    <span class="n">timeline_urls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths2url</span><span class="p">(</span><span class="n">timeseries</span><span class="p">,</span> <span class="s">&#39;read_time_page&#39;</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="n">params</span><span class="p">))</span>
+                <span class="n">base_urls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ABCDisplayer</span><span class="o">.</span><span class="n">VISUALIZERS_URL_PREFIX</span> <span class="o">+</span> <span class="n">timeseries</span><span class="o">.</span><span class="n">gid</span><span class="p">)</span>
+                <span class="n">time_set_urls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">timeline_urls</span><span class="p">)</span>
+                <span class="n">total_pages_set</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">total_pages</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">base_urls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ABCDisplayer</span><span class="o">.</span><span class="n">VISUALIZERS_URL_PREFIX</span> <span class="o">+</span> <span class="n">list_of_timeseries</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">gid</span><span class="p">)</span>
+            <span class="n">total_pages_set</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">page_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preview_page_size</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="s">&quot;current_page=0;page_size=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preview_page_size</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;;max_size=&quot;</span> <span class="o">+</span> \
+                     <span class="nb">str</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preview_page_size</span><span class="p">,</span> <span class="n">list_of_timeseries</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">read_data_shape</span><span class="p">()[</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="n">time_set_urls</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">paths2url</span><span class="p">(</span><span class="n">list_of_timeseries</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;read_time_page&#39;</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="n">params</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="n">base_urls</span><span class="p">,</span> <span class="n">page_size</span><span class="p">,</span> <span class="n">total_pages_set</span><span class="p">,</span> <span class="n">time_set_urls</span>
+
+    </div>
+</pre></div>
 
           </div>
         </div>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../../search.html" method="get">
@@ -355,13 +381,13 @@ from tvb.core.adapters.exceptions import LaunchException
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

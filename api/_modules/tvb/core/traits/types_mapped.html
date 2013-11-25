@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.core.traits.types_mapped &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.core.traits.types_mapped &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../index.html" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -70,6 +69,15 @@
 <span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
 <span class="c">#</span>
 <span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
@@ -87,63 +95,59 @@
 <span class="kn">import</span> <span class="nn">tvb.basic.traits.types_mapped_light</span> <span class="kn">as</span> <span class="nn">mapped</span>
 <span class="kn">from</span> <span class="nn">tvb.basic.traits.util</span> <span class="kn">import</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">tvb.basic.traits.core</span> <span class="kn">import</span> <span class="n">FILE_STORAGE_NONE</span><span class="p">,</span> <span class="n">KWARG_STORAGE_PATH</span><span class="p">,</span> <span class="n">FILE_STORAGE_DEFAULT</span>
-<span class="kn">from</span> <span class="nn">tvb.basic.traits.exceptions</span> <span class="kn">import</span> <span class="n">ValidationException</span><span class="p">,</span> <span class="n">MissingEntityException</span>
-<span class="kn">from</span> <span class="nn">tvb.basic.traits.exceptions</span> <span class="kn">import</span> <span class="n">StorageException</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.traits.exceptions</span> <span class="kn">import</span> <span class="n">ValidationException</span><span class="p">,</span> <span class="n">MissingEntityException</span><span class="p">,</span> <span class="n">StorageException</span>
 <span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
 <span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span>
 <span class="kn">from</span> <span class="nn">tvb.core.traits.core</span> <span class="kn">import</span> <span class="n">compute_table_name</span>
 <span class="kn">from</span> <span class="nn">tvb.core.entities</span> <span class="kn">import</span> <span class="n">model</span>
 <span class="kn">from</span> <span class="nn">tvb.core.entities.storage</span> <span class="kn">import</span> <span class="n">dao</span>
-<span class="kn">from</span> <span class="nn">tvb.core.entities.file.fileshelper</span> <span class="kn">import</span> <span class="n">FilesHelper</span>
-<span class="kn">from</span> <span class="nn">tvb.core.entities.file.hdf5storage</span> <span class="kn">import</span> <span class="n">HDF5StorageManager</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.file.files_helper</span> <span class="kn">import</span> <span class="n">FilesHelper</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.file.hdf5_storage_manager</span> <span class="kn">import</span> <span class="n">HDF5StorageManager</span>
 <span class="kn">from</span> <span class="nn">tvb.core.entities.file.exceptions</span> <span class="kn">import</span> <span class="n">MissingDataSetException</span>
-
-
 
 
 <div class="viewcode-block" id="MappedType"><a class="viewcode-back" href="../../../../tvb.core.traits.html#tvb.core.traits.types_mapped.MappedType">[docs]</a><span class="k">class</span> <span class="nc">MappedType</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">DataType</span><span class="p">,</span> <span class="n">mapped</span><span class="o">.</span><span class="n">MappedTypeLight</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Mix-in class combining core Traited mechanics with the db&#39;ed DataType</span>
-<span class="sd">    class enabling SQLAlchemy.</span>
+<span class="sd">    Mix-in class combining core Traited mechanics with the db&#39;ed DataType class enabling SQLAlchemy.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c">#### Transient fields below</span>
     <span class="n">storage_path</span> <span class="o">=</span> <span class="bp">None</span>
     <span class="n">framework_metadata</span> <span class="o">=</span> <span class="bp">None</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
     <span class="n">_ui_complex_datatype</span> <span class="o">=</span> <span class="bp">False</span>
-    
+
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param kwargs: initialization arguments for generic class.</span>
-<span class="sd">                       Traited fields are optional to appear here. </span>
-<span class="sd">                       If not here, default traited value will be taken. </span>
+<span class="sd">                       Traited fields are optional to appear here. If not here, default traited value will be taken.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">KWARG_STORAGE_PATH</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">KWARG_STORAGE_PATH</span><span class="p">]</span>
             <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">KWARG_STORAGE_PATH</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_metadata</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">MappedType</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    
+
 
     <span class="nd">@declared_attr</span>
     <span class="k">def</span> <span class="nf">__tablename__</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overwrite field __tablename__ for class.</span>
-<span class="sd">        :return None if MappedType itself, custom table name, to recognize Mapped Table in DB.</span>
+<span class="sd">        :returns: None if MappedType itself, custom table name, to recognize Mapped Table in DB.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s">&#39;MappedType&#39;</span> <span class="ow">in</span> <span class="n">cls</span><span class="o">.</span><span class="n">__name__</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">None</span>
         <span class="k">return</span> <span class="n">cls</span><span class="o">.</span><span class="n">compute_table_name</span><span class="p">()</span>
 
-     
-    <span class="nd">@classmethod</span>   
+
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">compute_table_name</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For current class, if to be persisted in DB, compute proper table name.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">compute_table_name</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
-    
+
 
     <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inst</span><span class="p">,</span> <span class="n">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -156,8 +160,8 @@
             <span class="k">return</span> <span class="n">get</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="s">&#39;__&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span>
-        
-        
+
+
     <span class="k">def</span> <span class="nf">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inst</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add DB code for when an attribute of MappedType class is set on another entity.</span>
@@ -171,29 +175,27 @@
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">instances_arr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">full_instance</span> <span class="o">=</span> <span class="n">instances_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;Could not set &#39;</span><span class="si">%s</span><span class="s">&#39; field on &#39;</span><span class="si">%s</span><span class="s">&#39; because there is&quot;</span> <span class="o">+</span> 
-                           <span class="s">&quot; no &#39;</span><span class="si">%s</span><span class="s">&#39; with gid: </span><span class="si">%s</span><span class="s"> in database.&quot;</span><span class="p">)</span>\
-                           <span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">inst</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> 
-                             <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">instance_gid</span><span class="p">)</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Could not set &#39;</span><span class="si">%s</span><span class="s">&#39; field on &#39;</span><span class="si">%s</span><span class="s">&#39; because there is no &#39;</span><span class="si">%s</span><span class="s">&#39; with gid: </span><span class="si">%s</span><span class="s"> in database.&quot;</span> \
+                          <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">inst</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">instance_gid</span><span class="p">)</span>
                     <span class="k">raise</span> <span class="n">MissingEntityException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">instance_gid</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">gid</span>
             <span class="n">full_instance</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_put_value_on_instance</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="n">instance_gid</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">bound</span><span class="p">:</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="s">&#39;__&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">full_instance</span><span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method automatically called immediately after DB-Load.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_operation_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fk_from_operation</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
-    
-    
-    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignore_list</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+
+
+    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignore_list</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method checks if the data stored into this entity is valid, </span>
 <span class="sd">        and ready to be stored in DB.</span>
@@ -206,26 +208,26 @@
             <span class="c"># Skip attribute</span>
             <span class="k">if</span> <span class="n">ignore_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">ignore_list</span><span class="p">:</span>
                 <span class="k">break</span>
-             
+
             <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
                 <span class="c"># In case of fields with data stored on disk check shape</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">mapped</span><span class="o">.</span><span class="n">Array</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">file_storage</span> <span class="o">!=</span> <span class="n">FILE_STORAGE_NONE</span><span class="p">:</span> 
-                        <span class="c"># Check if any data stored in corresponding dataset</span>
+                    <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">file_storage</span> <span class="o">!=</span> <span class="n">FILE_STORAGE_NONE</span><span class="p">:</span>
+                    <span class="c"># Check if any data stored in corresponding dataset</span>
                         <span class="k">try</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">get_data_shape</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
                         <span class="k">except</span> <span class="n">MissingDataSetException</span><span class="p">:</span>
-                            <span class="k">raise</span> <span class="n">ValidationException</span><span class="p">(</span><span class="s">&quot;Could not store &#39;</span><span class="si">%s</span><span class="s">&#39; because required array &#39;</span><span class="si">%s</span><span class="s">&#39; is missing.&quot;</span><span class="o">%</span>
+                            <span class="k">raise</span> <span class="n">ValidationException</span><span class="p">(</span><span class="s">&quot;Could not store &#39;</span><span class="si">%s</span><span class="s">&#39; because required array &#39;</span><span class="si">%s</span><span class="s">&#39; is missing.&quot;</span> <span class="o">%</span>
                                                       <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span>
                         <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
-                            <span class="k">raise</span> <span class="n">ValidationException</span><span class="p">(</span><span class="s">&quot;Could not store &#39;</span><span class="si">%s</span><span class="s">&#39; because there is no HDF5 file associated.&quot;</span><span class="o">%</span>
-                                                      <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">))</span>
-                                
-                <span class="k">elif</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="n">ValidationException</span><span class="p">(</span><span class="s">&quot;Could not store &#39;</span><span class="si">%s</span><span class="s">&#39; because required attribute &#39;</span><span class="si">%s</span><span class="s">&#39; is missing.&quot;</span><span class="o">%</span>
+                            <span class="k">raise</span> <span class="n">ValidationException</span><span class="p">(</span><span class="s">&quot;Could not store &#39;</span><span class="si">%s</span><span class="s">&#39; because there is no HDF5 file associated.&quot;</span> <span class="o">%</span>
+                                                      <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">ValidationException</span><span class="p">(</span><span class="s">&quot;Could not store &#39;</span><span class="si">%s</span><span class="s">&#39; because required attribute &#39;</span><span class="si">%s</span><span class="s">&#39; is missing.&quot;</span> <span class="o">%</span>
                                               <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span>
-        
-        
+
+
     <span class="k">def</span> <span class="nf">set_operation_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Setter for FK_operation_id.</span>
@@ -238,44 +240,40 @@
 
     <span class="c"># ---------------------------- FILE STORAGE -------------------------------</span>
     <span class="n">ROOT_NODE_PATH</span> <span class="o">=</span> <span class="s">&quot;/&quot;</span>
-        
-        
+
+
     <span class="k">def</span> <span class="nf">store_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_name</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">ROOT_NODE_PATH</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Store data into a HDF5 file on disk. Each data will be stored into a </span>
 <span class="sd">        dataset with the provided name.</span>
-<span class="sd">            ::param data_name: name of the dataset where to store data</span>
-<span class="sd">            ::param data: data to be stored (can be a list / array / numpy array...) </span>
-<span class="sd">            ::param where: represents the path where to store our dataset (e.g. /data/info) </span>
+<span class="sd">            :param data_name: name of the dataset where to store data</span>
+<span class="sd">            :param data: data to be stored (can be a list / array / numpy array...)</span>
+<span class="sd">            :param where: represents the path where to store our dataset (e.g. /data/info)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">store_manager</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_storage_mng</span><span class="p">()</span>
         <span class="n">store_manager</span><span class="o">.</span><span class="n">store_data</span><span class="p">(</span><span class="n">data_name</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span>
         <span class="c">### Also store Array specific meta-data.</span>
         <span class="n">meta_dictionary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__retrieve_array_metadata</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">data_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_metadata</span><span class="p">(</span><span class="n">meta_dictionary</span><span class="p">,</span> <span class="n">data_name</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
-    
-    
-    <span class="k">def</span> <span class="nf">store_data_chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_name</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">grow_dimension</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">expected_rows</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> 
-                         <span class="n">buffer_shape</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">close_file</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">ROOT_NODE_PATH</span><span class="p">):</span>
+
+
+    <span class="k">def</span> <span class="nf">store_data_chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_name</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">grow_dimension</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">close_file</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">ROOT_NODE_PATH</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Store data into a HDF5 file on disk by writing chunks. </span>
 <span class="sd">        Data will be stored into a data-set with the provided name.</span>
-<span class="sd">            ::param data_name: name of the data-set where to store data</span>
-<span class="sd">            ::param data: data to be stored (can be a list / array / numpy array...)</span>
-<span class="sd">            ::param grow_dimension: The dimension to be used to grow stored array. </span>
+<span class="sd">            :param data_name: name of the data-set where to store data</span>
+<span class="sd">            :param data: data to be stored (can be a list / array / numpy array...)</span>
+<span class="sd">            :param grow_dimension: The dimension to be used to grow stored array.</span>
 <span class="sd">                                   If not provided a default value = -1 is used (grow on LAST dimension).</span>
-<span class="sd">            ::param expected_rows: Expected number of row elements that will be added to the </span>
-<span class="sd">                                   growable dimension. Providing an accurate value for this </span>
-<span class="sd">                                   parameter improves storage performance. </span>
-<span class="sd">            ::param close_file: Specify if the file should be closed automatically after write operation. </span>
+<span class="sd">            :param close_file: Specify if the file should be closed automatically after write operation.</span>
 <span class="sd">                                If not, you have to close file by calling method close_file()</span>
-<span class="sd">            ::param where: represents the path where to store our dataset (e.g. /data/info)  </span>
+<span class="sd">            :param where: represents the path where to store our dataset (e.g. /data/info)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="n">store_manager</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_storage_mng</span><span class="p">()</span>
-        <span class="n">store_manager</span><span class="o">.</span><span class="n">append_data</span><span class="p">(</span><span class="n">data_name</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">grow_dimension</span><span class="p">,</span> <span class="n">expected_rows</span><span class="p">,</span> <span class="n">buffer_shape</span><span class="p">,</span> <span class="n">close_file</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span>
-        
+        <span class="n">store_manager</span><span class="o">.</span><span class="n">append_data</span><span class="p">(</span><span class="n">data_name</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">grow_dimension</span><span class="p">,</span> <span class="n">close_file</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span>
+
         <span class="c">### Start updating array meta-data after new chunk of data stored. </span>
         <span class="n">new_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__retrieve_array_metadata</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">data_name</span><span class="p">)</span>
         <span class="n">previous_meta</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -283,26 +281,26 @@
             <span class="n">previous_meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_metadata</span><span class="p">[</span><span class="n">data_name</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__merge_metadata</span><span class="p">(</span><span class="n">new_metadata</span><span class="p">,</span> <span class="n">previous_meta</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_metadata</span><span class="p">[</span><span class="n">data_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_metadata</span>
-    
+
 
     <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_name</span><span class="p">,</span> <span class="n">data_slice</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">ROOT_NODE_PATH</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method reads data from the given data set based on the slice specification</span>
-<span class="sd">            ::param data_name: Name of the data set from where to read data</span>
-<span class="sd">            ::param data_slice: Specify how to retrieve data from array {e.g [slice(1,10,1),slice(1,6,2)] ]</span>
-<span class="sd">            ::param where: represents the path where dataset is stored (e.g. /data/info)  </span>
-<span class="sd">            ::return: a numpy.ndarray containing filtered data</span>
+<span class="sd">            :param data_name: Name of the data set from where to read data</span>
+<span class="sd">            :param data_slice: Specify how to retrieve data from array {e.g [slice(1,10,1),slice(1,6,2)] ]</span>
+<span class="sd">            :param where: represents the path where dataset is stored (e.g. /data/info)</span>
+<span class="sd">            :returns: a numpy.ndarray containing filtered data</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">store_manager</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_storage_mng</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">store_manager</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">data_name</span><span class="p">,</span> <span class="n">data_slice</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">get_data_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_name</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">ROOT_NODE_PATH</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method reads data-shape from the given data set</span>
-<span class="sd">            ::param data_name: Name of the data set from where to read size</span>
-<span class="sd">            ::param where: represents the path where dataset is stored (e.g. /data/info)  </span>
-<span class="sd">            ::return: a shape tuple</span>
+<span class="sd">            :param data_name: Name of the data set from where to read size</span>
+<span class="sd">            :param where: represents the path where dataset is stored (e.g. /data/info)</span>
+<span class="sd">            :returns: a shape tuple</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">TVBSettings</span><span class="o">.</span><span class="n">TRAITS_CONFIGURATION</span><span class="o">.</span><span class="n">use_storage</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">use_storage</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -314,25 +312,24 @@
                 <span class="k">return</span> <span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">MappedType</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_data_shape</span><span class="p">(</span><span class="n">data_name</span><span class="p">)</span>
-        
-        
+
+
     <span class="k">def</span> <span class="nf">get_info_about_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array_name</span><span class="p">,</span> <span class="n">included_info</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :return: dictionary {label: value} about an attribute of type mapped.Array</span>
-<span class="sd">                 Generic informations, like Max/Min/Mean/Var are to be retrieved for this array_attr</span>
+<span class="sd">        :returns: dictionary {label: value} about an attribute of type mapped.Array</span>
+<span class="sd">                 Generic information, like Max/Min/Mean/Var are to be retrieved for this array_attr</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">summary</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">TVBSettings</span><span class="o">.</span><span class="n">TRAITS_CONFIGURATION</span><span class="o">.</span><span class="n">use_storage</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">use_storage</span><span class="p">:</span>
             <span class="n">summary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_summary_info</span><span class="p">(</span><span class="n">array_name</span><span class="p">,</span> <span class="n">included_info</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">summary</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">MappedType</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__get_summary_info</span><span class="p">(</span><span class="n">array_name</span><span class="p">,</span> <span class="n">included_info</span><span class="p">)</span>
-        <span class="c">### Before return, prepare names for UI display.                </span>
+        <span class="c">### Before return, prepare names for UI display.</span>
         <span class="n">result</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">summary</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
             <span class="n">result</span><span class="p">[</span><span class="n">array_name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;_&quot;</span><span class="p">,</span> <span class="s">&quot; &quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; - &quot;</span> <span class="o">+</span> <span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-        <span class="k">return</span> <span class="n">result</span>    
-    
-    
+        <span class="k">return</span> <span class="n">result</span>
+
+
     <span class="k">def</span> <span class="nf">__get_summary_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array_name</span><span class="p">,</span> <span class="n">included_info</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overwrite get_summary to read from storage.</span>
@@ -343,8 +340,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_SHAPE</span> <span class="ow">in</span> <span class="n">included_info</span><span class="p">:</span>
             <span class="n">summary</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_SHAPE</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_shape</span><span class="p">(</span><span class="n">array_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">summary</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__read_storage_array_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array_name</span><span class="p">,</span> <span class="n">included_info</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve from HDF5 specific meta-data about an array.</span>
@@ -361,31 +358,31 @@
                 <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">return</span> <span class="n">result</span>
 
-    
+
     <span class="k">def</span> <span class="nf">set_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta_dictionary</span><span class="p">,</span> <span class="n">data_name</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">tvb_specific_metadata</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">ROOT_NODE_PATH</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set meta-data information for root node or for a given data set.</span>
-<span class="sd">            ::param meta_dictionary: disctionary containing meta info to be stored on node</span>
-<span class="sd">            ::param data_name: name of the dataset where to assign metadata. </span>
+<span class="sd">            :param meta_dictionary: disctionary containing meta info to be stored on node</span>
+<span class="sd">            :param data_name: name of the dataset where to assign metadata.</span>
 <span class="sd">                                 If None, metadata is assigned to ROOT node.  </span>
-<span class="sd">            ::param tvb_specific_metadata: specify if the provided metadata is</span>
+<span class="sd">            :param tvb_specific_metadata: specify if the provided metadata is</span>
 <span class="sd">                                 specific to TVB (keys will have a TVB prefix).</span>
-<span class="sd">            ::param where: represents the path where dataset is stored (e.g. /data/info)  </span>
+<span class="sd">            :param where: represents the path where dataset is stored (e.g. /data/info)</span>
 <span class="sd">             </span>
-<span class="sd">        &quot;&quot;&quot;</span>  
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">meta_dictionary</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="n">store_manager</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_storage_mng</span><span class="p">()</span>
         <span class="n">store_manager</span><span class="o">.</span><span class="n">set_metadata</span><span class="p">(</span><span class="n">meta_dictionary</span><span class="p">,</span> <span class="n">data_name</span><span class="p">,</span> <span class="n">tvb_specific_metadata</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span>
-        
-        
+
+
     <span class="k">def</span> <span class="nf">persist_full_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gather all instrumented attributed on current entity, </span>
 <span class="sd">        then write them as meta-data in storage.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">meta_dictionary</span> <span class="o">=</span> <span class="p">{}</span>
-        
+
         <span class="c"># First we process fields store in DB (from Type)</span>
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
@@ -393,7 +390,7 @@
                 <span class="n">capitalized_name</span> <span class="o">=</span> <span class="n">attr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="n">attr</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">attr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">):</span>
                     <span class="n">meta_dictionary</span><span class="p">[</span><span class="n">capitalized_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
-                    
+
         <span class="c"># Now process object traits</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
             <span class="n">kwd</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">inits</span><span class="o">.</span><span class="n">kwd</span>
@@ -412,11 +409,11 @@
                         <span class="n">meta_dictionary</span><span class="p">[</span><span class="n">capitalized_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">field_value</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">meta_dictionary</span><span class="p">[</span><span class="n">capitalized_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">field_value</span><span class="p">)</span>
-        
+
         <span class="c"># Now store collected meta data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_metadata</span><span class="p">(</span><span class="n">meta_dictionary</span><span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">load_from_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta_dictionary</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method loads data from provided dictionary into current instance</span>
@@ -427,13 +424,13 @@
                 <span class="n">capitalized_name</span> <span class="o">=</span> <span class="n">attr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="n">attr</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">attr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">):</span>
                     <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_meta_value</span><span class="p">(</span><span class="n">meta_dictionary</span><span class="p">,</span> <span class="n">capitalized_name</span><span class="p">))</span>
-                
+
         <span class="c"># Now process object traits</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
             <span class="n">kwd</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">inits</span><span class="o">.</span><span class="n">kwd</span>
             <span class="k">if</span> <span class="n">kwd</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;db&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">):</span>
                 <span class="n">capitalized_name</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-                <span class="n">field_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_meta_value</span><span class="p">(</span><span class="n">meta_dictionary</span><span class="p">,</span> <span class="n">capitalized_name</span><span class="p">)</span>                
+                <span class="n">field_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_meta_value</span><span class="p">(</span><span class="n">meta_dictionary</span><span class="p">,</span> <span class="n">capitalized_name</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">field_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">MappedType</span><span class="p">):</span>
                         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&quot;_&quot;</span> <span class="o">+</span> <span class="n">key</span><span class="p">,</span> <span class="n">field_value</span><span class="p">)</span>
@@ -447,44 +444,43 @@
                             <span class="n">field_value</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">field_value</span><span class="p">)</span>
                         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">field_value</span><span class="p">)</span>
 
-    
-    <span class="nd">@staticmethod</span>    
+
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_get_meta_value</span><span class="p">(</span><span class="n">meta_dictionary</span><span class="p">,</span> <span class="n">meta_key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Utitility method. Get meta_key from meta_dictionary, if found key, or None.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">meta_key</span> <span class="ow">in</span> <span class="n">meta_dictionary</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">meta_dictionary</span><span class="p">[</span><span class="n">meta_key</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">None</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">remove_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta_key</span><span class="p">,</span> <span class="n">data_name</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">tvb_specific_metadata</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
                         <span class="n">where</span><span class="o">=</span><span class="n">ROOT_NODE_PATH</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove meta-data information for root node or for a given data set.</span>
-<span class="sd">            ::param meta_key: name of the metadata attribute to be removed</span>
-<span class="sd">            ::param data_name: name of the dataset from where to delete metadata. </span>
+<span class="sd">            :param meta_key: name of the metadata attribute to be removed</span>
+<span class="sd">            :param data_name: name of the dataset from where to delete metadata.</span>
 <span class="sd">                                  If None, metadata will be removed from ROOT node.</span>
-<span class="sd">            ::param tvb_specific_metadata: specify if the provided metadata is </span>
+<span class="sd">            :param tvb_specific_metadata: specify if the provided metadata is</span>
 <span class="sd">                                  specific to TVB (keys will have a TVB prefix).</span>
-<span class="sd">            ::param where: represents the path where dataset is stored (e.g. /data/info)   </span>
-<span class="sd">        &quot;&quot;&quot;</span> 
+<span class="sd">            :param where: represents the path where dataset is stored (e.g. /data/info)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">store_manager</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_storage_mng</span><span class="p">()</span>
         <span class="n">store_manager</span><span class="o">.</span><span class="n">remove_metadata</span><span class="p">(</span><span class="n">meta_key</span><span class="p">,</span> <span class="n">data_name</span><span class="p">,</span> <span class="n">tvb_specific_metadata</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span>
-             
-                       
-                       
+
+
     <span class="k">def</span> <span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_name</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">ROOT_NODE_PATH</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve meta-data information for root node or for a given data set.</span>
-<span class="sd">            ::param data_name: name of the dataset for which to read metadata. </span>
+<span class="sd">            :param data_name: name of the dataset for which to read metadata.</span>
 <span class="sd">                                 If None, read metadata from ROOT node.</span>
-<span class="sd">            ::param where: represents the path where dataset is stored (e.g. /data/info)  </span>
-<span class="sd">            ::return: a dictionary containing all metadata associated with the node</span>
-<span class="sd">        &quot;&quot;&quot;</span>        
+<span class="sd">            :param where: represents the path where dataset is stored (e.g. /data/info)</span>
+<span class="sd">            :returns: a dictionary containing all metadata associated with the node</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">store_manager</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_storage_mng</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">store_manager</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span><span class="n">data_name</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">close_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Close file used to store data.</span>
@@ -496,18 +492,18 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">set_metadata</span><span class="p">(</span><span class="n">new_metadata</span><span class="p">,</span> <span class="n">data_name</span><span class="p">)</span>
         <span class="n">store_manager</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_storage_mng</span><span class="p">()</span>
         <span class="n">store_manager</span><span class="o">.</span><span class="n">close_file</span><span class="p">()</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">_get_file_storage_mng</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build the manager responsible for storing data into a file on disk</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&quot;_storage_manager&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage_manager</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_storage_file_name</span><span class="p">()</span>      
-            <span class="bp">self</span><span class="o">.</span><span class="n">_storage_manager</span> <span class="o">=</span> <span class="n">HDF5StorageManager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>       
+            <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_storage_file_name</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_storage_manager</span> <span class="o">=</span> <span class="n">HDF5StorageManager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage_manager</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">get_storage_file_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method returns the name of the file where data will be stored.</span>
@@ -520,13 +516,14 @@
 <span class="sd">        This method returns FULL path to the file which stores data </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_storage_file_name</span><span class="p">())</span>
-    
+
+
     <span class="c"># ---------------------------- END FILE STORAGE --------------------------------</span>
-    
-    
+
+
     <span class="c"># ---------------------------- ARRAY ATTR METADATAS ----------------------------</span>
     <span class="c"># -------- see also store_data, store_data_chunck and close_file----------------</span>
-        
+
     <span class="k">def</span> <span class="nf">__retrieve_array_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param data: New NumPy array to invoke meta-data methods on.</span>
@@ -536,10 +533,10 @@
             <span class="c">### Ignore non traited attributes (e.g. sparse-matrix sub-sections).</span>
             <span class="k">return</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="n">traited_attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="p">[</span><span class="n">data_name</span><span class="p">]</span><span class="o">.</span><span class="n">_stored_metadata</span>
-        
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        
+
         <span class="n">meta_dictionary</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ALL_METADATA_ARRAY</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_SHAPE</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">traited_attr</span><span class="p">:</span>
@@ -548,76 +545,75 @@
         <span class="c">## but we will use H5 native shape support</span>
         <span class="n">meta_dictionary</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_METADATA_ARRAY_SIZE</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span>
         <span class="k">return</span> <span class="n">meta_dictionary</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__merge_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_meta</span><span class="p">,</span> <span class="n">merge_meta</span><span class="p">,</span> <span class="n">new_data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Merge after new chunk added.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_VAR</span> <span class="ow">in</span> <span class="n">result_meta</span><span class="p">:</span>
             <span class="k">del</span> <span class="n">result_meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_VAR</span><span class="p">]</span>
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_MIN</span> <span class="ow">in</span> <span class="n">merge_meta</span> 
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_MIN</span> <span class="ow">in</span> <span class="n">merge_meta</span>
             <span class="ow">and</span> <span class="n">merge_meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_MIN</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">result_meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_MIN</span><span class="p">]):</span>
             <span class="n">result_meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_MIN</span><span class="p">]</span> <span class="o">=</span> <span class="n">merge_meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_MIN</span><span class="p">]</span>
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_MAX</span> <span class="ow">in</span> <span class="n">merge_meta</span> 
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_MAX</span> <span class="ow">in</span> <span class="n">merge_meta</span>
             <span class="ow">and</span> <span class="n">merge_meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_MAX</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">result_meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_MAX</span><span class="p">]):</span>
             <span class="n">result_meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_MAX</span><span class="p">]</span> <span class="o">=</span> <span class="n">merge_meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_MAX</span><span class="p">]</span>
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_MEAN</span> <span class="ow">in</span> <span class="n">merge_meta</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_METADATA_ARRAY_SIZE</span> <span class="ow">in</span> <span class="n">merge_meta</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_MEAN</span> <span class="ow">in</span> <span class="n">merge_meta</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_METADATA_ARRAY_SIZE</span> <span class="ow">in</span> <span class="n">merge_meta</span><span class="p">:</span>
             <span class="n">prev_no</span> <span class="o">=</span> <span class="n">merge_meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_METADATA_ARRAY_SIZE</span><span class="p">]</span>
             <span class="n">curr_no</span> <span class="o">=</span> <span class="n">new_data</span><span class="o">.</span><span class="n">size</span>
-            <span class="n">result_meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_MEAN</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">merge_meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_MEAN</span><span class="p">]</span><span class="o">*</span> <span class="n">prev_no</span> <span class="o">+</span> 
-                                                     <span class="n">result_meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_MEAN</span><span class="p">]</span><span class="o">*</span><span class="n">curr_no</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">prev_no</span><span class="o">+</span><span class="n">curr_no</span><span class="p">)</span>
+            <span class="n">result_meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_MEAN</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">merge_meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_MEAN</span><span class="p">]</span> <span class="o">*</span> <span class="n">prev_no</span> <span class="o">+</span>
+                                                <span class="n">result_meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">METADATA_ARRAY_MEAN</span><span class="p">]</span> <span class="o">*</span> <span class="n">curr_no</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">prev_no</span> <span class="o">+</span> <span class="n">curr_no</span><span class="p">)</span>
             <span class="n">result_meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_METADATA_ARRAY_SIZE</span><span class="p">]</span> <span class="o">=</span> <span class="n">prev_no</span> <span class="o">+</span> <span class="n">curr_no</span>
-    
+
     <span class="c"># ---------------------------- END ARRAY ATTR METADATAS ------------------------</span>
+
 
 </div>
 <div class="viewcode-block" id="Array"><a class="viewcode-back" href="../../../../tvb.core.traits.html#tvb.core.traits.types_mapped.Array">[docs]</a><span class="k">class</span> <span class="nc">Array</span><span class="p">(</span><span class="n">mapped</span><span class="o">.</span><span class="n">Array</span><span class="p">):</span>
-    
-    
+
     <span class="k">def</span> <span class="nf">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inst</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called when an attribute of type Array is set on another class instance.</span>
 <span class="sd">        :param inst: It is a MappedType instance</span>
 <span class="sd">        :param value: expected to be of type self.wraps</span>
-<span class="sd">        @raise Exception: When incompatible type of value is set</span>
+<span class="sd">        :raises Exception: When incompatible type of value is set</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Array</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__set__</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="s">&#39;__&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">TVBSettings</span><span class="o">.</span><span class="n">TRAITS_CONFIGURATION</span><span class="o">.</span><span class="n">use_storage</span> <span class="ow">and</span> <span class="n">inst</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">use_storage</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> 
-            <span class="ow">and</span> <span class="p">(</span><span class="n">inst</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="n">mapped</span><span class="o">.</span><span class="n">MappedTypeLight</span><span class="p">)</span> 
+        <span class="k">if</span> <span class="p">(</span><span class="n">TVBSettings</span><span class="o">.</span><span class="n">TRAITS_CONFIGURATION</span><span class="o">.</span><span class="n">use_storage</span> <span class="ow">and</span> <span class="n">inst</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">use_storage</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+            <span class="ow">and</span> <span class="p">(</span><span class="n">inst</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="n">mapped</span><span class="o">.</span><span class="n">MappedTypeLight</span><span class="p">)</span>
                  <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">file_storage</span> <span class="o">!=</span> <span class="n">FILE_STORAGE_NONE</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
-            
+
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">wraps</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Invalid DataType!! It expects </span><span class="si">%s</span><span class="s">, but is </span><span class="si">%s</span><span class="s">&quot;</span><span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">wraps</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
-            
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Invalid DataType!! It expects </span><span class="si">%s</span><span class="s">, but is </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">wraps</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">_write_in_storage</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">_get_cached_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inst</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overwrite method from library mode array to read from storage when needed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">cached_data</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="s">&#39;__&#39;</span><span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
-            
+        <span class="n">cached_data</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="s">&#39;__&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="p">((</span><span class="n">cached_data</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">cached_data</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">file_storage</span> <span class="o">!=</span> <span class="n">FILE_STORAGE_NONE</span>
-            <span class="ow">and</span> <span class="n">TVBSettings</span><span class="o">.</span><span class="n">TRAITS_CONFIGURATION</span><span class="o">.</span><span class="n">use_storage</span> <span class="ow">and</span> <span class="n">inst</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">use_storage</span> 
+            <span class="ow">and</span> <span class="n">TVBSettings</span><span class="o">.</span><span class="n">TRAITS_CONFIGURATION</span><span class="o">.</span><span class="n">use_storage</span> <span class="ow">and</span> <span class="n">inst</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">use_storage</span>
             <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="n">mapped</span><span class="o">.</span><span class="n">MappedTypeLight</span><span class="p">)):</span>
-            
             <span class="c">### Data not already loaded, and storage usage</span>
             <span class="n">cached_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_from_storage</span><span class="p">(</span><span class="n">inst</span><span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="s">&#39;__&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">cached_data</span><span class="p">)</span>
-            
+
         <span class="c">## Data already loaded, or no storage is used</span>
         <span class="k">return</span> <span class="n">cached_data</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">_write_in_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inst</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Store value on disk (in h5 file).</span>
 <span class="sd">        :param inst: Will give us the storage_path, it is a MappedType instance</span>
 <span class="sd">        :param value: expected to be of type self.wraps</span>
-<span class="sd">        @raise Exception : when passed value is incompatible (e.g. used with chunks)  </span>
+<span class="sd">        :raises Exception : when passed value is incompatible (e.g. used with chunks)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">file_storage</span> <span class="o">==</span> <span class="n">FILE_STORAGE_NONE</span><span class="p">:</span>
             <span class="k">pass</span>
@@ -625,14 +621,14 @@
             <span class="n">inst</span><span class="o">.</span><span class="n">store_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">StorageException</span><span class="p">(</span><span class="s">&quot;You should not use SET on attributes-to-be-stored-in-files!&quot;</span><span class="p">)</span>
-        
-        
+
+
     <span class="k">def</span> <span class="nf">_read_from_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inst</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call correct storage methods, and validation</span>
 <span class="sd">        :param inst: Will give us the storage_path, it is a MappedType instance</span>
-<span class="sd">        :return: entity of self.wraps type</span>
-<span class="sd">        @raise: Exception when used with chunks</span>
+<span class="sd">        :returns: entity of self.wraps type</span>
+<span class="sd">        :raises: Exception when used with chunks</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">file_storage</span> <span class="o">==</span> <span class="n">FILE_STORAGE_NONE</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">None</span>
@@ -645,11 +641,10 @@
                 <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">StorageException</span><span class="p">(</span><span class="s">&quot;Use get_data(_, slice) not full GET on attributes-stored-in-files!&quot;</span><span class="p">)</span>
-    
+
+
 </div>
 <div class="viewcode-block" id="SparseMatrix"><a class="viewcode-back" href="../../../../tvb.core.traits.html#tvb.core.traits.types_mapped.SparseMatrix">[docs]</a><span class="k">class</span> <span class="nc">SparseMatrix</span><span class="p">(</span><span class="n">mapped</span><span class="o">.</span><span class="n">SparseMatrix</span><span class="p">,</span> <span class="n">Array</span><span class="p">):</span>
-    
-    
     <span class="k">def</span> <span class="nf">_read_from_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inst</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overwrite method from superclass, and call Sparse_Matrix specific reader.</span>
@@ -660,94 +655,93 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Missing dataSet &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">None</span>
-        
-    
+
+
     <span class="k">def</span> <span class="nf">_write_in_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inst</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overwrite method from superclass, and call specific Sparse_Matrix writer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_store_sparse_matrix</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        
-        
+
+
     <span class="c"># ------------------------- STORE and READ sparse matrix to / from HDF5 format </span>
     <span class="n">ROOT_PATH</span> <span class="o">=</span> <span class="s">&quot;/&quot;</span>
-   
-    <span class="n">FORMAT_META</span> <span class="o">=</span> <span class="s">&quot;format&quot;</span> 
-    <span class="n">DTYPE_META</span> <span class="o">=</span> <span class="s">&quot;dtype&quot;</span> 
-    <span class="n">SHAPE_META</span> <span class="o">=</span> <span class="s">&quot;shape&quot;</span> 
-    <span class="n">DATA_DS</span> <span class="o">=</span> <span class="s">&quot;data&quot;</span> 
-    <span class="n">INDPTR_DS</span> <span class="o">=</span> <span class="s">&quot;indptr&quot;</span> 
-    <span class="n">INDICES_DS</span> <span class="o">=</span> <span class="s">&quot;indices&quot;</span> 
-    <span class="n">ROWS_DS</span> <span class="o">=</span> <span class="s">&quot;rows&quot;</span> 
-    <span class="n">COLS_DS</span> <span class="o">=</span> <span class="s">&quot;cols&quot;</span> 
-     
-     
-    <span class="nd">@staticmethod</span>   
-    <span class="k">def</span> <span class="nf">_store_sparse_matrix</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="n">mtx</span><span class="p">,</span> <span class="n">data_name</span><span class="p">):</span> 
+
+    <span class="n">FORMAT_META</span> <span class="o">=</span> <span class="s">&quot;format&quot;</span>
+    <span class="n">DTYPE_META</span> <span class="o">=</span> <span class="s">&quot;dtype&quot;</span>
+    <span class="n">SHAPE_META</span> <span class="o">=</span> <span class="s">&quot;shape&quot;</span>
+    <span class="n">DATA_DS</span> <span class="o">=</span> <span class="s">&quot;data&quot;</span>
+    <span class="n">INDPTR_DS</span> <span class="o">=</span> <span class="s">&quot;indptr&quot;</span>
+    <span class="n">INDICES_DS</span> <span class="o">=</span> <span class="s">&quot;indices&quot;</span>
+    <span class="n">ROWS_DS</span> <span class="o">=</span> <span class="s">&quot;rows&quot;</span>
+    <span class="n">COLS_DS</span> <span class="o">=</span> <span class="s">&quot;cols&quot;</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_store_sparse_matrix</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="n">mtx</span><span class="p">,</span> <span class="n">data_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;    </span>
 <span class="sd">        This method stores sparse matrix into H5 file.</span>
-<span class="sd">        ::param inst: instance on for which to store sparse matrix</span>
-<span class="sd">        ::param mtx: sparse matrix to store</span>
-<span class="sd">        ::param data_name: name of data group which will contain sparse matrix details     </span>
+<span class="sd">        :param inst: instance on for which to store sparse matrix</span>
+<span class="sd">        :param mtx: sparse matrix to store</span>
+<span class="sd">        :param data_name: name of data group which will contain sparse matrix details</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">info_dict</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">info_dict</span><span class="p">[</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">DTYPE_META</span><span class="p">]</span> <span class="o">=</span> <span class="n">mtx</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">str</span> 
-        <span class="n">info_dict</span><span class="p">[</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">SHAPE_META</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">mtx</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> 
-        <span class="n">info_dict</span><span class="p">[</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">FORMAT_META</span><span class="p">]</span> <span class="o">=</span> <span class="n">mtx</span><span class="o">.</span><span class="n">format</span> 
-    
+        <span class="n">info_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">DTYPE_META</span><span class="p">:</span> <span class="n">mtx</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">str</span><span class="p">,</span>
+                     <span class="n">SparseMatrix</span><span class="o">.</span><span class="n">SHAPE_META</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">mtx</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
+                     <span class="n">SparseMatrix</span><span class="o">.</span><span class="n">FORMAT_META</span><span class="p">:</span> <span class="n">mtx</span><span class="o">.</span><span class="n">format</span><span class="p">}</span>
+
         <span class="n">data_group_path</span> <span class="o">=</span> <span class="n">SparseMatrix</span><span class="o">.</span><span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="n">data_name</span>
-        
+
         <span class="c"># Store data and additional info</span>
-        <span class="n">inst</span><span class="o">.</span><span class="n">store_data</span><span class="p">(</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">DATA_DS</span><span class="p">,</span> <span class="n">mtx</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">data_group_path</span><span class="p">)</span> 
-        <span class="n">inst</span><span class="o">.</span><span class="n">store_data</span><span class="p">(</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">INDPTR_DS</span><span class="p">,</span> <span class="n">mtx</span><span class="o">.</span><span class="n">indptr</span><span class="p">,</span> <span class="n">data_group_path</span><span class="p">)</span> 
+        <span class="n">inst</span><span class="o">.</span><span class="n">store_data</span><span class="p">(</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">DATA_DS</span><span class="p">,</span> <span class="n">mtx</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">data_group_path</span><span class="p">)</span>
+        <span class="n">inst</span><span class="o">.</span><span class="n">store_data</span><span class="p">(</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">INDPTR_DS</span><span class="p">,</span> <span class="n">mtx</span><span class="o">.</span><span class="n">indptr</span><span class="p">,</span> <span class="n">data_group_path</span><span class="p">)</span>
         <span class="n">inst</span><span class="o">.</span><span class="n">store_data</span><span class="p">(</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">INDICES_DS</span><span class="p">,</span> <span class="n">mtx</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="n">data_group_path</span><span class="p">)</span>
-        
+
         <span class="c"># Store additional info on the group dedicated to sparse matrix</span>
-        <span class="n">inst</span><span class="o">.</span><span class="n">set_metadata</span><span class="p">(</span><span class="n">info_dict</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="n">data_group_path</span><span class="p">)</span> 
-     
-    
+        <span class="n">inst</span><span class="o">.</span><span class="n">set_metadata</span><span class="p">(</span><span class="n">info_dict</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="n">data_group_path</span><span class="p">)</span>
+
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_read_sparse_matrix</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="n">data_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads SparseMatrix from H5 file and returns an instance of such matrix</span>
-<span class="sd">        ::param inst: instance on for which to read sparse matrix</span>
-<span class="sd">        ::param data_name: name of data group which contains sparse matrix details</span>
-<span class="sd">        ::return in instance of sparse matrix with data loaded from H5 file</span>
-<span class="sd">        &quot;&quot;&quot;</span> 
-        <span class="n">constructors</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;csr&#39;</span><span class="p">:</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">,</span> <span class="s">&#39;csc&#39;</span><span class="p">:</span><span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">}</span> 
-    
+<span class="sd">        :param inst: instance on for which to read sparse matrix</span>
+<span class="sd">        :param data_name: name of data group which contains sparse matrix details</span>
+<span class="sd">        :returns: in instance of sparse matrix with data loaded from H5 file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">constructors</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;csr&#39;</span><span class="p">:</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">,</span> <span class="s">&#39;csc&#39;</span><span class="p">:</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">}</span>
+
         <span class="n">data_group_path</span> <span class="o">=</span> <span class="n">SparseMatrix</span><span class="o">.</span><span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="n">data_name</span>
-        
+
         <span class="n">info_dict</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">data_group_path</span><span class="p">)</span>
-        
-        <span class="n">mtx_format</span> <span class="o">=</span> <span class="n">info_dict</span><span class="p">[</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">FORMAT_META</span><span class="p">]</span> 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mtx_format</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span> 
-            <span class="n">mtx_format</span> <span class="o">=</span> <span class="n">mtx_format</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
-    
-        <span class="n">dtype</span> <span class="o">=</span> <span class="n">info_dict</span><span class="p">[</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">DTYPE_META</span><span class="p">]</span> 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span> 
-            <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
-    
-        <span class="n">constructor</span> <span class="o">=</span> <span class="n">constructors</span><span class="p">[</span><span class="n">mtx_format</span><span class="p">]</span> 
-    
+
+        <span class="n">mtx_format</span> <span class="o">=</span> <span class="n">info_dict</span><span class="p">[</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">FORMAT_META</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mtx_format</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">mtx_format</span> <span class="o">=</span> <span class="n">mtx_format</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">info_dict</span><span class="p">[</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">DTYPE_META</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">constructor</span> <span class="o">=</span> <span class="n">constructors</span><span class="p">[</span><span class="n">mtx_format</span><span class="p">]</span>
+
         <span class="k">if</span> <span class="n">mtx_format</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;csc&#39;</span><span class="p">,</span> <span class="s">&#39;csr&#39;</span><span class="p">]:</span>
-            <span class="n">data</span> <span class="o">=</span>  <span class="n">inst</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">DATA_DS</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">data_group_path</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">DATA_DS</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">data_group_path</span><span class="p">)</span>
             <span class="n">indices</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">INDICES_DS</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">data_group_path</span><span class="p">)</span>
             <span class="n">indptr</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">INDPTR_DS</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">data_group_path</span><span class="p">)</span>
             <span class="n">shape</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">info_dict</span><span class="p">[</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">SHAPE_META</span><span class="p">])</span>
-            
-            <span class="n">mtx</span> <span class="o">=</span> <span class="n">constructor</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">indptr</span><span class="p">),</span> <span class="n">shape</span> <span class="o">=</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="p">)</span>
-            <span class="n">mtx</span><span class="o">.</span><span class="n">sort_indices</span><span class="p">()</span> 
-        <span class="k">elif</span> <span class="n">mtx_format</span> <span class="o">==</span> <span class="s">&#39;coo&#39;</span><span class="p">:</span> 
-            <span class="n">data</span> <span class="o">=</span>  <span class="n">inst</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">DATA_DS</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">data_group_path</span><span class="p">)</span>
+
+            <span class="n">mtx</span> <span class="o">=</span> <span class="n">constructor</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">indptr</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">mtx</span><span class="o">.</span><span class="n">sort_indices</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">mtx_format</span> <span class="o">==</span> <span class="s">&#39;coo&#39;</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">DATA_DS</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">data_group_path</span><span class="p">)</span>
             <span class="n">shape</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">info_dict</span><span class="p">[</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">SHAPE_META</span><span class="p">])</span>
-            <span class="n">rows</span> <span class="o">=</span>  <span class="n">inst</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">ROWS_DS</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">data_group_path</span><span class="p">)</span>
-            <span class="n">cols</span> <span class="o">=</span>  <span class="n">inst</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">COLS_DS</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">data_group_path</span><span class="p">)</span>
-            
-            <span class="n">mtx</span> <span class="o">=</span> <span class="n">constructor</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="n">sparse</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">),</span> <span class="n">shape</span> <span class="o">=</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span> <span class="p">)</span> 
-        <span class="k">else</span><span class="p">:</span> 
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Unsupported format: </span><span class="si">%s</span><span class="s">&quot;</span><span class="o">%</span><span class="n">mtx_format</span><span class="p">)</span> 
-    
+            <span class="n">rows</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">ROWS_DS</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">data_group_path</span><span class="p">)</span>
+            <span class="n">cols</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">SparseMatrix</span><span class="o">.</span><span class="n">COLS_DS</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">data_group_path</span><span class="p">)</span>
+
+            <span class="n">mtx</span> <span class="o">=</span> <span class="n">constructor</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="n">sparse</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Unsupported format: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">mtx_format</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">mtx</span> 
 </pre></div></div>
 
@@ -756,6 +750,9 @@
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../../search.html" method="get">
@@ -782,13 +779,13 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

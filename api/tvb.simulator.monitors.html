@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Monitors &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>Monitors &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '1.0.4',
+        URL_ROOT:    './',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,8 +24,9 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="index.html" />
-    <link rel="up" title="" href="tvb.simulator.html" />
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="index.html" />
+    <link rel="up" title="Welcome to tvb.simulator’s documentation!" href="tvb.simulator.html" />
     <link rel="next" title="Phase-Plane Interactive" href="tvb.simulator.phase_plane_interactive.html" />
     <link rel="prev" title="Noise" href="tvb.simulator.noise.html" /> 
   </head>
@@ -47,9 +46,9 @@
         <li class="right" >
           <a href="tvb.simulator.noise.html" title="Noise"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
-          <li><a href="tvb.html" ></a> &raquo;</li>
-          <li><a href="tvb.simulator.html" accesskey="U"></a> &raquo;</li> 
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">tvb</span></tt> Package</a> &raquo;</li>
+          <li><a href="tvb.simulator.html" accesskey="U">Welcome to tvb.simulator&#8217;s documentation!</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -495,7 +494,7 @@ Biology, 1987.</td></tr>
 <dl class="method">
 <dt id="tvb.simulator.monitors.SphericalEEG.config_for_sim">
 <tt class="descclassname">SphericalEEG.</tt><tt class="descname">config_for_sim</tt><big>(</big><em>simulator</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#SphericalEEG.config_for_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.SphericalEEG.config_for_sim" title="Permalink to this definition">¶</a></dt>
-<dd><p>Equation 12 of <a class="reference internal" href="#sarvas-1987">[Sarvas_1987]</a></p>
+<dd><p>Equation 12 of <a class="reference internal" href="#sarvas-1987" id="id2">[Sarvas_1987]</a></p>
 <p>TODO: add equations...</p>
 </dd></dl>
 
@@ -551,7 +550,7 @@ the projectin matrix.</p>
 <dl class="method">
 <dt id="tvb.simulator.monitors.SphericalMEG.config_for_sim">
 <tt class="descclassname">SphericalMEG.</tt><tt class="descname">config_for_sim</tt><big>(</big><em>simulator</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#SphericalMEG.config_for_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.SphericalMEG.config_for_sim" title="Permalink to this definition">¶</a></dt>
-<dd><p>Equation 25 of <a class="reference internal" href="#sarvas-1987">[Sarvas_1987]</a></p>
+<dd><p>Equation 25 of <a class="reference internal" href="#sarvas-1987" id="id3">[Sarvas_1987]</a></p>
 <p>TODO: add equation...</p>
 </dd></dl>
 
@@ -591,7 +590,17 @@ activity at nodes of the simulation to a set of MEG sensors.</p>
 <dl class="attribute">
 <dt id="tvb.simulator.monitors.Bold">
 <tt class="descclassname">tvb.simulator.monitors.</tt><tt class="descname">Bold</tt><a class="reference internal" href="_modules/tvb/simulator/monitors.html#Bold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.Bold" title="Permalink to this definition">¶</a></dt>
-<dd><p>A Ballon-Windkessel like model</p>
+<dd><p>Base class for the Bold monitor.</p>
+<p><strong>Attributes</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt>hrf_kernel: the haemodynamic response function (HRF) used to compute </dt>
+<dd>the BOLD (Blood Oxygenation Level Dependent) signal.</dd>
+</dl>
+<p>length    : duration of the hrf in seconds.</p>
+<p>period    : the monitor&#8217;s period</p>
+</div></blockquote>
+<p><strong>References</strong>:</p>
 <table class="docutils citation" frame="void" id="b-1997" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
@@ -608,6 +617,29 @@ Responses in fMRI: The Balloon Model, Volterra Kernels, and Other
 Hemodynamics</em>, NeuroImage, 12, 466 - 477, 2000.</td></tr>
 </tbody>
 </table>
+<table class="docutils citation" frame="void" id="b-1996" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[B_1996]</td><td>Geoffrey M. Boynton, Stephen A. Engel, Gary H. Glover and David 
+J. Heeger (1996). Linear Systems Analysis of Functional Magnetic Resonance 
+Imaging in Human V1. J Neurosci 16: 4207-4221</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="p-2000" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[P_2000]</td><td>Alex Polonsky, Randolph Blake, Jochen Braun and David J. Heeger
+(2000). Neuronal activity in human primary visual cortex correlates with
+perception during binocular rivalry. Nature Neuroscience 3: 1153-1159</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="g-1999" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[G_1999]</td><td>Glover, G. <em>Deconvolution of Impulse Response in Event-Related BOLD fMRI</em>.
+NeuroImage 9, 416-429, 1999.</td></tr>
+</tbody>
+</table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">LIMITATIONS: sampling period must be integer multiple of 500ms</p>
@@ -616,6 +648,15 @@ Hemodynamics</em>, NeuroImage, 12, 466 - 477, 2000.</td></tr>
 <p class="first admonition-title">Note</p>
 <p class="last">CONSIDERATIONS: It is  sensible to use this monitor if your 
 simulation length is &gt; 30s (30000ms)</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">gamma and polonsky are based on the nitime implementation
+<a class="reference external" href="http://nipy.org/nitime/api/generated/nitime.fmri.hrf.html">http://nipy.org/nitime/api/generated/nitime.fmri.hrf.html</a></p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">see Tutorial_Exploring_The_Bold_Monitor</p>
 </div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
@@ -644,34 +685,22 @@ step corresponds to the interim period.</p>
 <p><strong>traits on this class:</strong></p>
 <blockquote>
 <div><dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">V0</span></tt> (resting blood volume fraction )</dt>
+<dt><tt class="docutils literal"><span class="pre">hrf_kernel</span></tt> (Haemodynamic Response Function)</dt>
 <dd><div class="first last line-block">
-<div class="line"><br /></div>
-<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.02 </div>
+<div class="line">A tvb.datatypes.equation object which describe the haemodynamic         response function used to compute the BOLD signal.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.datatypes.equations.FirstOrderVolterra&#8217;&gt; </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">k1</span></tt> (First Volterra kernel coefficient)</dt>
+<dt><tt class="docutils literal"><span class="pre">hrf_length</span></tt> (Duration (ms))</dt>
 <dd><div class="first last line-block">
-<div class="line"><br /></div>
-<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  5.6 </div>
+<div class="line">Duration of the hrf kernel</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  20000.0 </div>
 </div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">period</span></tt> (Sampling period (ms))</dt>
 <dd><div class="first last line-block">
-<div class="line">For the BOLD monitor, sampling period in milliseconds must be             an integral multiple of 500</div>
+<div class="line">For the BOLD monitor, sampling period in milliseconds must be         an integral multiple of 500. Typical measurment interval (repetition          time TR) is between 1-3 s. If TR is 2s, then Bold period is 2000ms.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  2000.0 </div>
-</div>
-</dd>
-<dt><tt class="docutils literal"><span class="pre">tau_f</span></tt> (Dimensionless? oscillatory parameter)</dt>
-<dd><div class="first last line-block">
-<div class="line"><br /></div>
-<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.4 </div>
-</div>
-</dd>
-<dt><tt class="docutils literal"><span class="pre">tau_s</span></tt> (Dimensionless? exponential decay parameter)</dt>
-<dd><div class="first last line-block">
-<div class="line"><br /></div>
-<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.8 </div>
 </div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Model variables to watch)</dt>
@@ -696,34 +725,22 @@ simulation.</p>
 <p><strong>traits on this class:</strong></p>
 <blockquote>
 <div><dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">V0</span></tt> (resting blood volume fraction )</dt>
+<dt><tt class="docutils literal"><span class="pre">hrf_kernel</span></tt> (Haemodynamic Response Function)</dt>
 <dd><div class="first last line-block">
-<div class="line"><br /></div>
-<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.02 </div>
+<div class="line">A tvb.datatypes.equation object which describe the haemodynamic         response function used to compute the BOLD signal.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.datatypes.equations.FirstOrderVolterra&#8217;&gt; </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">k1</span></tt> (First Volterra kernel coefficient)</dt>
+<dt><tt class="docutils literal"><span class="pre">hrf_length</span></tt> (Duration (ms))</dt>
 <dd><div class="first last line-block">
-<div class="line"><br /></div>
-<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  5.6 </div>
+<div class="line">Duration of the hrf kernel</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  20000.0 </div>
 </div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">period</span></tt> (Sampling period (ms))</dt>
 <dd><div class="first last line-block">
-<div class="line">For the BOLD monitor, sampling period in milliseconds must be             an integral multiple of 500</div>
+<div class="line">For the BOLD monitor, sampling period in milliseconds must be         an integral multiple of 500. Typical measurment interval (repetition          time TR) is between 1-3 s. If TR is 2s, then Bold period is 2000ms.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  2000.0 </div>
-</div>
-</dd>
-<dt><tt class="docutils literal"><span class="pre">tau_f</span></tt> (Dimensionless? oscillatory parameter)</dt>
-<dd><div class="first last line-block">
-<div class="line"><br /></div>
-<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.4 </div>
-</div>
-</dd>
-<dt><tt class="docutils literal"><span class="pre">tau_s</span></tt> (Dimensionless? exponential decay parameter)</dt>
-<dd><div class="first last line-block">
-<div class="line"><br /></div>
-<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.8 </div>
 </div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Model variables to watch)</dt>
@@ -768,34 +785,22 @@ simply doesn&#8217;t touch it, but operations automatically work correctly.</dd>
 <p><strong>traits on this class:</strong></p>
 <blockquote>
 <div><dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">V0</span></tt> (resting blood volume fraction )</dt>
+<dt><tt class="docutils literal"><span class="pre">hrf_kernel</span></tt> (Haemodynamic Response Function)</dt>
 <dd><div class="first last line-block">
-<div class="line"><br /></div>
-<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.02 </div>
+<div class="line">A tvb.datatypes.equation object which describe the haemodynamic         response function used to compute the BOLD signal.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.datatypes.equations.FirstOrderVolterra&#8217;&gt; </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">k1</span></tt> (First Volterra kernel coefficient)</dt>
+<dt><tt class="docutils literal"><span class="pre">hrf_length</span></tt> (Duration (ms))</dt>
 <dd><div class="first last line-block">
-<div class="line"><br /></div>
-<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  5.6 </div>
+<div class="line">Duration of the hrf kernel</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  20000.0 </div>
 </div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">period</span></tt> (Sampling period (ms))</dt>
 <dd><div class="first last line-block">
-<div class="line">For the BOLD monitor, sampling period in milliseconds must be             an integral multiple of 500</div>
+<div class="line">For the BOLD monitor, sampling period in milliseconds must be         an integral multiple of 500. Typical measurment interval (repetition          time TR) is between 1-3 s. If TR is 2s, then Bold period is 2000ms.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  2000.0 </div>
-</div>
-</dd>
-<dt><tt class="docutils literal"><span class="pre">tau_f</span></tt> (Dimensionless? oscillatory parameter)</dt>
-<dd><div class="first last line-block">
-<div class="line"><br /></div>
-<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.4 </div>
-</div>
-</dd>
-<dt><tt class="docutils literal"><span class="pre">tau_s</span></tt> (Dimensionless? exponential decay parameter)</dt>
-<dd><div class="first last line-block">
-<div class="line"><br /></div>
-<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.8 </div>
 </div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Model variables to watch)</dt>
@@ -884,6 +889,9 @@ modeling</em>, NeuroImage, 19, 1273 - 1302, 2003.</td></tr>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
   <h4>Previous topic</h4>
   <p class="topless"><a href="tvb.simulator.noise.html"
                         title="previous chapter"><tt class="docutils literal docutils literal"><span class="pre">Noise</span></tt></a></p>
@@ -927,14 +935,14 @@ modeling</em>, NeuroImage, 19, 1273 - 1302, 2003.</td></tr>
         <li class="right" >
           <a href="tvb.simulator.noise.html" title="Noise"
              >previous</a> |</li>
-        <li><a href="index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
-          <li><a href="tvb.html" ></a> &raquo;</li>
-          <li><a href="tvb.simulator.html" ></a> &raquo;</li> 
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">tvb</span></tt> Package</a> &raquo;</li>
+          <li><a href="tvb.simulator.html" >Welcome to tvb.simulator&#8217;s documentation!</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

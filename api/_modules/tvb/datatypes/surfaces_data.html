@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.datatypes.surfaces_data &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.datatypes.surfaces_data &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../index.html" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -49,466 +48,485 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for tvb.datatypes.surfaces_data</h1><pre>
-# -*- coding: utf-8 -*-
-#
-#
-#  TheVirtualBrain-Scientific Package. This package holds all simulators, and 
-# analysers necessary to run brain-simulations. You can use it stand alone or
-# in conjunction with TheVirtualBrain-Framework Package. See content of the
-# documentation-folder for more details. See also http://www.thevirtualbrain.org
-#
-# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
-#
-# This program is free software; you can redistribute it and/or modify it under 
-# the terms of the GNU General Public License version 2 as published by the Free
-# Software Foundation. This program is distributed in the hope that it will be
-# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
-# License for more details. You should have received a copy of the GNU General 
-# Public License along with this program; if not, you can download it here
-# http://www.gnu.org/licenses/old-licenses/gpl-2.0
-#
-#
+  <h1>Source code for tvb.datatypes.surfaces_data</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
 
-"""
+<span class="sd">&quot;&quot;&quot;</span>
 
-The Data component of Surfaces DataTypes.
+<span class="sd">The Data component of Surfaces DataTypes.</span>
 
-.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;
-.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;
-.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;</span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
 
-"""
+<span class="sd">&quot;&quot;&quot;</span>
 
-import numpy
-import scipy.sparse as sparse
-import tvb.basic.traits.core as core
-import tvb.basic.traits.types_basic as basic
-import tvb.basic.traits.data_readers as readers
-import tvb.basic.traits.exceptions as exceptions
-import tvb.datatypes.arrays as arrays
-import tvb.datatypes.equations as equations
-from tvb.datatypes.connectivity import Connectivity
-from tvb.basic.logger.builder import get_logger
-from tvb.basic.traits.types_mapped import MappedType, SparseMatrix
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="kn">as</span> <span class="nn">sparse</span>
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.core</span> <span class="kn">as</span> <span class="nn">core</span>
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.types_basic</span> <span class="kn">as</span> <span class="nn">basic</span>
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.data_readers</span> <span class="kn">as</span> <span class="nn">readers</span>
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.exceptions</span> <span class="kn">as</span> <span class="nn">exceptions</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.arrays</span> <span class="kn">as</span> <span class="nn">arrays</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.equations</span> <span class="kn">as</span> <span class="nn">equations</span>
+<span class="kn">from</span> <span class="nn">tvb.datatypes.connectivity</span> <span class="kn">import</span> <span class="n">Connectivity</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.traits.types_mapped</span> <span class="kn">import</span> <span class="n">MappedType</span><span class="p">,</span> <span class="n">SparseMatrix</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.traits.core</span> <span class="kn">import</span> <span class="n">FILE_STORAGE_NONE</span>
 
-LOG = get_logger(__name__)
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 
-OUTER_SKIN = "Skin Air"
-OUTER_SKULL = "Skull Skin"
-INNER_SKULL = "Brain Skull"
-CORTICAL = "Cortical Surface"
-EEG_CAP = "EEG Cap"
-FACE = "Face"
-
-
-##--------------------- CLOSE SURFACES Start Here---------------------------------------##
-
-<div class="viewcode-block" id="SurfaceData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.SurfaceData">[docs]</a>class SurfaceData(MappedType):
-    """
-    This class primarily exists to bundle the structural Surface data into a 
-    single object.
-    """
-
-    default = readers.File(folder_path = "surfaces/cortex_reg13")
-
-    vertices = arrays.PositionArray(
-        label = "Vertex positions",
-        order = -1,
-        console_default = default.read_data(file_name = "vertices.txt.bz2", field = "vertices"),
-        doc = """An array specifying coordinates for the surface vertices.""")
-
-    triangles = arrays.IndexArray(
-        label = "Triangles",
-        order = -1, 
-        target = vertices,
-        console_default = default.read_data(file_name = "triangles.txt.bz2", dtype =numpy.int32, field = "triangles"),
-        doc = """Array of indices into the vertices, specifying the triangles which define the surface.""")
-
-    vertex_normals = arrays.OrientationArray(
-        label = "Vertex normal vectors",
-        order = -1,
-        console_default = default.read_data(file_name = "vertex_normals.txt.bz2", field = "vertex_normals"),
-        doc = """An array of unit normal vectors for the surfaces vertices.""")
-
-    triangle_normals = arrays.OrientationArray(
-        label = "Triangle normal vectors",
-        order = -1,
-        doc = """An array of unit normal vectors for the surfaces triangles.""")
-
-    geodesic_distance_matrix = SparseMatrix(
-        label = "Geodesic distance matrix",
-        order = -1,
-        required = False,
-        doc = """A sparse matrix of truncated geodesic distances""") #'CS'
-
-    number_of_vertices = basic.Integer(
-        label = "Number of vertices",
-        order = -1,
-        doc = """The number of vertices making up this surface.""")
-
-    number_of_triangles = basic.Integer(
-        label = "Number of triangles",
-        order = -1,
-        doc = """The number of triangles making up this surface.""")
-
-    ##--------------------- FRAMEWORK ATTRIBUTES -----------------------------##
-    zero_based_triangles = basic.Bool(order = -1)
-
-    split_triangles = arrays.IndexArray(order = -1, required = False)
-    
-    number_of_split_slices = basic.Integer(order = -1)
-    
-    split_triangles_indices = basic.List(order = -1)
-
-    surface_type = basic.String
-    
-    __mapper_args__ = {'polymorphic_on': 'surface_type'}
+<span class="n">OUTER_SKIN</span> <span class="o">=</span> <span class="s">&quot;Skin Air&quot;</span>
+<span class="n">OUTER_SKULL</span> <span class="o">=</span> <span class="s">&quot;Skull Skin&quot;</span>
+<span class="n">INNER_SKULL</span> <span class="o">=</span> <span class="s">&quot;Brain Skull&quot;</span>
+<span class="n">CORTICAL</span> <span class="o">=</span> <span class="s">&quot;Cortical Surface&quot;</span>
+<span class="n">EEG_CAP</span> <span class="o">=</span> <span class="s">&quot;EEG Cap&quot;</span>
+<span class="n">FACE</span> <span class="o">=</span> <span class="s">&quot;Face&quot;</span>
 
 
-</div>
-<div class="viewcode-block" id="CorticalSurfaceData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.CorticalSurfaceData">[docs]</a>class CorticalSurfaceData(SurfaceData):
-    """
-    A surface for describing the Brain Cortical area.
-    """
+<span class="c">##--------------------- CLOSE SURFACES Start Here---------------------------------------##</span>
 
-    _ui_name = "A cortical surface"
-    
-    surface_type = basic.String(default = CORTICAL, order = -1)
+<div class="viewcode-block" id="SurfaceData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.SurfaceData">[docs]</a><span class="k">class</span> <span class="nc">SurfaceData</span><span class="p">(</span><span class="n">MappedType</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class primarily exists to bundle the structural Surface data into a </span>
+<span class="sd">    single object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    ##--------------------- FRAMEWORK ATTRIBUTES -----------------------------##
-    __tablename__ = None
-    
-    __mapper_args__ = {'polymorphic_identity': CORTICAL}
+    <span class="n">default</span> <span class="o">=</span> <span class="n">readers</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">folder_path</span><span class="o">=</span><span class="s">&quot;surfaces/cortex_reg13&quot;</span><span class="p">)</span>
 
-    def __init__(self, **kwargs):
-        super(CorticalSurfaceData, self).__init__(**kwargs)
-        self.default.reload(self.__class__, folder_path = "surfaces/cortex_tvb_whitematter")
+    <span class="n">vertices</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">PositionArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Vertex positions&quot;</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">console_default</span><span class="o">=</span><span class="n">default</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s">&quot;vertices.txt.bz2&quot;</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s">&quot;vertices&quot;</span><span class="p">),</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;An array specifying coordinates for the surface vertices.&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">triangles</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">IndexArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Triangles&quot;</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">target</span><span class="o">=</span><span class="n">vertices</span><span class="p">,</span>
+        <span class="n">console_default</span><span class="o">=</span><span class="n">default</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s">&quot;triangles.txt.bz2&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s">&quot;triangles&quot;</span><span class="p">),</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;Array of indices into the vertices, specifying the triangles which define the surface.&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">vertex_normals</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">OrientationArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Vertex normal vectors&quot;</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">console_default</span><span class="o">=</span><span class="n">default</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s">&quot;vertex_normals.txt.bz2&quot;</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s">&quot;vertex_normals&quot;</span><span class="p">),</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;An array of unit normal vectors for the surfaces vertices.&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">triangle_normals</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">OrientationArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Triangle normal vectors&quot;</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;An array of unit normal vectors for the surfaces triangles.&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">geodesic_distance_matrix</span> <span class="o">=</span> <span class="n">SparseMatrix</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Geodesic distance matrix&quot;</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">file_storage</span><span class="o">=</span><span class="n">FILE_STORAGE_NONE</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;A sparse matrix of truncated geodesic distances&quot;&quot;&quot;</span><span class="p">)</span>  <span class="c"># &#39;CS&#39;</span>
+
+    <span class="n">number_of_vertices</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Integer</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Number of vertices&quot;</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;The number of vertices making up this surface.&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">number_of_triangles</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Integer</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Number of triangles&quot;</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;The number of triangles making up this surface.&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="c">##--------------------- FRAMEWORK ATTRIBUTES -----------------------------##</span>
+    <span class="n">zero_based_triangles</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Bool</span><span class="p">(</span><span class="n">order</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">split_triangles</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">IndexArray</span><span class="p">(</span><span class="n">order</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="n">number_of_split_slices</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Integer</span><span class="p">(</span><span class="n">order</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">split_triangles_indices</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">List</span><span class="p">(</span><span class="n">order</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">surface_type</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">String</span>
+
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;polymorphic_on&#39;</span><span class="p">:</span> <span class="s">&#39;surface_type&#39;</span><span class="p">}</span>
 
 
 </div>
-<div class="viewcode-block" id="SkinAirData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.SkinAirData">[docs]</a>class SkinAirData(SurfaceData):
-    """
-    A surface defining the boundary between the skin and the air.
-    """
+<div class="viewcode-block" id="CorticalSurfaceData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.CorticalSurfaceData">[docs]</a><span class="k">class</span> <span class="nc">CorticalSurfaceData</span><span class="p">(</span><span class="n">SurfaceData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A surface for describing the Brain Cortical area.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    _ui_name = "Skin"
+    <span class="n">_ui_name</span> <span class="o">=</span> <span class="s">&quot;A cortical surface&quot;</span>
 
-    surface_type = basic.String(default = OUTER_SKIN)
+    <span class="n">surface_type</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">CORTICAL</span><span class="p">,</span> <span class="n">order</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 
-    ##--------------------- FRAMEWORK ATTRIBUTES -----------------------------##
-    __mapper_args__ = {'polymorphic_identity': OUTER_SKIN}
+    <span class="c">##--------------------- FRAMEWORK ATTRIBUTES -----------------------------##</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
 
-    __generate_table__ = True
-
-    def __init__(self, **kwargs):
-        super(SkinAirData, self).__init__(**kwargs)
-        self.default.reload(self.__class__, folder_path = "surfaces/outer_skin_4096")
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;polymorphic_identity&#39;</span><span class="p">:</span> <span class="n">CORTICAL</span><span class="p">}</span>
 
 
-</div>
-<div class="viewcode-block" id="BrainSkullData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.BrainSkullData">[docs]</a>class BrainSkullData(SurfaceData):
-    """
-    A surface defining the boundary between the brain and the skull.
-    """
-
-    _ui_name = "Inside of the skull"
-
-    surface_type = basic.String(default = INNER_SKULL)
-
-    ##--------------------- FRAMEWORK ATTRIBUTES -----------------------------##
-    __tablename__ = None
-    
-    __mapper_args__ = {'polymorphic_identity': INNER_SKULL}
-    
-    def __init__(self, **kwargs):
-        super(BrainSkullData, self).__init__(**kwargs)
-        self.default.reload(self.__class__, folder_path = "surfaces/inner_skull_4096")
-    
-
-</div>
-<div class="viewcode-block" id="SkullSkinData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.SkullSkinData">[docs]</a>class SkullSkinData(SurfaceData):
-    """
-    A surface defining the boundary between the skull and the skin.
-    """
-
-    _ui_name = "Outside of the skull"
-    
-    surface_type = basic.String(default = OUTER_SKULL)
-
-
-    ##--------------------- FRAMEWORK ATTRIBUTES -----------------------------##
-    __tablename__ = None
-    
-    __mapper_args__ = {'polymorphic_identity': OUTER_SKULL}
-    
-    def __init__(self, **kwargs):
-        super(SkullSkinData, self).__init__(**kwargs)
-        self.default.reload(self.__class__, folder_path = "surfaces/outer_skull_4096")
-
-
-##--------------------- CLOSE SURFACES End Here---------------------------------------##
-
-
-##--------------------- OPEN SURFACES Start Here---------------------------------------##
-</div>
-<div class="viewcode-block" id="OpenSurfaceData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.OpenSurfaceData">[docs]</a>class OpenSurfaceData(SurfaceData):
-    """
-    A base class for all surfaces that are open (eg. CapEEG or Face Surface).
-    """
-    __tablename__ = None
-    
-</div>
-<div class="viewcode-block" id="EEGCapData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.EEGCapData">[docs]</a>class EEGCapData(OpenSurfaceData):
-    """
-    A surface defining the EEG Cap.
-    """
-    _ui_name = "EEG Cap"
-    
-    surface_type = basic.String(default = EEG_CAP)
-    
-    __tablename__ = None
-    
-    __mapper_args__ = {'polymorphic_identity' : EEG_CAP}
-    
-    </div>
-<div class="viewcode-block" id="FaceSurfaceData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.FaceSurfaceData">[docs]</a>class FaceSurfaceData(OpenSurfaceData):
-    """
-    A surface defining the face of a human.
-    """
-    _ui_name = "Face Surface"
-    
-    surface_type = basic.String(default = FACE)
-    
-    __tablename__ = None
-    
-    __mapper_args__ = {'polymorphic_identity' : FACE}
-
-
-##--------------------- OPEN SURFACES End Here---------------------------------------##
-
-##--------------------- SURFACES ADJIACENT classes start Here---------------------------------------##
-</div>
-<div class="viewcode-block" id="RegionMappingData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.RegionMappingData">[docs]</a>class RegionMappingData(arrays.MappedArray):
-    """
-    An array representing a measure of a Connectivity dataType.
-    """
-    default = readers.File(folder_path = "surfaces/cortex_reg13")
-
-    array_data = arrays.IndexArray(console_default = default.read_data(file_name = "o52r00_irp2008.txt.bz2",
-                                                                       dtype = numpy.int32, field = "array_data"))
-
-    connectivity = Connectivity
-
-    surface = SurfaceData
-
-    __generate_table__ = True
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CorticalSurfaceData</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">folder_path</span><span class="o">=</span><span class="s">&quot;surfaces/cortex_tvb_whitematter&quot;</span><span class="p">)</span>
 
 
 </div>
-<div class="viewcode-block" id="LocalConnectivityData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.LocalConnectivityData">[docs]</a>class LocalConnectivityData(MappedType):
-    """
-    A sparse matrix for representing the local connectivity within the Cortex.
-    """
-    _ui_name = "Local connectivity"
+<div class="viewcode-block" id="SkinAirData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.SkinAirData">[docs]</a><span class="k">class</span> <span class="nc">SkinAirData</span><span class="p">(</span><span class="n">SurfaceData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A surface defining the boundary between the skin and the air.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    surface = CorticalSurfaceData(label = "Surface", order=1)
+    <span class="n">_ui_name</span> <span class="o">=</span> <span class="s">&quot;Skin&quot;</span>
 
-    matrix = SparseMatrix(order = -1)
+    <span class="n">surface_type</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">OUTER_SKIN</span><span class="p">)</span>
 
-    equation = equations.FiniteSupportEquation(
-        label = "Spatial",
-        required = False,
-        default = equations.Gaussian,
-        order = 2)
+    <span class="c">##--------------------- FRAMEWORK ATTRIBUTES -----------------------------##</span>
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;polymorphic_identity&#39;</span><span class="p">:</span> <span class="n">OUTER_SKIN</span><span class="p">}</span>
 
-    cutoff = basic.Float(
-        label = "Cutoff distance (mm)",
-        default = 40.0,
-        doc = "Distance at which to truncate the evaluation in mm.",
-        order = 3)
+    <span class="n">__generate_table__</span> <span class="o">=</span> <span class="bp">True</span>
 
 
-    def compute(self):
-        """
-        Compute current Matrix.
-        """
-        LOG.info("Mapping geodesic distance through the LocalConnectivity.")
-
-        #Start with data being geodesic_distance_matrix, then map it through equation
-        self.equation.pattern = self.matrix.data
-
-        #Then replace original data with result...
-        self.matrix.data = self.equation.pattern
-
-        #Homogenise spatial discretisation effects across the surface
-        nv = self.matrix.shape[0]
-        ind = numpy.arange(nv, dtype=int)
-        pos_mask = self.matrix.data &gt; 0.0
-        neg_mask = self.matrix.data &lt; 0.0
-        pos_con = self.matrix.copy()
-        neg_con = self.matrix.copy()
-        pos_con.data[neg_mask] = 0.0
-        neg_con.data[pos_mask] = 0.0
-        pos_contrib = pos_con.sum(axis=1)
-        pos_contrib = numpy.array(pos_contrib).squeeze()
-        neg_contrib = neg_con.sum(axis=1)
-        neg_contrib = numpy.array(neg_contrib).squeeze()
-        pos_mean = pos_contrib.mean()
-        neg_mean = neg_contrib.mean()
-        if ((pos_mean != 0.0 and any(pos_contrib == 0.0)) or
-            (neg_mean != 0.0 and any(neg_contrib == 0.0))):
-            msg = "Cortical mesh is too coarse for requested LocalConnectivity."
-            LOG.warning(msg)
-            bad_verts = ()
-            if pos_mean != 0.0:
-                bad_verts = bad_verts + numpy.nonzero(pos_contrib == 0.0)
-            if neg_mean != 0.0:
-                bad_verts = bad_verts + numpy.nonzero(neg_contrib == 0.0)
-            LOG.debug("Problem vertices are: %s" % str(bad_verts))
-        pos_hf = numpy.zeros(shape=pos_contrib.shape)
-        pos_hf[pos_contrib != 0] = pos_mean / pos_contrib[pos_contrib != 0]
-        neg_hf = numpy.zeros(shape=neg_contrib.shape)
-        neg_hf[neg_contrib != 0] = neg_mean / neg_contrib[neg_contrib != 0]
-        pos_hf_diag = sparse.csc_matrix((pos_hf, (ind, ind)), shape=(nv, nv))
-        neg_hf_diag = sparse.csc_matrix((neg_hf, (ind, ind)), shape=(nv, nv))
-        homogenious_conn = (pos_hf_diag * pos_con) + (neg_hf_diag * neg_con)
-
-        #Then replace unhomogenised result with the spatially homogenious one...
-        if not homogenious_conn.has_sorted_indices:
-            homogenious_conn.sort_indices()
-
-        self.matrix = homogenious_conn
-
-
-    def validate(self, ignore_list = None):
-        """
-        This method checks if the data stored into this entity is valid, and 
-        ready to be stored in DB.
-        Method automatically called just before saving entity in DB.
-        In case data is not valid an Exception should be thrown.
-        :param ignore_list: list of strings representing names of the attributes
-                            to not be validated.
-        """
-        super(LocalConnectivityData, self).validate(ignore_list = ["matrix"])
-
-        # Sparse Matrix is required so we should check if there is any data stored for it
-        if self.matrix is None:
-            msg = " ".join(("LocalConnectivity can not be stored because it",
-                            "has no SparseMatrix attached."))
-            raise exceptions.ValidationException(msg)
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SkinAirData</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">folder_path</span><span class="o">=</span><span class="s">&quot;surfaces/outer_skin_4096&quot;</span><span class="p">)</span>
 
 
 </div>
-<div class="viewcode-block" id="CortexData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.CortexData">[docs]</a>class CortexData(CorticalSurfaceData):
-    """
-    Extends the CorticalSurface class to add specific attributes of the cortex,
-    such as, local connectivity...
-    """
-    _ui_complex_datatype = CorticalSurfaceData
+<div class="viewcode-block" id="BrainSkullData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.BrainSkullData">[docs]</a><span class="k">class</span> <span class="nc">BrainSkullData</span><span class="p">(</span><span class="n">SurfaceData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A surface defining the boundary between the brain and the skull.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    _ui_name = "A cortex..."
+    <span class="n">_ui_name</span> <span class="o">=</span> <span class="s">&quot;Inside of the skull&quot;</span>
 
-    local_connectivity = LocalConnectivityData(label = "Local Connectivity",
-                                               required = False,
-                                               doc = """Define the interaction 
-                                               between neighboring network nodes. 
-                                               This is implicitly integrated in 
-                                               the definition of a given surface 
-                                               as an excitatory mean coupling of 
-                                               directly adjacent neighbors to 
-                                               the first state variable of each 
-                                               population model (since these 
-                                               typically represent the mean-neural 
-                                               membrane voltage). 
-                                               This coupling is instantaneous 
-                                               (no time delays).""")
+    <span class="n">surface_type</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">INNER_SKULL</span><span class="p">)</span>
 
-    region_mapping_data = RegionMappingData(
-        label = "region mapping",
-        console_default = RegionMappingData(),
-        doc = """An index vector of length equal to the number_of_vertices + the
-            number of non-cortical regions, with values that index into an
-            associated connectivity matrix.""") # 'CS'
+    <span class="c">##--------------------- FRAMEWORK ATTRIBUTES -----------------------------##</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
 
-    coupling_strength = arrays.FloatArray(
-        label = "Local coupling strength", 
-        range= basic.Range(lo=0.0, hi=20.0, step=1.0),
-        default = numpy.array([1.0]), 
-        file_storage = core.FILE_STORAGE_NONE,
-        doc = """A factor that rescales local connectivity strengths.""")
-
-    eeg_projection = arrays.FloatArray(
-        label = "EEG projection", order = -1,
-        console_default = CorticalSurfaceData.default.read_data(matlab_data_name = "ProjectionMatrix", lazy_load = True,
-                            field = "eeg_projection", file_name = "projection_outer_skin_4096_eeg_1020_62.mat"),
-        #NOTE: This is redundant if the EEG monitor isn't used, but it makes life simpler.
-        required = False,
-        doc = """A 2-D array which projects the neural activity on the cortical
-            surface to a set of EEG sensors.""") 
-        #  requires linked sensors.SensorsEEG and Skull/Skin/Air
-
-    meg_projection = arrays.FloatArray(
-        label = "MEG projection",
-        required = False, order = -1,
-        #linked = ?sensors, skull, skin, etc?
-        doc = """A 2-D array which projects the neural activity on the cortical
-            surface to a set of MEG sensors.""") 
-        #  requires linked SensorsMEG and Skull/Skin/Air
-
-    internal_projection = arrays.FloatArray(
-        label = "Internal projection",
-        required = False, order = -1,
-        #linked = ?sensors, skull, skin, etc?
-        doc = """A 2-D array which projects the neural activity on the 
-            cortical surface to a set of embeded sensors.""") 
-        #  requires linked SensorsInternal
-
-    __generate_table__ = False
-
-    def __init__(self, **kwargs):
-        super(CortexData, self).__init__(**kwargs)
-        self.default.reload(self.__class__, folder_path = "surfaces/cortex_reg13")
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;polymorphic_identity&#39;</span><span class="p">:</span> <span class="n">INNER_SKULL</span><span class="p">}</span>
 
 
-    def populate_cortex(self, cortex_surface, cortex_parameters=None):
-        """
-        Populate 'self' from a CorticalSurfaceData instance with additional 
-        CortexData specific attributes.
-
-        :param cortex_surface:  CorticalSurfaceData instance
-        :param cortex_parameters: dictionary key:value, where key is attribute on CortexData 
-        """
-        for name in cortex_surface.trait:
-            try:
-                setattr(self, name, getattr(cortex_surface, name))
-            except Exception, exc:
-                self.logger.exception(exc)
-                self.logger.error("Could not set attribute '" + name +"' on Cortex")
-        for key, value in cortex_parameters.iteritems():
-            setattr(self, key, value)
-        return self
-
-
-    @property
-    def region_mapping(self):
-        """
-        Define shortcut for retrieving RegionMapping map array.
-        """
-        if self.region_mapping_data is None:
-            return None
-        return self.region_mapping_data.array_data
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BrainSkullData</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">folder_path</span><span class="o">=</span><span class="s">&quot;surfaces/inner_skull_4096&quot;</span><span class="p">)</span>
 
 
 </div>
-</pre>
+<div class="viewcode-block" id="SkullSkinData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.SkullSkinData">[docs]</a><span class="k">class</span> <span class="nc">SkullSkinData</span><span class="p">(</span><span class="n">SurfaceData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A surface defining the boundary between the skull and the skin.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_ui_name</span> <span class="o">=</span> <span class="s">&quot;Outside of the skull&quot;</span>
+
+    <span class="n">surface_type</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">OUTER_SKULL</span><span class="p">)</span>
+
+
+    <span class="c">##--------------------- FRAMEWORK ATTRIBUTES -----------------------------##</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;polymorphic_identity&#39;</span><span class="p">:</span> <span class="n">OUTER_SKULL</span><span class="p">}</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SkullSkinData</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">folder_path</span><span class="o">=</span><span class="s">&quot;surfaces/outer_skull_4096&quot;</span><span class="p">)</span>
+
+
+<span class="c">##--------------------- CLOSE SURFACES End Here---------------------------------------##</span>
+
+
+<span class="c">##--------------------- OPEN SURFACES Start Here---------------------------------------##</span>
+</div>
+<div class="viewcode-block" id="OpenSurfaceData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.OpenSurfaceData">[docs]</a><span class="k">class</span> <span class="nc">OpenSurfaceData</span><span class="p">(</span><span class="n">SurfaceData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A base class for all surfaces that are open (eg. CapEEG or Face Surface).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
+
+
+</div>
+<div class="viewcode-block" id="EEGCapData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.EEGCapData">[docs]</a><span class="k">class</span> <span class="nc">EEGCapData</span><span class="p">(</span><span class="n">OpenSurfaceData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A surface defining the EEG Cap.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_ui_name</span> <span class="o">=</span> <span class="s">&quot;EEG Cap&quot;</span>
+
+    <span class="n">surface_type</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">EEG_CAP</span><span class="p">)</span>
+
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;polymorphic_identity&#39;</span><span class="p">:</span> <span class="n">EEG_CAP</span><span class="p">}</span>
+
+
+</div>
+<div class="viewcode-block" id="FaceSurfaceData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.FaceSurfaceData">[docs]</a><span class="k">class</span> <span class="nc">FaceSurfaceData</span><span class="p">(</span><span class="n">OpenSurfaceData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A surface defining the face of a human.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_ui_name</span> <span class="o">=</span> <span class="s">&quot;Face Surface&quot;</span>
+
+    <span class="n">surface_type</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">FACE</span><span class="p">)</span>
+
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;polymorphic_identity&#39;</span><span class="p">:</span> <span class="n">FACE</span><span class="p">}</span>
+
+
+<span class="c">##--------------------- OPEN SURFACES End Here---------------------------------------##</span>
+
+<span class="c">##--------------------- SURFACES ADJIACENT classes start Here---------------------------------------##</span>
+</div>
+<div class="viewcode-block" id="RegionMappingData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.RegionMappingData">[docs]</a><span class="k">class</span> <span class="nc">RegionMappingData</span><span class="p">(</span><span class="n">arrays</span><span class="o">.</span><span class="n">MappedArray</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An array representing a measure of a Connectivity dataType.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">default</span> <span class="o">=</span> <span class="n">readers</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">folder_path</span><span class="o">=</span><span class="s">&quot;surfaces/cortex_reg13&quot;</span><span class="p">)</span>
+
+    <span class="n">array_data</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">IndexArray</span><span class="p">(</span><span class="n">console_default</span><span class="o">=</span><span class="n">default</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s">&quot;o52r00_irp2008.txt.bz2&quot;</span><span class="p">,</span>
+                                                                     <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s">&quot;array_data&quot;</span><span class="p">))</span>
+
+    <span class="n">connectivity</span> <span class="o">=</span> <span class="n">Connectivity</span>
+
+    <span class="n">surface</span> <span class="o">=</span> <span class="n">SurfaceData</span>
+
+    <span class="n">__generate_table__</span> <span class="o">=</span> <span class="bp">True</span>
+
+
+</div>
+<div class="viewcode-block" id="LocalConnectivityData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.LocalConnectivityData">[docs]</a><span class="k">class</span> <span class="nc">LocalConnectivityData</span><span class="p">(</span><span class="n">MappedType</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A sparse matrix for representing the local connectivity within the Cortex.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_ui_name</span> <span class="o">=</span> <span class="s">&quot;Local connectivity&quot;</span>
+
+    <span class="n">surface</span> <span class="o">=</span> <span class="n">CorticalSurfaceData</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Surface&quot;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">matrix</span> <span class="o">=</span> <span class="n">SparseMatrix</span><span class="p">(</span><span class="n">order</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">equation</span> <span class="o">=</span> <span class="n">equations</span><span class="o">.</span><span class="n">FiniteSupportEquation</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Spatial&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">equations</span><span class="o">.</span><span class="n">Gaussian</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">cutoff</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Float</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Cutoff distance (mm)&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">40.0</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;Distance at which to truncate the evaluation in mm.&quot;</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute current Matrix.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Mapping geodesic distance through the LocalConnectivity.&quot;</span><span class="p">)</span>
+
+        <span class="c">#Start with data being geodesic_distance_matrix, then map it through equation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="c">#Then replace original data with result...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">pattern</span>
+
+        <span class="c">#Homogenise spatial discretisation effects across the surface</span>
+        <span class="n">nv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nv</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">pos_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">data</span> <span class="o">&gt;</span> <span class="mf">0.0</span>
+        <span class="n">neg_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">data</span> <span class="o">&lt;</span> <span class="mf">0.0</span>
+        <span class="n">pos_con</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">neg_con</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">pos_con</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">neg_mask</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">neg_con</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">pos_mask</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">pos_contrib</span> <span class="o">=</span> <span class="n">pos_con</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pos_contrib</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pos_contrib</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+        <span class="n">neg_contrib</span> <span class="o">=</span> <span class="n">neg_con</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">neg_contrib</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">neg_contrib</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+        <span class="n">pos_mean</span> <span class="o">=</span> <span class="n">pos_contrib</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">neg_mean</span> <span class="o">=</span> <span class="n">neg_contrib</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">pos_mean</span> <span class="o">!=</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">pos_contrib</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">))</span> <span class="ow">or</span>
+                <span class="p">(</span><span class="n">neg_mean</span> <span class="o">!=</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">neg_contrib</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">))):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Cortical mesh is too coarse for requested LocalConnectivity.&quot;</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">bad_verts</span> <span class="o">=</span> <span class="p">()</span>
+            <span class="k">if</span> <span class="n">pos_mean</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">bad_verts</span> <span class="o">=</span> <span class="n">bad_verts</span> <span class="o">+</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">pos_contrib</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">neg_mean</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">bad_verts</span> <span class="o">=</span> <span class="n">bad_verts</span> <span class="o">+</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">neg_contrib</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">)</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Problem vertices are: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">bad_verts</span><span class="p">))</span>
+        <span class="n">pos_hf</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">pos_contrib</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">pos_hf</span><span class="p">[</span><span class="n">pos_contrib</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">pos_mean</span> <span class="o">/</span> <span class="n">pos_contrib</span><span class="p">[</span><span class="n">pos_contrib</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">neg_hf</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">neg_contrib</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">neg_hf</span><span class="p">[</span><span class="n">neg_contrib</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">neg_mean</span> <span class="o">/</span> <span class="n">neg_contrib</span><span class="p">[</span><span class="n">neg_contrib</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">pos_hf_diag</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">((</span><span class="n">pos_hf</span><span class="p">,</span> <span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">ind</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">nv</span><span class="p">,</span> <span class="n">nv</span><span class="p">))</span>
+        <span class="n">neg_hf_diag</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">((</span><span class="n">neg_hf</span><span class="p">,</span> <span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">ind</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">nv</span><span class="p">,</span> <span class="n">nv</span><span class="p">))</span>
+        <span class="n">homogenious_conn</span> <span class="o">=</span> <span class="p">(</span><span class="n">pos_hf_diag</span> <span class="o">*</span> <span class="n">pos_con</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">neg_hf_diag</span> <span class="o">*</span> <span class="n">neg_con</span><span class="p">)</span>
+
+        <span class="c">#Then replace unhomogenised result with the spatially homogenious one...</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">homogenious_conn</span><span class="o">.</span><span class="n">has_sorted_indices</span><span class="p">:</span>
+            <span class="n">homogenious_conn</span><span class="o">.</span><span class="n">sort_indices</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span> <span class="o">=</span> <span class="n">homogenious_conn</span>
+
+
+    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignore_list</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method checks if the data stored into this entity is valid, and </span>
+<span class="sd">        ready to be stored in DB.</span>
+<span class="sd">        Method automatically called just before saving entity in DB.</span>
+<span class="sd">        In case data is not valid an Exception should be thrown.</span>
+<span class="sd">        :param ignore_list: list of strings representing names of the attributes</span>
+<span class="sd">                            to not be validated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LocalConnectivityData</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">ignore_list</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;matrix&quot;</span><span class="p">])</span>
+
+        <span class="c"># Sparse Matrix is required so we should check if there is any data stored for it</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s">&quot;LocalConnectivity can not be stored because it&quot;</span><span class="p">,</span>
+                            <span class="s">&quot;has no SparseMatrix attached.&quot;</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ValidationException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="CortexData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_data.CortexData">[docs]</a><span class="k">class</span> <span class="nc">CortexData</span><span class="p">(</span><span class="n">CorticalSurfaceData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extends the CorticalSurface class to add specific attributes of the cortex,</span>
+<span class="sd">    such as, local connectivity...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_ui_complex_datatype</span> <span class="o">=</span> <span class="n">CorticalSurfaceData</span>
+
+    <span class="n">_ui_name</span> <span class="o">=</span> <span class="s">&quot;A cortex...&quot;</span>
+
+    <span class="n">local_connectivity</span> <span class="o">=</span> <span class="n">LocalConnectivityData</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Local Connectivity&quot;</span><span class="p">,</span>
+                                               <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                                               <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;Define the interaction</span>
+<span class="s">                                               between neighboring network nodes. </span>
+<span class="s">                                               This is implicitly integrated in </span>
+<span class="s">                                               the definition of a given surface </span>
+<span class="s">                                               as an excitatory mean coupling of </span>
+<span class="s">                                               directly adjacent neighbors to </span>
+<span class="s">                                               the first state variable of each </span>
+<span class="s">                                               population model (since these </span>
+<span class="s">                                               typically represent the mean-neural </span>
+<span class="s">                                               membrane voltage). </span>
+<span class="s">                                               This coupling is instantaneous </span>
+<span class="s">                                               (no time delays).&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">region_mapping_data</span> <span class="o">=</span> <span class="n">RegionMappingData</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;region mapping&quot;</span><span class="p">,</span>
+        <span class="n">console_default</span><span class="o">=</span><span class="n">RegionMappingData</span><span class="p">(),</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;An index vector of length equal to the number_of_vertices + the</span>
+<span class="s">            number of non-cortical regions, with values that index into an</span>
+<span class="s">            associated connectivity matrix.&quot;&quot;&quot;</span><span class="p">)</span>  <span class="c"># &#39;CS&#39;</span>
+
+    <span class="n">coupling_strength</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Local coupling strength&quot;</span><span class="p">,</span>
+        <span class="nb">range</span><span class="o">=</span><span class="n">basic</span><span class="o">.</span><span class="n">Range</span><span class="p">(</span><span class="n">lo</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">hi</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">]),</span>
+        <span class="n">file_storage</span><span class="o">=</span><span class="n">core</span><span class="o">.</span><span class="n">FILE_STORAGE_NONE</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;A factor that rescales local connectivity strengths.&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">eeg_projection</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;EEG projection&quot;</span><span class="p">,</span> <span class="n">order</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">console_default</span><span class="o">=</span><span class="n">CorticalSurfaceData</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">matlab_data_name</span><span class="o">=</span><span class="s">&quot;ProjectionMatrix&quot;</span><span class="p">,</span> <span class="n">lazy_load</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                                              <span class="n">field</span><span class="o">=</span><span class="s">&quot;eeg_projection&quot;</span><span class="p">,</span>
+                                                              <span class="n">file_name</span><span class="o">=</span><span class="s">&quot;projection_outer_skin_4096_eeg_1020_62.mat&quot;</span><span class="p">),</span>
+        <span class="c">#NOTE: This is redundant if the EEG monitor isn&#39;t used, but it makes life simpler.</span>
+        <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;A 2-D array which projects the neural activity on the cortical</span>
+<span class="s">            surface to a set of EEG sensors.&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="c">#  requires linked sensors.SensorsEEG and Skull/Skin/Air</span>
+
+    <span class="n">meg_projection</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;MEG projection&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="c">#linked = ?sensors, skull, skin, etc?</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;A 2-D array which projects the neural activity on the cortical</span>
+<span class="s">            surface to a set of MEG sensors.&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="c">#  requires linked SensorsMEG and Skull/Skin/Air</span>
+
+    <span class="n">internal_projection</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Internal projection&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="c">#linked = ?sensors, skull, skin, etc?</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;A 2-D array which projects the neural activity on the</span>
+<span class="s">            cortical surface to a set of embeded sensors.&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="c">#  requires linked SensorsInternal</span>
+
+    <span class="n">__generate_table__</span> <span class="o">=</span> <span class="bp">False</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CortexData</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">folder_path</span><span class="o">=</span><span class="s">&quot;surfaces/cortex_reg13&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">populate_cortex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cortex_surface</span><span class="p">,</span> <span class="n">cortex_parameters</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Populate &#39;self&#39; from a CorticalSurfaceData instance with additional </span>
+<span class="sd">        CortexData specific attributes.</span>
+
+<span class="sd">        :param cortex_surface:  CorticalSurfaceData instance</span>
+<span class="sd">        :param cortex_parameters: dictionary key:value, where key is attribute on CortexData </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">cortex_surface</span><span class="o">.</span><span class="n">trait</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cortex_surface</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Could not set attribute &#39;&quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s">&quot;&#39; on Cortex&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">cortex_parameters</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">region_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Define shortcut for retrieving RegionMapping map array.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">region_mapping_data</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">region_mapping_data</span><span class="o">.</span><span class="n">array_data</span>
+</pre></div></div>
 
           </div>
         </div>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../search.html" method="get">
@@ -535,13 +553,13 @@ FACE = "Face"
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

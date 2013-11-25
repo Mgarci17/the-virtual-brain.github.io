@@ -1,0 +1,403 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.entities.storage.project_dao &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../index.html" />
+    <link rel="up" title="tvb.core.entities.storage" href="../storage.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../storage.html" accesskey="U">tvb.core.entities.storage</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.entities.storage.project_dao</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">DAO operation related to Users and Projects are defined here.</span>
+
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">or_</span><span class="p">,</span> <span class="n">and_</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.sql.expression</span> <span class="kn">import</span> <span class="n">desc</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm.exc</span> <span class="kn">import</span> <span class="n">NoResultFound</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span> <span class="k">as</span> <span class="n">cfg</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities</span> <span class="kn">import</span> <span class="n">model</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.storage.root_dao</span> <span class="kn">import</span> <span class="n">RootDAO</span>
+
+
+
+<div class="viewcode-block" id="CaseDAO"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO">[docs]</a><span class="k">class</span> <span class="nc">CaseDAO</span><span class="p">(</span><span class="n">RootDAO</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    USER and PROJECT RELATED OPERATIONS</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="CaseDAO.get_user_by_id"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.get_user_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_user_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve USER entity by name.&quot;&quot;&quot;</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">user_id</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">user</span>
+
+</div>
+<div class="viewcode-block" id="CaseDAO.get_user_by_name"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.get_user_by_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_user_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve USER entity by name.&quot;&quot;&quot;</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">user</span>
+
+</div>
+<div class="viewcode-block" id="CaseDAO.get_system_user"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.get_system_user">[docs]</a>    <span class="k">def</span> <span class="nf">get_system_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve System user by name.&quot;&quot;&quot;</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">SYSTEM_USER_NAME</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">user</span>
+
+</div>
+<div class="viewcode-block" id="CaseDAO.count_users_for_name"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.count_users_for_name">[docs]</a>    <span class="k">def</span> <span class="nf">count_users_for_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve the number of users in DB for a given name.&quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+</div>
+<div class="viewcode-block" id="CaseDAO.get_administrators"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.get_administrators">[docs]</a>    <span class="k">def</span> <span class="nf">get_administrators</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve System user by name.&quot;&quot;&quot;</span>
+        <span class="n">admins</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">admins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">ROLE_ADMINISTRATOR</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">admins</span>
+
+</div>
+<div class="viewcode-block" id="CaseDAO.get_all_users"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.get_all_users">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">different_name</span><span class="o">=</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="n">page_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">page_end</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">is_count</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve all USERS in DB, except current user and system user.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User</span>
+                                       <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">!=</span> <span class="n">different_name</span>
+                                                <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">!=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">SYSTEM_USER_NAME</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_count</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">offset</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">page_start</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">page_end</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="n">NoResultFound</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;No users found. Maybe database is empty.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span>
+
+</div>
+<div class="viewcode-block" id="CaseDAO.get_user_by_name_email"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.get_user_by_name_email">[docs]</a>    <span class="k">def</span> <span class="nf">get_user_by_name_email</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">email</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;For a username and a email reset the password to a random one&quot;&quot;&quot;</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">user</span>
+
+</div>
+<div class="viewcode-block" id="CaseDAO.delete_user"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.delete_user">[docs]</a>    <span class="k">def</span> <span class="nf">delete_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove USER entity by ID.&quot;&quot;&quot;</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">user_id</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="CaseDAO.get_user_for_datatype"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.get_user_for_datatype">[docs]</a>    <span class="k">def</span> <span class="nf">get_user_for_datatype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the user for the datatype id&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">datatype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">DataType</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">dt_id</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="n">datatype</span><span class="o">.</span><span class="n">parent_operation</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">datatype</span><span class="o">.</span><span class="n">parent_operation</span><span class="o">.</span><span class="n">user</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">user</span>
+
+
+    <span class="c">#</span>
+    <span class="c"># PROJECT RELATED OPERATIONS</span>
+    <span class="c">#</span>
+</div>
+<div class="viewcode-block" id="CaseDAO.get_project_by_id"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.get_project_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_project_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve PROJECT entity for a given identifier.</span>
+<span class="sd">           THROW SqlException when not found.&quot;&quot;&quot;</span>
+        <span class="n">prj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Project</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">project_id</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="n">prj</span><span class="o">.</span><span class="n">administrator</span>
+        <span class="k">return</span> <span class="n">prj</span>
+
+</div>
+<div class="viewcode-block" id="CaseDAO.get_project_by_gid"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.get_project_by_gid">[docs]</a>    <span class="k">def</span> <span class="nf">get_project_by_gid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_gid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve PROJECT entity for a given identifier.</span>
+<span class="sd">           THROW SqlException when not found.&quot;&quot;&quot;</span>
+        <span class="n">prj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Project</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">gid</span><span class="o">=</span><span class="n">project_gid</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="n">prj</span><span class="o">.</span><span class="n">administrator</span>
+        <span class="k">return</span> <span class="n">prj</span>
+
+</div>
+<div class="viewcode-block" id="CaseDAO.delete_project"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.delete_project">[docs]</a>    <span class="k">def</span> <span class="nf">delete_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove PROJECT entity by ID.&quot;&quot;&quot;</span>
+        <span class="n">project</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Project</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">project_id</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+        <span class="n">linked_users</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User</span>
+                                          <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">selected_project</span><span class="o">=</span><span class="n">project_id</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">linked_users</span><span class="p">:</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">selected_project</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="CaseDAO.count_projects_for_name"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.count_projects_for_name">[docs]</a>    <span class="k">def</span> <span class="nf">count_projects_for_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">different_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve the number of projects with a given name currently in DB.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">different_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">number</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Project</span>
+                                        <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">different_id</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">number</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Project</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">number</span>
+
+</div>
+<div class="viewcode-block" id="CaseDAO.get_all_projects"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.get_all_projects">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_projects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">page_end</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">is_count</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve all Project entities currently in the system.</span>
+<span class="sd">        WARNING: use this wisely, as it might easily overflow the system.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Project</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_count</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">offset</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">page_start</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">page_end</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+</div>
+<div class="viewcode-block" id="CaseDAO.get_projects_for_user"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.get_projects_for_user">[docs]</a>    <span class="k">def</span> <span class="nf">get_projects_for_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">page_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">page_end</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">is_count</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return all projects a given user can access (administrator or not).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># First load projects that current user is administrator for.</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Project</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">model</span><span class="o">.</span><span class="n">User</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">fk_admin</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                                <span class="p">)</span><span class="o">.</span><span class="n">outerjoin</span><span class="p">((</span><span class="n">model</span><span class="o">.</span><span class="n">User_to_Project</span><span class="p">,</span>
+                                             <span class="n">and_</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">User_to_Project</span><span class="o">.</span><span class="n">fk_project</span><span class="p">,</span>
+                                                  <span class="n">model</span><span class="o">.</span><span class="n">User_to_Project</span><span class="o">.</span><span class="n">fk_user</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">))</span>
+                                <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">or_</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">User_to_Project</span><span class="o">.</span><span class="n">fk_user</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">)</span>
+                                <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">desc</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">is_count</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">offset</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">page_start</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">page_end</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="p">[</span><span class="n">project</span><span class="o">.</span><span class="n">administrator</span><span class="o">.</span><span class="n">username</span> <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+</div>
+<div class="viewcode-block" id="CaseDAO.get_project_for_operation"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.get_project_for_operation">[docs]</a>    <span class="k">def</span> <span class="nf">get_project_for_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find parent project for current operation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Project</span>
+                                        <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">fk_launched_in</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">id</span>
+                                                 <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">operation_id</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+</div>
+<div class="viewcode-block" id="CaseDAO.get_link"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.get_link">[docs]</a>    <span class="k">def</span> <span class="nf">get_link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt_id</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the link from DataType given by dt_id and project given by project_id.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Links</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Links</span><span class="o">.</span><span class="n">fk_from_datatype</span> <span class="o">==</span> <span class="n">dt_id</span>
+                                                        <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Links</span><span class="o">.</span><span class="n">fk_to_project</span> <span class="o">==</span> <span class="n">project_id</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+</div>
+<div class="viewcode-block" id="CaseDAO.remove_link"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.remove_link">[docs]</a>    <span class="k">def</span> <span class="nf">remove_link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">link</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove a link entity.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">link</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="CaseDAO.get_linkable_projects_for_user"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.get_linkable_projects_for_user">[docs]</a>    <span class="k">def</span> <span class="nf">get_linkable_projects_for_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">data_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return all projects a given user can link some data given by a data_id to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c"># First load projects that current user is administrator for.</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Project</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User</span>
+                                        <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Project</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User_to_Project</span>
+                                             <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User_to_Project</span><span class="o">.</span><span class="n">fk_user</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+            <span class="n">linked_project_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Links</span><span class="o">.</span><span class="n">fk_to_project</span>
+                                                    <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Links</span><span class="o">.</span><span class="n">fk_from_datatype</span> <span class="o">==</span> <span class="n">data_id</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="n">linked_project_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">linked_project_ids</span><span class="p">]</span>
+            <span class="n">datatype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_datatype_by_id</span><span class="p">(</span><span class="n">data_id</span><span class="p">)</span>
+            <span class="n">current_prj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">fk_launched_in</span>
+                                             <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">datatype</span><span class="o">.</span><span class="n">fk_from_operation</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">linked_project_ids</span><span class="p">:</span>
+                <span class="n">linked_project_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_prj</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">linked_project_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">current_prj</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="n">filtered_result</span> <span class="o">=</span> <span class="p">[</span><span class="n">entry</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">result</span> <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">linked_project_ids</span><span class="p">]</span>
+            <span class="p">[</span><span class="n">project</span><span class="o">.</span><span class="n">administrator</span><span class="o">.</span><span class="n">username</span> <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">filtered_result</span><span class="p">]</span>
+            <span class="n">linked_project_ids</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">current_prj</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">linked_projects</span> <span class="o">=</span> <span class="p">[</span><span class="n">entry</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">result</span> <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">linked_project_ids</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">filtered_result</span><span class="p">,</span> <span class="n">linked_projects</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+
+</div>
+<div class="viewcode-block" id="CaseDAO.delete_members_for_project"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.delete_members_for_project">[docs]</a>    <span class="k">def</span> <span class="nf">delete_members_for_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">members</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove all linked user to current project.&quot;&quot;&quot;</span>
+        <span class="n">members</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User_to_Project</span>
+                                     <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User_to_Project</span><span class="o">.</span><span class="n">fk_project</span> <span class="o">==</span> <span class="n">project_id</span>
+                                              <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User_to_Project</span><span class="o">.</span><span class="n">fk_user</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">members</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">members</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="CaseDAO.get_members_of_project"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.get_members_of_project">[docs]</a>    <span class="k">def</span> <span class="nf">get_members_of_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proj_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve USER entities with rights on current project.&quot;&quot;&quot;</span>
+        <span class="n">users_members</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User_to_Project</span>
+                                           <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User_to_Project</span><span class="o">.</span><span class="n">fk_project</span> <span class="o">==</span> <span class="n">proj_id</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">users_members</span>
+
+</div>
+<div class="viewcode-block" id="CaseDAO.get_operation_numbers"><a class="viewcode-back" href="../../../../../tvb.core.entities.storage.html#tvb.core.entities.storage.project_dao.CaseDAO.get_operation_numbers">[docs]</a>    <span class="k">def</span> <span class="nf">get_operation_numbers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proj_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Count total number of operations started for current project.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">fk_launched_in</span><span class="o">=</span><span class="n">proj_id</span>
+                                 <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">STATUS_FINISHED</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="n">sta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">fk_launched_in</span><span class="o">=</span><span class="n">proj_id</span>
+                                 <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">STATUS_STARTED</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">fk_launched_in</span><span class="o">=</span><span class="n">proj_id</span>
+                                 <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">STATUS_ERROR</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="n">canceled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Operation</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">fk_launched_in</span><span class="o">=</span><span class="n">proj_id</span>
+                                      <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">STATUS_CANCELED</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">fns</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">canceled</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../storage.html" >tvb.core.entities.storage</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.simulator.coupling &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.simulator.coupling &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../index.html" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -68,6 +67,15 @@
 <span class="c"># License for more details. You should have received a copy of the GNU General </span>
 <span class="c"># Public License along with this program; if not, you can download it here</span>
 <span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
 <span class="c">#</span>
 <span class="c">#</span>
 
@@ -178,21 +186,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_kernel</span> <span class="o">=</span> <span class="n">kernel</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">n_cfpr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="coupling_device_info.n_cfpr"><a class="viewcode-back" href="../../../tvb.simulator.coupling.html#tvb.simulator.coupling.coupling_device_info.n_cfpr">[docs]</a>    <span class="k">def</span> <span class="nf">n_cfpr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pars</span><span class="p">)</span>
-
+</div>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">cfpr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="coupling_device_info.cfpr"><a class="viewcode-back" href="../../../tvb.simulator.coupling.html#tvb.simulator.coupling.coupling_device_info.cfpr">[docs]</a>    <span class="k">def</span> <span class="nf">cfpr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">pars</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_cfpr</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pars</span><span class="p">):</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">p</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">)</span> <span class="k">else</span> <span class="n">p</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">name</span>
             <span class="n">pars</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">pars</span>
-
+</div>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="coupling_device_info.kernel"><a class="viewcode-back" href="../../../tvb.simulator.coupling.html#tvb.simulator.coupling.coupling_device_info.kernel">[docs]</a>    <span class="k">def</span> <span class="nf">kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kernel</span>
-
+</div>
     <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inst</span><span class="p">,</span> <span class="n">ownr</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">inst</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="n">inst</span>
@@ -237,11 +245,11 @@
 
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">input</span> <span class="o">=</span> <span class="p">(</span><span class="n">g_ij</span> <span class="o">*</span> <span class="n">x_j</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">*</span> <span class="nb">input</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span>
+        <span class="n">coupled_input</span> <span class="o">=</span> <span class="p">(</span><span class="n">g_ij</span> <span class="o">*</span> <span class="n">x_j</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">*</span> <span class="n">coupled_input</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span>
 
     <span class="n">device_info</span> <span class="o">=</span> <span class="n">coupling_device_info</span><span class="p">(</span>
-        <span class="n">pars</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span>
+        <span class="n">pars</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">],</span>
         <span class="n">kernel</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
 
 <span class="s">        // parameters</span>
@@ -272,7 +280,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">scaling_factor</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Float</span><span class="p">(</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Float</span><span class="p">(</span>
         <span class="n">label</span><span class="o">=</span><span class="s">&quot;Scaling factor&quot;</span><span class="p">,</span>
         <span class="n">default</span> <span class="o">=</span> <span class="mf">0.00390625</span><span class="p">,</span>
         <span class="nb">range</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Range</span><span class="p">(</span><span class="n">lo</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">),</span>
@@ -286,15 +294,15 @@
 <span class="sd">        evaluated has the following form:</span>
 
 <span class="sd">            .. math::</span>
-<span class="sd">                scaling_factor x </span>
+<span class="sd">                a x </span>
 
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">input</span> <span class="o">=</span> <span class="p">(</span><span class="n">g_ij</span> <span class="o">*</span> <span class="n">x_j</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaling_factor</span> <span class="o">*</span> <span class="nb">input</span>
+        <span class="n">coupled_input</span> <span class="o">=</span> <span class="p">(</span><span class="n">g_ij</span> <span class="o">*</span> <span class="n">x_j</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">*</span> <span class="n">coupled_input</span>
 </div>
     <span class="n">device_info</span> <span class="o">=</span> <span class="n">coupling_device_info</span><span class="p">(</span>
-        <span class="n">pars</span> <span class="o">=</span> <span class="p">[</span><span class="n">scaling_factor</span><span class="p">],</span>
+        <span class="n">pars</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">],</span>
         <span class="n">kernel</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
 
 <span class="s">        // parameters</span>
@@ -306,6 +314,60 @@
 
 <span class="s">        &quot;&quot;&quot;</span>
         <span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="HyperbolicTangent"><a class="viewcode-back" href="../../../tvb.simulator.coupling.html#tvb.simulator.coupling.HyperbolicTangent">[docs]</a><span class="k">class</span> <span class="nc">HyperbolicTangent</span><span class="p">(</span><span class="n">Coupling</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Hyperbolic tangent.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;:math:`a`&quot;</span><span class="p">,</span> 
+        <span class="n">default</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="nb">range</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Range</span><span class="p">(</span><span class="n">lo</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1000.0</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="mf">1000.0</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">),</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;Minimum of the sigmoid function&quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">midpoint</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;midpoint&quot;</span><span class="p">,</span> 
+        <span class="n">default</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,]),</span>
+        <span class="nb">range</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Range</span><span class="p">(</span><span class="n">lo</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1000.0</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="mf">1000.0</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">),</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;Midpoint of the linear portion of the sigmoid&quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>
+
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s">r&quot;:math:`\sigma`&quot;</span><span class="p">,</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,]),</span>
+        <span class="nb">range</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Range</span><span class="p">(</span><span class="n">lo</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="mf">1000.0</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">),</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;Standard deviation of the ...&quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>
+
+    <span class="n">normalise</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Bool</span><span class="p">(</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;normalise by in-degree&quot;</span><span class="p">,</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;Normalise the node coupling by the node&#39;s in-degree&quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g_ij</span><span class="p">,</span> <span class="n">x_i</span><span class="p">,</span> <span class="n">x_j</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Evaluate the Sigmoidal function for the arg ``x``. The equation being</span>
+<span class="sd">        evaluated has the following form:</span>
+
+<span class="sd">            .. math::</span>
+<span class="sd">                        a * (1 + tanh((x - midpoint)/sigma))</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">temp</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span>  <span class="n">numpy</span><span class="o">.</span><span class="n">tanh</span><span class="p">((</span><span class="n">x_j</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">midpoint</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalise</span><span class="p">:</span> <span class="c"># yeeeeahhh, let&#39;s make simulations slower ...</span>
+            <span class="n">temp</span> <span class="o">*=</span> <span class="p">(</span><span class="n">g_ij</span> <span class="o">/</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">g_ij</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)))))</span> <span class="c"># region mode normalisation</span>
+            <span class="n">coupled_input</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="n">coupled_input</span> <span class="o">=</span> <span class="p">(</span><span class="n">g_ij</span><span class="o">*</span><span class="n">temp</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">coupled_input</span>
 
 
 </div>
@@ -360,23 +422,23 @@
 
 </div>
 <div class="viewcode-block" id="Sigmoidal.__call__"><a class="viewcode-back" href="../../../tvb.simulator.coupling.html#tvb.simulator.coupling.Sigmoidal.__call__">[docs]</a>    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g_ij</span><span class="p">,</span> <span class="n">x_i</span><span class="p">,</span> <span class="n">x_j</span><span class="p">):</span>
-        <span class="s">r&quot;&quot;&quot;</span>
-<span class="s">        Evaluate the Sigmoidal function for the arg ``x``. The equation being</span>
-<span class="s">        evaluated has the following form:</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Evaluate the Sigmoidal function for the arg ``x``. The equation being</span>
+<span class="sd">        evaluated has the following form:</span>
 
-<span class="s">            .. math::</span>
-<span class="s">                c_{min} + (c_{max} - c_{min}) / (1.0 + \exp(-\pi/\sqrt(3.0)</span>
-<span class="s">                (x-midpoint)/\sigma))</span>
+<span class="sd">            .. math::</span>
+<span class="sd">                c_{min} + (c_{max} - c_{min}) / (1.0 + \exp(-\pi/\sqrt(3.0)</span>
+<span class="sd">                (x-midpoint)/\sigma))</span>
 
 
-<span class="s">        &quot;&quot;&quot;</span>
-        <span class="nb">input</span> <span class="o">=</span> <span class="p">(</span><span class="n">g_ij</span> <span class="o">*</span> <span class="n">x_j</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">coupled_input</span> <span class="o">=</span> <span class="p">(</span><span class="n">g_ij</span> <span class="o">*</span> <span class="n">x_j</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">sig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmin</span> <span class="o">+</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">cmax</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmin</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span>
-            <span class="n">numpy</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">pi_on_sqrt3</span> <span class="o">*</span> <span class="p">((</span><span class="nb">input</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">midpoint</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">))))</span>
+              <span class="n">numpy</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">pi_on_sqrt3</span> <span class="o">*</span> <span class="p">((</span><span class="n">coupled_input</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">midpoint</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">))))</span>
         <span class="k">return</span> <span class="n">sig</span>
 </div>
     <span class="n">device_info</span> <span class="o">=</span> <span class="n">coupling_device_info</span><span class="p">(</span>
-        <span class="n">pars</span> <span class="o">=</span> <span class="p">[</span><span class="n">cmin</span><span class="p">,</span> <span class="n">cmax</span><span class="p">,</span> <span class="n">midpoint</span><span class="p">,</span> <span class="n">sigma</span><span class="p">],</span>
+        <span class="n">pars</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;cmin&#39;</span><span class="p">,</span> <span class="s">&#39;cmax&#39;</span><span class="p">,</span> <span class="s">&#39;midpoint&#39;</span><span class="p">,</span> <span class="s">&#39;sigma&#39;</span><span class="p">],</span>
         <span class="n">kernel</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
 <span class="s">        // load parameters</span>
 <span class="s">        float cmin     = P(0)</span>
@@ -408,18 +470,18 @@
 
 
     <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g_ij</span><span class="p">,</span> <span class="n">x_i</span><span class="p">,</span> <span class="n">x_j</span><span class="p">):</span>
-        <span class="s">r&quot;&quot;&quot;</span>
-<span class="s">        Evaluates a difference coupling:</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Evaluates a difference coupling:</span>
 
-<span class="s">            .. math::</span>
-<span class="s">                a \sum_j^N g_ij (x_j - x_i)</span>
+<span class="sd">            .. math::</span>
+<span class="sd">                a \sum_j^N g_ij (x_j - x_i)</span>
 
-<span class="s">        &quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">*</span><span class="p">(</span><span class="n">g_ij</span><span class="o">*</span><span class="p">(</span><span class="n">x_j</span> <span class="o">-</span> <span class="n">x_i</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="n">device_info</span> <span class="o">=</span> <span class="n">coupling_device_info</span><span class="p">(</span>
-        <span class="n">pars</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">],</span>
+        <span class="n">pars</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">],</span>
         <span class="n">kernel</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
 <span class="s">        // load parameters</span>
 <span class="s">        float a = P(0);</span>
@@ -442,18 +504,18 @@
 
 
     <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g_ij</span><span class="p">,</span> <span class="n">x_i</span><span class="p">,</span> <span class="n">x_j</span><span class="p">,</span> <span class="n">sin</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">sin</span><span class="p">):</span>
-        <span class="s">r&quot;&quot;&quot;</span>
-<span class="s">        Evaluates the Kuramoto-style coupling, a periodic difference:</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Evaluates the Kuramoto-style coupling, a periodic difference:</span>
 
-<span class="s">            .. math::</span>
-<span class="s">                a \sum_j^N g_ij sin(x_j - x_i)</span>
+<span class="sd">            .. math::</span>
+<span class="sd">                a \sum_j^N g_ij sin(x_j - x_i)</span>
 
-<span class="s">        &quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">*</span><span class="p">(</span><span class="n">g_ij</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">x_j</span> <span class="o">-</span> <span class="n">x_i</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="n">device_info</span> <span class="o">=</span> <span class="n">coupling_device_info</span><span class="p">(</span>
-        <span class="n">pars</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">],</span>
+        <span class="n">pars</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">],</span>
         <span class="n">kernel</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
 <span class="s">        // load parameters</span>
 <span class="s">        float a = P(0);</span>
@@ -470,6 +532,9 @@
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../search.html" method="get">
@@ -496,13 +561,13 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

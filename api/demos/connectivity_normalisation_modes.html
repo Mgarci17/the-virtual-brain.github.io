@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Demo connectivity_normalisation_modes.py &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../index.html" />
+    <link rel="up" title="demos" href="../demos.html" />
+    <link rel="next" title="Demo display_subject_dataset.py" href="display_subject_dataset.html" />
+    <link rel="prev" title="Demo region_deterministic_stimulus.py" href="region_deterministic_stimulus.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="display_subject_dataset.html" title="Demo display_subject_dataset.py"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="region_deterministic_stimulus.html" title="Demo region_deterministic_stimulus.py"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../demos.html" accesskey="U">demos</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="demo-connectivity-normalisation-modes-py">
+<h1>Demo connectivity_normalisation_modes.py<a class="headerlink" href="#demo-connectivity-normalisation-modes-py" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Demonstrate the effect of different normalisation ``modes`` on the connectivity</span>
+<span class="sd">strength range. </span>
+
+<span class="sd">Current modes are re-scaling methods.</span>
+
+<span class="sd">.. moduleauthor:: Paula Sanz Leon &lt;Paula@tvb.invalid&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c"># Third party python libraries</span>
+
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+<span class="c">#Import from tvb.datatypes modules:</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.connectivity</span> <span class="kn">as</span> <span class="nn">connectivity</span>
+
+<span class="kn">from</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">tvb.simulator.plot.tools</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Reading default connectivity...&quot;</span><span class="p">)</span>
+
+<span class="c">#Initialise a Connectivity object</span>
+<span class="n">white_matter</span> <span class="o">=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">Connectivity</span><span class="p">()</span>
+<span class="n">white_matter</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+<span class="n">con</span> <span class="o">=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">Connectivity</span><span class="p">()</span>
+<span class="n">con</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+
+<span class="c">#Normalise weights</span>
+<span class="n">con</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">white_matter</span><span class="o">.</span><span class="n">normalised_weights</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s">&#39;tract&#39;</span><span class="p">)</span>
+<span class="n">plot_connectivity</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="s">&quot;tract_mode&quot;</span><span class="p">,</span> <span class="n">plot_tracts</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="c">#Undo normalisation</span>
+<span class="n">con</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">white_matter</span><span class="o">.</span><span class="n">normalised_weights</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">)</span>
+<span class="n">plot_connectivity</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="s">&quot;default_mode&quot;</span><span class="p">,</span> <span class="n">plot_tracts</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="c">#Re-normalise using another `` mode``</span>
+<span class="n">con</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">white_matter</span><span class="o">.</span><span class="n">normalised_weights</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s">&#39;region&#39;</span><span class="p">)</span>
+<span class="n">plot_connectivity</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="s">&quot;region_mode&quot;</span><span class="p">,</span> <span class="n">plot_tracts</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="n">pyplot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="region_deterministic_stimulus.html"
+                        title="previous chapter">Demo region_deterministic_stimulus.py</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="display_subject_dataset.html"
+                        title="next chapter">Demo display_subject_dataset.py</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/demos/connectivity_normalisation_modes.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="display_subject_dataset.html" title="Demo display_subject_dataset.py"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="region_deterministic_stimulus.html" title="Demo region_deterministic_stimulus.py"
+             >previous</a> |</li>
+        <li><a href="../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../demos.html" >demos</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.analyzers.ica &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.analyzers.ica &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../index.html" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -49,205 +48,215 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for tvb.analyzers.ica</h1><pre>
-# -*- coding: utf-8 -*-
-#
-#
-#  TheVirtualBrain-Scientific Package. This package holds all simulators, and 
-# analysers necessary to run brain-simulations. You can use it stand alone or
-# in conjunction with TheVirtualBrain-Framework Package. See content of the
-# documentation-folder for more details. See also http://www.thevirtualbrain.org
-#
-# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
-#
-# This program is free software; you can redistribute it and/or modify it under 
-# the terms of the GNU General Public License version 2 as published by the Free
-# Software Foundation. This program is distributed in the hope that it will be
-# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
-# License for more details. You should have received a copy of the GNU General 
-# Public License along with this program; if not, you can download it here
-# http://www.gnu.org/licenses/old-licenses/gpl-2.0
-#
-#
+  <h1>Source code for tvb.analyzers.ica</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
 
-"""
-Perform Independent Component Analysis on a TimeSeries Object and returns an
-IndependentComponents datatype.
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Perform Independent Component Analysis on a TimeSeries Object and returns an</span>
+<span class="sd">IndependentComponents datatype.</span>
 
-.. moduleauthor:: Paula Sanz Leon &lt;Paula@tvb.invalid&gt;
+<span class="sd">.. moduleauthor:: Paula Sanz Leon &lt;Paula@tvb.invalid&gt;</span>
 
-"""
+<span class="sd">&quot;&quot;&quot;</span>
 
-#Third party libraries
-import numpy
-from sklearn.decomposition import fastica
+<span class="c">#Third party libraries</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">fastica</span>
 
-# TVB
-#TODO: Currently built around the Simulator's 4D timeseries (as PCA) -- generalise
-import tvb.datatypes.time_series as time_series
-import tvb.datatypes.mode_decompositions as mode_decompositions
-import tvb.basic.traits.core as core
-import tvb.basic.traits.types_basic as basic
-import tvb.basic.traits.util as util
-from tvb.basic.logger.builder import get_logger
+<span class="c"># TVB</span>
+<span class="c">#TODO: Currently built around the Simulator&#39;s 4D timeseries (as PCA) -- generalise</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.time_series</span> <span class="kn">as</span> <span class="nn">time_series</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.mode_decompositions</span> <span class="kn">as</span> <span class="nn">mode_decompositions</span>
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.core</span> <span class="kn">as</span> <span class="nn">core</span>
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.types_basic</span> <span class="kn">as</span> <span class="nn">basic</span>
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.util</span> <span class="kn">as</span> <span class="nn">util</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
 
-LOG = get_logger(__name__)
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="fastICA"><a class="viewcode-back" href="../../../tvb.analyzers.html#tvb.analyzers.ica.fastICA">[docs]</a>class fastICA(core.Type):
-    """
-    Takes a TimeSeries datatype (x) and returns the unmixed temporal sources (S) 
-    and the estimated mixing matrix (A).
+<div class="viewcode-block" id="fastICA"><a class="viewcode-back" href="../../../tvb.analyzers.html#tvb.analyzers.ica.fastICA">[docs]</a><span class="k">class</span> <span class="nc">fastICA</span><span class="p">(</span><span class="n">core</span><span class="o">.</span><span class="n">Type</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes a TimeSeries datatype (x) and returns the unmixed temporal sources (S) </span>
+<span class="sd">    and the estimated mixing matrix (A).</span>
+<span class="sd">    </span>
+<span class="sd">    :math: x = AS</span>
+<span class="sd">    </span>
+<span class="sd">    ICA takes time-points as observations and nodes as variables.</span>
+<span class="sd">    </span>
+<span class="sd">    It uses the fastICA algorithm implemented in the scikit-learn toolkit, and </span>
+<span class="sd">    its intended usage is as a `blind source separation` method.</span>
+<span class="sd">    </span>
+<span class="sd">    See also: http://scikit-learn.org/stable/modules/generated/sklearn.decomposition.fastica.html#sklearn.decomposition.fastica</span>
+<span class="sd">    </span>
+<span class="sd">    Before the fastICA algorithm can be applied, the input vector data </span>
+<span class="sd">    should be whitened (`sphering`). This means that any correlations in the </span>
+<span class="sd">    data are removed, i.e. the signals are forced to be uncorrelated. To this end,</span>
+<span class="sd">    the `whiten` parameter is always set to `True`.</span>
+<span class="sd">    </span>
+<span class="sd">    NOTE: As for PCA the TimeSeries datatype must be longer (more time-points)</span>
+<span class="sd">          than the number of nodes -- Mostly a problem for TimeSeriesSurface </span>
+<span class="sd">          datatypes, which, if sampled at 1024Hz, would need to be greater than </span>
+<span class="sd">          16 seconds long.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     
-    :math: x = AS
-    
-    ICA takes time-points as observations and nodes as variables.
-    
-    It uses the fastICA algorithm implemented in the scikit-learn toolkit, and 
-    its intended usage is as a `blind source separation` method.
-    
-    See also: http://scikit-learn.org/stable/modules/generated/sklearn.decomposition.fastica.html#sklearn.decomposition.fastica
-    
-    Before the fastICA algorithm can be applied, the input vector data 
-    should be whitened (`sphering`). This means that any correlations in the 
-    data are removed, i.e. the signals are forced to be uncorrelated. To this end,
-    the `whiten` parameter is always set to `True`.
-    
-    NOTE: As for PCA the TimeSeries datatype must be longer (more time-points)
-          than the number of nodes -- Mostly a problem for TimeSeriesSurface 
-          datatypes, which, if sampled at 1024Hz, would need to be greater than 
-          16 seconds long.
-    """
-    
-    time_series = time_series.TimeSeries(
-        label = "Time Series",
-        required = True,
-        doc = """The timeseries to which the ICA is to be applied. NOTE: The 
-            TimeSeries must be longer(more time-points) than the number of nodes
-            -- Mostly a problem for surface times-series, which, if sampled at
-            1024Hz, would need to be greater than 16 seconds long.""")
+    <span class="n">time_series</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Time Series&quot;</span><span class="p">,</span>
+        <span class="n">required</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;The timeseries to which the ICA is to be applied. NOTE: The </span>
+<span class="s">            TimeSeries must be longer(more time-points) than the number of nodes</span>
+<span class="s">            -- Mostly a problem for surface times-series, which, if sampled at</span>
+<span class="s">            1024Hz, would need to be greater than 16 seconds long.&quot;&quot;&quot;</span><span class="p">)</span>
             
-    n_components = basic.Integer(
-        label = "Number of components to extract",
-        required = False,
-        default = None,
-        doc = """Number of components to extract and to perform dimension reduction.
-            The number of components must be less than the number of variables.
-            By default it takes number of components = number of nodes. Definitely
-            a problem for surface time-series.""")
+    <span class="n">n_components</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Integer</span><span class="p">(</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Number of components to extract&quot;</span><span class="p">,</span>
+        <span class="n">required</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;Number of components to extract and to perform dimension reduction.</span>
+<span class="s">            The number of components must be less than the number of variables.</span>
+<span class="s">            By default it takes number of components = number of nodes. Definitely</span>
+<span class="s">            a problem for surface time-series.&quot;&quot;&quot;</span><span class="p">)</span>
     
-    # NOTE: For default surface the weights matrix has a size ~ 2GB * modes * vars...
+    <span class="c"># NOTE: For default surface the weights matrix has a size ~ 2GB * modes * vars...</span>
     
-    def evaluate(self):
-        """
-        Compute the independent sources 
-        """
-        cls_attr_name = self.__class__.__name__+".time_series"
-        self.time_series.trait["data"].log_debug(owner = cls_attr_name)
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the independent sources </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cls_attr_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="o">+</span><span class="s">&quot;.time_series&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">trait</span><span class="p">[</span><span class="s">&quot;data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">log_debug</span><span class="p">(</span><span class="n">owner</span> <span class="o">=</span> <span class="n">cls_attr_name</span><span class="p">)</span>
         
-        ts_shape = self.time_series.data.shape
+        <span class="n">ts_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
         
-        #Need more observations than variables
-        if ts_shape[0] &lt; ts_shape[2]:
-            msg = "ICA requires a longer timeseries (tpts &gt; number of nodes)."
-            LOG.error(msg)
-            raise Exception, msg
+        <span class="c">#Need more observations than variables</span>
+        <span class="k">if</span> <span class="n">ts_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">ts_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;ICA requires a longer timeseries (tpts &gt; number of nodes).&quot;</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">msg</span>
             
-        #Need more variables than components
-        if self.n_components &gt; ts_shape[2]:
-            msg = "ICA requires more variables than components to extract (number of nodes &gt; number of components)."
-            LOG.error(msg)
-            raise Exception, msg
+        <span class="c">#Need more variables than components</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">&gt;</span> <span class="n">ts_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;ICA requires more variables than components to extract (number of nodes &gt; number of components).&quot;</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">msg</span>
         
-        if self.n_components is None:
-            self.n_components = ts_shape[2]
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">=</span> <span class="n">ts_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
         
-        #(n_components, n_components, state-variables, modes) --  unmixing matrix
-        unmixing_matrix_shape = (self.n_components, self.n_components, ts_shape[1], ts_shape[3])
-        LOG.info("unmixing matrix shape will be: %s" % str(unmixing_matrix_shape))
+        <span class="c">#(n_components, n_components, state-variables, modes) --  unmixing matrix</span>
+        <span class="n">unmixing_matrix_shape</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span> <span class="n">ts_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ts_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;unmixing matrix shape will be: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">unmixing_matrix_shape</span><span class="p">))</span>
         
-        # (n_components, nodes, state_variables, modes) -- prewhitening matrix
-        prewhitening_matrix_shape = (self.n_components, ts_shape[2], ts_shape[1], ts_shape[3])
-        LOG.info("prewhitening matrix shape will be: %s" % str(prewhitening_matrix_shape))
-        
-        
-        unmixing_matrix = numpy.zeros(unmixing_matrix_shape)
-        prewhitening_matrix = numpy.zeros(prewhitening_matrix_shape)
+        <span class="c"># (n_components, nodes, state_variables, modes) -- prewhitening matrix</span>
+        <span class="n">prewhitening_matrix_shape</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span> <span class="n">ts_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">ts_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ts_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;prewhitening matrix shape will be: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">prewhitening_matrix_shape</span><span class="p">))</span>
         
         
-        #(tpts, n_components, state_variables, modes) -- unmixed sources time series
-        data_ica = numpy.zeros((ts_shape[0], self.n_components, ts_shape[1], ts_shape[3]))
+        <span class="n">unmixing_matrix</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">unmixing_matrix_shape</span><span class="p">)</span>
+        <span class="n">prewhitening_matrix</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">prewhitening_matrix_shape</span><span class="p">)</span>
         
-        #One un/mixing matrix for each state-var &amp; mode.
-        for mode in range(ts_shape[3]):
-            for var in range(ts_shape[1]):
-                # Assumes data must be whitened
-                ica = fastica(self.time_series.data[:, var, :, mode], 
-                                            n_components = self.n_components,
-                                            whiten = True)
-                # unmixed sources - component_time_series
-                data_ica[:, :, var, mode] = ica[2]
-                # prewhitening matrix
-                prewhitening_matrix[:, :, var, mode] = ica[0]
-                # unmixing matrix
-                unmixing_matrix[:, :, var, mode] = ica[1]
         
-        util.log_debug_array(LOG, prewhitening_matrix, "whitening_matrix")
-        util.log_debug_array(LOG, unmixing_matrix, "unmixing_matrix")
+        <span class="c">#(tpts, n_components, state_variables, modes) -- unmixed sources time series</span>
+        <span class="n">data_ica</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ts_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span> <span class="n">ts_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ts_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+        
+        <span class="c">#One un/mixing matrix for each state-var &amp; mode.</span>
+        <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ts_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ts_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="c"># Assumes data must be whitened</span>
+                <span class="n">ica</span> <span class="o">=</span> <span class="n">fastica</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="n">var</span><span class="p">,</span> <span class="p">:,</span> <span class="n">mode</span><span class="p">],</span> 
+                                            <span class="n">n_components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span>
+                                            <span class="n">whiten</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+                <span class="c"># unmixed sources - component_time_series</span>
+                <span class="n">data_ica</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">var</span><span class="p">,</span> <span class="n">mode</span><span class="p">]</span> <span class="o">=</span> <span class="n">ica</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="c"># prewhitening matrix</span>
+                <span class="n">prewhitening_matrix</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">var</span><span class="p">,</span> <span class="n">mode</span><span class="p">]</span> <span class="o">=</span> <span class="n">ica</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="c"># unmixing matrix</span>
+                <span class="n">unmixing_matrix</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">var</span><span class="p">,</span> <span class="n">mode</span><span class="p">]</span> <span class="o">=</span> <span class="n">ica</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        
+        <span class="n">util</span><span class="o">.</span><span class="n">log_debug_array</span><span class="p">(</span><span class="n">LOG</span><span class="p">,</span> <span class="n">prewhitening_matrix</span><span class="p">,</span> <span class="s">&quot;whitening_matrix&quot;</span><span class="p">)</span>
+        <span class="n">util</span><span class="o">.</span><span class="n">log_debug_array</span><span class="p">(</span><span class="n">LOG</span><span class="p">,</span> <span class="n">unmixing_matrix</span><span class="p">,</span> <span class="s">&quot;unmixing_matrix&quot;</span><span class="p">)</span>
 
         
-        ica_result = mode_decompositions.IndependentComponents(source = self.time_series,
-                                         component_time_series = data_ica, 
-                                         #mixing_matrix = mixing_matrix,
-                                         prewhitening_matrix = prewhitening_matrix,
-                                         unmixing_matrix = unmixing_matrix,
-                                         n_components = self.n_components, 
-                                         use_storage = False)
+        <span class="n">ica_result</span> <span class="o">=</span> <span class="n">mode_decompositions</span><span class="o">.</span><span class="n">IndependentComponents</span><span class="p">(</span><span class="n">source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series</span><span class="p">,</span>
+                                         <span class="n">component_time_series</span> <span class="o">=</span> <span class="n">data_ica</span><span class="p">,</span> 
+                                         <span class="c">#mixing_matrix = mixing_matrix,</span>
+                                         <span class="n">prewhitening_matrix</span> <span class="o">=</span> <span class="n">prewhitening_matrix</span><span class="p">,</span>
+                                         <span class="n">unmixing_matrix</span> <span class="o">=</span> <span class="n">unmixing_matrix</span><span class="p">,</span>
+                                         <span class="n">n_components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span> 
+                                         <span class="n">use_storage</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
         
-        return ica_result
+        <span class="k">return</span> <span class="n">ica_result</span>
     
     
-    def result_shape(self, input_shape):
-        """
-        Returns the shape of the main result of the ICA analysis -- component
-        mixing matrix.
-        """
-        unmixing_matrix_shape = ((self.n_components or input_shape[2]), 
-                                 (self.n_components or input_shape[2]),
-                                 input_shape[1], input_shape[3])
-        return unmixing_matrix_shape
+    <span class="k">def</span> <span class="nf">result_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the shape of the main result of the ICA analysis -- component</span>
+<span class="sd">        mixing matrix.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">unmixing_matrix_shape</span> <span class="o">=</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="ow">or</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> 
+                                 <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="ow">or</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                                 <span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">unmixing_matrix_shape</span>
     
     
-    def result_size(self, input_shape):
-        """
-        Returns the storage size in Bytes of the results of the ICA analysis.
-        """
-        result_size = numpy.sum(map(numpy.prod, self.result_shape(input_shape))) * 8.0 #Bytes
-        return result_size
+    <span class="k">def</span> <span class="nf">result_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the storage size in Bytes of the results of the ICA analysis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result_size</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_shape</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)))</span> <span class="o">*</span> <span class="mf">8.0</span> <span class="c">#Bytes</span>
+        <span class="k">return</span> <span class="n">result_size</span>
     
     
-    def extended_result_size(self, input_shape):
-        """
-        Returns the storage size in Bytes of the extended result of the ICA.
-        That is, it includes storage of the evaluated IndependentComponents
-        attributes such as norm_source, component_time_series, etc.
-        """
-        result_size = self.result_size(input_shape)
-        extend_size = result_size #Main arrays
-        extend_size = extend_size + numpy.prod(input_shape) * 8.0 #norm_source
-        extend_size = extend_size + numpy.prod(input_shape) * 8.0 #component_time_series
-        extend_size = extend_size + numpy.prod(input_shape) * 8.0 #normalised_component_time_series
-        return extend_size
-
-</div>
-</pre>
+    <span class="k">def</span> <span class="nf">extended_result_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the storage size in Bytes of the extended result of the ICA.</span>
+<span class="sd">        That is, it includes storage of the evaluated IndependentComponents</span>
+<span class="sd">        attributes such as norm_source, component_time_series, etc.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_size</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span>
+        <span class="n">extend_size</span> <span class="o">=</span> <span class="n">result_size</span> <span class="c">#Main arrays</span>
+        <span class="n">extend_size</span> <span class="o">=</span> <span class="n">extend_size</span> <span class="o">+</span> <span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span> <span class="o">*</span> <span class="mf">8.0</span> <span class="c">#norm_source</span>
+        <span class="n">extend_size</span> <span class="o">=</span> <span class="n">extend_size</span> <span class="o">+</span> <span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span> <span class="o">*</span> <span class="mf">8.0</span> <span class="c">#component_time_series</span>
+        <span class="n">extend_size</span> <span class="o">=</span> <span class="n">extend_size</span> <span class="o">+</span> <span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span> <span class="o">*</span> <span class="mf">8.0</span> <span class="c">#normalised_component_time_series</span>
+        <span class="k">return</span> <span class="n">extend_size</span>
+</pre></div></div>
 
           </div>
         </div>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../search.html" method="get">
@@ -274,13 +283,13 @@ LOG = get_logger(__name__)
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

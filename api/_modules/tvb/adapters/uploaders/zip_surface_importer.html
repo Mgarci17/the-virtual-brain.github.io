@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.adapters.uploaders.zip_surface_importer &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.adapters.uploaders.zip_surface_importer &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../index.html" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -49,210 +48,234 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for tvb.adapters.uploaders.zip_surface_importer</h1><pre>
-# -*- coding: utf-8 -*-
-#
-#
-# TheVirtualBrain-Framework Package. This package holds all Data Management, and 
-# Web-UI helpful to run brain-simulations. To use it, you also need do download
-# TheVirtualBrain-Scientific Package (for simulators). See content of the
-# documentation-folder for more details. See also http://www.thevirtualbrain.org
-#
-# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
-#
-# This program is free software; you can redistribute it and/or modify it under 
-# the terms of the GNU General Public License version 2 as published by the Free
-# Software Foundation. This program is distributed in the hope that it will be
-# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
-# License for more details. You should have received a copy of the GNU General 
-# Public License along with this program; if not, you can download it here
-# http://www.gnu.org/licenses/old-licenses/gpl-2.0
-#
-#
-"""
-.. moduleauthor:: Calin Pavel &lt;calin.pavel@codemart.ro&gt;
-.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;
-"""
-import numpy
-from tvb.core.adapters.abcadapter import ABCSynchronous
-from tvb.core.entities.file.fileshelper import FilesHelper
-from tvb.datatypes.surfaces import Surface, CorticalSurface, SkinAir, BrainSkull, SkullSkin, EEGCap, FaceSurface
-from tvb.datatypes.surfaces_data import CORTICAL, OUTER_SKIN, OUTER_SKULL, INNER_SKULL, EEG_CAP, FACE
-from tvb.core.adapters.exceptions import LaunchException
-from tvb.basic.logger.builder import get_logger
+  <h1>Source code for tvb.adapters.uploaders.zip_surface_importer</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Calin Pavel &lt;calin.pavel@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.abcadapter</span> <span class="kn">import</span> <span class="n">ABCSynchronous</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.file.files_helper</span> <span class="kn">import</span> <span class="n">FilesHelper</span>
+<span class="kn">from</span> <span class="nn">tvb.datatypes.surfaces</span> <span class="kn">import</span> <span class="n">Surface</span><span class="p">,</span> <span class="n">CorticalSurface</span><span class="p">,</span> <span class="n">SkinAir</span><span class="p">,</span> <span class="n">BrainSkull</span><span class="p">,</span> <span class="n">SkullSkin</span><span class="p">,</span> <span class="n">EEGCap</span><span class="p">,</span> <span class="n">FaceSurface</span>
+<span class="kn">from</span> <span class="nn">tvb.datatypes.surfaces_data</span> <span class="kn">import</span> <span class="n">CORTICAL</span><span class="p">,</span> <span class="n">OUTER_SKIN</span><span class="p">,</span> <span class="n">OUTER_SKULL</span><span class="p">,</span> <span class="n">INNER_SKULL</span><span class="p">,</span> <span class="n">EEG_CAP</span><span class="p">,</span> <span class="n">FACE</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.exceptions</span> <span class="kn">import</span> <span class="n">LaunchException</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
 
 
 
-<div class="viewcode-block" id="ZIPSurfaceImporter"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.zip_surface_importer.ZIPSurfaceImporter">[docs]</a>class ZIPSurfaceImporter(ABCSynchronous):
-    """
-    Handler for uploading a Surface Data archive, with files holding 
-    vertices, normals and triangles to represent a surface data.
-    """
-    _ui_name = "Surface ZIP"
-    _ui_subsection = "zip_surface_importer"
-    _ui_description = "Import a Surface from ZIP"
+<div class="viewcode-block" id="ZIPSurfaceImporter"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.zip_surface_importer.ZIPSurfaceImporter">[docs]</a><span class="k">class</span> <span class="nc">ZIPSurfaceImporter</span><span class="p">(</span><span class="n">ABCSynchronous</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handler for uploading a Surface Data archive, with files holding </span>
+<span class="sd">    vertices, normals and triangles to represent a surface data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_ui_name</span> <span class="o">=</span> <span class="s">&quot;Surface ZIP&quot;</span>
+    <span class="n">_ui_subsection</span> <span class="o">=</span> <span class="s">&quot;zip_surface_importer&quot;</span>
+    <span class="n">_ui_description</span> <span class="o">=</span> <span class="s">&quot;Import a Surface from ZIP&quot;</span>
     
-    VERTICES_TOKEN = "vertices"
-    NORMALS_TOKEN = "normals"
-    TRIANGLES_TOKEN = "triangles"
+    <span class="n">VERTICES_TOKEN</span> <span class="o">=</span> <span class="s">&quot;vertices&quot;</span>
+    <span class="n">NORMALS_TOKEN</span> <span class="o">=</span> <span class="s">&quot;normals&quot;</span>
+    <span class="n">TRIANGLES_TOKEN</span> <span class="o">=</span> <span class="s">&quot;triangles&quot;</span>
         
-    def __init__(self):
-        ABCSynchronous.__init__(self)
-        self.logger = get_logger(self.__class__.__module__)
-    
-    
-<div class="viewcode-block" id="ZIPSurfaceImporter.get_input_tree"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.zip_surface_importer.ZIPSurfaceImporter.get_input_tree">[docs]</a>    def get_input_tree(self):
-        """ Take as input a ZIP archive. """
-        return [{'name': 'uploaded', 'type': 'upload', 'required_type': 'application/zip',
-                  'label': 'Surface file (zip)', 'required': True},
-                {'name': 'surface_type', 'type': 'select', 'label': 'Surface type', 'required': True,
-                 'options': [{'name':'Cortical Surface','value': CORTICAL},
-                             {'name':'Brain Skull','value': INNER_SKULL},
-                             {'name':'Skull Skin','value': OUTER_SKULL},
-                             {'name':'Skin Air', 'value': OUTER_SKIN},
-                             {'name':'EEG Cap', 'value': EEG_CAP},
-                             {'name':'Face Surface', 'value':FACE}]},
-                {'name':'zero_based_triangles', 'label':'Zero based triangles', 'type':'bool', 'default':True}]
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ABCSynchronous</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ZIPSurfaceImporter.get_input_tree"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.zip_surface_importer.ZIPSurfaceImporter.get_input_tree">[docs]</a>    <span class="k">def</span> <span class="nf">get_input_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Take as input a ZIP archive. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;uploaded&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;upload&#39;</span><span class="p">,</span> <span class="s">&#39;required_type&#39;</span><span class="p">:</span> <span class="s">&#39;application/zip&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Surface file (zip)&#39;</span><span class="p">,</span> <span class="s">&#39;required&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
+                <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;surface_type&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;select&#39;</span><span class="p">,</span> <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Surface type&#39;</span><span class="p">,</span> <span class="s">&#39;required&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+                 <span class="s">&#39;options&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;Cortical Surface&#39;</span><span class="p">,</span> <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">CORTICAL</span><span class="p">},</span>
+                             <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;Brain Skull&#39;</span><span class="p">,</span> <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">INNER_SKULL</span><span class="p">},</span>
+                             <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;Skull Skin&#39;</span><span class="p">,</span> <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">OUTER_SKULL</span><span class="p">},</span>
+                             <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;Skin Air&#39;</span><span class="p">,</span> <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">OUTER_SKIN</span><span class="p">},</span>
+                             <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;EEG Cap&#39;</span><span class="p">,</span> <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">EEG_CAP</span><span class="p">},</span>
+                             <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;Face Surface&#39;</span><span class="p">,</span> <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">FACE</span><span class="p">}]},</span>
+                <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;zero_based_triangles&#39;</span><span class="p">,</span> <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Zero based triangles&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;bool&#39;</span><span class="p">,</span> <span class="s">&#39;default&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}]</span>
         
         </div>
-<div class="viewcode-block" id="ZIPSurfaceImporter.get_output"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.zip_surface_importer.ZIPSurfaceImporter.get_output">[docs]</a>    def get_output(self):
-        return [Surface]
+<div class="viewcode-block" id="ZIPSurfaceImporter.get_output"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.zip_surface_importer.ZIPSurfaceImporter.get_output">[docs]</a>    <span class="k">def</span> <span class="nf">get_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Surface</span><span class="p">]</span>
 
 </div>
-<div class="viewcode-block" id="ZIPSurfaceImporter.get_required_memory_size"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.zip_surface_importer.ZIPSurfaceImporter.get_required_memory_size">[docs]</a>    def get_required_memory_size(self, **kwargs):
-        """
-        Return the required memory to run this algorithm.
-        As it is an upload algorithm and we do not have information about data, we can not approximate this.
-        """
-        return -1    
+<div class="viewcode-block" id="ZIPSurfaceImporter.get_required_memory_size"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.zip_surface_importer.ZIPSurfaceImporter.get_required_memory_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_required_memory_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the required memory to run this algorithm.</span>
+<span class="sd">        As it is an upload algorithm and we do not have information about data, we can not approximate this.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>    
 </div>
-<div class="viewcode-block" id="ZIPSurfaceImporter.get_required_disk_size"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.zip_surface_importer.ZIPSurfaceImporter.get_required_disk_size">[docs]</a>    def get_required_disk_size(self, **kwargs):
-        """
-        Returns the required disk size to be able to run the adapter.
-        """
-        return 0
+<div class="viewcode-block" id="ZIPSurfaceImporter.get_required_disk_size"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.zip_surface_importer.ZIPSurfaceImporter.get_required_disk_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_required_disk_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the required disk size to be able to run the adapter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">0</span>
 </div>
-<div class="viewcode-block" id="ZIPSurfaceImporter.launch"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.zip_surface_importer.ZIPSurfaceImporter.launch">[docs]</a>    def launch(self, uploaded, surface_type, zero_based_triangles = False):
-        """
-        Execute import operations: unpack ZIP and build Surface object as result.
-        """
-        if uploaded is None:
-            raise LaunchException ("Please select ZIP file which contains data to import")
+<div class="viewcode-block" id="ZIPSurfaceImporter.launch"><a class="viewcode-back" href="../../../../tvb.adapters.uploaders.html#tvb.adapters.uploaders.zip_surface_importer.ZIPSurfaceImporter.launch">[docs]</a>    <span class="k">def</span> <span class="nf">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uploaded</span><span class="p">,</span> <span class="n">surface_type</span><span class="p">,</span> <span class="n">zero_based_triangles</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute import operations: unpack ZIP and build Surface object as result.</span>
+
+<span class="sd">        :param uploaded: an archive containing the Surface data to be imported</span>
+<span class="sd">        :param surface_type: a string from the following\: \</span>
+<span class="sd">                            &quot;Skin Air&quot;, &quot;Skull Skin&quot;, &quot;Brain Skull&quot;, &quot;Cortical Surface&quot;, &quot;EEG Cap&quot;, &quot;Face&quot;</span>
+
+<span class="sd">        :returns: a subclass of `Surface` DataType</span>
+<span class="sd">        :raises LaunchException: when</span>
+<span class="sd">                * `uploaded` is missing</span>
+<span class="sd">                * `surface_type` is invalid</span>
+<span class="sd">        :raises RuntimeError: when triangles contain an invalid vertex index</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">uploaded</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">LaunchException</span><span class="p">(</span><span class="s">&quot;Please select ZIP file which contains data to import&quot;</span><span class="p">)</span>
   
-        self.logger.debug("Start to import surface: '%s' from file: %s"%(surface_type, uploaded))
-        try:
-            files = FilesHelper().unpack_zip(uploaded, self.storage_path)
-        except IOError:
-            exception_str = "Did not find the specified ZIP at %s" % uploaded
-            raise LaunchException(exception_str)
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Start to import surface: &#39;</span><span class="si">%s</span><span class="s">&#39; from file: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">surface_type</span><span class="p">,</span> <span class="n">uploaded</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="n">FilesHelper</span><span class="p">()</span><span class="o">.</span><span class="n">unpack_zip</span><span class="p">(</span><span class="n">uploaded</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+            <span class="n">exception_str</span> <span class="o">=</span> <span class="s">&quot;Did not find the specified ZIP at </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">uploaded</span>
+            <span class="k">raise</span> <span class="n">LaunchException</span><span class="p">(</span><span class="n">exception_str</span><span class="p">)</span>
         
-        vertices = []
-        normals = []
-        triangles = []
-        for file_name in files:
-            if file_name.lower().find(self.VERTICES_TOKEN) &gt;= 0:
-                vertices.append(file_name)            
-                continue
-            if file_name.lower().find(self.NORMALS_TOKEN) &gt;= 0:
-                normals.append(file_name)            
-                continue
-            if file_name.lower().find(self.TRIANGLES_TOKEN) &gt;= 0:
-                triangles.append(file_name)
+        <span class="n">vertices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">normals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">triangles</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">file_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">VERTICES_TOKEN</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">vertices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>            
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">file_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NORMALS_TOKEN</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">normals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>            
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">file_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TRIANGLES_TOKEN</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">triangles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
                 
-        # Now detect and instantiate correct surface type
-        self.logger.debug("Create surface instance")
-        if surface_type == CORTICAL:
-            surface = CorticalSurface()
-        elif surface_type == INNER_SKULL:
-            surface = BrainSkull()
-        elif surface_type == OUTER_SKULL:
-            surface = SkullSkin()
-        elif surface_type == OUTER_SKIN:
-            surface = SkinAir()
-        elif surface_type == EEG_CAP:
-            surface = EEGCap()
-        elif surface_type == FACE:
-            surface = FaceSurface()
-        else:
-            exception_str = "Could not determine surface type (selected option %s)" % surface_type
-            raise LaunchException(exception_str)
+        <span class="c"># Now detect and instantiate correct surface type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Create surface instance&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">surface_type</span> <span class="o">==</span> <span class="n">CORTICAL</span><span class="p">:</span>
+            <span class="n">surface</span> <span class="o">=</span> <span class="n">CorticalSurface</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">surface_type</span> <span class="o">==</span> <span class="n">INNER_SKULL</span><span class="p">:</span>
+            <span class="n">surface</span> <span class="o">=</span> <span class="n">BrainSkull</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">surface_type</span> <span class="o">==</span> <span class="n">OUTER_SKULL</span><span class="p">:</span>
+            <span class="n">surface</span> <span class="o">=</span> <span class="n">SkullSkin</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">surface_type</span> <span class="o">==</span> <span class="n">OUTER_SKIN</span><span class="p">:</span>
+            <span class="n">surface</span> <span class="o">=</span> <span class="n">SkinAir</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">surface_type</span> <span class="o">==</span> <span class="n">EEG_CAP</span><span class="p">:</span>
+            <span class="n">surface</span> <span class="o">=</span> <span class="n">EEGCap</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">surface_type</span> <span class="o">==</span> <span class="n">FACE</span><span class="p">:</span>
+            <span class="n">surface</span> <span class="o">=</span> <span class="n">FaceSurface</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">exception_str</span> <span class="o">=</span> <span class="s">&quot;Could not determine surface type (selected option </span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="n">surface_type</span>
+            <span class="k">raise</span> <span class="n">LaunchException</span><span class="p">(</span><span class="n">exception_str</span><span class="p">)</span>
             
-        surface.storage_path = self.storage_path
+        <span class="n">surface</span><span class="o">.</span><span class="n">storage_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span>
 
-        all_vertices, all_normals, all_triangles = self._process_files(vertices, normals, triangles)
-        FilesHelper.remove_files(files, True)
-        surface.zero_based_triangles = zero_based_triangles
-        surface.vertices = all_vertices
-        surface.vertex_normals = all_normals
-        if zero_based_triangles:
-            surface.triangles = all_triangles
-        else :
-            surface.triangles = all_triangles - 1
-        surface.triangle_normals = None
+        <span class="n">all_vertices</span><span class="p">,</span> <span class="n">all_normals</span><span class="p">,</span> <span class="n">all_triangles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_files</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">normals</span><span class="p">,</span> <span class="n">triangles</span><span class="p">)</span>
+        <span class="n">FilesHelper</span><span class="o">.</span><span class="n">remove_files</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="n">surface</span><span class="o">.</span><span class="n">zero_based_triangles</span> <span class="o">=</span> <span class="n">zero_based_triangles</span>
+        <span class="n">surface</span><span class="o">.</span><span class="n">vertices</span> <span class="o">=</span> <span class="n">all_vertices</span>
+        <span class="n">surface</span><span class="o">.</span><span class="n">vertex_normals</span> <span class="o">=</span> <span class="n">all_normals</span>
+        <span class="k">if</span> <span class="n">zero_based_triangles</span><span class="p">:</span>
+            <span class="n">surface</span><span class="o">.</span><span class="n">triangles</span> <span class="o">=</span> <span class="n">all_triangles</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">surface</span><span class="o">.</span><span class="n">triangles</span> <span class="o">=</span> <span class="n">all_triangles</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">surface</span><span class="o">.</span><span class="n">triangle_normals</span> <span class="o">=</span> <span class="bp">None</span>
 
-        # Now check if the triangles of the surface are valid   
-        triangles_min_vertex = numpy.amin(surface.triangles)
-        if triangles_min_vertex &lt; 0:
-            if triangles_min_vertex == -1 and not zero_based_triangles:
-                raise RuntimeError("Triangles contain a negative vertex index. Maybe you have a ZERO based surface.")
-            else:
-                raise RuntimeError("Your triangles contain a negative vertex index: %d" %triangles_min_vertex)
+        <span class="c"># Now check if the triangles of the surface are valid   </span>
+        <span class="n">triangles_min_vertex</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">surface</span><span class="o">.</span><span class="n">triangles</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">triangles_min_vertex</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">triangles_min_vertex</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">zero_based_triangles</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Triangles contain a negative vertex index. Maybe you have a ZERO based surface.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Your triangles contain a negative vertex index: </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">triangles_min_vertex</span><span class="p">)</span>
         
-        no_of_vertices = len(surface.vertices)        
-        triangles_max_vertex = numpy.amax(surface.triangles)
-        if triangles_max_vertex &gt;= no_of_vertices:
-            if triangles_max_vertex == no_of_vertices and zero_based_triangles:
-                raise RuntimeError("Your triangles contain an invalid vertex index: %d. \
-                Maybe your surface is NOT ZERO Based."%triangles_max_vertex)
-            else:
-                raise RuntimeError("Your triangles contain an invalid vertex index: %d." %triangles_max_vertex)
+        <span class="n">no_of_vertices</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">surface</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span>        
+        <span class="n">triangles_max_vertex</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">surface</span><span class="o">.</span><span class="n">triangles</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">triangles_max_vertex</span> <span class="o">&gt;=</span> <span class="n">no_of_vertices</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">triangles_max_vertex</span> <span class="o">==</span> <span class="n">no_of_vertices</span> <span class="ow">and</span> <span class="n">zero_based_triangles</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Your triangles contain an invalid vertex index: </span><span class="si">%d</span><span class="s">. </span><span class="se">\</span>
+<span class="s">                Maybe your surface is NOT ZERO Based.&quot;</span> <span class="o">%</span> <span class="n">triangles_max_vertex</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Your triangles contain an invalid vertex index: </span><span class="si">%d</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="n">triangles_max_vertex</span><span class="p">)</span>
             
-        self.logger.debug("Surface ready to be stored")
-        return surface
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Surface ready to be stored&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">surface</span>
 
 </div>
-    @staticmethod
-    def _process_files(list_of_vertices, list_of_normals, list_of_triangles):
-        """
-        Read vertices, normals and triangles from files.
-        """
-        if len(list_of_vertices) != len(list_of_normals) != len(list_of_triangles):
-            raise Exception("The number of vertices files should be equal to the normals/triangles files.")
-        vertices = []
-        normals = []
-        triangles = []
-        vertices_files_lengths = []
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_process_files</span><span class="p">(</span><span class="n">list_of_vertices</span><span class="p">,</span> <span class="n">list_of_normals</span><span class="p">,</span> <span class="n">list_of_triangles</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read vertices, normals and triangles from files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_of_vertices</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_of_normals</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_of_triangles</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;The number of vertices files should be equal to the normals/triangles files.&quot;</span><span class="p">)</span>
+        <span class="n">vertices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">normals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">triangles</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">vertices_files_lengths</span> <span class="o">=</span> <span class="p">[]</span>
     
-        for i in range(len(list_of_vertices)):
-            current_vertices = numpy.loadtxt(list_of_vertices[i], dtype=numpy.float32)
-            current_normals = numpy.loadtxt(list_of_normals[i], dtype=numpy.float32)
-            vertices_files_lengths.append(len(current_vertices))
-            vertices.extend(current_vertices)
-            normals.extend(current_normals)
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">vertice</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">list_of_vertices</span><span class="p">):</span>
+            <span class="n">current_vertices</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">vertice</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+            <span class="n">current_normals</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">list_of_normals</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+            <span class="n">vertices_files_lengths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">current_vertices</span><span class="p">))</span>
+            <span class="n">vertices</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">current_vertices</span><span class="p">)</span>
+            <span class="n">normals</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">current_normals</span><span class="p">)</span>
     
-        increment_value = 0
-        for i in range(len(list_of_triangles)):
-            current_triangles = numpy.loadtxt(list_of_triangles[i], dtype=numpy.int32)
-            if not i:
-                triangles.extend(current_triangles)
-                continue
-            increment_value = increment_value + vertices_files_lengths[i - 1]
-            for j in range(len(current_triangles)):
-                current_triangles[j] = current_triangles[j] + increment_value
-            triangles.extend(current_triangles)
+        <span class="n">increment_value</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">triangle</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">list_of_triangles</span><span class="p">):</span>
+            <span class="n">current_triangles</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">triangle</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">i</span><span class="p">:</span>
+                <span class="n">triangles</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">current_triangles</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="n">increment_value</span> <span class="o">=</span> <span class="n">increment_value</span> <span class="o">+</span> <span class="n">vertices_files_lengths</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">current_triangles</span><span class="p">)):</span>
+                <span class="n">current_triangles</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">increment_value</span>
+            <span class="n">triangles</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">current_triangles</span><span class="p">)</span>
     
-        return (numpy.array(vertices, dtype=numpy.float64), 
-                numpy.array(normals, dtype=numpy.float64), 
-                numpy.array(triangles, dtype=numpy.int64))
-</div>
-</pre>
+        <span class="k">return</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> 
+                <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">normals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> 
+                <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">triangles</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+</pre></div></div>
 
           </div>
         </div>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../../search.html" method="get">
@@ -279,13 +302,13 @@ from tvb.basic.logger.builder import get_logger
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

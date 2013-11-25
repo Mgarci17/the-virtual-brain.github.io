@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.core.services.initializer &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.core.services.initializer &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../index.html" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -49,106 +48,116 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for tvb.core.services.initializer</h1><pre>
-# -*- coding: utf-8 -*-
-#
-#
-# TheVirtualBrain-Framework Package. This package holds all Data Management, and 
-# Web-UI helpful to run brain-simulations. To use it, you also need do download
-# TheVirtualBrain-Scientific Package (for simulators). See content of the
-# documentation-folder for more details. See also http://www.thevirtualbrain.org
-#
-# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
-#
-# This program is free software; you can redistribute it and/or modify it under 
-# the terms of the GNU General Public License version 2 as published by the Free
-# Software Foundation. This program is distributed in the hope that it will be
-# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
-# License for more details. You should have received a copy of the GNU General 
-# Public License along with this program; if not, you can download it here
-# http://www.gnu.org/licenses/old-licenses/gpl-2.0
-#
-#
-"""
-.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;
-"""
-import datetime
-import tvb.core.services.eventhandler as eventhandler
-from tvb.core.entities.model import ROLE_ADMINISTRATOR
-from tvb.core.entities.modelmanager import initialize_startup
-from tvb.core.entities.modelmanager import reset_database
-from tvb.core.code_versions.code_update_manager import CodeUpdateManager
-from tvb.core.services.projectservice import initialize_storage
-from tvb.core.services.userservice import UserService
-from tvb.core.services.settingsservice import SettingsService
-from tvb.core.adapters.introspector import Introspector
-from tvb.basic.config.settings import TVBSettings as cfg
-from tvb.core.entities import model
-from tvb.core.entities.storage import dao
-from tvb.core.traits import db_events
+  <h1>Source code for tvb.core.services.initializer</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span> <span class="k">as</span> <span class="n">cfg</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities</span> <span class="kn">import</span> <span class="n">model</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.storage</span> <span class="kn">import</span> <span class="n">dao</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.model_manager</span> <span class="kn">import</span> <span class="n">initialize_startup</span><span class="p">,</span> <span class="n">reset_database</span>
+<span class="kn">from</span> <span class="nn">tvb.core.code_versions.code_update_manager</span> <span class="kn">import</span> <span class="n">CodeUpdateManager</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.project_service</span> <span class="kn">import</span> <span class="n">initialize_storage</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.user_service</span> <span class="kn">import</span> <span class="n">UserService</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.settings_service</span> <span class="kn">import</span> <span class="n">SettingsService</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.event_handlers</span> <span class="kn">import</span> <span class="n">read_events</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.introspector</span> <span class="kn">import</span> <span class="n">Introspector</span>
+<span class="kn">from</span> <span class="nn">tvb.core.traits</span> <span class="kn">import</span> <span class="n">db_events</span>
 
 
-<div class="viewcode-block" id="reset"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.initializer.reset">[docs]</a>def reset():
-    """
-    Service Layer for Database reset.
-    """
-    reset_database()
+<div class="viewcode-block" id="reset"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.initializer.reset">[docs]</a><span class="k">def</span> <span class="nf">reset</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Service Layer for Database reset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">reset_database</span><span class="p">()</span>
 
 </div>
-<div class="viewcode-block" id="initialize"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.initializer.initialize">[docs]</a>def initialize(introspected_modules, load_xml_events=True):
-    """
-    Initialize when Application is starting.
-    Check for new algorithms or new DataTypes.
-    """
-    SettingsService().check_db_url(cfg.DB_URL)
+<div class="viewcode-block" id="initialize"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.initializer.initialize">[docs]</a><span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">introspected_modules</span><span class="p">,</span> <span class="n">load_xml_events</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initialize when Application is starting.</span>
+<span class="sd">    Check for new algorithms or new DataTypes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">SettingsService</span><span class="p">()</span><span class="o">.</span><span class="n">check_db_url</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">DB_URL</span><span class="p">)</span>
     
-    ## Initialize DB
-    is_db_empty = initialize_startup()
+    <span class="c">## Initialize DB</span>
+    <span class="n">is_db_empty</span> <span class="o">=</span> <span class="n">initialize_startup</span><span class="p">()</span>
     
-    ## Create Projects storage root in case it does not exist.
-    initialize_storage()
+    <span class="c">## Create Projects storage root in case it does not exist.</span>
+    <span class="n">initialize_storage</span><span class="p">()</span>
     
-    ## Populate DB algorithms, by introspection
-    event_folders = []
-    start_introspection_time = datetime.datetime.now()
-    for module in introspected_modules:
-        introspector = Introspector(module)
-        # Introspection is always done, even if DB was not empty.
-        introspector.introspect(True)
-        event_path = introspector.get_events_path()
-        if event_path:
-            event_folders.append(event_path)
-    # Now remove any unverified Algo-Groups, categories or Portlets
-    invalid_stored_entities = dao.get_non_validated_entities(start_introspection_time)
-    for entity in invalid_stored_entities:
-        dao.remove_entity(entity.__class__, entity.id)
+    <span class="c">## Populate DB algorithms, by introspection</span>
+    <span class="n">event_folders</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">start_introspection_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">introspected_modules</span><span class="p">:</span>
+        <span class="n">introspector</span> <span class="o">=</span> <span class="n">Introspector</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+        <span class="c"># Introspection is always done, even if DB was not empty.</span>
+        <span class="n">introspector</span><span class="o">.</span><span class="n">introspect</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">event_path</span> <span class="o">=</span> <span class="n">introspector</span><span class="o">.</span><span class="n">get_events_path</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">event_path</span><span class="p">:</span>
+            <span class="n">event_folders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event_path</span><span class="p">)</span>
+    <span class="c"># Now remove any unverified Algo-Groups, categories or Portlets</span>
+    <span class="n">invalid_stored_entities</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_non_validated_entities</span><span class="p">(</span><span class="n">start_introspection_time</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">invalid_stored_entities</span><span class="p">:</span>
+        <span class="n">dao</span><span class="o">.</span><span class="n">remove_entity</span><span class="p">(</span><span class="n">entity</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
    
-    ## Populate events
-    if load_xml_events:
-        eventhandler.read_events(event_folders)
+    <span class="c">## Populate events</span>
+    <span class="k">if</span> <span class="n">load_xml_events</span><span class="p">:</span>
+        <span class="n">read_events</span><span class="p">(</span><span class="n">event_folders</span><span class="p">)</span>
     
-    ## Make sure DB events are linked.
-    db_events.attach_db_events()
+    <span class="c">## Make sure DB events are linked.</span>
+    <span class="n">db_events</span><span class="o">.</span><span class="n">attach_db_events</span><span class="p">()</span>
     
-    ## Create default users.
-    if is_db_empty:
-        dao.store_entity(model.User(cfg.SYSTEM_USER_NAME, None, None, True, None))
-        UserService().create_user(username=cfg.ADMINISTRATOR_NAME, password=cfg.ADMINISTRATOR_PASSWORD,
-                                  email=cfg.ADMINISTRATOR_EMAIL, role=ROLE_ADMINISTRATOR)
+    <span class="c">## Create default users.</span>
+    <span class="k">if</span> <span class="n">is_db_empty</span><span class="p">:</span>
+        <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">SYSTEM_USER_NAME</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="bp">None</span><span class="p">))</span>
+        <span class="n">UserService</span><span class="p">()</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">ADMINISTRATOR_NAME</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">ADMINISTRATOR_PASSWORD</span><span class="p">,</span>
+                                  <span class="n">email</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">ADMINISTRATOR_EMAIL</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">ROLE_ADMINISTRATOR</span><span class="p">)</span>
         
-    ## In case actions related to latest code-changes are needed, make sure they are executed.
-    CodeUpdateManager().update_all()
+    <span class="c">## In case actions related to latest code-changes are needed, make sure they are executed.</span>
+    <span class="n">CodeUpdateManager</span><span class="p">()</span><span class="o">.</span><span class="n">update_all</span><span class="p">()</span>
    
    
             </div>
-</pre>
+</pre></div>
 
           </div>
         </div>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../../search.html" method="get">
@@ -175,13 +184,13 @@ from tvb.core.traits import db_events
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title> &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>filters Package &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '1.0.4',
+        URL_ROOT:    './',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,10 +24,11 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="index.html" />
-    <link rel="up" title="" href="tvb.basic.html" />
-    <link rel="next" title="" href="tvb.basic.logger.html" />
-    <link rel="prev" title="" href="tvb.basic.config.html" /> 
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="index.html" />
+    <link rel="up" title="basic Package" href="tvb.basic.html" />
+    <link rel="next" title="logger Package" href="tvb.basic.logger.html" />
+    <link rel="prev" title="config Package" href="tvb.basic.config.html" /> 
   </head>
   <body>
     <div class="related">
@@ -42,14 +41,14 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="tvb.basic.logger.html" title=""
+          <a href="tvb.basic.logger.html" title="logger Package"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="tvb.basic.config.html" title=""
+          <a href="tvb.basic.config.html" title="config Package"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
-          <li><a href="tvb.html" ></a> &raquo;</li>
-          <li><a href="tvb.basic.html" accesskey="U"></a> &raquo;</li> 
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">tvb</span></tt> Package</a> &raquo;</li>
+          <li><a href="tvb.basic.html" accesskey="U"><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">basic</span></tt> Package</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -58,13 +57,10 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="logo">
-<h1><a class="reference external" href="http://www.thevirtualbrain.org"><div align="top" class="align-top"><img alt="The Virtual Brain Project" height="148" src="_images/evil_tvb_logo_transparent.svg" /></div>
-</a><a class="headerlink" href="#logo" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="filters-package">
-<h2>filters Package<a class="headerlink" href="#filters-package" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="filters-package">
+<h1><tt class="xref py py-mod docutils literal"><span class="pre">filters</span></tt> Package<a class="headerlink" href="#filters-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-tvb.basic.filters.chain">
-<span id="chain-module"></span><h3><tt class="xref py py-mod docutils literal"><span class="pre">chain</span></tt> Module<a class="headerlink" href="#module-tvb.basic.filters.chain" title="Permalink to this headline">¶</a></h3>
+<span id="chain-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">chain</span></tt> Module<a class="headerlink" href="#module-tvb.basic.filters.chain" title="Permalink to this headline">¶</a></h2>
 <p>The following are the categories that will be available for filters in the UI. 
 In case of adding a new category, the first input &#8216;model.DataType.subject&#8217; is 
 the field from the model that will be used , display represents the
@@ -74,10 +70,9 @@ possible operations that can be done on that field
 Type represents the type of input that is expected. So far string, date and 
 list are supported.</p>
 <p>In order to define a default filter, from the adapter interface add:</p>
-<div class="highlight-python"><pre>'conditions': FilterChain(fields= [FilterChain.datatype + ".subject", FilterChain.datatype + ".some_attribute",</pre>
+<div class="highlight-python"><pre>'conditions': FilterChain(fields= [FilterChain.datatype + ".subject", FilterChain.datatype + ".some_attribute",
+                          values= [["John Doe", "JohnDoe1"], "Some Attr Value"], operations= ["in", "=="])</pre>
 </div>
-<blockquote>
-<div>values= [[&#8220;John Doe&#8221;, &#8220;JohnDoe1&#8221;], &#8220;Some Attr Value&#8221;], operations= [&#8220;in&#8221;, &#8220;==&#8221;])</div></blockquote>
 <p>If you want to add a filter to a XML interface:</p>
 <div class="highlight-python"><pre>&lt;input required="True"&gt;
     &lt;name value="data1"/&gt;
@@ -151,11 +146,17 @@ Initialize filter with a list of fields, and corresponding values.</p>
 <tt class="descname">get_python_filter_equivalent</tt><big>(</big><em>datatype_to_check=None</em>, <em>algogroup_to_check=None</em>, <em>algocategory_to_check=None</em>, <em>operation_to_check=None</em><big>)</big><a class="reference internal" href="_modules/tvb/basic/filters/chain.html#FilterChain.get_python_filter_equivalent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.basic.filters.chain.FilterChain.get_python_filter_equivalent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Python evaluate of the filter against a current given DataType
 Check a filter instance next to a given input.</p>
-<p>&#64;param input_to_check: the dataType to be checked against this filter instance</p>
-<dl class="docutils">
-<dt>&#64;return: true if input passed</dt>
-<dd>false if input failed</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>datatype_to_check</strong> &#8211; the dataType to be checked against this filter instance</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">true if input passed
+false if input failed</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -166,10 +167,11 @@ The method may return None if the filter is None or the
 fields of the filter are not set.</p>
 <p>The input to this method should be a string representing the name under which 
 the variable you want to be filtered was binded in the callers namespace.
-e.g.  
-def foo(var_to_filter, filter_entity):</p>
-<blockquote>
-<div>filter_entity.get_sql_filter_equivalent(&#8216;var_to_filter&#8217;)</div></blockquote>
+e.g.</p>
+<dl class="docutils">
+<dt>def foo(var_to_filter, filter_entity):</dt>
+<dd>filter_entity.get_sql_filter_equivalent(&#8216;var_to_filter&#8217;)</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
@@ -204,7 +206,7 @@ def foo(var_to_filter, filter_entity):</p>
 
 </div>
 <div class="section" id="module-tvb.basic.filters.exceptions">
-<span id="exceptions-module"></span><h3><a class="reference external" href="http://docs.python.org/library/exceptions.html#exceptions" title="(in Python v2.7)"><tt class="xref py py-mod docutils literal"><span class="pre">exceptions</span></tt></a> Module<a class="headerlink" href="#module-tvb.basic.filters.exceptions" title="Permalink to this headline">¶</a></h3>
+<span id="exceptions-module"></span><h2><a class="reference external" href="http://docs.python.org/library/exceptions.html#exceptions" title="(in Python v2.7)"><tt class="xref py py-mod docutils literal"><span class="pre">exceptions</span></tt></a> Module<a class="headerlink" href="#module-tvb.basic.filters.exceptions" title="Permalink to this headline">¶</a></h2>
 <dl class="exception">
 <dt id="tvb.basic.filters.exceptions.InvalidFilterChainInput">
 <em class="property">exception </em><tt class="descclassname">tvb.basic.filters.exceptions.</tt><tt class="descname">InvalidFilterChainInput</tt><big>(</big><em>message</em><big>)</big><a class="reference internal" href="_modules/tvb/basic/filters/exceptions.html#InvalidFilterChainInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.basic.filters.exceptions.InvalidFilterChainInput" title="Permalink to this definition">¶</a></dt>
@@ -222,7 +224,6 @@ for example: in None, not in 1</p>
 
 </div>
 </div>
-</div>
 
 
           </div>
@@ -230,24 +231,24 @@ for example: in None, not in 1</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#"></a><ul>
-<li><a class="reference internal" href="#filters-package">filters Package</a><ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">filters</span></tt> Package</a><ul>
 <li><a class="reference internal" href="#module-tvb.basic.filters.chain"><tt class="docutils literal"><span class="pre">chain</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-tvb.basic.filters.exceptions"><tt class="docutils literal"><span class="pre">exceptions</span></tt> Module</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="tvb.basic.config.html"
-                        title="previous chapter"></a></p>
+                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">config</span></tt> Package</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="tvb.basic.logger.html"
-                        title="next chapter"></a></p>
+                        title="next chapter"><tt class="docutils literal"><span class="pre">logger</span></tt> Package</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/tvb.basic.filters.txt"
@@ -280,19 +281,19 @@ for example: in None, not in 1</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="tvb.basic.logger.html" title=""
+          <a href="tvb.basic.logger.html" title="logger Package"
              >next</a> |</li>
         <li class="right" >
-          <a href="tvb.basic.config.html" title=""
+          <a href="tvb.basic.config.html" title="config Package"
              >previous</a> |</li>
-        <li><a href="index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
-          <li><a href="tvb.html" ></a> &raquo;</li>
-          <li><a href="tvb.basic.html" ></a> &raquo;</li> 
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">tvb</span></tt> Package</a> &raquo;</li>
+          <li><a href="tvb.basic.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">basic</span></tt> Package</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

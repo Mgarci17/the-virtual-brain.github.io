@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.adapters.simulator.simulator_adapter &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.adapters.simulator.simulator_adapter &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../index.html" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -49,324 +48,379 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for tvb.adapters.simulator.simulator_adapter</h1><pre>
-# -*- coding: utf-8 -*-
-#
-#
-# TheVirtualBrain-Framework Package. This package holds all Data Management, and 
-# Web-UI helpful to run brain-simulations. To use it, you also need do download
-# TheVirtualBrain-Scientific Package (for simulators). See content of the
-# documentation-folder for more details. See also http://www.thevirtualbrain.org
-#
-# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
-#
-# This program is free software; you can redistribute it and/or modify it under 
-# the terms of the GNU General Public License version 2 as published by the Free
-# Software Foundation. This program is distributed in the hope that it will be
-# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
-# License for more details. You should have received a copy of the GNU General 
-# Public License along with this program; if not, you can download it here
-# http://www.gnu.org/licenses/old-licenses/gpl-2.0
-#
-#
+  <h1>Source code for tvb.adapters.simulator.simulator_adapter</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
 
-"""
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Adapter that uses the traits module to generate interfaces to the Simulator.</span>
+<span class="sd">Few supplementary steps are done here:</span>
 
-Adapter that uses the traits module to generate interfaces to the Simulator.
-Few supplementary steps are done here:
-   - from submitted Monitor/Model... names, build transient entities
-   - after UI parameters submit, compose transient Cortex entity to be passed to the Simulator.
+<span class="sd">   * from submitted Monitor/Model... names, build transient entities</span>
+<span class="sd">   * after UI parameters submit, compose transient Cortex entity to be passed to the Simulator.</span>
 
-.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;
-.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;</span>
 
-"""
-import numpy
-from tvb.simulator.simulator import Simulator
-from tvb.simulator.models import Model
-from tvb.simulator.monitors import Monitor
-from tvb.simulator.integrators import Integrator
-from tvb.simulator.coupling import Coupling
-from tvb.simulator.noise import Noise
-from tvb.core.adapters.abcadapter import ABCAsynchronous
-from tvb.core.adapters.exceptions import LaunchException
-from tvb.basic.traits.parameters_factory import get_traited_subclasses
-from tvb.datatypes.surfaces import Cortex
-from tvb.datatypes.simulation_state import SimulationState
-from tvb.datatypes import noise_framework
-import tvb.datatypes.time_series as time_series
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">tvb.simulator.simulator</span> <span class="kn">import</span> <span class="n">Simulator</span>
+<span class="kn">from</span> <span class="nn">tvb.simulator.models</span> <span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">from</span> <span class="nn">tvb.simulator.monitors</span> <span class="kn">import</span> <span class="n">Monitor</span>
+<span class="kn">from</span> <span class="nn">tvb.simulator.integrators</span> <span class="kn">import</span> <span class="n">Integrator</span>
+<span class="kn">from</span> <span class="nn">tvb.simulator.coupling</span> <span class="kn">import</span> <span class="n">Coupling</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.abcadapter</span> <span class="kn">import</span> <span class="n">ABCAsynchronous</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.exceptions</span> <span class="kn">import</span> <span class="n">LaunchException</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.traits.parameters_factory</span> <span class="kn">import</span> <span class="n">get_traited_subclasses</span>
+<span class="kn">from</span> <span class="nn">tvb.datatypes.equations</span> <span class="kn">import</span> <span class="n">HRFKernelEquation</span>
+<span class="kn">from</span> <span class="nn">tvb.datatypes.surfaces</span> <span class="kn">import</span> <span class="n">Cortex</span>
+<span class="kn">from</span> <span class="nn">tvb.datatypes.simulation_state</span> <span class="kn">import</span> <span class="n">SimulationState</span>
+<span class="kn">from</span> <span class="nn">tvb.datatypes</span> <span class="kn">import</span> <span class="n">noise_framework</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.time_series</span> <span class="kn">as</span> <span class="nn">time_series</span>
 
 
-<div class="viewcode-block" id="SimulatorAdapter"><a class="viewcode-back" href="../../../../tvb.adapters.simulator.html#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter">[docs]</a>class SimulatorAdapter(ABCAsynchronous):
-    """
-    Interface between the Simulator and the Framework.
-    """
-    _ui_name = "Simulation Core"
-    
-    available_models = get_traited_subclasses(Model)
-    available_monitors = get_traited_subclasses(Monitor)
-    available_integrators = get_traited_subclasses(Integrator)
-    available_couplings = get_traited_subclasses(Coupling)
-    available_noise = get_traited_subclasses(Noise)
-    
-    
-### Info: This are the possible results returned with this adapter from different Monitors.
-###       When a list appears(surface &amp; region), we actually return only one based on param surface being None or not.
 
-#    MONITOR_RESULTS = {"Raw": [time_series.TimeSeriesRegion, time_series.TimeSeriesSurface],
-#                       "SubSample": [time_series.TimeSeriesRegion, time_series.TimeSeriesSurface],
-#                       "SpatialAverage": time_series.TimeSeries,
-#                       "GlobalAverage": time_series.TimeSeries,
-#                       "TemporalAverage": [time_series.TimeSeriesRegion, time_series.TimeSeriesSurface],
-#                       "EEG": time_series.TimeSeriesEEG,
-#                       "SphericalEEG": time_series.TimeSeriesEEG,
-#                       "SphericalMEG": time_series.TimeSeriesMEG,
-#                       "Bold": [time_series.TimeSeriesRegion, time_series.TimeSeriesSurface]}
-    
-    RESULTS_MAP = {time_series.TimeSeriesEEG: ["SphericalEEG", "EEG"],
-                   time_series.TimeSeriesMEG: ["SphericalMEG"], #TODO: add here also "MEG" monitor reference
-                   time_series.TimeSeries: ["GlobalAverage", "SpatialAverage"]}
-    
-                   # time_series.TimeSeriesVolume: ["Bold"], 
-                   #SK:   For a number of reasons, it's probably best to avoid returning TimeSeriesVolume ,
-                   #      from a simulation directly, instead just stick with the source, i.e. Region and Surface, 
-                   #      then later we can add a voxelisation "analyser" to produce TimeSeriesVolume on which Volume 
-                   #      based analysers and visualisers (which don't exist yet) can operate.
-                   
-    # This is a list with the monitors that actually return multi dimensions for the state variable dimension.
-    # We exclude from this for example EEG, MEG or Bold which return 
-    HAVE_STATE_VARIABLES = ["GlobalAverage", "SpatialAverage", "Raw", "SubSample", "TemporalAverage"]
-    
-    
-    
-    def __init__(self):
-        super(SimulatorAdapter, self).__init__()
-        self.log.debug("%s: Initialized..." % str(self))
-    
-    
-<div class="viewcode-block" id="SimulatorAdapter.get_input_tree"><a class="viewcode-back" href="../../../../tvb.adapters.simulator.html#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.get_input_tree">[docs]</a>    def get_input_tree(self):
-        """
-        Return a list of lists describing the interface to the simulator. This
-        is used by the GUI to generate the menus and fields necessary for
-        defining a simulation.
-        """
-        sim = Simulator()
-        sim.trait.bound = self.INTERFACE_ATTRIBUTES_ONLY
-        result = sim.interface[self.INTERFACE_ATTRIBUTES]
-        # We should add as hidden the Simulator State attribute.
-        result.append({'name': 'simulation_state', 'type': SimulationState, 'required': False, 'ui_hidden': True})
-        return result
-    
-    </div>
-<div class="viewcode-block" id="SimulatorAdapter.get_output"><a class="viewcode-back" href="../../../../tvb.adapters.simulator.html#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.get_output">[docs]</a>    def get_output(self):
-        """
-        :return: list of classes for possible results of the Simulator.
-        """
-        return [time_series.TimeSeries]
-    
-    </div>
-<div class="viewcode-block" id="SimulatorAdapter.configure"><a class="viewcode-back" href="../../../../tvb.adapters.simulator.html#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.configure">[docs]</a>    def configure(self, model, model_parameters, integrator, integrator_parameters, connectivity,
-               monitors, monitors_parameters=None, surface=None, surface_parameters=None, stimulus=None,
-               coupling=None, coupling_parameters=None, initial_conditions=None, 
-               conduction_speed = None, simulation_length = 0, simulation_state=None):
-        """
-        Make preparations for the adapter launch.
-        """
-        self.log.debug("available_couplings: %s..." % str(self.available_couplings))
-        self.log.debug("coupling: %s..." % str(coupling))
-        self.log.debug("coupling_parameters: %s..." % str(coupling_parameters))
-        
-        self.log.debug("%s: Initializing Model..." % str(self))
-        noise_framework.build_noise(model_parameters)
-        model_instance = self.available_models[str(model)](**model_parameters)
-        self._validate_model_parameters(model_instance, connectivity, surface)
-        
-        self.log.debug("%s: Initializing Integration scheme..." % str(self))
-        noise_framework.build_noise(integrator_parameters)
-        integr = self.available_integrators[integrator](**integrator_parameters)
-        
-        self.log.debug("%s: Instantiating Monitors..." % str(self))
-        monitors_list = []
-        for monitor_name in monitors:
-            if (monitors_parameters is not None) and (str(monitor_name) in monitors_parameters):
-                monitors_list.append(self.available_monitors[str(monitor_name)
-                                                             ](**monitors_parameters[str(monitor_name)]))
-            else:
-                ### We have monitors without any UI settable parameter.
-                monitors_list.append(self.available_monitors[str(monitor_name)]())
-            
-        if len(monitors) &lt; 1:
-            raise LaunchException("Can not launch operation without monitors selected !!!")
-        
-        self.log.debug("%s: Initializing Coupling..." % str(self))
-        coupling_inst = self.available_couplings[str(coupling)](**coupling_parameters)
-        
-        self.log.debug("Initializing Cortex...")
-        if surface is not None and surface_parameters is not None:
-            cortex_entity = Cortex(use_storage=False).populate_cortex(surface, surface_parameters)
-            if cortex_entity.region_mapping_data.connectivity.number_of_regions != connectivity.number_of_regions:
-                raise LaunchException("Incompatible RegionMapping -- Connectivity !!")
-            if cortex_entity.region_mapping_data.surface.number_of_vertices != surface.number_of_vertices:
-                raise LaunchException("Incompatible RegionMapping -- Surface !!")
-            select_loc_conn = cortex_entity.local_connectivity
-            if select_loc_conn is not None and select_loc_conn.surface.number_of_vertices != surface.number_of_vertices:
-                raise LaunchException("Incompatible LocalConnectivity -- Surface !!")
-        else:
-            cortex_entity = None
-        
-        self.log.debug("%s: Instantiating requested simulator..." % str(self))
-        connectivity.configure()
-        self.algorithm = Simulator(connectivity= connectivity, coupling= coupling_inst, surface= cortex_entity,
-                                   stimulus= stimulus, model= model_instance, integrator= integr,
-                                   monitors= monitors_list, initial_conditions= initial_conditions, 
-                                   conduction_speed = conduction_speed)
-        self.log.debug("%s: Initializing storage..." % str(self))
-        try:
-            self.algorithm.configure()
-            if simulation_state != None:
-                simulation_state.fill_into(self.algorithm)
-        except ValueError, err:
-            raise LaunchException("Failed to configure simulator due to invalid Input Values. It could be because "
-                                  "of an incompatibility between different version of TVB code.", err) 
-    
-    </div>
-<div class="viewcode-block" id="SimulatorAdapter.get_required_memory_size"><a class="viewcode-back" href="../../../../tvb.adapters.simulator.html#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.get_required_memory_size">[docs]</a>    def get_required_memory_size(self, **kwargs):
-        """
-        Return the required memory to run this algorithm.
-        """
-        return self.algorithm.memory_requirement()
-    
-    </div>
-<div class="viewcode-block" id="SimulatorAdapter.get_required_disk_size"><a class="viewcode-back" href="../../../../tvb.adapters.simulator.html#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.get_required_disk_size">[docs]</a>    def get_required_disk_size(self, **kwargs):
-        """
-        Return the required disk size this algorithm estimates it will take. (in kB)
-        """
-        return self.algorithm.storage_requirement(kwargs['simulation_length']) / 2 ** 10
-    </div>
-<div class="viewcode-block" id="SimulatorAdapter.launch"><a class="viewcode-back" href="../../../../tvb.adapters.simulator.html#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.launch">[docs]</a>    def launch(self, model, model_parameters, integrator, integrator_parameters, connectivity,
-               monitors, monitors_parameters=None, surface=None, surface_parameters=None, stimulus=None,
-               coupling=None, coupling_parameters=None, initial_conditions=None, 
-               conduction_speed = None, simulation_length = 0, simulation_state=None): 
-        """
-        Called from the GUI to launch a simulation.
-          *: string class name of chosen model, etc...
-          *_parameters: dictionary of parameters for chosen model, etc...
-          connectivity: tvb.datatypes.connectivity.Connectivity object.
-          surface: tvb.datatypes.surfaces.CorticalSurface: or None.
-          stimulus: tvb.datatypes.patters.* object
-        """
-        result_datatypes = dict()
-        start_time = self.algorithm.current_step * self.algorithm.integrator.dt
-        m_ind = -1
-        for m_name in monitors:
-            m_ind += 1 
-            sample_period = self.algorithm.monitors[m_ind].period
-            # Create the required output for each monitor that was submitted
-            if (m_name in self.RESULTS_MAP[time_series.TimeSeriesEEG] 
-                and hasattr(self.algorithm.monitors[m_ind], 'sensors')):
-                result_datatypes[m_name] = time_series.TimeSeriesEEG(storage_path=self.storage_path, 
-                                                                     sensors=self.algorithm.monitors[m_ind].sensors,
-                                                                     sample_period=sample_period,
-                                                                     title=' ' + m_name, start_time=start_time,)
-                
-            elif (m_name in self.RESULTS_MAP[time_series.TimeSeriesMEG] 
-                and hasattr(self.algorithm.monitors[m_ind], 'sensors')):
-                result_datatypes[m_name] = time_series.TimeSeriesMEG(storage_path=self.storage_path, 
-                                                                     sensors=self.algorithm.monitors[m_ind].sensors,
-                                                                     sample_period=sample_period,
-                                                                     title=' ' + m_name, start_time=start_time)
-            
-            elif (m_name in self.RESULTS_MAP[time_series.TimeSeries]):
-                result_datatypes[m_name] = time_series.TimeSeries(storage_path=self.storage_path, 
-                                                                  sample_period=sample_period,
-                                                                  title=' ' + m_name, start_time=start_time)
-            
-            elif surface is None:
-                ## We do not have a surface selected from UI, or regions only result.
-                result_datatypes[m_name] = time_series.TimeSeriesRegion(storage_path=self.storage_path, 
-                                                                    connectivity=connectivity,
-                                                                    sample_period=sample_period,
-                                                                    title='Regions ' + m_name, start_time=start_time)
-            
-            else:
-                result_datatypes[m_name] = time_series.TimeSeriesSurface(storage_path=self.storage_path, 
-                                                                    surface=surface, sample_period=sample_period,
-                                                                    title='Surface ' + m_name, start_time=start_time)
-            # Now check if the monitor will return results for each state variable, in which case store
-            # the labels for these state variables.
-            if m_name in self.HAVE_STATE_VARIABLES:
-                selected_state_vars = [self.algorithm.model.state_variables[idx] 
-                                       for idx in self.algorithm.monitors[m_ind].voi]
-                result_datatypes[m_name].labels_dimensions = {result_datatypes[m_name].labels_ordering[1]: selected_state_vars}
-        
-        #### Create Simulator State entity and persist it in DB. H5 file will be empty now.
-        simulation_state = SimulationState(storage_path=self.storage_path)
-        self._capture_operation_results([simulation_state])
-        
-        ### Run simulation
-        self.log.debug("%s: Starting simulation..." % str(self))
-        for result in self.algorithm(simulation_length = simulation_length):
-            for j in range(len(monitors)):
-                if result[j] is not None:
-                    expected_rows = int(simulation_length / result_datatypes[monitors[j]].sample_period)
-                    result_datatypes[monitors[j]].write_time_slice([result[j][0]], expected_rows)
-                    result_datatypes[monitors[j]].write_data_slice([result[j][1]], expected_rows)
-        
-        self.log.debug("%s: Completed simulation, starting to store simulation state " % str(self))
-        ### Populate H5 file for simulator state. This step could also be done while running sim, in background.
-        simulation_state.populate_from(self.algorithm)
-        self._capture_operation_results([simulation_state])
-        
-        self.log.debug("%s: Simulation state persisted, returning results " % str(self))
-        final_results = []
-        for result in result_datatypes.values():
-            result.close_file()
-            final_results.append(result)
-        self.log.info("%s: Adapter simulation finished!!" % str(self))
-        return final_results
-    
-    </div>
-    def _validate_model_parameters(self, model_instance, connectivity, surface):
-        """
-        Checks if the size of the model parameters is set correctly.
-        """
-        ui_configurable_params = model_instance.ui_configurable_parameters
-        for param in ui_configurable_params:
-            param_value = eval('model_instance.' + param)
-            if isinstance(param_value, numpy.ndarray):
-                if len(param_value) == 1:
-                    continue
-                if ((surface is not None and len(param_value) != surface.number_of_vertices) 
-                    and (connectivity is not None and len(param_value) != connectivity.number_of_regions)):
-                    msg = str(surface.number_of_vertices) + ' or ' + str(connectivity.number_of_regions)
-                    msg = self._get_exception_message(param, msg, len(param_value))
-                    self.log.error(msg)
-                    raise LaunchException(msg)
-                elif (connectivity is not None and len(param_value) != connectivity.number_of_regions):
-                    msg = self._get_exception_message(param, connectivity.number_of_regions, len(param_value))
-                    self.log.error(msg)
-                    raise LaunchException(msg)
-    
-    
-    @staticmethod
-    def _get_exception_message(param_name, expected_size, actual_size):
-        """
-        Creates the message that will be displayed to the user when the size of a model parameter is incorrect.
-        """
-        msg = "The length of the parameter '" + param_name + "' is not correct."
-        msg += " It is expected to be an array of length " + str(expected_size) + "."
-        msg += " It is an array of length " + str(actual_size) + "."
-        return msg
+<div class="viewcode-block" id="SimulatorAdapter"><a class="viewcode-back" href="../../../../tvb.adapters.simulator.html#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter">[docs]</a><span class="k">class</span> <span class="nc">SimulatorAdapter</span><span class="p">(</span><span class="n">ABCAsynchronous</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interface between the Simulator and the Framework.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_ui_name</span> <span class="o">=</span> <span class="s">&quot;Simulation Core&quot;</span>
+
+    <span class="n">algorithm</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">available_models</span> <span class="o">=</span> <span class="n">get_traited_subclasses</span><span class="p">(</span><span class="n">Model</span><span class="p">)</span>
+    <span class="n">available_monitors</span> <span class="o">=</span> <span class="n">get_traited_subclasses</span><span class="p">(</span><span class="n">Monitor</span><span class="p">)</span>
+    <span class="n">available_integrators</span> <span class="o">=</span> <span class="n">get_traited_subclasses</span><span class="p">(</span><span class="n">Integrator</span><span class="p">)</span>
+    <span class="n">available_couplings</span> <span class="o">=</span> <span class="n">get_traited_subclasses</span><span class="p">(</span><span class="n">Coupling</span><span class="p">)</span>
+
+
+<span class="c">### Info: This are the possible results returned with this adapter from different Monitors.</span>
+<span class="c">###       When a list appears(surface &amp; region), we actually return only one based on param surface being None or not.</span>
+
+<span class="c">#    MONITOR_RESULTS = {&quot;Raw&quot;: [time_series.TimeSeriesRegion, time_series.TimeSeriesSurface],</span>
+<span class="c">#                       &quot;SubSample&quot;: [time_series.TimeSeriesRegion, time_series.TimeSeriesSurface],</span>
+<span class="c">#                       &quot;SpatialAverage&quot;: time_series.TimeSeries,</span>
+<span class="c">#                       &quot;GlobalAverage&quot;: time_series.TimeSeries,</span>
+<span class="c">#                       &quot;TemporalAverage&quot;: [time_series.TimeSeriesRegion, time_series.TimeSeriesSurface],</span>
+<span class="c">#                       &quot;EEG&quot;: time_series.TimeSeriesEEG,</span>
+<span class="c">#                       &quot;SphericalEEG&quot;: time_series.TimeSeriesEEG,</span>
+<span class="c">#                       &quot;SphericalMEG&quot;: time_series.TimeSeriesMEG,</span>
+<span class="c">#                       &quot;Bold&quot;: [time_series.TimeSeriesRegion, time_series.TimeSeriesSurface]}</span>
+
+    <span class="n">RESULTS_MAP</span> <span class="o">=</span> <span class="p">{</span><span class="n">time_series</span><span class="o">.</span><span class="n">TimeSeriesEEG</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;SphericalEEG&quot;</span><span class="p">,</span> <span class="s">&quot;EEG&quot;</span><span class="p">],</span>
+                   <span class="n">time_series</span><span class="o">.</span><span class="n">TimeSeriesMEG</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;SphericalMEG&quot;</span><span class="p">],</span>  <span class="c"># Add here also &quot;MEG&quot; monitor reference</span>
+                   <span class="n">time_series</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;GlobalAverage&quot;</span><span class="p">,</span> <span class="s">&quot;SpatialAverage&quot;</span><span class="p">],</span>
+                   <span class="n">time_series</span><span class="o">.</span><span class="n">TimeSeriesSEEG</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;SEEG&quot;</span><span class="p">]}</span>
+
+                   <span class="c"># time_series.TimeSeriesVolume: [&quot;Bold&quot;],</span>
+                   <span class="c">#SK:   For a number of reasons, it&#39;s probably best to avoid returning TimeSeriesVolume ,</span>
+                   <span class="c">#      from a simulation directly, instead just stick with the source, i.e. Region and Surface,</span>
+                   <span class="c">#      then later we can add a voxelisation &quot;analyser&quot; to produce TimeSeriesVolume on which Volume</span>
+                   <span class="c">#      based analysers and visualisers (which don&#39;t exist yet) can operate.</span>
+
+    <span class="c"># This is a list with the monitors that actually return multi dimensions for the state variable dimension.</span>
+    <span class="c"># We exclude from this for example EEG, MEG or Bold which return </span>
+    <span class="n">HAVE_STATE_VARIABLES</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;GlobalAverage&quot;</span><span class="p">,</span> <span class="s">&quot;SpatialAverage&quot;</span><span class="p">,</span> <span class="s">&quot;Raw&quot;</span><span class="p">,</span> <span class="s">&quot;SubSample&quot;</span><span class="p">,</span> <span class="s">&quot;TemporalAverage&quot;</span><span class="p">]</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SimulatorAdapter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: Initialized...&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="SimulatorAdapter.get_input_tree"><a class="viewcode-back" href="../../../../tvb.adapters.simulator.html#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.get_input_tree">[docs]</a>    <span class="k">def</span> <span class="nf">get_input_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of lists describing the interface to the simulator. This</span>
+<span class="sd">        is used by the GUI to generate the menus and fields necessary for</span>
+<span class="sd">        defining a simulation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sim</span> <span class="o">=</span> <span class="n">Simulator</span><span class="p">()</span>
+        <span class="n">sim</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">bound</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">INTERFACE_ATTRIBUTES_ONLY</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">interface</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">INTERFACE_ATTRIBUTES</span><span class="p">]</span>
+        <span class="c"># We should add as hidden the Simulator State attribute.</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_NAME</span><span class="p">:</span> <span class="s">&#39;simulation_state&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KEY_TYPE</span><span class="p">:</span> <span class="n">SimulationState</span><span class="p">,</span>
+                       <span class="bp">self</span><span class="o">.</span><span class="n">KEY_LABEL</span><span class="p">:</span> <span class="s">&quot;Continuation of&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KEY_REQUIRED</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KEY_UI_HIDE</span><span class="p">:</span> <span class="bp">True</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">result</span>
 
 </div>
-</pre>
+<div class="viewcode-block" id="SimulatorAdapter.get_output"><a class="viewcode-back" href="../../../../tvb.adapters.simulator.html#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.get_output">[docs]</a>    <span class="k">def</span> <span class="nf">get_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :returns: list of classes for possible results of the Simulator.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">time_series</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="SimulatorAdapter.configure"><a class="viewcode-back" href="../../../../tvb.adapters.simulator.html#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.configure">[docs]</a>    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">model_parameters</span><span class="p">,</span> <span class="n">integrator</span><span class="p">,</span> <span class="n">integrator_parameters</span><span class="p">,</span> <span class="n">connectivity</span><span class="p">,</span>
+                  <span class="n">monitors</span><span class="p">,</span> <span class="n">monitors_parameters</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">surface_parameters</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stimulus</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                  <span class="n">coupling</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">coupling_parameters</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">initial_conditions</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                  <span class="n">conduction_speed</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">simulation_length</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">simulation_state</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make preparations for the adapter launch.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;available_couplings: </span><span class="si">%s</span><span class="s">...&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">available_couplings</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;coupling: </span><span class="si">%s</span><span class="s">...&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">coupling</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;coupling_parameters: </span><span class="si">%s</span><span class="s">...&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">coupling_parameters</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: Initializing Model...&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="n">noise_framework</span><span class="o">.</span><span class="n">build_noise</span><span class="p">(</span><span class="n">model_parameters</span><span class="p">)</span>
+        <span class="n">model_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">available_models</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">model</span><span class="p">)](</span><span class="o">**</span><span class="n">model_parameters</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_model_parameters</span><span class="p">(</span><span class="n">model_instance</span><span class="p">,</span> <span class="n">connectivity</span><span class="p">,</span> <span class="n">surface</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: Initializing Integration scheme...&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="n">noise_framework</span><span class="o">.</span><span class="n">build_noise</span><span class="p">(</span><span class="n">integrator_parameters</span><span class="p">)</span>
+        <span class="n">integr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">available_integrators</span><span class="p">[</span><span class="n">integrator</span><span class="p">](</span><span class="o">**</span><span class="n">integrator_parameters</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: Instantiating Monitors...&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="n">monitors_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">monitor_name</span> <span class="ow">in</span> <span class="n">monitors</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">monitors_parameters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">monitor_name</span><span class="p">)</span> <span class="ow">in</span> <span class="n">monitors_parameters</span><span class="p">):</span>
+                <span class="n">current_monitor_parameters</span> <span class="o">=</span> <span class="n">monitors_parameters</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">monitor_name</span><span class="p">)]</span>
+                <span class="n">HRFKernelEquation</span><span class="o">.</span><span class="n">build_equation_from_dict</span><span class="p">(</span><span class="s">&#39;hrf_kernel&#39;</span><span class="p">,</span> <span class="n">current_monitor_parameters</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+                <span class="n">monitors_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">available_monitors</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">monitor_name</span><span class="p">)](</span><span class="o">**</span><span class="n">current_monitor_parameters</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c">### We have monitors without any UI settable parameter.</span>
+                <span class="n">monitors_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">available_monitors</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">monitor_name</span><span class="p">)]())</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">monitors</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">LaunchException</span><span class="p">(</span><span class="s">&quot;Can not launch operation without monitors selected !!!&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: Initializing Coupling...&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="n">coupling_inst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">available_couplings</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">coupling</span><span class="p">)](</span><span class="o">**</span><span class="n">coupling_parameters</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Initializing Cortex...&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_surface_simulation</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">surface_parameters</span><span class="p">):</span>
+            <span class="n">cortex_entity</span> <span class="o">=</span> <span class="n">Cortex</span><span class="p">(</span><span class="n">use_storage</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">populate_cortex</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">surface_parameters</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cortex_entity</span><span class="o">.</span><span class="n">region_mapping_data</span><span class="o">.</span><span class="n">connectivity</span><span class="o">.</span><span class="n">number_of_regions</span> <span class="o">!=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">number_of_regions</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">LaunchException</span><span class="p">(</span><span class="s">&quot;Incompatible RegionMapping -- Connectivity !!&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cortex_entity</span><span class="o">.</span><span class="n">region_mapping_data</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">number_of_vertices</span> <span class="o">!=</span> <span class="n">surface</span><span class="o">.</span><span class="n">number_of_vertices</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">LaunchException</span><span class="p">(</span><span class="s">&quot;Incompatible RegionMapping -- Surface !!&quot;</span><span class="p">)</span>
+            <span class="n">select_loc_conn</span> <span class="o">=</span> <span class="n">cortex_entity</span><span class="o">.</span><span class="n">local_connectivity</span>
+            <span class="k">if</span> <span class="n">select_loc_conn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">select_loc_conn</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">number_of_vertices</span> <span class="o">!=</span> <span class="n">surface</span><span class="o">.</span><span class="n">number_of_vertices</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">LaunchException</span><span class="p">(</span><span class="s">&quot;Incompatible LocalConnectivity -- Surface !!&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cortex_entity</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: Instantiating requested simulator...&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="n">connectivity</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">Simulator</span><span class="p">(</span><span class="n">connectivity</span><span class="o">=</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">coupling</span><span class="o">=</span><span class="n">coupling_inst</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="n">cortex_entity</span><span class="p">,</span>
+                                   <span class="n">stimulus</span><span class="o">=</span><span class="n">stimulus</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model_instance</span><span class="p">,</span> <span class="n">integrator</span><span class="o">=</span><span class="n">integr</span><span class="p">,</span>
+                                   <span class="n">monitors</span><span class="o">=</span><span class="n">monitors_list</span><span class="p">,</span> <span class="n">initial_conditions</span><span class="o">=</span><span class="n">initial_conditions</span><span class="p">,</span>
+                                   <span class="n">conduction_speed</span><span class="o">=</span><span class="n">conduction_speed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation_length</span> <span class="o">=</span> <span class="n">simulation_length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: Initializing storage...&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">simulation_state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">simulation_state</span><span class="o">.</span><span class="n">fill_into</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">LaunchException</span><span class="p">(</span><span class="s">&quot;Failed to configure simulator due to invalid Input Values. It could be because &quot;</span>
+                                  <span class="s">&quot;of an incompatibility between different version of TVB code.&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="SimulatorAdapter.get_required_memory_size"><a class="viewcode-back" href="../../../../tvb.adapters.simulator.html#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.get_required_memory_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_required_memory_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the required memory to run this algorithm.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">memory_requirement</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="SimulatorAdapter.get_required_disk_size"><a class="viewcode-back" href="../../../../tvb.adapters.simulator.html#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.get_required_disk_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_required_disk_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the required disk size this algorithm estimates it will take. (in kB)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">storage_requirement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_length</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">10</span>
+    
+    </div>
+<div class="viewcode-block" id="SimulatorAdapter.get_execution_time_approximation"><a class="viewcode-back" href="../../../../tvb.adapters.simulator.html#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.get_execution_time_approximation">[docs]</a>    <span class="k">def</span> <span class="nf">get_execution_time_approximation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method should approximate based on input arguments, the time it will take for the operation </span>
+<span class="sd">        to finish (in seconds).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># This is just a brute approx so cluster nodes won&#39;t kill operation before</span>
+        <span class="c"># it&#39;s finished. This should be done with a higher grade of sensitivity</span>
+        <span class="c"># Magic number connecting simulation length to simulation computation time</span>
+        <span class="c"># This number should as big as possible, as long as it is still realistic, to</span>
+        <span class="n">magic_number</span> <span class="o">=</span> <span class="mf">2.0</span>
+        <span class="n">simulation_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;simulation_length&#39;</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="n">simulation_length</span> <span class="o">&lt;=</span> <span class="n">magic_number</span><span class="p">:</span>
+            <span class="c"># No matter how small the simulation, we&#39;re going to approximate at least 1 second of execution time</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="s">&#39;surface&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;surface&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;surface&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">simulation_length</span> <span class="o">*</span> <span class="mf">10.0</span>
+        <span class="k">return</span> <span class="n">simulation_length</span> <span class="o">/</span> <span class="n">magic_number</span>
+
+
+</div>
+<div class="viewcode-block" id="SimulatorAdapter.launch"><a class="viewcode-back" href="../../../../tvb.adapters.simulator.html#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.launch">[docs]</a>    <span class="k">def</span> <span class="nf">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">model_parameters</span><span class="p">,</span> <span class="n">integrator</span><span class="p">,</span> <span class="n">integrator_parameters</span><span class="p">,</span> <span class="n">connectivity</span><span class="p">,</span>
+               <span class="n">monitors</span><span class="p">,</span> <span class="n">monitors_parameters</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">surface_parameters</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stimulus</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+               <span class="n">coupling</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">coupling_parameters</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">initial_conditions</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+               <span class="n">conduction_speed</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">simulation_length</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">simulation_state</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called from the GUI to launch a simulation.</span>
+<span class="sd">          *: string class name of chosen model, etc...</span>
+<span class="sd">          *_parameters: dictionary of parameters for chosen model, etc...</span>
+<span class="sd">          connectivity: tvb.datatypes.connectivity.Connectivity object.</span>
+<span class="sd">          surface: tvb.datatypes.surfaces.CorticalSurface: or None.</span>
+<span class="sd">          stimulus: tvb.datatypes.patters.* object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result_datatypes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">current_step</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">integrator</span><span class="o">.</span><span class="n">dt</span>
+        <span class="n">m_ind</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">for</span> <span class="n">m_name</span> <span class="ow">in</span> <span class="n">monitors</span><span class="p">:</span>
+            <span class="n">m_ind</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">sample_period</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">m_ind</span><span class="p">]</span><span class="o">.</span><span class="n">period</span>
+            <span class="c"># Create the required output for each monitor that was submitted</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">m_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">RESULTS_MAP</span><span class="p">[</span><span class="n">time_series</span><span class="o">.</span><span class="n">TimeSeriesEEG</span><span class="p">]</span>
+                    <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">m_ind</span><span class="p">],</span> <span class="s">&#39;sensors&#39;</span><span class="p">)):</span>
+                <span class="n">result_datatypes</span><span class="p">[</span><span class="n">m_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">TimeSeriesEEG</span><span class="p">(</span><span class="n">storage_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span><span class="p">,</span>
+                                                                     <span class="n">sensors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">m_ind</span><span class="p">]</span><span class="o">.</span><span class="n">sensors</span><span class="p">,</span>
+                                                                     <span class="n">sample_period</span><span class="o">=</span><span class="n">sample_period</span><span class="p">,</span>
+                                                                     <span class="n">title</span><span class="o">=</span><span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">m_name</span><span class="p">,</span> <span class="n">start_time</span><span class="o">=</span><span class="n">start_time</span><span class="p">,</span> <span class="p">)</span>
+
+            <span class="k">elif</span> <span class="p">(</span><span class="n">m_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">RESULTS_MAP</span><span class="p">[</span><span class="n">time_series</span><span class="o">.</span><span class="n">TimeSeriesMEG</span><span class="p">]</span>
+                  <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">m_ind</span><span class="p">],</span> <span class="s">&#39;sensors&#39;</span><span class="p">)):</span>
+                <span class="n">result_datatypes</span><span class="p">[</span><span class="n">m_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">TimeSeriesMEG</span><span class="p">(</span><span class="n">storage_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span><span class="p">,</span>
+                                                                     <span class="n">sensors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">m_ind</span><span class="p">]</span><span class="o">.</span><span class="n">sensors</span><span class="p">,</span>
+                                                                     <span class="n">sample_period</span><span class="o">=</span><span class="n">sample_period</span><span class="p">,</span>
+                                                                     <span class="n">title</span><span class="o">=</span><span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">m_name</span><span class="p">,</span> <span class="n">start_time</span><span class="o">=</span><span class="n">start_time</span><span class="p">)</span>
+                
+            <span class="k">elif</span> <span class="p">(</span><span class="n">m_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">RESULTS_MAP</span><span class="p">[</span><span class="n">time_series</span><span class="o">.</span><span class="n">TimeSeriesSEEG</span><span class="p">]</span>
+                  <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">m_ind</span><span class="p">],</span> <span class="s">&#39;sensors&#39;</span><span class="p">)):</span>
+                <span class="n">result_datatypes</span><span class="p">[</span><span class="n">m_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">TimeSeriesSEEG</span><span class="p">(</span><span class="n">storage_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span><span class="p">,</span>
+                                                                      <span class="n">sensors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">m_ind</span><span class="p">]</span><span class="o">.</span><span class="n">sensors</span><span class="p">,</span>
+                                                                      <span class="n">sample_period</span><span class="o">=</span><span class="n">sample_period</span><span class="p">,</span>
+                                                                      <span class="n">title</span><span class="o">=</span><span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">m_name</span><span class="p">,</span> <span class="n">start_time</span><span class="o">=</span><span class="n">start_time</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">m_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">RESULTS_MAP</span><span class="p">[</span><span class="n">time_series</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">]:</span>
+                <span class="n">result_datatypes</span><span class="p">[</span><span class="n">m_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="n">storage_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span><span class="p">,</span>
+                                                                  <span class="n">sample_period</span><span class="o">=</span><span class="n">sample_period</span><span class="p">,</span>
+                                                                  <span class="n">title</span><span class="o">=</span><span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">m_name</span><span class="p">,</span> <span class="n">start_time</span><span class="o">=</span><span class="n">start_time</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_surface_simulation</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">surface_parameters</span><span class="p">):</span>
+                <span class="c">## We do not have a surface selected from UI, or regions only result.</span>
+                <span class="n">result_datatypes</span><span class="p">[</span><span class="n">m_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">TimeSeriesRegion</span><span class="p">(</span><span class="n">storage_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span><span class="p">,</span>
+                                                                        <span class="n">connectivity</span><span class="o">=</span><span class="n">connectivity</span><span class="p">,</span>
+                                                                        <span class="n">sample_period</span><span class="o">=</span><span class="n">sample_period</span><span class="p">,</span>
+                                                                        <span class="n">title</span><span class="o">=</span><span class="s">&#39;Regions &#39;</span> <span class="o">+</span> <span class="n">m_name</span><span class="p">,</span>
+                                                                        <span class="n">start_time</span><span class="o">=</span><span class="n">start_time</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result_datatypes</span><span class="p">[</span><span class="n">m_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">TimeSeriesSurface</span><span class="p">(</span><span class="n">storage_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span><span class="p">,</span>
+                                                                         <span class="n">surface</span><span class="o">=</span><span class="n">surface</span><span class="p">,</span> <span class="n">sample_period</span><span class="o">=</span><span class="n">sample_period</span><span class="p">,</span>
+                                                                         <span class="n">title</span><span class="o">=</span><span class="s">&#39;Surface &#39;</span> <span class="o">+</span> <span class="n">m_name</span><span class="p">,</span>
+                                                                         <span class="n">start_time</span><span class="o">=</span><span class="n">start_time</span><span class="p">)</span>
+            <span class="c"># Now check if the monitor will return results for each state variable, in which case store</span>
+            <span class="c"># the labels for these state variables.</span>
+            <span class="k">if</span> <span class="n">m_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">HAVE_STATE_VARIABLES</span><span class="p">:</span>
+                <span class="n">selected_state_vars</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variables</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+                                       <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">m_ind</span><span class="p">]</span><span class="o">.</span><span class="n">voi</span><span class="p">]</span>
+                <span class="n">state_variable_dimension_name</span> <span class="o">=</span> <span class="n">result_datatypes</span><span class="p">[</span><span class="n">m_name</span><span class="p">]</span><span class="o">.</span><span class="n">labels_ordering</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">result_datatypes</span><span class="p">[</span><span class="n">m_name</span><span class="p">]</span><span class="o">.</span><span class="n">labels_dimensions</span><span class="p">[</span><span class="n">state_variable_dimension_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">selected_state_vars</span>
+        
+        <span class="c">#### Create Simulator State entity and persist it in DB. H5 file will be empty now.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_group_launch</span><span class="p">():</span>
+            <span class="n">simulation_state</span> <span class="o">=</span> <span class="n">SimulationState</span><span class="p">(</span><span class="n">storage_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_capture_operation_results</span><span class="p">([</span><span class="n">simulation_state</span><span class="p">])</span>
+
+        <span class="c">### Run simulation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: Starting simulation...&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="p">(</span><span class="n">simulation_length</span><span class="o">=</span><span class="n">simulation_length</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">monitor</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">monitors</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">result_datatypes</span><span class="p">[</span><span class="n">monitor</span><span class="p">]</span><span class="o">.</span><span class="n">write_time_slice</span><span class="p">([</span><span class="n">result</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">0</span><span class="p">]])</span>
+                    <span class="n">result_datatypes</span><span class="p">[</span><span class="n">monitor</span><span class="p">]</span><span class="o">.</span><span class="n">write_data_slice</span><span class="p">([</span><span class="n">result</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">1</span><span class="p">]])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: Completed simulation, starting to store simulation state &quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="c">### Populate H5 file for simulator state. This step could also be done while running sim, in background.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_group_launch</span><span class="p">():</span>
+            <span class="n">simulation_state</span><span class="o">.</span><span class="n">populate_from</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_capture_operation_results</span><span class="p">([</span><span class="n">simulation_state</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: Simulation state persisted, returning results &quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="n">final_results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">result_datatypes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">close_file</span><span class="p">()</span>
+            <span class="n">final_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: Adapter simulation finished!!&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">final_results</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">_validate_model_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_instance</span><span class="p">,</span> <span class="n">connectivity</span><span class="p">,</span> <span class="n">surface</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the size of the model parameters is set correctly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ui_configurable_params</span> <span class="o">=</span> <span class="n">model_instance</span><span class="o">.</span><span class="n">ui_configurable_parameters</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">ui_configurable_params</span><span class="p">:</span>
+            <span class="n">param_value</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s">&#39;model_instance.&#39;</span> <span class="o">+</span> <span class="n">param</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param_value</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">param_value</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">connectivity</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">surface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">param_value</span><span class="p">)</span> <span class="o">!=</span> <span class="n">surface</span><span class="o">.</span><span class="n">number_of_vertices</span>
+                            <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">param_value</span><span class="p">)</span> <span class="o">!=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">number_of_regions</span><span class="p">):</span>
+                        <span class="n">msg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">surface</span><span class="o">.</span><span class="n">number_of_vertices</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; or &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">connectivity</span><span class="o">.</span><span class="n">number_of_regions</span><span class="p">)</span>
+                        <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_exception_message</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">param_value</span><span class="p">))</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="n">LaunchException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">param_value</span><span class="p">)</span> <span class="o">!=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">number_of_regions</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_exception_message</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">number_of_regions</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">param_value</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">LaunchException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_exception_message</span><span class="p">(</span><span class="n">param_name</span><span class="p">,</span> <span class="n">expected_size</span><span class="p">,</span> <span class="n">actual_size</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates the message that will be displayed to the user when the size of a model parameter is incorrect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;The length of the parameter &#39;&quot;</span> <span class="o">+</span> <span class="n">param_name</span> <span class="o">+</span> <span class="s">&quot;&#39; is not correct.&quot;</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s">&quot; It is expected to be an array of length &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">expected_size</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;.&quot;</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s">&quot; It is an array of length &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">actual_size</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;.&quot;</span>
+        <span class="k">return</span> <span class="n">msg</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_is_surface_simulation</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">surface_parameters</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Is this a surface simulation?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">surface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">surface_parameters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+</pre></div></div>
 
           </div>
         </div>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../../search.html" method="get">
@@ -393,13 +447,13 @@ import tvb.datatypes.time_series as time_series
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

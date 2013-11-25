@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.adapters.exporters.export_manager &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.adapters.exporters.export_manager &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../index.html" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -49,276 +48,287 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for tvb.adapters.exporters.export_manager</h1><pre>
-# -*- coding: utf-8 -*-
-#
-#
-# TheVirtualBrain-Framework Package. This package holds all Data Management, and 
-# Web-UI helpful to run brain-simulations. To use it, you also need do download
-# TheVirtualBrain-Scientific Package (for simulators). See content of the
-# documentation-folder for more details. See also http://www.thevirtualbrain.org
-#
-# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
-#
-# This program is free software; you can redistribute it and/or modify it under 
-# the terms of the GNU General Public License version 2 as published by the Free
-# Software Foundation. This program is distributed in the hope that it will be
-# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
-# License for more details. You should have received a copy of the GNU General 
-# Public License along with this program; if not, you can download it here
-# http://www.gnu.org/licenses/old-licenses/gpl-2.0
-#
-#
+  <h1>Source code for tvb.adapters.exporters.export_manager</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
 
-"""
-Class responsible for all TVB exports (datatype or project).
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Class responsible for all TVB exports (datatype or project).</span>
 
-.. moduleauthor:: Calin Pavel
-"""
-import os
-import json
-from datetime import datetime
+<span class="sd">.. moduleauthor:: Calin Pavel</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
-from tvb.adapters.exporters.tvb_export import TVBExporter 
-from tvb.adapters.exporters.cifti_export import CIFTIExporter 
-from tvb.adapters.exporters.exceptions import ExportException, InvalidExportDataException
-from tvb.basic.config.settings import TVBSettings as cfg
-from tvb.core.entities.model.model_burst import BURST_INFO_FILE, BURSTS_DICT_KEY, DT_BURST_MAP
-from tvb.core.entities.file.fileshelper import FilesHelper
-from tvb.core.entities.transient.burst_export_entities import BurstInformation, WorkflowInformation
-from tvb.core.entities.transient.burst_export_entities import WorkflowStepInformation, WorkflowViewStepInformation
-from tvb.core.entities.storage import dao
-from tvb.basic.logger.builder import get_logger
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">tvb.adapters.exporters.tvb_export</span> <span class="kn">import</span> <span class="n">TVBExporter</span> 
+<span class="kn">from</span> <span class="nn">tvb.adapters.exporters.cifti_export</span> <span class="kn">import</span> <span class="n">CIFTIExporter</span> 
+<span class="kn">from</span> <span class="nn">tvb.adapters.exporters.exceptions</span> <span class="kn">import</span> <span class="n">ExportException</span><span class="p">,</span> <span class="n">InvalidExportDataException</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span> <span class="k">as</span> <span class="n">cfg</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.model.model_burst</span> <span class="kn">import</span> <span class="n">BURST_INFO_FILE</span><span class="p">,</span> <span class="n">BURSTS_DICT_KEY</span><span class="p">,</span> <span class="n">DT_BURST_MAP</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.file.files_helper</span> <span class="kn">import</span> <span class="n">FilesHelper</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.transient.burst_export_entities</span> <span class="kn">import</span> <span class="n">BurstInformation</span><span class="p">,</span> <span class="n">WorkflowInformation</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.transient.burst_export_entities</span> <span class="kn">import</span> <span class="n">WorkflowStepInformation</span><span class="p">,</span> <span class="n">WorkflowViewStepInformation</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.storage</span> <span class="kn">import</span> <span class="n">dao</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
 
-LOG = get_logger(__name__)
-BURST_PAGE_SIZE = 100
-DATAYPES_PAGE_SIZE = 100
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">BURST_PAGE_SIZE</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">DATAYPES_PAGE_SIZE</span> <span class="o">=</span> <span class="mi">100</span>
 
-<div class="viewcode-block" id="ExportManager"><a class="viewcode-back" href="../../../../tvb.adapters.exporters.html#tvb.adapters.exporters.export_manager.ExportManager">[docs]</a>class ExportManager:
-    """
-        This class provides basic methods for exporting data types of projects in different formats.
-    """
-    all_exporters = {} # Dictionary containing all available exporters
-    export_folder = None
-    EXPORT_FOLDER_NAME = "EXPORT_TMP"
-    ZIP_FILE_EXTENSION = "zip"
+
+<div class="viewcode-block" id="ExportManager"><a class="viewcode-back" href="../../../../tvb.adapters.exporters.html#tvb.adapters.exporters.export_manager.ExportManager">[docs]</a><span class="k">class</span> <span class="nc">ExportManager</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class provides basic methods for exporting data types of projects in different formats.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">all_exporters</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c"># Dictionary containing all available exporters</span>
+    <span class="n">export_folder</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">EXPORT_FOLDER_NAME</span> <span class="o">=</span> <span class="s">&quot;EXPORT_TMP&quot;</span>
+    <span class="n">ZIP_FILE_EXTENSION</span> <span class="o">=</span> <span class="s">&quot;zip&quot;</span>
     
-    def __init__(self):
-        # Here we register all available data type exporters
-        # If new exporters supported, they should be added here
-        self.__registerExporter(TVBExporter()) 
-        self.__registerExporter(CIFTIExporter())
-        self.export_folder = os.path.join(cfg.TVB_STORAGE, self.EXPORT_FOLDER_NAME)
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># Here we register all available data type exporters</span>
+        <span class="c"># If new exporters supported, they should be added here</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__registerExporter</span><span class="p">(</span><span class="n">TVBExporter</span><span class="p">())</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">__registerExporter</span><span class="p">(</span><span class="n">CIFTIExporter</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">export_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">TVB_STORAGE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">EXPORT_FOLDER_NAME</span><span class="p">)</span>
 
     
-    def __registerExporter(self, exporter):
-        """
-            This method register into an internal format available exporters.
-            :param exporter: Instance of a data type exporter (extends ABCExporter)
-        """
-        if exporter is not None:
-            self.all_exporters[exporter.__class__.__name__] = exporter
+    <span class="k">def</span> <span class="nf">__registerExporter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exporter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method register into an internal format available exporters.</span>
+<span class="sd">        :param exporter: Instance of a data type exporter (extends ABCExporter)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">exporter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">all_exporters</span><span class="p">[</span><span class="n">exporter</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">]</span> <span class="o">=</span> <span class="n">exporter</span>
      
-<div class="viewcode-block" id="ExportManager.get_exporters_for_data"><a class="viewcode-back" href="../../../../tvb.adapters.exporters.html#tvb.adapters.exporters.export_manager.ExportManager.get_exporters_for_data">[docs]</a>    def get_exporters_for_data(self, data):
-        """
-            Get available exporters for current data type.
-            :return: a dictionary with the {exporter_id : label}
-        """
-        if data is None:
-            raise InvalidExportDataException("Could not detect exporters for null data")
+<div class="viewcode-block" id="ExportManager.get_exporters_for_data"><a class="viewcode-back" href="../../../../tvb.adapters.exporters.html#tvb.adapters.exporters.export_manager.ExportManager.get_exporters_for_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_exporters_for_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Get available exporters for current data type.</span>
+<span class="sd">            :returns: a dictionary with the {exporter_id : label}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidExportDataException</span><span class="p">(</span><span class="s">&quot;Could not detect exporters for null data&quot;</span><span class="p">)</span>
         
-        LOG.debug("Trying to determine exporters valid for %s" % data.type)
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Trying to determine exporters valid for </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
         
-        results = {}
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
         
-        # No exporter for None data
-        if data is None:
-            return results
+        <span class="c"># No exporter for None data</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">results</span>
         
-        for exporterId in self.all_exporters.keys():
-            exporter = self.all_exporters[exporterId]
-            if exporter.accepts(data):
-                results[exporterId] = exporter.get_label()
+        <span class="k">for</span> <span class="n">exporterId</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_exporters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">exporter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_exporters</span><span class="p">[</span><span class="n">exporterId</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">exporter</span><span class="o">.</span><span class="n">accepts</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">exporterId</span><span class="p">]</span> <span class="o">=</span> <span class="n">exporter</span><span class="o">.</span><span class="n">get_label</span><span class="p">()</span>
         
-        return results
+        <span class="k">return</span> <span class="n">results</span>
     </div>
-<div class="viewcode-block" id="ExportManager.export_data"><a class="viewcode-back" href="../../../../tvb.adapters.exporters.html#tvb.adapters.exporters.export_manager.ExportManager.export_data">[docs]</a>    def export_data(self, data, exporter_id, project):
-        """
-            Export provided data using given exporter
-            :param data: data type to be exported
-            :param exporter_id: identifier of the exporter to be used
-            :param project: project that contains data to be exported
+<div class="viewcode-block" id="ExportManager.export_data"><a class="viewcode-back" href="../../../../tvb.adapters.exporters.html#tvb.adapters.exporters.export_manager.ExportManager.export_data">[docs]</a>    <span class="k">def</span> <span class="nf">export_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">exporter_id</span><span class="p">,</span> <span class="n">project</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Export provided data using given exporter</span>
+<span class="sd">        :param data: data type to be exported</span>
+<span class="sd">        :param exporter_id: identifier of the exporter to be used</span>
+<span class="sd">        :param project: project that contains data to be exported</span>
+<span class="sd">            </span>
+<span class="sd">        :returns: a tuple with the following elements</span>
+<span class="sd">            1. name of the file to be shown to user</span>
+<span class="sd">            2. full path of the export file (available for download)</span>
+<span class="sd">            3. boolean which specify if file can be deleted after download</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidExportDataException</span><span class="p">(</span><span class="s">&quot;Could not export null data. Please select data to be exported&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">exporter_id</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ExportException</span><span class="p">(</span><span class="s">&quot;Please select the exporter to be used for this operation&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">exporter_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_exporters</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ExportException</span><span class="p">(</span><span class="s">&quot;Provided exporter identifier is not a valid one&quot;</span><span class="p">)</span>
+        
+        <span class="n">exporter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_exporters</span><span class="p">[</span><span class="n">exporter_id</span><span class="p">]</span>
+        
+        <span class="k">if</span> <span class="n">project</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>  
+            <span class="k">raise</span> <span class="n">ExportException</span><span class="p">(</span><span class="s">&quot;Please provide the project where data files are stored&quot;</span><span class="p">)</span>
+        
+        <span class="c"># Now we start the real export        </span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">exporter</span><span class="o">.</span><span class="n">accepts</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidExportDataException</span><span class="p">(</span><span class="s">&quot;Current data can not be exported by specified exporter&quot;</span><span class="p">)</span>
+        
+        <span class="c"># Now compute and create folder where to store exported data</span>
+        <span class="c"># This will imply to generate a folder which is unique for each export</span>
+        <span class="n">data_export_folder</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data_export_folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_data_export_folder</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
             
-            :return: a tuple with the following elements
-                1. name of the file to be shown to user
-                2. full path of the export file (available for download)
-                3. boolean which specify if file can be deleted after download 
-        """
-        if data is None:
-            raise InvalidExportDataException("Could not export null data. Please select data to be exported")
-        
-        if exporter_id is None:
-            raise ExportException("Please select the exporter to be used for this operation")
-        
-        
-        if not self.all_exporters.has_key(exporter_id):
-            raise ExportException("Provided exporter identifier is not a valid one")
-        
-        exporter = self.all_exporters[exporter_id]
-        
-        if project is None:  
-            raise ExportException("Please provide the project where data files are stored")
-        
-        # Now we start the real export        
-        if not exporter.accepts(data):
-            raise InvalidExportDataException("Current data can not be exported by specified exporter")
-        
-        # Now compute and create folder where to store exported data
-        # This will imply to generate a folder which is unique for each export
-        data_export_folder = None
-        try:
-            data_export_folder = self._build_data_export_folder(data)
+            <span class="c"># Here is the real export                    </span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Start export of data: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+            <span class="n">export_data</span> <span class="o">=</span> <span class="n">exporter</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">data_export_folder</span><span class="p">,</span> <span class="n">project</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="c"># In case export did not generated any file delete folder</span>
+            <span class="k">if</span> <span class="n">data_export_folder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">data_export_folder</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">rmdir</span><span class="p">(</span><span class="n">data_export_folder</span><span class="p">)</span>
             
-            # Here is the real export                    
-            LOG.debug("Start export of data: %s" % data.type)
-            export_data = exporter.export(data, data_export_folder, project)
-        finally:
-            # In case export did not generated any file delete folder
-            if data_export_folder is not None and len(os.listdir(data_export_folder)) == 0:
-                os.rmdir(data_export_folder)
-            
-        return export_data
+        <span class="k">return</span> <span class="n">export_data</span>
 
 </div>
-<div class="viewcode-block" id="ExportManager.export_project"><a class="viewcode-back" href="../../../../tvb.adapters.exporters.html#tvb.adapters.exporters.export_manager.ExportManager.export_project">[docs]</a>    def export_project(self, project):
-        """
-        Given a project root and the TVB storage_path, create a ZIP
-        ready for export.
-        :param project: project object which identifies project to be exported
-        :param project)name: name of the project to be exported
-        :param export_folder: folder where to store export result( e.g zip file)
-        """
-        if project is None:
-            raise ExportException("Please provide project to be exported")
+<div class="viewcode-block" id="ExportManager.export_project"><a class="viewcode-back" href="../../../../tvb.adapters.exporters.html#tvb.adapters.exporters.export_manager.ExportManager.export_project">[docs]</a>    <span class="k">def</span> <span class="nf">export_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a project root and the TVB storage_path, create a ZIP</span>
+<span class="sd">        ready for export.</span>
+<span class="sd">        :param project: project object which identifies project to be exported</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">project</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ExportException</span><span class="p">(</span><span class="s">&quot;Please provide project to be exported&quot;</span><span class="p">)</span>
 
-        files_helper = FilesHelper()
-        project_folder = files_helper.get_project_folder(project)
+        <span class="n">files_helper</span> <span class="o">=</span> <span class="n">FilesHelper</span><span class="p">()</span>
+        <span class="n">project_folder</span> <span class="o">=</span> <span class="n">files_helper</span><span class="o">.</span><span class="n">get_project_folder</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
         
-        bursts_dict = {}
-        datatype_burst_mapping = {}
-        bursts_count = dao.get_bursts_for_project(project.id, count=True)
-        for start_idx in range(0, bursts_count, BURST_PAGE_SIZE):
-            bursts = dao.get_bursts_for_project(project.id, page_start=start_idx, page_end=start_idx+BURST_PAGE_SIZE)
-            for burst in bursts:
-                self._build_burst_export_dict(burst, bursts_dict)
+        <span class="n">bursts_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">datatype_burst_mapping</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">bursts_count</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_bursts_for_project</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">start_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">bursts_count</span><span class="p">,</span> <span class="n">BURST_PAGE_SIZE</span><span class="p">):</span>
+            <span class="n">bursts</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_bursts_for_project</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">page_start</span><span class="o">=</span><span class="n">start_idx</span><span class="p">,</span> <span class="n">page_end</span><span class="o">=</span><span class="n">start_idx</span> <span class="o">+</span> <span class="n">BURST_PAGE_SIZE</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">burst</span> <span class="ow">in</span> <span class="n">bursts</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_build_burst_export_dict</span><span class="p">(</span><span class="n">burst</span><span class="p">,</span> <span class="n">bursts_dict</span><span class="p">)</span>
                 
-        datatypes_count = dao.get_datatypes_for_project(project.id, count=True)
-        for start_idx in range(0, datatypes_count, DATAYPES_PAGE_SIZE):
-            datatypes = dao.get_datatypes_for_project(project.id, page_start=start_idx, page_end=start_idx+DATAYPES_PAGE_SIZE)
-            for datatype in datatypes:
-                datatype_burst_mapping[datatype.gid] = datatype.fk_parent_burst
+        <span class="n">datatypes_count</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_datatypes_for_project</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">start_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">datatypes_count</span><span class="p">,</span> <span class="n">DATAYPES_PAGE_SIZE</span><span class="p">):</span>
+            <span class="n">datatypes</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_datatypes_for_project</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">page_start</span><span class="o">=</span><span class="n">start_idx</span><span class="p">,</span>
+                                                      <span class="n">page_end</span><span class="o">=</span><span class="n">start_idx</span> <span class="o">+</span> <span class="n">DATAYPES_PAGE_SIZE</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="n">datatypes</span><span class="p">:</span>
+                <span class="n">datatype_burst_mapping</span><span class="p">[</span><span class="n">datatype</span><span class="o">.</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="n">datatype</span><span class="o">.</span><span class="n">fk_parent_burst</span>
+
+        <span class="c"># Compute path and name of the zip file</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">date_str</span> <span class="o">=</span> <span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%Y-%m-</span><span class="si">%d</span><span class="s">_%H-%M&quot;</span><span class="p">)</span>
+        <span class="n">zip_file_name</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">date_str</span><span class="p">,</span> <span class="n">project</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ZIP_FILE_EXTENSION</span><span class="p">)</span>
         
+        <span class="n">export_folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_data_export_folder</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>    
+        <span class="n">result_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">export_folder</span><span class="p">,</span> <span class="n">zip_file_name</span><span class="p">)</span> 
+        
+        <span class="n">bursts_file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">project_folder</span><span class="p">,</span> <span class="n">BURST_INFO_FILE</span><span class="p">)</span>
+        <span class="n">burst_info</span> <span class="o">=</span> <span class="p">{</span><span class="n">BURSTS_DICT_KEY</span><span class="p">:</span> <span class="n">bursts_dict</span><span class="p">,</span>
+                      <span class="n">DT_BURST_MAP</span><span class="p">:</span> <span class="n">datatype_burst_mapping</span><span class="p">}</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">bursts_file_name</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">bursts_file</span><span class="p">:</span>
+            <span class="n">bursts_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">burst_info</span><span class="p">))</span>
             
-        # Compute path and name of the zip file
-        now = datetime.now()
-        date_str = now.strftime("%Y-%m-%d_%H-%M")
-        zip_file_name = "%s_%s.%s" % (date_str, project.name, self.ZIP_FILE_EXTENSION)
+        <span class="c"># pack project content into a ZIP file</span>
+        <span class="n">result_zip</span> <span class="o">=</span> <span class="n">files_helper</span><span class="o">.</span><span class="n">zip_folder</span><span class="p">(</span><span class="n">result_path</span><span class="p">,</span> <span class="n">project_folder</span><span class="p">)</span>
         
-        export_folder = self._build_data_export_folder(project)    
-        result_path = os.path.join(export_folder, zip_file_name) 
-        
-        bursts_file_name = os.path.join(project_folder, BURST_INFO_FILE)
-        burst_info = {BURSTS_DICT_KEY : bursts_dict,
-                      DT_BURST_MAP : datatype_burst_mapping}
-        with open(bursts_file_name, 'w') as bursts_file:
-            bursts_file.write(json.dumps(burst_info))
-            
-        # pack project content into a ZIP file
-        result_zip = files_helper.zip_folder(result_path, project_folder)
-        
-        # remove these files, since we only want them in export archive
-        os.remove(bursts_file_name)
-        return result_zip
+        <span class="c"># remove these files, since we only want them in export archive</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">bursts_file_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result_zip</span>
     
     </div>
-    def _build_workflow_step_info(self, workflow):
-        """
-        For the input workflow, get all workflop steps and return a list with information
-        that can be then exported.
-        """
-        wf_steps = []
-        view_steps = []
-        for wf_step in dao.get_workflow_steps(workflow.id):
+    <span class="k">def</span> <span class="nf">_build_workflow_step_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For the input workflow, get all workflop steps and return a list with information</span>
+<span class="sd">        that can be then exported.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">wf_steps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">view_steps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">wf_step</span> <span class="ow">in</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_workflow_steps</span><span class="p">(</span><span class="n">workflow</span><span class="o">.</span><span class="n">id</span><span class="p">):</span>
             
-            if wf_step.fk_operation is None:
-                ## Avoid exporting old form of View Steps.
-                continue
-            # Get all basic information for this workflow step
-            wf_step_info = WorkflowStepInformation(wf_step.to_dict()[1])
-            # We need to store the gid for the operation since the id might be 
-            # different in case of a project export / import
-            linked_operation = dao.get_operation_by_id(wf_step.fk_operation)
-            wf_step_info.set_operation(linked_operation)
-            # We also need to keep info about algorithm in the form of module
-            # and classname because that id might also be different in case 
-            # of project export / import.
-            linked_algorithm = dao.get_algorithm_by_id(wf_step.fk_algorithm)
-            wf_step_info.set_algorithm(linked_algorithm)
-            wf_steps.append(wf_step_info)
-        for view_step in dao.get_visualization_steps(workflow.id):
-            # Get all basic information for this view step
-            view_step_info = WorkflowViewStepInformation(view_step.to_dict()[1])
-            # We need to store portlet identifier, since portlet id might be different
-            # in project we are importing into.
-            portlet = dao.get_portlet_by_id(view_step.fk_portlet)
-            view_step_info.set_portlet(portlet)
-            # We also need to keep info about algorithm in the form of module
-            # and classname because that id might also be different in case 
-            # of project export / import.
-            linked_algorithm = dao.get_algorithm_by_id(view_step.fk_algorithm)
-            view_step_info.set_algorithm(linked_algorithm)
-            view_steps.append(view_step_info)
-        return wf_steps, view_steps
+            <span class="k">if</span> <span class="n">wf_step</span><span class="o">.</span><span class="n">fk_operation</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="c">## Avoid exporting old form of View Steps.</span>
+                <span class="k">continue</span>
+            <span class="c"># Get all basic information for this workflow step</span>
+            <span class="n">wf_step_info</span> <span class="o">=</span> <span class="n">WorkflowStepInformation</span><span class="p">(</span><span class="n">wf_step</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="c"># We need to store the gid for the operation since the id might be </span>
+            <span class="c"># different in case of a project export / import</span>
+            <span class="n">linked_operation</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operation_by_id</span><span class="p">(</span><span class="n">wf_step</span><span class="o">.</span><span class="n">fk_operation</span><span class="p">)</span>
+            <span class="n">wf_step_info</span><span class="o">.</span><span class="n">set_operation</span><span class="p">(</span><span class="n">linked_operation</span><span class="p">)</span>
+            <span class="c"># We also need to keep info about algorithm in the form of module</span>
+            <span class="c"># and classname because that id might also be different in case </span>
+            <span class="c"># of project export / import.</span>
+            <span class="n">linked_algorithm</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_algorithm_by_id</span><span class="p">(</span><span class="n">wf_step</span><span class="o">.</span><span class="n">fk_algorithm</span><span class="p">)</span>
+            <span class="n">wf_step_info</span><span class="o">.</span><span class="n">set_algorithm</span><span class="p">(</span><span class="n">linked_algorithm</span><span class="p">)</span>
+            <span class="n">wf_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wf_step_info</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">view_step</span> <span class="ow">in</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_visualization_steps</span><span class="p">(</span><span class="n">workflow</span><span class="o">.</span><span class="n">id</span><span class="p">):</span>
+            <span class="c"># Get all basic information for this view step</span>
+            <span class="n">view_step_info</span> <span class="o">=</span> <span class="n">WorkflowViewStepInformation</span><span class="p">(</span><span class="n">view_step</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="c"># We need to store portlet identifier, since portlet id might be different</span>
+            <span class="c"># in project we are importing into.</span>
+            <span class="n">portlet</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_portlet_by_id</span><span class="p">(</span><span class="n">view_step</span><span class="o">.</span><span class="n">fk_portlet</span><span class="p">)</span>
+            <span class="n">view_step_info</span><span class="o">.</span><span class="n">set_portlet</span><span class="p">(</span><span class="n">portlet</span><span class="p">)</span>
+            <span class="c"># We also need to keep info about algorithm in the form of module</span>
+            <span class="c"># and classname because that id might also be different in case </span>
+            <span class="c"># of project export / import.</span>
+            <span class="n">linked_algorithm</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_algorithm_by_id</span><span class="p">(</span><span class="n">view_step</span><span class="o">.</span><span class="n">fk_algorithm</span><span class="p">)</span>
+            <span class="n">view_step_info</span><span class="o">.</span><span class="n">set_algorithm</span><span class="p">(</span><span class="n">linked_algorithm</span><span class="p">)</span>
+            <span class="n">view_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">view_step_info</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">wf_steps</span><span class="p">,</span> <span class="n">view_steps</span>
             
     
-    def _build_burst_export_dict(self, burst, bursts_dict):
-        """
-        Compute needed info and add them to burst_dict for export.
-        """
-        burst_info = BurstInformation(burst.to_dict()[1])
-        workflows = dao.get_workflows_for_burst(burst.id)
-        for workflow in workflows:
-            # Get information for each workflow for this burst
-            workflow_info = WorkflowInformation(workflow.to_dict()[1])
-            wf_steps, view_steps = self._build_workflow_step_info(workflow)
-            workflow_info.set_workflow_steps(wf_steps)
-            workflow_info.set_view_steps(view_steps)
-            burst_info.add_workflow(workflow_info)
-        # Save data in dictionary form so we can just save it as a json later on
-        bursts_dict[burst.id] = burst_info.to_dict()
+    <span class="k">def</span> <span class="nf">_build_burst_export_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">burst</span><span class="p">,</span> <span class="n">bursts_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute needed info and add them to burst_dict for export.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">burst_info</span> <span class="o">=</span> <span class="n">BurstInformation</span><span class="p">(</span><span class="n">burst</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">workflows</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_workflows_for_burst</span><span class="p">(</span><span class="n">burst</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">workflow</span> <span class="ow">in</span> <span class="n">workflows</span><span class="p">:</span>
+            <span class="c"># Get information for each workflow for this burst</span>
+            <span class="n">workflow_info</span> <span class="o">=</span> <span class="n">WorkflowInformation</span><span class="p">(</span><span class="n">workflow</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">wf_steps</span><span class="p">,</span> <span class="n">view_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_workflow_step_info</span><span class="p">(</span><span class="n">workflow</span><span class="p">)</span>
+            <span class="n">workflow_info</span><span class="o">.</span><span class="n">set_workflow_steps</span><span class="p">(</span><span class="n">wf_steps</span><span class="p">)</span>
+            <span class="n">workflow_info</span><span class="o">.</span><span class="n">set_view_steps</span><span class="p">(</span><span class="n">view_steps</span><span class="p">)</span>
+            <span class="n">burst_info</span><span class="o">.</span><span class="n">add_workflow</span><span class="p">(</span><span class="n">workflow_info</span><span class="p">)</span>
+        <span class="c"># Save data in dictionary form so we can just save it as a json later on</span>
+        <span class="n">bursts_dict</span><span class="p">[</span><span class="n">burst</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">burst_info</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
     
     
-    def _build_data_export_folder(self, data):
-        """
-        This method computes the folder where results of an export operation will be 
-        stored for a while (e.g until download is done; or for 1 day)
-        """
-        now = datetime.now()
-        date_str = "%d-%d-%d_%d-%d-%d_%d"%(now.year, now.month, now.day, now.hour,
-                                           now.minute, now.second, now.microsecond)
-        tmp_str = date_str + "@" + data.gid
-        data_export_folder = os.path.join(self.export_folder, tmp_str)
-        files_helper = FilesHelper()
-        files_helper.check_created(data_export_folder)
+    <span class="k">def</span> <span class="nf">_build_data_export_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method computes the folder where results of an export operation will be </span>
+<span class="sd">        stored for a while (e.g until download is done; or for 1 day)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">date_str</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%d</span><span class="s">-</span><span class="si">%d</span><span class="s">-</span><span class="si">%d</span><span class="s">_</span><span class="si">%d</span><span class="s">-</span><span class="si">%d</span><span class="s">-</span><span class="si">%d</span><span class="s">_</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span>
+                                             <span class="n">now</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">microsecond</span><span class="p">)</span>
+        <span class="n">tmp_str</span> <span class="o">=</span> <span class="n">date_str</span> <span class="o">+</span> <span class="s">&quot;@&quot;</span> <span class="o">+</span> <span class="n">data</span><span class="o">.</span><span class="n">gid</span>
+        <span class="n">data_export_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">export_folder</span><span class="p">,</span> <span class="n">tmp_str</span><span class="p">)</span>
+        <span class="n">files_helper</span> <span class="o">=</span> <span class="n">FilesHelper</span><span class="p">()</span>
+        <span class="n">files_helper</span><span class="o">.</span><span class="n">check_created</span><span class="p">(</span><span class="n">data_export_folder</span><span class="p">)</span>
         
-        return data_export_folder        </pre></div>
+        <span class="k">return</span> <span class="n">data_export_folder</span>        </div>
+</pre></div>
 
           </div>
         </div>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../../search.html" method="get">
@@ -345,13 +355,13 @@ DATAYPES_PAGE_SIZE = 100
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

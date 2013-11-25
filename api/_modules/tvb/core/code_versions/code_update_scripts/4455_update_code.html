@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.core.code_versions.code_update_scripts.4455_update_code &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.core.code_versions.code_update_scripts.4455_update_code &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../../index.html" />
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../index.html" />
     <link rel="up" title="Module code" href="../../../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -70,15 +69,24 @@
 <span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
 <span class="c">#</span>
 <span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">tvb.core.services.eventhandler</span> <span class="kn">as</span> <span class="nn">eventhandler</span>
 <span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
 <span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span> <span class="k">as</span> <span class="n">cfg</span>
 <span class="kn">from</span> <span class="nn">tvb.core.utils</span> <span class="kn">import</span> <span class="n">get_matlab_executable</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.event_handlers</span> <span class="kn">import</span> <span class="n">handle_event</span>
 <span class="kn">from</span> <span class="nn">tvb.core.entities.storage</span> <span class="kn">import</span> <span class="n">dao</span>
 
 
@@ -95,15 +103,16 @@
     <span class="n">projects_count</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_all_projects</span><span class="p">(</span><span class="n">is_count</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     
     <span class="k">for</span> <span class="n">page_start</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">projects_count</span><span class="p">,</span> <span class="n">PAGE_SIZE</span><span class="p">):</span>
-        <span class="n">projects_page</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_all_projects</span><span class="p">(</span><span class="n">page_start</span><span class="o">=</span><span class="n">page_start</span><span class="p">,</span> <span class="n">page_end</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">page_start</span> <span class="o">+</span><span class="n">PAGE_SIZE</span><span class="p">,</span> <span class="n">projects_count</span><span class="p">))</span>
+        <span class="n">projects_page</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_all_projects</span><span class="p">(</span><span class="n">page_start</span><span class="o">=</span><span class="n">page_start</span><span class="p">,</span>
+                                             <span class="n">page_end</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">page_start</span> <span class="o">+</span> <span class="n">PAGE_SIZE</span><span class="p">,</span> <span class="n">projects_count</span><span class="p">))</span>
         
         <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">projects_page</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">eventhandler</span><span class="o">.</span><span class="n">handle_event</span><span class="p">(</span><span class="n">EVENT_FILE_IDENTIFIER</span><span class="p">,</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_system_user</span><span class="p">(),</span> <span class="n">project</span><span class="p">)</span>
+                <span class="n">handle_event</span><span class="p">(</span><span class="n">EVENT_FILE_IDENTIFIER</span><span class="p">,</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_system_user</span><span class="p">(),</span> <span class="n">project</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
                 <span class="n">LOGGER</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
                 
-    <span class="n">cfg</span><span class="o">.</span><span class="n">add_entries_to_config_file</span><span class="p">({</span><span class="n">cfg</span><span class="o">.</span><span class="n">KEY_MATLAB_EXECUTABLE</span> <span class="p">:</span> <span class="n">get_matlab_executable</span><span class="p">()})</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">add_entries_to_config_file</span><span class="p">({</span><span class="n">cfg</span><span class="o">.</span><span class="n">KEY_MATLAB_EXECUTABLE</span><span class="p">:</span> <span class="n">get_matlab_executable</span><span class="p">()})</span>
     
     
     </div>
@@ -114,6 +123,9 @@
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../../../search.html" method="get">
@@ -140,13 +152,13 @@
         <li class="right" >
           <a href="../../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

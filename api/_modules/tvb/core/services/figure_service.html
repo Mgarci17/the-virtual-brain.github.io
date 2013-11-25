@@ -1,0 +1,292 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.services.figure_service &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.services.figure_service</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Service layer, for storing/retrieving Resulting Figures in TVB.</span>
+
+<span class="sd">.. moduleauthor:: Ciprian Tomoiaga &lt;ciprian.tomoiaga@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">Image</span>
+<span class="c"># See TVB-985</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">Image</span><span class="p">,</span> <span class="s">&#39;open&#39;</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">Image</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">xml.dom.minidom</span>
+<span class="kn">from</span> <span class="nn">StringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">tvb.core</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities</span> <span class="kn">import</span> <span class="n">model</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.storage</span> <span class="kn">import</span> <span class="n">dao</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.file.files_helper</span> <span class="kn">import</span> <span class="n">FilesHelper</span>
+
+
+
+<div class="viewcode-block" id="FigureService"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.figure_service.FigureService">[docs]</a><span class="k">class</span> <span class="nc">FigureService</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Service layer for Figure entities.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_TYPE_PNG</span> <span class="o">=</span> <span class="s">&quot;png&quot;</span>
+    <span class="n">_TYPE_SVG</span> <span class="o">=</span> <span class="s">&quot;svg&quot;</span>
+
+    <span class="n">_BRANDING_BAR_PNG</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span> <span class="s">&quot;resources&quot;</span><span class="p">,</span> <span class="s">&quot;branding_bar.png&quot;</span><span class="p">)</span>
+    <span class="n">_BRANDING_BAR_SVG</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span> <span class="s">&quot;resources&quot;</span><span class="p">,</span> <span class="s">&quot;branding_bar.svg&quot;</span><span class="p">)</span>
+
+    <span class="n">_DEFAULT_SESSION_NAME</span> <span class="o">=</span> <span class="s">&quot;Default&quot;</span>
+    <span class="n">_DEFAULT_IMAGE_FILE_NAME</span> <span class="o">=</span> <span class="s">&quot;snapshot.&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_helper</span> <span class="o">=</span> <span class="n">FilesHelper</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="FigureService.store_result_figure"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.figure_service.FigureService.store_result_figure">[docs]</a>    <span class="k">def</span> <span class="nf">store_result_figure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">img_type</span><span class="p">,</span> <span class="n">operation_id</span><span class="p">,</span> <span class="n">export_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Store into a file, Result Image and reference in DB.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Generate path where to store image</span>
+        <span class="n">store_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_helper</span><span class="o">.</span><span class="n">get_images_folder</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">operation_id</span><span class="p">)</span>
+        <span class="n">store_path</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_unique_file_name</span><span class="p">(</span><span class="n">store_path</span><span class="p">,</span> <span class="n">FigureService</span><span class="o">.</span><span class="n">_DEFAULT_IMAGE_FILE_NAME</span> <span class="o">+</span> <span class="n">img_type</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">store_path</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">img_type</span> <span class="o">==</span> <span class="n">FigureService</span><span class="o">.</span><span class="n">_TYPE_PNG</span><span class="p">:</span>                         <span class="c"># PNG file from canvas</span>
+            <span class="n">imgData</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">export_data</span><span class="p">)</span>                     <span class="c"># decode the image</span>
+            <span class="n">fakeImgFile</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">imgData</span><span class="p">)</span>                             <span class="c"># PIL.Image only opens from file, so fake one</span>
+            <span class="n">origImg</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fakeImgFile</span><span class="p">)</span>
+            <span class="n">brandingBar</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">FigureService</span><span class="o">.</span><span class="n">_BRANDING_BAR_PNG</span><span class="p">)</span>
+
+            <span class="n">finalSize</span> <span class="o">=</span> <span class="p">(</span><span class="n">origImg</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>                               <span class="c"># original width</span>
+                         <span class="n">origImg</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">brandingBar</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>         <span class="c"># original height + brandingBar height</span>
+            <span class="n">finalImg</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s">&quot;RGBA&quot;</span><span class="p">,</span> <span class="n">finalSize</span><span class="p">)</span>
+
+            <span class="n">finalImg</span><span class="o">.</span><span class="n">paste</span><span class="p">(</span><span class="n">origImg</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>                             <span class="c"># add the original image</span>
+            <span class="n">finalImg</span><span class="o">.</span><span class="n">paste</span><span class="p">(</span><span class="n">brandingBar</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">origImg</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>           <span class="c"># add the branding bar, below the original</span>
+                                                                        <span class="c"># the extra width will be discarded</span>
+
+            <span class="n">finalImg</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">store_path</span><span class="p">)</span>                                   <span class="c"># store to disk</span>
+
+        <span class="k">elif</span> <span class="n">img_type</span> <span class="o">==</span> <span class="n">FigureService</span><span class="o">.</span><span class="n">_TYPE_SVG</span><span class="p">:</span>                                   <span class="c"># SVG file from svg viewer</span>
+            <span class="n">dom</span> <span class="o">=</span> <span class="n">xml</span><span class="o">.</span><span class="n">dom</span><span class="o">.</span><span class="n">minidom</span><span class="o">.</span><span class="n">parseString</span><span class="p">(</span><span class="n">export_data</span><span class="p">)</span>
+            <span class="n">figureSvg</span> <span class="o">=</span> <span class="n">dom</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s">&#39;svg&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>                          <span class="c"># get the original image</span>
+
+            <span class="n">dom</span> <span class="o">=</span> <span class="n">xml</span><span class="o">.</span><span class="n">dom</span><span class="o">.</span><span class="n">minidom</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">FigureService</span><span class="o">.</span><span class="n">_BRANDING_BAR_SVG</span><span class="p">)</span>
+            <span class="n">brandingSvg</span> <span class="o">=</span> <span class="n">dom</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s">&#39;svg&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>                        <span class="c"># get the branding bar</span>
+            <span class="n">brandingSvg</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s">&quot;y&quot;</span><span class="p">,</span> <span class="n">figureSvg</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&quot;height&quot;</span><span class="p">))</span>         <span class="c"># position it below the figure</span>
+
+            <span class="n">finalSvg</span> <span class="o">=</span> <span class="n">dom</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s">&#39;svg&#39;</span><span class="p">)</span>                                     <span class="c"># prepare the final svg</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="n">figureSvg</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&#39;width&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;px&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>               <span class="c"># same width as original figure</span>
+            <span class="n">finalSvg</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s">&quot;width&quot;</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">figureSvg</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&#39;height&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;px&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">))</span>      <span class="c"># increase original height with</span>
+            <span class="n">height</span> <span class="o">+=</span> <span class="nb">float</span><span class="p">(</span><span class="n">brandingSvg</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&#39;height&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;px&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">))</span>   <span class="c"># branding bar&#39;s height</span>
+            <span class="n">finalSvg</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s">&quot;height&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">height</span><span class="p">))</span>
+
+            <span class="n">finalSvg</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">figureSvg</span><span class="p">)</span>                                         <span class="c"># add the image</span>
+            <span class="n">finalSvg</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">brandingSvg</span><span class="p">)</span>                                       <span class="c"># and the branding bar</span>
+
+            <span class="c"># Generate path where to store image</span>
+            <span class="n">dest</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">store_path</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+            <span class="n">finalSvg</span><span class="o">.</span><span class="n">writexml</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>                                                 <span class="c"># store to disk</span>
+            <span class="n">dest</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">operation</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operation_by_id</span><span class="p">(</span><span class="n">operation_id</span><span class="p">)</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="s">&#39;TVB-</span><span class="si">%s</span><span class="s">-</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">operation</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">),</span> <span class="n">operation_id</span><span class="p">)</span>    <span class="c"># e.g. TVB-Algo-Name-352</span>
+
+        <span class="c"># Store entity into DB</span>
+        <span class="n">entity</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">ResultFigure</span><span class="p">(</span><span class="n">operation_id</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">FigureService</span><span class="o">.</span><span class="n">_DEFAULT_SESSION_NAME</span><span class="p">,</span>
+                                    <span class="n">file_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">img_type</span><span class="p">)</span>
+        <span class="n">entity</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+
+        <span class="c"># Load instance from DB to have lazy fields loaded</span>
+        <span class="n">figure</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">load_figure</span><span class="p">(</span><span class="n">entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="c"># Write image meta data to disk  </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_helper</span><span class="o">.</span><span class="n">write_image_metadata</span><span class="p">(</span><span class="n">figure</span><span class="p">)</span>
+
+        <span class="c"># Force writing operation meta data on disk. </span>
+        <span class="c"># This is important later for operation import</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_helper</span><span class="o">.</span><span class="n">write_operation_metadata</span><span class="p">(</span><span class="n">operation</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="FigureService.retrieve_result_figures"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.figure_service.FigureService.retrieve_result_figures">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve_result_figures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">selected_session_name</span><span class="o">=</span><span class="s">&#39;all_sessions&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve from DB all the stored Displayer previews that belongs to the specified session. The</span>
+<span class="sd">        previews are for current user and project; grouped by session.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span><span class="p">,</span> <span class="n">previews_info</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_previews</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">selected_session_name</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">figure</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="n">name</span><span class="p">]:</span>
+                <span class="n">figures_folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_helper</span><span class="o">.</span><span class="n">get_images_folder</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">figure</span><span class="o">.</span><span class="n">operation</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="n">figure_full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">figures_folder</span><span class="p">,</span> <span class="n">figure</span><span class="o">.</span><span class="n">file_path</span><span class="p">)</span>
+                <span class="c"># Compute the path </span>
+                <span class="n">figure</span><span class="o">.</span><span class="n">file_path</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">path2url_part</span><span class="p">(</span><span class="n">figure_full_path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">previews_info</span>
+
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="FigureService.load_figure"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.figure_service.FigureService.load_figure">[docs]</a>    <span class="k">def</span> <span class="nf">load_figure</span><span class="p">(</span><span class="n">figure_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads a stored figure by its id.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dao</span><span class="o">.</span><span class="n">load_figure</span><span class="p">(</span><span class="n">figure_id</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="FigureService.edit_result_figure"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.figure_service.FigureService.edit_result_figure">[docs]</a>    <span class="k">def</span> <span class="nf">edit_result_figure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve and edit a previously stored figure.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">figure</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">load_figure</span><span class="p">(</span><span class="n">figure_id</span><span class="p">)</span>
+        <span class="n">figure</span><span class="o">.</span><span class="n">session_name</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;session_name&#39;</span><span class="p">]</span>
+        <span class="n">figure</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+        <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">figure</span><span class="p">)</span>
+
+        <span class="c"># Load instance from DB to have lazy fields loaded.</span>
+        <span class="n">figure</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">load_figure</span><span class="p">(</span><span class="n">figure_id</span><span class="p">)</span>
+        <span class="c"># Store figure meta data in an XML attached to the image.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_helper</span><span class="o">.</span><span class="n">write_image_metadata</span><span class="p">(</span><span class="n">figure</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="FigureService.remove_result_figure"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.figure_service.FigureService.remove_result_figure">[docs]</a>    <span class="k">def</span> <span class="nf">remove_result_figure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove figure from DB and file storage.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">figure</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">load_figure</span><span class="p">(</span><span class="n">figure_id</span><span class="p">)</span>
+
+        <span class="c"># Delete all figure related files from disk.</span>
+        <span class="n">figures_folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_helper</span><span class="o">.</span><span class="n">get_images_folder</span><span class="p">(</span><span class="n">figure</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">figure</span><span class="o">.</span><span class="n">operation</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">path2figure</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">figures_folder</span><span class="p">,</span> <span class="n">figure</span><span class="o">.</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path2figure</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">path2figure</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_helper</span><span class="o">.</span><span class="n">remove_image_metadata</span><span class="p">(</span><span class="n">figure</span><span class="p">)</span>
+
+        <span class="c"># Remove figure reference from DB.</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">remove_entity</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">ResultFigure</span><span class="p">,</span> <span class="n">figure_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+        
+        
+        </div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

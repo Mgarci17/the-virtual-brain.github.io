@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.simulator.integrators &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.simulator.integrators &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../index.html" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -70,6 +69,15 @@
 <span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
 <span class="c">#</span>
 <span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Defines a set of integration methods for both deterministic and stochastic</span>
@@ -79,6 +87,8 @@
 <span class="sd">    [0.244140625, 0.1220703125, 0.06103515625, 0.048828125, 0.0244140625, 0.01220703125, 0.009765625, 0.006103515625, 0.0048828125]</span>
 
 <span class="sd">will be consistent with Monitor periods corresponding to any of [4096, 2048, 1024, 512, 256, 128] Hz</span>
+
+<span class="sd"># TODO: error analysis</span>
 
 <span class="sd">.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;</span>
 <span class="sd">.. moduleauthor:: Marmaduke Woodman &lt;mw@eml.cc&gt;</span>
@@ -186,17 +196,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_kernel</span> <span class="o">=</span> <span class="n">kernel</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">n_inpr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="integrator_device_info.n_inpr"><a class="viewcode-back" href="../../../tvb.simulator.integrators.html#tvb.simulator.integrators.integrator_device_info.n_inpr">[docs]</a>    <span class="k">def</span> <span class="nf">n_inpr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pars</span><span class="p">)</span>
-
+</div>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">inpr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="integrator_device_info.inpr"><a class="viewcode-back" href="../../../tvb.simulator.integrators.html#tvb.simulator.integrators.integrator_device_info.inpr">[docs]</a>    <span class="k">def</span> <span class="nf">inpr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
-
+</div>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="integrator_device_info.kernel"><a class="viewcode-back" href="../../../tvb.simulator.integrators.html#tvb.simulator.integrators.integrator_device_info.kernel">[docs]</a>    <span class="k">def</span> <span class="nf">kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kernel</span>
-
+</div>
     <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inst</span><span class="p">,</span> <span class="n">ownr</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">inst</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="n">inst</span>
@@ -210,32 +220,32 @@
 
 </div>
 <div class="viewcode-block" id="IntegratorStochastic"><a class="viewcode-back" href="../../../tvb.simulator.integrators.html#tvb.simulator.integrators.IntegratorStochastic">[docs]</a><span class="k">class</span> <span class="nc">IntegratorStochastic</span><span class="p">(</span><span class="n">Integrator</span><span class="p">):</span>
-    <span class="s">r&quot;&quot;&quot;</span>
-<span class="s">    The IntegratorStochastic class is a base class for the stochastic</span>
-<span class="s">    integration methods. It derives from the Integrator abstract base class.</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    The IntegratorStochastic class is a base class for the stochastic</span>
+<span class="sd">    integration methods. It derives from the Integrator abstract base class.</span>
 
-<span class="s">    We consider a stochastic differential equation has the generic form:</span>
+<span class="sd">    We consider a stochastic differential equation has the generic form:</span>
 
-<span class="s">        .. math::</span>
-<span class="s">            \dot{X}_i(t) = dX_i(\vec{X}) + g_i(\vec{X})  \xi(t)</span>
+<span class="sd">        .. math::</span>
+<span class="sd">            \dot{X}_i(t) = dX_i(\vec{X}) + g_i(\vec{X})  \xi(t)</span>
 
-<span class="s">    where we assume that the stochastic process :math:`\xi` is a Gaussian</span>
-<span class="s">    forcing. In the deterministic case, :math:`g(X)` would be zero. The full</span>
-<span class="s">    algorithm, for one external stochastic forcing which is additive, is:</span>
+<span class="sd">    where we assume that the stochastic process :math:`\xi` is a Gaussian</span>
+<span class="sd">    forcing. In the deterministic case, :math:`g(X)` would be zero. The full</span>
+<span class="sd">    algorithm, for one external stochastic forcing which is additive, is:</span>
 
-<span class="s">        .. math::</span>
-<span class="s">            X_i(t) = X_i(0) + g_i(X) Z_1(t) + dX_i t + Z_2(t) dX_{i,k} g_k(X) +</span>
-<span class="s">                    0.5 dX_{i,jk} g_j(X) g_k(X) Z_3(t) + 0.5 t^2 dX_{i,j} dX_j</span>
+<span class="sd">        .. math::</span>
+<span class="sd">            X_i(t) = X_i(0) + g_i(X) Z_1(t) + dX_i t + Z_2(t) dX_{i,k} g_k(X) +</span>
+<span class="sd">                    0.5 dX_{i,jk} g_j(X) g_k(X) Z_3(t) + 0.5 t^2 dX_{i,j} dX_j</span>
 
-<span class="s">    where :math:`Z_1`, :math:`Z_2` and :math:`Z_3` are Gaussian variables,</span>
-<span class="s">    assuming the Einstein notation and defining:</span>
+<span class="sd">    where :math:`Z_1`, :math:`Z_2` and :math:`Z_3` are Gaussian variables,</span>
+<span class="sd">    assuming the Einstein notation and defining:</span>
 
-<span class="s">        .. math::</span>
-<span class="s">            dX_{i,j} = \frac{\partial dX_i}{\partial X_j}</span>
+<span class="sd">        .. math::</span>
+<span class="sd">            dX_{i,j} = \frac{\partial dX_i}{\partial X_j}</span>
 
-<span class="s">    .. automethod:: IntegratorStochastic.__init__</span>
+<span class="sd">    .. automethod:: IntegratorStochastic.__init__</span>
 
-<span class="s">    &quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">noise</span> <span class="o">=</span> <span class="n">tvb</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">Noise</span><span class="p">(</span>
         <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Integration Noise&quot;</span><span class="p">,</span>
@@ -290,17 +300,17 @@
 
 </div>
 <div class="viewcode-block" id="HeunDeterministic.scheme"><a class="viewcode-back" href="../../../tvb.simulator.integrators.html#tvb.simulator.integrators.HeunDeterministic.scheme">[docs]</a>    <span class="k">def</span> <span class="nf">scheme</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">dfun</span><span class="p">,</span> <span class="n">coupling</span><span class="p">,</span> <span class="n">local_coupling</span><span class="p">,</span> <span class="n">stimulus</span><span class="p">):</span>
-        <span class="s">r&quot;&quot;&quot;</span>
-<span class="s">        From [1]_:</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        From [1]_:</span>
 
-<span class="s">        .. math::</span>
-<span class="s">            X_{n+1} &amp;= X_n + dt (dX(t_n, X_n) + </span>
-<span class="s">                                 dX(t_{n+1}, \tilde{X}_{n+1})) / 2 \\</span>
-<span class="s">            \tilde{X}_{n+1} &amp;= X_n + dt dX(t_n, X_n)</span>
+<span class="sd">        .. math::</span>
+<span class="sd">            X_{n+1} &amp;= X_n + dt (dX(t_n, X_n) + </span>
+<span class="sd">                                 dX(t_{n+1}, \tilde{X}_{n+1})) / 2 \\</span>
+<span class="sd">            \tilde{X}_{n+1} &amp;= X_n + dt dX(t_n, X_n)</span>
 
-<span class="s">        cf. Equation 1.11, page 283.</span>
+<span class="sd">        cf. Equation 1.11, page 283.</span>
 
-<span class="s">        &quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c">#import pdb; pdb.set_trace()</span>
         <span class="n">inter</span> <span class="o">=</span> <span class="n">X</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">*</span> <span class="p">(</span><span class="n">dfun</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">coupling</span><span class="p">,</span> <span class="n">local_coupling</span><span class="p">)</span>  <span class="o">+</span> <span class="n">stimulus</span><span class="p">)</span>
 
@@ -373,10 +383,16 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">noise</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">noise_gfun</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">gfun</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">noise_gfun</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="ow">and</span> <span class="n">noise</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">noise_gfun</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s">&quot;Got shape </span><span class="si">%s</span><span class="s"> for noise but require </span><span class="si">%s</span><span class="s">.&quot;</span>
+                      <span class="s">&quot; You need to reconfigure noise after you have changed your model.&quot;</span><span class="o">%</span><span class="p">(</span>
+                       <span class="n">noise_gfun</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="p">(</span><span class="n">noise</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">noise</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="c">#import pdb; pdb.set_trace()</span>
         <span class="n">inter</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">*</span> <span class="n">dfun</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">coupling</span><span class="p">,</span> <span class="n">local_coupling</span><span class="p">)</span> <span class="o">+</span>
-                 <span class="bp">self</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">gfun</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="n">noise</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">*</span> <span class="n">stimulus</span><span class="p">)</span>
+                 <span class="n">noise_gfun</span> <span class="o">*</span> <span class="n">noise</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">*</span> <span class="n">stimulus</span><span class="p">)</span>
 
         <span class="n">dX</span> <span class="o">=</span> <span class="p">(</span><span class="n">dfun</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">coupling</span><span class="p">,</span> <span class="n">local_coupling</span><span class="p">)</span> <span class="o">+</span> 
               <span class="n">dfun</span><span class="p">(</span><span class="n">inter</span><span class="p">,</span> <span class="n">coupling</span><span class="p">,</span> <span class="n">local_coupling</span><span class="p">))</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">/</span> <span class="mf">2.0</span>
@@ -438,14 +454,14 @@
 
 </div>
 <div class="viewcode-block" id="EulerDeterministic.scheme"><a class="viewcode-back" href="../../../tvb.simulator.integrators.html#tvb.simulator.integrators.EulerDeterministic.scheme">[docs]</a>    <span class="k">def</span> <span class="nf">scheme</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">dfun</span><span class="p">,</span> <span class="n">coupling</span><span class="p">,</span> <span class="n">local_coupling</span><span class="p">,</span> <span class="n">stimulus</span><span class="p">):</span>
-        <span class="s">r&quot;&quot;&quot;</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
 
-<span class="s">        .. math::</span>
-<span class="s">            X_{n+1} = X_n + dt \, dX(t_n, X_n)</span>
+<span class="sd">        .. math::</span>
+<span class="sd">            X_{n+1} = X_n + dt \, dX(t_n, X_n)</span>
 
-<span class="s">        cf. Equations 1.3 and 1.13, pages 305 and 306 respectively.</span>
+<span class="sd">        cf. Equations 1.3 and 1.13, pages 305 and 306 respectively.</span>
 
-<span class="s">        &quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">dX</span> <span class="o">=</span> <span class="n">dfun</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">coupling</span><span class="p">,</span> <span class="n">local_coupling</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
 
@@ -492,25 +508,31 @@
 
 </div>
 <div class="viewcode-block" id="EulerStochastic.scheme"><a class="viewcode-back" href="../../../tvb.simulator.integrators.html#tvb.simulator.integrators.EulerStochastic.scheme">[docs]</a>    <span class="k">def</span> <span class="nf">scheme</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">dfun</span><span class="p">,</span> <span class="n">coupling</span><span class="p">,</span> <span class="n">local_coupling</span><span class="p">,</span> <span class="n">stimulus</span><span class="p">):</span>
-        <span class="s">r&quot;&quot;&quot;</span>
-<span class="s">        Ones of the simplest time discrete approximations of an Ito process is</span>
-<span class="s">        Euler-Maruyama approximation, that satisfies the scalar stochastic</span>
-<span class="s">        differential equation (From [1]_, page 305):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Ones of the simplest time discrete approximations of an Ito process is</span>
+<span class="sd">        Euler-Maruyama approximation, that satisfies the scalar stochastic</span>
+<span class="sd">        differential equation (From [1]_, page 305):</span>
 
-<span class="s">        .. math::</span>
-<span class="s">            X_{n+1} = X_n + dX(t_n, X_n) \, dt + g(X_n) Z_1</span>
+<span class="sd">        .. math::</span>
+<span class="sd">            X_{n+1} = X_n + dX(t_n, X_n) \, dt + g(X_n) Z_1</span>
 
-<span class="s">        in our case, :math:`noise = Z_1`</span>
+<span class="sd">        in our case, :math:`noise = Z_1`</span>
 
-<span class="s">        cf. Equations 1.3 and 1.13, pages 305 and 306 respectively.</span>
+<span class="sd">        cf. Equations 1.3 and 1.13, pages 305 and 306 respectively.</span>
 
-<span class="s">        &quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">noise</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
         <span class="n">dX</span> <span class="o">=</span> <span class="n">dfun</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">coupling</span><span class="p">,</span> <span class="n">local_coupling</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> 
+        <span class="n">noise_gfun</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">gfun</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">noise_gfun</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="ow">and</span> <span class="n">noise</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">noise_gfun</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s">&quot;Got shape </span><span class="si">%s</span><span class="s"> for noise but require </span><span class="si">%s</span><span class="s">.&quot;</span>
+                      <span class="s">&quot; You need to reconfigure noise after you have changed your model.&quot;</span><span class="o">%</span><span class="p">(</span>
+                       <span class="n">noise_gfun</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="p">(</span><span class="n">noise</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">noise</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">X</span> <span class="o">+</span> <span class="n">dX</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">gfun</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="n">noise</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">*</span> <span class="n">stimulus</span>
+        <span class="k">return</span> <span class="n">X</span> <span class="o">+</span> <span class="n">dX</span> <span class="o">+</span> <span class="n">noise_gfun</span> <span class="o">*</span> <span class="n">noise</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">*</span> <span class="n">stimulus</span>
 </div>
     <span class="n">device_info</span> <span class="o">=</span> <span class="n">integrator_device_info</span><span class="p">(</span>
         <span class="n">pars</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;dt&#39;</span><span class="p">],</span>
@@ -553,24 +575,24 @@
 
 </div>
 <div class="viewcode-block" id="RungeKutta4thOrderDeterministic.scheme"><a class="viewcode-back" href="../../../tvb.simulator.integrators.html#tvb.simulator.integrators.RungeKutta4thOrderDeterministic.scheme">[docs]</a>    <span class="k">def</span> <span class="nf">scheme</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">dfun</span><span class="p">,</span> <span class="n">coupling</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">local_coupling</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">stimulus</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
-        <span class="s">r&quot;&quot;&quot;</span>
-<span class="s">        The classical 4th order Runge-Kutta method is an explicit method.</span>
-<span class="s">        The 4th order Runge-Kutta methods are the most commonly used,</span>
-<span class="s">        representing a good compromise between accuracy and computational</span>
-<span class="s">        effort.</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The classical 4th order Runge-Kutta method is an explicit method.</span>
+<span class="sd">        The 4th order Runge-Kutta methods are the most commonly used,</span>
+<span class="sd">        representing a good compromise between accuracy and computational</span>
+<span class="sd">        effort.</span>
 
-<span class="s">        From [1]_, pages 289-290, cf. Equation 2.8</span>
+<span class="sd">        From [1]_, pages 289-290, cf. Equation 2.8</span>
 
-<span class="s">        .. math::</span>
-<span class="s">            y_{n+1} &amp;= y_n + 1/6 h (k_1 + 2 k_2 + 2 k_3 + k_4) \\</span>
-<span class="s">            t_{n+1} &amp;= t_n + h \\</span>
-<span class="s">            k_1 &amp;= f(t_n, y_n) \\</span>
-<span class="s">            k_2 &amp;= f(t_n + h/2, y_n + h k_1 / 2) \\</span>
-<span class="s">            k_3 &amp;= f(t_n + h/2, y_n + h k_2 / 2) \\</span>
-<span class="s">            k_4 &amp;= f(t_n + h, y_n + h k_3)</span>
+<span class="sd">        .. math::</span>
+<span class="sd">            y_{n+1} &amp;= y_n + 1/6 h (k_1 + 2 k_2 + 2 k_3 + k_4) \\</span>
+<span class="sd">            t_{n+1} &amp;= t_n + h \\</span>
+<span class="sd">            k_1 &amp;= f(t_n, y_n) \\</span>
+<span class="sd">            k_2 &amp;= f(t_n + h/2, y_n + h k_1 / 2) \\</span>
+<span class="sd">            k_3 &amp;= f(t_n + h/2, y_n + h k_2 / 2) \\</span>
+<span class="sd">            k_4 &amp;= f(t_n + h, y_n + h k_3)</span>
 
 
-<span class="s">        &quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">you_have_been_warned</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">coupling</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">):</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">: Does NOT support coupling. Just to check local dynamics&quot;</span>
@@ -598,6 +620,9 @@
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../search.html" method="get">
@@ -624,13 +649,13 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

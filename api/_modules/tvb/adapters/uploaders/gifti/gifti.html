@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tvb.adapters.uploaders.gifti.gifti &mdash; The Virtual Brain 1.0.4 documentation</title>
+    <title>tvb.adapters.uploaders.gifti.gifti &mdash; The Virtual Brain 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../../',
-        VERSION:     '1.0.4',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +24,8 @@
     <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../../index.html" />
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../index.html" />
     <link rel="up" title="Module code" href="../../../../index.html" /> 
   </head>
   <body>
@@ -39,7 +38,7 @@
         <li class="right" >
           <a href="../../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -301,9 +300,9 @@
         <span class="n">array_node</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s">&#39;DataType&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">GiftiDataType</span><span class="o">.</span><span class="n">datatypes_inv</span><span class="p">[</span><span class="n">darray</span><span class="o">.</span><span class="n">datatype</span><span class="p">]))</span>
         <span class="n">array_node</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s">&#39;ArrayIndexingOrder&#39;</span><span class="p">,</span> <span class="s">&quot;RowMajorOrder&quot;</span><span class="p">)</span>
         <span class="n">array_node</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s">&#39;Dimensionality&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">darray</span><span class="o">.</span><span class="n">dims</span><span class="p">)))</span>
-        <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">darray</span><span class="o">.</span><span class="n">dims</span><span class="p">)):</span>
-            <span class="n">dim_name</span> <span class="o">=</span> <span class="s">&#39;Dim&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
-            <span class="n">array_node</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">dim_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">darray</span><span class="o">.</span><span class="n">dims</span><span class="p">[</span><span class="n">dim</span><span class="p">]))</span>
+        <span class="k">for</span> <span class="n">dim_idx</span><span class="p">,</span> <span class="n">dimension</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">darray</span><span class="o">.</span><span class="n">dims</span><span class="p">):</span>
+            <span class="n">dim_name</span> <span class="o">=</span> <span class="s">&#39;Dim&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dim_idx</span><span class="p">)</span>
+            <span class="n">array_node</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">dim_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">dimension</span><span class="p">))</span>
         <span class="n">array_node</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s">&quot;Encoding&quot;</span><span class="p">,</span> <span class="s">&quot;ASCII&quot;</span><span class="p">)</span>
         <span class="n">array_node</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s">&#39;endian&#39;</span><span class="p">,</span> <span class="s">&#39;LittleEndian&#39;</span><span class="p">)</span>
         <span class="n">array_node</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s">&#39;ExternalFileName&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
@@ -354,6 +353,9 @@
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../../../../../search.html" method="get">
@@ -380,13 +382,13 @@
         <li class="right" >
           <a href="../../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
           <li><a href="../../../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>
