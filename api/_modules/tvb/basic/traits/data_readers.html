@@ -1,0 +1,314 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.basic.traits.data_readers &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.basic.traits.data_readers</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">H5PY_SUPPORT</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="kn">import</span> <span class="nn">h5py</span> <span class="kn">as</span> <span class="nn">hdf5</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+    <span class="n">H5PY_SUPPORT</span> <span class="o">=</span> <span class="bp">False</span>
+    
+<span class="kn">import</span> <span class="nn">tvb.simulator</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">io</span> <span class="k">as</span> <span class="n">scipy_io</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.traits.util</span> <span class="kn">import</span> <span class="n">read_list_data</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span>
+
+
+<span class="c">### As current reader will be used in library-mode, all paths are relative to simulator.</span>
+<span class="n">ROOT_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">tvb</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">__file__</span><span class="p">),</span> <span class="s">&#39;files&#39;</span><span class="p">)</span>
+
+
+
+<div class="viewcode-block" id="File"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.data_readers.File">[docs]</a><span class="k">class</span> <span class="nc">File</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Will be used for reading default values, when library-profile is selected.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">KEY_PARAMETERS</span> <span class="o">=</span> <span class="s">&quot;parameters&quot;</span>
+    <span class="n">KEY_METHOD</span> <span class="o">=</span> <span class="s">&quot;method_name&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder_path</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">folder_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ROOT_PATH</span><span class="p">,</span> <span class="n">folder_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">file_name</span>
+        <span class="c">### Map of references to be used for further reload of default from a different file.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">references</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="File.read_data"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.data_readers.File.read_data">[docs]</a>    <span class="k">def</span> <span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">matlab_data_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                  <span class="n">skiprows</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">lazy_load</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read from given file and sub-file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">TVBSettings</span><span class="o">.</span><span class="n">TRAITS_CONFIGURATION</span><span class="o">.</span><span class="n">use_storage</span><span class="p">:</span>
+            <span class="c"># We want to avoid reading files when no library-mode is used.</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="n">field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">references</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_PARAMETERS</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;file_name&#39;</span><span class="p">:</span> <span class="n">file_name</span><span class="p">,</span>
+                                                            <span class="s">&#39;matlab_data_name&#39;</span><span class="p">:</span> <span class="n">matlab_data_name</span><span class="p">,</span>
+                                                            <span class="s">&#39;dtype&#39;</span><span class="p">:</span> <span class="n">dtype</span><span class="p">,</span>
+                                                            <span class="s">&#39;skiprows&#39;</span><span class="p">:</span> <span class="n">skiprows</span><span class="p">,</span>
+                                                            <span class="s">&#39;usecols&#39;</span><span class="p">:</span> <span class="n">usecols</span><span class="p">,</span>
+                                                            <span class="s">&#39;field&#39;</span> <span class="p">:</span> <span class="n">field</span><span class="p">},</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">KEY_METHOD</span><span class="p">:</span> <span class="s">&#39;read_data&#39;</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">lazy_load</span><span class="p">:</span>
+            <span class="c">## Do not read now, just keep the reference. It will be used on &quot;reload&quot; later.</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        
+        <span class="c"># If we are reloading from a h5py we will need to skip check for file_name</span>
+        <span class="c"># since a &#39;non&#39; h5py read will always pass a filename, which will overwrite</span>
+        <span class="c"># self.file_name (which is the h5py file in this reload case)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.h5&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">H5PY_SUPPORT</span><span class="p">:</span>
+                <span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_h5py</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;You need h5py properly installed in order to load from a HDF5 file.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span>
+        <span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_path</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Starting to read from: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">full_path</span><span class="p">))</span>
+
+        <span class="c"># Try to read NumPy</span>
+        <span class="k">if</span> <span class="n">full_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.txt&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">full_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.txt.bz2&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">read_list_data</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="n">skiprows</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="n">usecols</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">full_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.npz&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span>
+
+        <span class="c"># Try to read Matlab format</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_matlab</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">matlab_data_name</span><span class="p">)</span>
+
+    </div>
+    <span class="k">def</span> <span class="nf">_read_h5py</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+        <span class="n">hfd5_file</span> <span class="o">=</span> <span class="n">hdf5</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">,</span> <span class="n">libver</span><span class="o">=</span><span class="s">&#39;latest&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">hfd5_file</span><span class="p">[</span><span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">field</span><span class="p">][()]</span>
+    
+
+    <span class="k">def</span> <span class="nf">_read_matlab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">matlab_data_name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read array from Matlab file. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&quot;.mtx&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">scipy_io</span><span class="o">.</span><span class="n">mmread</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&quot;.mat&quot;</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">matlab_data</span> <span class="o">=</span> <span class="n">scipy_io</span><span class="o">.</span><span class="n">matlab</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Could not read Matlab content from: &quot;</span> <span class="o">+</span> <span class="n">path</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Matlab files must be saved in a format &lt;= -V7...&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">exc</span>
+            <span class="k">return</span> <span class="n">matlab_data</span><span class="p">[</span><span class="n">matlab_data_name</span><span class="p">]</span>
+
+
+    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+
+<div class="viewcode-block" id="File.reload"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.data_readers.File.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_instance</span><span class="p">,</span> <span class="n">folder_path</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Re-read a file, and populate attributes on target_instance, </span>
+<span class="sd">        according with previously stored map or references.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span>
+        <span class="n">new_default</span> <span class="o">=</span> <span class="n">current_class</span><span class="p">(</span><span class="n">folder_path</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+        <span class="n">new_default</span><span class="o">.</span><span class="n">references</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">references</span>
+
+        <span class="k">for</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">references</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target_instance</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
+                <span class="c">## Skip attribute references which might come from subclasses.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Skipped attribute reference: &quot;</span> <span class="o">+</span> <span class="n">field_name</span> <span class="o">+</span> <span class="s">&quot; on instance of &quot;</span>
+                                  <span class="o">+</span> <span class="n">target_instance</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">previous_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">references</span><span class="p">[</span><span class="n">field_name</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_PARAMETERS</span><span class="p">]</span>
+                <span class="n">method_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">references</span><span class="p">[</span><span class="n">field_name</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_METHOD</span><span class="p">]</span>
+                <span class="n">method_call</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">new_default</span><span class="p">,</span> <span class="n">method_name</span><span class="p">)</span>
+                <span class="n">new_value</span> <span class="o">=</span> <span class="n">method_call</span><span class="p">(</span><span class="o">**</span><span class="n">previous_parameters</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">target_instance</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="n">target_instance</span><span class="p">):</span>
+                    <span class="n">target_instance</span><span class="o">.</span><span class="n">trait</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">new_value</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Could not read data for field &quot;</span> <span class="o">+</span> <span class="n">field_name</span> <span class="o">+</span> <span class="s">&quot; on instance of class &quot;</span>
+                                    <span class="o">+</span> <span class="n">target_instance</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">excep</span><span class="p">))</span>
+
+        <span class="n">target_instance</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="n">new_default</span>
+
+
+</div></div>
+<div class="viewcode-block" id="Table"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.data_readers.Table">[docs]</a><span class="k">class</span> <span class="nc">Table</span><span class="p">(</span><span class="n">File</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A lookup table reload capable map of references.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder_path</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Table</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">folder_path</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loaded_table</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">loaded_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Table.read_dimension"><a class="viewcode-back" href="../../../../tvb.basic.traits.html#tvb.basic.traits.data_readers.Table.read_dimension">[docs]</a>    <span class="k">def</span> <span class="nf">read_dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dimension_1</span><span class="p">,</span> <span class="n">dimension_2</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method will more or less replace in end-usage the method from superclass &#39;read_data&#39;.</span>
+<span class="sd">        On a table, this is the method calls we want to persist in references.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">TVBSettings</span><span class="o">.</span><span class="n">TRAITS_CONFIGURATION</span><span class="o">.</span><span class="n">use_storage</span><span class="p">:</span>
+            <span class="c"># We want to avoid reading files when no library-mode is used.</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="n">field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">references</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_PARAMETERS</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;dimension_1&#39;</span><span class="p">:</span> <span class="n">dimension_1</span><span class="p">,</span>
+                                                            <span class="s">&#39;dimension_2&#39;</span><span class="p">:</span> <span class="n">dimension_2</span><span class="p">},</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">KEY_METHOD</span><span class="p">:</span> <span class="s">&#39;read_dimension&#39;</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_table</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+
+        <span class="k">if</span> <span class="n">dimension_2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loaded_table</span><span class="p">[</span><span class="n">dimension_1</span><span class="p">][</span><span class="n">dimension_2</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loaded_table</span><span class="p">[</span><span class="n">dimension_1</span><span class="p">])</span>
+    
+        </div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

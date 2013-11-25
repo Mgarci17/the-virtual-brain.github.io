@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>code_versions Package &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="index.html" />
+    <link rel="up" title="core Package" href="tvb.core.html" />
+    <link rel="next" title="code_update_scripts Package" href="tvb.core.code_versions.code_update_scripts.html" />
+    <link rel="prev" title="adapters Package" href="tvb.core.adapters.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.core.code_versions.code_update_scripts.html" title="code_update_scripts Package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tvb.core.adapters.html" title="adapters Package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">tvb</span></tt> Package</a> &raquo;</li>
+          <li><a href="tvb.core.html" accesskey="U"><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">core</span></tt> Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-tvb.core.code_versions">
+<span id="code-versions-package"></span><h1><tt class="xref py py-mod docutils literal"><span class="pre">code_versions</span></tt> Package<a class="headerlink" href="#module-tvb.core.code_versions" title="Permalink to this headline">¶</a></h1>
+<p>This package contains update scripts to account for changes between different TVB releases that
+don&#8217;t fall in either a database change or file storage change categories.</p>
+<p>E.G. Adding new events on create project hookpoint.</p>
+<div class="section" id="module-tvb.core.code_versions.base_classes">
+<span id="base-classes-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">base_classes</span></tt> Module<a class="headerlink" href="#module-tvb.core.code_versions.base_classes" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="tvb.core.code_versions.base_classes.InvalidUpgradeScriptException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.code_versions.base_classes.</tt><tt class="descname">InvalidUpgradeScriptException</tt><big>(</big><em>message</em><big>)</big><a class="reference internal" href="_modules/tvb/core/code_versions/base_classes.html#InvalidUpgradeScriptException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.code_versions.base_classes.InvalidUpgradeScriptException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="tvb.basic.traits.html#tvb.basic.traits.exceptions.TVBException" title="tvb.basic.traits.exceptions.TVBException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.basic.traits.exceptions.TVBException</span></tt></a></p>
+<p>Raised in case an update script is present but does not comply to TVB conventions.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.core.code_versions.base_classes.UpdateManager">
+<em class="property">class </em><tt class="descclassname">tvb.core.code_versions.base_classes.</tt><tt class="descname">UpdateManager</tt><big>(</big><em>module_scripts</em>, <em>check_version</em>, <em>current_version</em><big>)</big><a class="reference internal" href="_modules/tvb/core/code_versions/base_classes.html#UpdateManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.code_versions.base_classes.UpdateManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>An update manager pattern.
+Goes through all the scripts, and based on the current version executed the one in need</p>
+<dl class="method">
+<dt id="tvb.core.code_versions.base_classes.UpdateManager.get_update_scripts">
+<tt class="descname">get_update_scripts</tt><big>(</big><em>checked_version=None</em><big>)</big><a class="reference internal" href="_modules/tvb/core/code_versions/base_classes.html#UpdateManager.get_update_scripts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.code_versions.base_classes.UpdateManager.get_update_scripts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all update scripts that need to be executed in order to bring code up to date.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.code_versions.base_classes.UpdateManager.log">
+<tt class="descname">log</tt><em class="property"> = &lt;logging.Logger object at 0xff98410&gt;</em><a class="headerlink" href="#tvb.core.code_versions.base_classes.UpdateManager.log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.code_versions.base_classes.UpdateManager.run_update_script">
+<tt class="descname">run_update_script</tt><big>(</big><em>script_name</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/core/code_versions/base_classes.html#UpdateManager.run_update_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.code_versions.base_classes.UpdateManager.run_update_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run one script file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.code_versions.base_classes.UpdateManager.update_all">
+<tt class="descname">update_all</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/code_versions/base_classes.html#UpdateManager.update_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.code_versions.base_classes.UpdateManager.update_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upgrade the code to current version.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.core.code_versions.code_update_manager">
+<span id="code-update-manager-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">code_update_manager</span></tt> Module<a class="headerlink" href="#module-tvb.core.code_versions.code_update_manager" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tvb.core.code_versions.code_update_manager.CodeUpdateManager">
+<em class="property">class </em><tt class="descclassname">tvb.core.code_versions.code_update_manager.</tt><tt class="descname">CodeUpdateManager</tt><a class="reference internal" href="_modules/tvb/core/code_versions/code_update_manager.html#CodeUpdateManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.code_versions.code_update_manager.CodeUpdateManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.code_versions.base_classes.UpdateManager" title="tvb.core.code_versions.base_classes.UpdateManager"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.code_versions.base_classes.UpdateManager</span></tt></a></p>
+<p>A manager that goes through all the scripts that are newer than the version number 
+written in the .tvb.basic.config.setting configuration file.</p>
+<dl class="method">
+<dt id="tvb.core.code_versions.code_update_manager.CodeUpdateManager.run_update_script">
+<tt class="descname">run_update_script</tt><big>(</big><em>script_name</em><big>)</big><a class="reference internal" href="_modules/tvb/core/code_versions/code_update_manager.html#CodeUpdateManager.run_update_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.code_versions.code_update_manager.CodeUpdateManager.run_update_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add specific code after every update script.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.code_versions.code_update_manager.CodeUpdateManager.update_all">
+<tt class="descname">update_all</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/code_versions/code_update_manager.html#CodeUpdateManager.update_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.code_versions.code_update_manager.CodeUpdateManager.update_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upgrade the code to current version. 
+Go through all update scripts with lower SVN version than the current running version.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tvb.core.code_versions.code_update_scripts.html"><tt class="docutils literal"><span class="pre">code_update_scripts</span></tt> Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tvb.core.code_versions.code_update_scripts.html#module-tvb.core.code_versions.code_update_scripts.4455_update_code"><tt class="docutils literal"><span class="pre">4455_update_code</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tvb.core.code_versions.code_update_scripts.html#module-tvb.core.code_versions.code_update_scripts.4750_update_code"><tt class="docutils literal"><span class="pre">4750_update_code</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">code_versions</span></tt> Package</a><ul>
+<li><a class="reference internal" href="#module-tvb.core.code_versions.base_classes"><tt class="docutils literal"><span class="pre">base_classes</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.core.code_versions.code_update_manager"><tt class="docutils literal"><span class="pre">code_update_manager</span></tt> Module</a></li>
+<li><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tvb.core.adapters.html"
+                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">adapters</span></tt> Package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tvb.core.code_versions.code_update_scripts.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">code_update_scripts</span></tt> Package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tvb.core.code_versions.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.core.code_versions.code_update_scripts.html" title="code_update_scripts Package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tvb.core.adapters.html" title="adapters Package"
+             >previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">tvb</span></tt> Package</a> &raquo;</li>
+          <li><a href="tvb.core.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">core</span></tt> Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

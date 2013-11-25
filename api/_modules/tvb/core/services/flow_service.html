@@ -1,0 +1,522 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.services.flow_service &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.services.flow_service</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Service layer, for executing computational steps in the application.</span>
+<span class="sd">Code related to launching/duplicating operations is placed here.</span>
+
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.traits.exceptions</span> <span class="kn">import</span> <span class="n">TVBException</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.filters.chain</span> <span class="kn">import</span> <span class="n">FilterChain</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">tvb.core</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities</span> <span class="kn">import</span> <span class="n">model</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.storage</span> <span class="kn">import</span> <span class="n">dao</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.file.files_helper</span> <span class="kn">import</span> <span class="n">FilesHelper</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.abcadapter</span> <span class="kn">import</span> <span class="n">ABCAdapter</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.exceptions</span> <span class="kn">import</span> <span class="n">IntrospectionException</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.exceptions</span> <span class="kn">import</span> <span class="n">OperationException</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.operation_service</span> <span class="kn">import</span> <span class="n">OperationService</span>
+<span class="kn">from</span> <span class="nn">tvb.core.portlets.xml_reader</span> <span class="kn">import</span> <span class="n">KEY_DYNAMIC</span>
+
+
+
+<div class="viewcode-block" id="FlowService"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService">[docs]</a><span class="k">class</span> <span class="nc">FlowService</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Service Layer for all TVB generic Work-Flow operations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_helper</span> <span class="o">=</span> <span class="n">FilesHelper</span><span class="p">()</span>
+    
+    
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="FlowService.read_algorithm_categories"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.read_algorithm_categories">[docs]</a>    <span class="k">def</span> <span class="nf">read_algorithm_categories</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve from DB all categories of adapters that were previously stored</span>
+<span class="sd">        by introspection into a Python module-given as parameter at startup.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_algorithm_categories</span><span class="p">()</span>
+    
+    </div>
+<div class="viewcode-block" id="FlowService.get_category_by_id"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.get_category_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_category_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Pass to DAO the retrieve of category by ID operation.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_category_by_id</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Wrong step!&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">OperationException</span><span class="p">(</span><span class="n">excep</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+    
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="FlowService.get_uploader_categories"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.get_uploader_categories">[docs]</a>    <span class="k">def</span> <span class="nf">get_uploader_categories</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve all algorithm categories with Upload mechanism&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_uploader_categories</span><span class="p">()</span>
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="FlowService.get_raw_categories"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.get_raw_categories">[docs]</a>    <span class="k">def</span> <span class="nf">get_raw_categories</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;:returns: AlgorithmCategory list of entities that have results in RAW state (Creators/Uploaders)&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_raw_categories</span><span class="p">()</span>
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="FlowService.get_visualisers_category"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.get_visualisers_category">[docs]</a>    <span class="k">def</span> <span class="nf">get_visualisers_category</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve all Algorithm categories, with display capability&quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_visualisers_categories</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;View Category not found!!!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="FlowService.get_launchable_non_viewers"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.get_launchable_non_viewers">[docs]</a>    <span class="k">def</span> <span class="nf">get_launchable_non_viewers</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve all Algorithm categories, with display capability&quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_launchable_categories</span><span class="p">(</span><span class="n">elimin_viewers</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Analyze Category not found!!!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="FlowService.get_groups_for_categories"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.get_groups_for_categories">[docs]</a>    <span class="k">def</span> <span class="nf">get_groups_for_categories</span><span class="p">(</span><span class="n">categories</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve the list of all Adapters names from a  given Category</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">categories_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">categ</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">categ</span> <span class="ow">in</span> <span class="n">categories</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_groups_by_categories</span><span class="p">(</span><span class="n">categories_ids</span><span class="p">)</span>
+    
+    </div>
+<div class="viewcode-block" id="FlowService.get_algorithm_by_identifier"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.get_algorithm_by_identifier">[docs]</a>    <span class="k">def</span> <span class="nf">get_algorithm_by_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ident</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve Algorithm entity by ID.</span>
+<span class="sd">        Return None, if ID is not found in DB.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_algorithm_by_id</span><span class="p">(</span><span class="n">ident</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span>
+    
+    </div>
+<div class="viewcode-block" id="FlowService.get_algo_group_by_identifier"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.get_algo_group_by_identifier">[docs]</a>    <span class="k">def</span> <span class="nf">get_algo_group_by_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ident</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve Algorithm Group entity by ID.</span>
+<span class="sd">        Return None, if ID is not found in DB.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_algo_group_by_id</span><span class="p">(</span><span class="n">ident</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="FlowService.load_operation"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.load_operation">[docs]</a>    <span class="k">def</span> <span class="nf">load_operation</span><span class="p">(</span><span class="n">operation_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Retrieve loaded OPeration from DB&quot;&quot;&quot;</span>
+        <span class="n">operation</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operation_by_id</span><span class="p">(</span><span class="n">operation_id</span><span class="p">)</span>
+        <span class="n">operation</span><span class="o">.</span><span class="n">burst</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_burst_for_operation_id</span><span class="p">(</span><span class="n">operation_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">operation</span>
+
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="FlowService.get_operation_numbers"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.get_operation_numbers">[docs]</a>    <span class="k">def</span> <span class="nf">get_operation_numbers</span><span class="p">(</span><span class="n">proj_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Count total number of operations started for current project. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operation_numbers</span><span class="p">(</span><span class="n">proj_id</span><span class="p">)</span>
+    
+    </div>
+<div class="viewcode-block" id="FlowService.build_adapter_instance"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.build_adapter_instance">[docs]</a>    <span class="k">def</span> <span class="nf">build_adapter_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Having a module and a class name, create an instance of ABCAdapter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">build_adapter</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">IntrospectionException</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">group</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;The given algorithm group is None.&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">OperationException</span><span class="p">(</span><span class="s">&quot;Could not prepare the algo- group.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;Not found: &#39;</span> <span class="o">+</span> <span class="n">group</span><span class="o">.</span><span class="n">classname</span> <span class="o">+</span> <span class="s">&#39; in:&#39;</span> <span class="o">+</span> <span class="n">group</span><span class="o">.</span><span class="n">module</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">OperationException</span><span class="p">(</span><span class="s">&quot;Could not prepare &quot;</span> <span class="o">+</span> <span class="n">group</span><span class="o">.</span><span class="n">classname</span><span class="p">)</span>
+              
+        </div>
+<div class="viewcode-block" id="FlowService.prepare_adapter"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.prepare_adapter">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_adapter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">algo_group</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Having a given Adapter, specified by Module and ClassName, </span>
+<span class="sd">        create a instance of it and return the instance.</span>
+<span class="sd">        Actually return a Tuple: Adapter Instance, Dictionary for Adapter </span>
+<span class="sd">        Interface specification.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">adapter_module</span> <span class="o">=</span> <span class="n">algo_group</span><span class="o">.</span><span class="n">module</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="s">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">adapter_name</span> <span class="o">=</span> <span class="n">algo_group</span><span class="o">.</span><span class="n">classname</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c"># Prepare Adapter Interface, by populating with existent data,</span>
+            <span class="c"># in case of a parameter of type DataType.</span>
+            <span class="n">group</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">find_group</span><span class="p">(</span><span class="n">adapter_module</span><span class="p">,</span> <span class="n">adapter_name</span><span class="p">,</span> <span class="n">algo_group</span><span class="o">.</span><span class="n">init_parameter</span><span class="p">)</span>
+            <span class="n">adapter_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_adapter_instance</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+            <span class="n">interface</span> <span class="o">=</span> <span class="n">adapter_instance</span><span class="o">.</span><span class="n">get_input_tree</span><span class="p">()</span>
+            <span class="n">interface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_parameters</span><span class="p">(</span><span class="n">interface</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">group</span><span class="o">.</span><span class="n">fk_category</span><span class="p">)</span>
+            <span class="n">interface</span> <span class="o">=</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">prepare_param_names</span><span class="p">(</span><span class="n">interface</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">group</span><span class="p">,</span> <span class="n">interface</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;Not found:&#39;</span> <span class="o">+</span> <span class="n">adapter_name</span> <span class="o">+</span> <span class="s">&#39; in:&#39;</span> <span class="o">+</span> <span class="n">adapter_module</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">OperationException</span><span class="p">(</span><span class="s">&quot;Could not prepare &quot;</span> <span class="o">+</span> <span class="n">adapter_name</span><span class="p">)</span>
+    
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="FlowService.get_algorithm_by_module_and_class"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.get_algorithm_by_module_and_class">[docs]</a>    <span class="k">def</span> <span class="nf">get_algorithm_by_module_and_class</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">classname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the db entry from the algorithm table for the given module and </span>
+<span class="sd">        class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">find_group</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">classname</span><span class="p">)</span>
+        <span class="n">algo</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_algorithm_by_group</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">algo</span><span class="p">,</span> <span class="n">group</span>
+    
+    </div>
+<div class="viewcode-block" id="FlowService.get_available_datatypes"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.get_available_datatypes">[docs]</a>    <span class="k">def</span> <span class="nf">get_available_datatypes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">data_name</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return all dataTypes that match a given name and some filters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data_class</span> <span class="o">=</span> <span class="n">FilterChain</span><span class="o">.</span><span class="n">_get_class_instance</span><span class="p">(</span><span class="n">data_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data_class</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Invalid Class specification:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">data_name</span><span class="p">))</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Filtering:&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">data_class</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_values_of_datatype</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">data_class</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
+        
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="FlowService.populate_values"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.populate_values">[docs]</a>    <span class="k">def</span> <span class="nf">populate_values</span><span class="p">(</span><span class="n">data_list</span><span class="p">,</span> <span class="n">type_</span><span class="p">,</span> <span class="n">category_key</span><span class="p">,</span> <span class="n">complex_dt_attributes</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Populate meta-data fields for data_list (list of DataTypes).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">all_field_values</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data_list</span><span class="p">:</span>
+            <span class="c"># Here we only populate with DB data, actual</span>
+            <span class="c"># XML check will be done after select and submit.</span>
+            <span class="n">entity_gid</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">actual_entity</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_generic_entity</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">entity_gid</span><span class="p">,</span> <span class="s">&quot;gid&quot;</span><span class="p">)</span>
+            <span class="n">display_name</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+            <span class="k">if</span> <span class="n">actual_entity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">actual_entity</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">actual_entity</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">model</span><span class="o">.</span><span class="n">DataType</span><span class="p">):</span>
+                <span class="n">display_name</span> <span class="o">=</span> <span class="n">actual_entity</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">display_name</span>
+            <span class="n">display_name</span> <span class="o">=</span> <span class="n">display_name</span> <span class="o">+</span> <span class="s">&#39; - &#39;</span> <span class="o">+</span> <span class="n">value</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="mi">5</span><span class="p">]:</span>
+                <span class="n">display_name</span> <span class="o">=</span> <span class="n">display_name</span> <span class="o">+</span> <span class="s">&#39; - From: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">display_name</span> <span class="o">=</span> <span class="n">display_name</span> <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">date2string</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="mi">6</span><span class="p">]:</span>
+                <span class="n">display_name</span> <span class="o">=</span> <span class="n">display_name</span> <span class="o">+</span> <span class="s">&#39; - &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span>
+            <span class="n">display_name</span> <span class="o">=</span> <span class="n">display_name</span> <span class="o">+</span> <span class="s">&#39; - ID:&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">all_field_values</span> <span class="o">=</span> <span class="n">all_field_values</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">entity_gid</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;,&#39;</span>
+            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_NAME</span><span class="p">:</span> <span class="n">display_name</span><span class="p">,</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_VALUE</span><span class="p">:</span> <span class="n">entity_gid</span><span class="p">})</span>
+            <span class="k">if</span> <span class="n">complex_dt_attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="c">### TODO apply filter on sub-attributes</span>
+                <span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span><span class="p">]</span> <span class="o">=</span> <span class="n">complex_dt_attributes</span>
+        <span class="k">if</span> <span class="n">category_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_category_by_id</span><span class="p">(</span><span class="n">category_key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">category</span><span class="o">.</span><span class="n">display</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">category</span><span class="o">.</span><span class="n">rawinput</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">values</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">{</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_NAME</span><span class="p">:</span> <span class="s">&quot;All&quot;</span><span class="p">,</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_VALUE</span><span class="p">:</span> <span class="n">all_field_values</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]})</span>
+        <span class="k">return</span> <span class="n">values</span>
+     
+     </div>
+<div class="viewcode-block" id="FlowService.prepare_parameters"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.prepare_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes_list</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">category_key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private method, to be called recursively.</span>
+<span class="sd">        It will receive a list of Attributes, and it will populate &#39;options&#39;</span>
+<span class="sd">        entry with data references from DB.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">attributes_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_UI_HIDE</span> <span class="ow">in</span> <span class="n">param</span><span class="p">)</span> <span class="ow">and</span> <span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_UI_HIDE</span><span class="p">]:</span>
+                <span class="k">continue</span>
+            <span class="n">transformed_param</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_TYPE</span> <span class="ow">in</span> <span class="n">param</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_TYPE</span><span class="p">]</span> <span class="ow">in</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">STATIC_ACCEPTED_TYPES</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_CONDITION</span> <span class="ow">in</span> <span class="n">param</span><span class="p">:</span>
+                    <span class="n">filter_condition</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_CONDITION</span><span class="p">]</span>
+                    <span class="n">filter_condition</span><span class="o">.</span><span class="n">add_condition</span><span class="p">(</span><span class="n">FilterChain</span><span class="o">.</span><span class="n">datatype</span> <span class="o">+</span> <span class="s">&quot;.visible&quot;</span><span class="p">,</span> <span class="s">&quot;==&quot;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">filter_condition</span> <span class="o">=</span> <span class="n">FilterChain</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">FilterChain</span><span class="o">.</span><span class="n">datatype</span> <span class="o">+</span> <span class="s">&#39;.visible&#39;</span><span class="p">],</span> <span class="p">[</span><span class="bp">True</span><span class="p">],</span> <span class="n">operations</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;==&quot;</span><span class="p">])</span>
+                    
+                <span class="n">data_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_available_datatypes</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_TYPE</span><span class="p">],</span> <span class="n">filter_condition</span><span class="p">)</span>
+                <span class="n">complex_dt_attributes</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span> <span class="ow">in</span> <span class="n">param</span> <span class="ow">and</span> <span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+                        <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span><span class="p">]))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">complex_dt_attributes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_parameters</span><span class="p">(</span><span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span><span class="p">],</span> 
+                                                                    <span class="n">project_id</span><span class="p">,</span> <span class="n">category_key</span><span class="p">)</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">populate_values</span><span class="p">(</span><span class="n">data_list</span><span class="p">,</span> <span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_TYPE</span><span class="p">],</span> 
+                                              <span class="n">category_key</span><span class="p">,</span> <span class="n">complex_dt_attributes</span><span class="p">)</span>
+                
+                <span class="k">if</span> <span class="p">(</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_REQUIRED</span> <span class="ow">in</span> <span class="n">transformed_param</span> <span class="ow">and</span> <span class="n">transformed_param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_REQUIRED</span><span class="p">]</span> <span class="ow">and</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">transformed_param</span> <span class="ow">or</span> 
+                                         <span class="n">transformed_param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> 
+                                         <span class="n">transformed_param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;None&#39;</span><span class="p">)):</span>
+                    <span class="n">def_val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_VALUE</span><span class="p">])</span>
+                    <span class="n">transformed_param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span><span class="p">]</span> <span class="o">=</span> <span class="n">def_val</span>
+                <span class="n">transformed_param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_FILTERABLE</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterChain</span><span class="o">.</span><span class="n">get_filters_for_type</span><span class="p">(</span>
+                    <span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_TYPE</span><span class="p">])</span>
+                <span class="n">transformed_param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_TYPE</span><span class="p">]</span> <span class="o">=</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">TYPE_SELECT</span>
+                <span class="c"># If Portlet dynamic parameter, don&#39;t add the options instead</span>
+                <span class="c"># just add the default value. </span>
+                <span class="k">if</span> <span class="n">KEY_DYNAMIC</span> <span class="ow">in</span> <span class="n">param</span><span class="p">:</span>
+                    <span class="n">dynamic_param</span> <span class="o">=</span> <span class="p">{</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_NAME</span><span class="p">:</span> <span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span><span class="p">],</span>
+                                     <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_VALUE</span><span class="p">:</span> <span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span><span class="p">]}</span>
+                    <span class="n">transformed_param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_OPTIONS</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">dynamic_param</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">transformed_param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_OPTIONS</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_TYPE</span><span class="p">])</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+                    <span class="n">transformed_param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DATATYPE</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_TYPE</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">data_type</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_TYPE</span><span class="p">]</span>
+                    <span class="n">transformed_param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DATATYPE</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_type</span><span class="o">.</span><span class="n">__module__</span> <span class="o">+</span> <span class="s">&#39;.&#39;</span> <span class="o">+</span> <span class="n">data_type</span><span class="o">.</span><span class="n">__name__</span>
+            
+                <span class="c">### DataType-attributes are no longer necessary, they were already copied on each OPTION</span>
+                <span class="n">transformed_param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_OPTIONS</span> <span class="ow">in</span> <span class="n">param</span> <span class="ow">and</span> <span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_OPTIONS</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">transformed_param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_OPTIONS</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_parameters</span><span class="p">(</span><span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_OPTIONS</span><span class="p">],</span>
+                                                                                        <span class="n">project_id</span><span class="p">,</span> <span class="n">category_key</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_REQUIRED</span> <span class="ow">in</span> <span class="n">transformed_param</span> <span class="ow">and</span> <span class="n">transformed_param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_REQUIRED</span><span class="p">]</span>
+                        <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_OPTIONS</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span>
+                            <span class="p">((</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">transformed_param</span><span class="p">)</span> <span class="ow">or</span>
+                                <span class="n">transformed_param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span>
+                                <span class="n">transformed_param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;None&#39;</span><span class="p">)):</span>
+                        <span class="n">def_val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_OPTIONS</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_VALUE</span><span class="p">])</span>
+                        <span class="n">transformed_param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span><span class="p">]</span> <span class="o">=</span> <span class="n">def_val</span>
+                    
+                <span class="k">if</span> <span class="p">(</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span> <span class="ow">in</span> <span class="n">param</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">):</span>
+                    <span class="n">transformed_param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_parameters</span><span class="p">(</span>
+                        <span class="n">param</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span><span class="p">],</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">category_key</span><span class="p">)</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transformed_param</span><span class="p">)</span>   
+        <span class="k">return</span> <span class="n">result</span>
+    
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="FlowService.create_link"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.create_link">[docs]</a>    <span class="k">def</span> <span class="nf">create_link</span><span class="p">(</span><span class="n">data_ids</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For a list of dataType IDs and a project id create all the required links.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">data_ids</span><span class="p">:</span>
+            <span class="n">link</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">Links</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">project_id</span><span class="p">)</span>
+            <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">link</span><span class="p">)</span>
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="FlowService.remove_link"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.remove_link">[docs]</a>    <span class="k">def</span> <span class="nf">remove_link</span><span class="p">(</span><span class="n">dt_id</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove the link from the datatype given by dt_id to project given by project_id.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">link</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_link</span><span class="p">(</span><span class="n">dt_id</span><span class="p">,</span> <span class="n">project_id</span><span class="p">)</span>
+        <span class="n">dao</span><span class="o">.</span><span class="n">remove_link</span><span class="p">(</span><span class="n">link</span><span class="p">)</span>
+    
+        </div>
+<div class="viewcode-block" id="FlowService.fire_operation"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.fire_operation">[docs]</a>    <span class="k">def</span> <span class="nf">fire_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adapter_instance</span><span class="p">,</span> <span class="n">current_user</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span>  
+                       <span class="n">method_name</span><span class="o">=</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">LAUNCH_METHOD</span><span class="p">,</span> <span class="n">visible</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Launch an operation, specified by AdapterInstance, for CurrentUser, </span>
+<span class="sd">        Current Project and a given set of UI Input Data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">operation_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">adapter_instance</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;.&quot;</span> <span class="o">+</span> <span class="n">method_name</span>
+        <span class="k">try</span><span class="p">:</span>
+<span class="c">#            if OperationService.ATT_UID in data:</span>
+<span class="c">#                existent = dao.get_last_data_with_uid(data[OperationService.ATT_UID])</span>
+<span class="c">#                if existent is not None:</span>
+<span class="c">#                    self.create_link(existent, project_id)</span>
+<span class="c">#                    return &quot;Created required links.&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Starting operation &quot;</span> <span class="o">+</span> <span class="n">operation_name</span><span class="p">)</span>
+            <span class="n">project</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_project_by_id</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+            <span class="n">tmp_folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_helper</span><span class="o">.</span><span class="n">get_project_folder</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_helper</span><span class="o">.</span><span class="n">TEMP_FOLDER</span><span class="p">)</span>
+            
+            <span class="n">result</span> <span class="o">=</span> <span class="n">OperationService</span><span class="p">()</span><span class="o">.</span><span class="n">initiate_operation</span><span class="p">(</span><span class="n">current_user</span><span class="p">,</span> <span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">adapter_instance</span><span class="p">,</span> 
+                                                           <span class="n">tmp_folder</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">visible</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Finished operation:&quot;</span> <span class="o">+</span> <span class="n">operation_name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="k">except</span> <span class="n">TVBException</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Could not launch operation &quot;</span> <span class="o">+</span> <span class="n">operation_name</span> <span class="o">+</span> <span class="s">&quot; with the given set of input data!&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">OperationException</span><span class="p">(</span><span class="n">excep</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">excep</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Could not launch operation &quot;</span> <span class="o">+</span> <span class="n">operation_name</span> <span class="o">+</span> <span class="s">&quot; with the given set of input data!&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">OperationException</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">excep</span><span class="p">))</span>      
+
+     </div>
+<div class="viewcode-block" id="FlowService.parse_version_xml"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.parse_version_xml">[docs]</a>    <span class="k">def</span> <span class="nf">parse_version_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xml_content</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Parse XML content, to retrieve Version number, </span>
+<span class="sd">        release date and release notes.&quot;&quot;&quot;</span> 
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_helper</span><span class="o">.</span><span class="n">parse_xml_content</span><span class="p">(</span><span class="n">xml_content</span><span class="p">)</span>
+    
+    <span class="c">##########################################################################</span>
+    <span class="c">######## Methods below are for connectivity selections ###################</span>
+    <span class="c">######## Might be good to move them to proper place ######################</span>
+    <span class="c">##########################################################################</span>
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="FlowService.get_selections_for_project"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.get_selections_for_project">[docs]</a>    <span class="k">def</span> <span class="nf">get_selections_for_project</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">connectivity_gid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieved from DB saved selections for current project. If a certain selection</span>
+<span class="sd">        doesn&#39;t have all the labels between the labels of the given connectivity than</span>
+<span class="sd">        this selection will not be returned.</span>
+<span class="sd">        :returns: List of ConnectivitySelection entities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">selections</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_selections_for_project</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">connectivity_gid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">selections</span>
+    
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="FlowService.save_connectivity_selection"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.flow_service.FlowService.save_connectivity_selection">[docs]</a>    <span class="k">def</span> <span class="nf">save_connectivity_selection</span><span class="p">(</span><span class="n">ui_name</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">selection</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">used_names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Store in DB a ConnectivitySelection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ui_name</span> <span class="ow">in</span> <span class="n">used_names</span><span class="p">:</span>
+            <span class="n">select_entity</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_selection_by_name_and_project</span><span class="p">(</span><span class="n">ui_name</span><span class="p">,</span> <span class="n">project_id</span><span class="p">)</span>
+            <span class="n">select_entity</span><span class="o">.</span><span class="n">selected_nodes</span> <span class="o">=</span> <span class="n">selection</span>
+            <span class="n">select_entity</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span>
+            <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">select_entity</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">same_names</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">count_selection_with_name</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">ui_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">same_names</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">False</span>
+            <span class="n">new_selection</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">ConnectivitySelection</span><span class="p">(</span><span class="n">selection</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">ui_name</span><span class="p">)</span>
+            <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">new_selection</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+
+
+        
+        
+        </div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

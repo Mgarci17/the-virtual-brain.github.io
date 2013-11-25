@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.adapters.visualizers.time_series &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.adapters.visualizers.time_series</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A Javascript displayer for time series, using SVG.</span>
+
+<span class="sd">.. moduleauthor:: Marmaduke Woodman &lt;mw@eml.cc&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.time_series</span> <span class="kn">as</span> <span class="nn">tsdata</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.filters.chain</span> <span class="kn">import</span> <span class="n">FilterChain</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.abcdisplayer</span> <span class="kn">import</span> <span class="n">ABCDisplayer</span>
+
+
+
+<div class="viewcode-block" id="TimeSeries"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.time_series.TimeSeries">[docs]</a><span class="k">class</span> <span class="nc">TimeSeries</span><span class="p">(</span><span class="n">ABCDisplayer</span><span class="p">):</span>
+    <span class="n">_ui_name</span> <span class="o">=</span> <span class="s">&quot;Time Series Viewer (SVG/d3)&quot;</span>
+    <span class="n">_ui_subsection</span> <span class="o">=</span> <span class="s">&quot;timeseries&quot;</span>
+
+    <span class="n">MAX_PREVIEW_DATA_LENGTH</span> <span class="o">=</span> <span class="mi">200</span>
+
+
+<div class="viewcode-block" id="TimeSeries.get_input_tree"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.time_series.TimeSeries.get_input_tree">[docs]</a>    <span class="k">def</span> <span class="nf">get_input_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inform caller of the data we need as input.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[{</span><span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;time_series&quot;</span><span class="p">,</span>
+                 <span class="s">&quot;type&quot;</span><span class="p">:</span> <span class="n">tsdata</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">,</span>
+                 <span class="s">&quot;label&quot;</span><span class="p">:</span> <span class="s">&quot;Time series to be displayed in a 2D form.&quot;</span><span class="p">,</span>
+                 <span class="s">&quot;required&quot;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+                 <span class="s">&quot;conditions&quot;</span><span class="p">:</span> <span class="n">FilterChain</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="n">FilterChain</span><span class="o">.</span><span class="n">datatype</span> <span class="o">+</span> <span class="s">&#39;.type&#39;</span><span class="p">],</span>
+                                           <span class="n">operations</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;!=&quot;</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;TimeSeriesVolume&quot;</span><span class="p">])</span>
+                 <span class="p">}]</span>
+
+</div>
+<div class="viewcode-block" id="TimeSeries.get_required_memory_size"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.time_series.TimeSeries.get_required_memory_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_required_memory_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return required memory.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+</div>
+<div class="viewcode-block" id="TimeSeries.launch"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.time_series.TimeSeries.launch">[docs]</a>    <span class="k">def</span> <span class="nf">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_series</span><span class="p">,</span> <span class="n">preview</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Construct data for visualization and launch it.&quot;&quot;&quot;</span>
+
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s">&#39;time&#39;</span><span class="p">)</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">read_data_shape1</span><span class="p">()</span>
+
+        <span class="c">## Assume that the first dimension is the time since that is the case so far</span>
+        <span class="k">if</span> <span class="n">preview</span> <span class="ow">and</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_PREVIEW_DATA_LENGTH</span><span class="p">:</span>
+            <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_PREVIEW_DATA_LENGTH</span>
+
+        <span class="n">state_variables</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">labels_dimensions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">time_series</span><span class="o">.</span><span class="n">labels_ordering</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[])</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">get_space_labels</span><span class="p">()</span>
+
+        <span class="n">pars</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;baseURL&#39;</span><span class="p">:</span> <span class="n">ABCDisplayer</span><span class="o">.</span><span class="n">VISUALIZERS_URL_PREFIX</span> <span class="o">+</span> <span class="n">time_series</span><span class="o">.</span><span class="n">gid</span><span class="p">,</span>
+                <span class="s">&#39;labels&#39;</span><span class="p">:</span> <span class="n">labels</span><span class="p">,</span> <span class="s">&#39;labels_json&#39;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">labels</span><span class="p">),</span>
+                <span class="s">&#39;ts_title&#39;</span><span class="p">:</span> <span class="n">time_series</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="s">&#39;preview&#39;</span><span class="p">:</span> <span class="n">preview</span><span class="p">,</span> <span class="s">&#39;figsize&#39;</span><span class="p">:</span> <span class="n">figsize</span><span class="p">,</span>
+                <span class="s">&#39;shape&#39;</span><span class="p">:</span> <span class="nb">repr</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">shape</span><span class="p">)),</span> <span class="s">&#39;t0&#39;</span><span class="p">:</span> <span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="s">&#39;dt&#39;</span><span class="p">:</span> <span class="n">ts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s">&#39;channelsPage&#39;</span><span class="p">:</span> <span class="s">&#39;../commons/channel_selector.html&#39;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">preview</span> <span class="k">else</span> <span class="bp">None</span><span class="p">,</span>
+                <span class="s">&#39;labelsStateVar&#39;</span><span class="p">:</span> <span class="n">state_variables</span><span class="p">,</span> <span class="s">&#39;labelsModes&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span>
+                <span class="p">}</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_display_result</span><span class="p">(</span><span class="s">&quot;time_series/view&quot;</span><span class="p">,</span> <span class="n">pars</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">controlPage</span><span class="o">=</span><span class="s">&quot;time_series/control&quot;</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="TimeSeries.generate_preview"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.time_series.TimeSeries.generate_preview">[docs]</a>    <span class="k">def</span> <span class="nf">generate_preview</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_series</span><span class="p">,</span> <span class="n">figure_size</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">launch</span><span class="p">(</span><span class="n">time_series</span><span class="p">,</span> <span class="n">preview</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figure_size</span><span class="p">)</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

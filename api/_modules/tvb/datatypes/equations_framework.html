@@ -1,0 +1,398 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.datatypes.equations_framework &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.datatypes.equations_framework</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">Framework methods for the Equation datatypes.</span>
+
+<span class="sd">.. moduleauthor:: Ionel Ortelecan &lt;ionel.ortelecan@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">parser</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.equations_data</span> <span class="kn">as</span> <span class="nn">equations_data</span>
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.parameters_factory</span> <span class="kn">as</span> <span class="nn">parameters_factory</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+<span class="c"># In how many points should the equation be evaluated for the plot. Increasing this will</span>
+<span class="c"># give smoother results at the cost of some performance</span>
+<span class="n">DEFAULT_PLOT_GRANULARITY</span> <span class="o">=</span> <span class="mi">1024</span>
+
+
+
+<div class="viewcode-block" id="EquationFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.EquationFramework">[docs]</a><span class="k">class</span> <span class="nc">EquationFramework</span><span class="p">(</span><span class="n">equations_data</span><span class="o">.</span><span class="n">EquationData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to EquationData. &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ui_equation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The string representation of this equation that will be used for computing the values in certain points.</span>
+
+<span class="sd">        Because some equations contains operations that python doesn&#39;t know how to interpret</span>
+<span class="sd">        we replaced those operations with others known by python.</span>
+<span class="sd">        E.g.: exp($expression) replaced with 2.71**($expression)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation</span>
+
+
+    <span class="k">def</span> <span class="nf">get_parsed_equation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parses the string representation of the equation and replaces</span>
+<span class="sd">        all the parameters placeholders with their values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">equation_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui_equation</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
+            <span class="n">equation_str</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\\</span><span class="s">b&#39;</span> <span class="o">+</span> <span class="n">param</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">b&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">param</span><span class="p">]),</span> <span class="n">equation_str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">equation_str</span>
+
+
+    <span class="k">def</span> <span class="nf">get_series_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">min_range</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_range</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        NOTE: The symbol from the equation which varies should be named: var</span>
+<span class="sd">        Returns the series data needed for plotting this equation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">step</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">max_range</span> <span class="o">-</span> <span class="n">min_range</span><span class="p">)</span> <span class="o">/</span> <span class="n">DEFAULT_PLOT_GRANULARITY</span>
+
+        <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">exp</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">parsed_equation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parsed_equation</span><span class="p">()</span>
+        <span class="n">parsed_equation</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">expr</span><span class="p">(</span><span class="n">parsed_equation</span><span class="p">)</span><span class="o">.</span><span class="n">compile</span><span class="p">()</span>
+        <span class="n">last_valid_point_value</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">was_exception_thrown</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">min_range</span><span class="p">,</span> <span class="n">max_range</span> <span class="o">+</span> <span class="n">step</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">point_value</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">parsed_equation</span><span class="p">)</span>
+                <span class="c">#the number should have max 20 decimals</span>
+                <span class="n">point_value</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">point_value</span><span class="p">,</span> <span class="mi">19</span><span class="p">)</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">var</span><span class="p">),</span> <span class="n">point_value</span><span class="p">])</span>
+                <span class="n">last_valid_point_value</span> <span class="o">=</span> <span class="n">point_value</span>
+            <span class="k">except</span> <span class="ne">OverflowError</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Could not evaluate the equation at step var = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">var</span><span class="p">))</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">var</span><span class="p">,</span> <span class="n">last_valid_point_value</span><span class="p">])</span>
+                <span class="n">was_exception_thrown</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">was_exception_thrown</span>
+
+
+        <span class="c">## TODO Try to make the commented code bellow usable. Currently it is not.</span>
+        <span class="c"># result = []</span>
+        <span class="c"># try:</span>
+        <span class="c">#     x_array = numpy.arange(min_range, max_range + step, step)</span>
+        <span class="c">#     self.pattern = x_array</span>
+        <span class="c">#     y_array = self.pattern</span>
+        <span class="c">#     for i in numpy.arrange(0, x_array.size):</span>
+        <span class="c">#         result.append([float(x_array[i]), round(y_array[i], 19)])</span>
+        <span class="c">#</span>
+        <span class="c"># except Exception, exc:</span>
+        <span class="c">#     LOG.exception(exc)</span>
+        <span class="c">#     LOG.error(&quot;Could not evaluate the equation&quot;)</span>
+        <span class="c">#     was_exception_thrown = True</span>
+        <span class="c">#</span>
+        <span class="c"># return result, was_exception_thrown</span>
+
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">build_equation_from_dict</span><span class="p">(</span><span class="n">equation_field_name</span><span class="p">,</span> <span class="n">submitted_data_dict</span><span class="p">,</span> <span class="n">alter_submitted_dictionary</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds from the given data dictionary the equation for the specified field name.</span>
+<span class="sd">        The dictionary should have the data collapsed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">equation</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">equation_field_name</span> <span class="ow">in</span> <span class="n">submitted_data_dict</span><span class="p">:</span>
+            <span class="n">equation_type</span> <span class="o">=</span> <span class="n">submitted_data_dict</span><span class="p">[</span><span class="n">equation_field_name</span><span class="p">]</span>
+            <span class="n">equation_parameters</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">eq_param_str</span> <span class="o">=</span> <span class="n">equation_field_name</span> <span class="o">+</span> <span class="s">&#39;_parameters&#39;</span>
+
+            <span class="k">if</span> <span class="n">eq_param_str</span> <span class="ow">in</span> <span class="n">submitted_data_dict</span> <span class="ow">and</span> <span class="s">&#39;parameters&#39;</span> <span class="ow">in</span> <span class="n">submitted_data_dict</span><span class="p">[</span><span class="n">eq_param_str</span><span class="p">]:</span>
+                <span class="n">equation_parameters</span> <span class="o">=</span> <span class="n">submitted_data_dict</span><span class="p">[</span><span class="n">eq_param_str</span><span class="p">][</span><span class="s">&#39;parameters&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">eq_param_str</span> <span class="ow">in</span> <span class="n">submitted_data_dict</span> <span class="ow">and</span> <span class="s">&#39;parameters_parameters&#39;</span> <span class="ow">in</span> <span class="n">submitted_data_dict</span><span class="p">[</span><span class="n">eq_param_str</span><span class="p">]:</span>
+                <span class="n">equation_parameters</span> <span class="o">=</span> <span class="n">submitted_data_dict</span><span class="p">[</span><span class="n">eq_param_str</span><span class="p">][</span><span class="s">&#39;parameters_parameters&#39;</span><span class="p">]</span>
+            <span class="n">equation</span> <span class="o">=</span> <span class="n">parameters_factory</span><span class="o">.</span><span class="n">get_traited_instance_for_name</span><span class="p">(</span><span class="n">equation_type</span><span class="p">,</span> <span class="n">equations_data</span><span class="o">.</span><span class="n">EquationData</span><span class="p">,</span>
+                                                                        <span class="p">{</span><span class="s">&#39;parameters&#39;</span><span class="p">:</span> <span class="n">equation_parameters</span><span class="p">})</span>
+            <span class="k">if</span> <span class="n">alter_submitted_dictionary</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">submitted_data_dict</span><span class="p">[</span><span class="n">eq_param_str</span><span class="p">]</span>
+                <span class="n">submitted_data_dict</span><span class="p">[</span><span class="n">equation_field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">equation</span>
+
+        <span class="k">return</span> <span class="n">equation</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="n">entity</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the json representation of this equation.</span>
+
+<span class="sd">        The representation of an equation is a dictionary with the following form:</span>
+<span class="sd">        {&#39;equation_type&#39;: &#39;$equation_type&#39;, &#39;parameters&#39;: {&#39;$param_name&#39;: &#39;$param_value&#39;, ...}}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">entity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;__mapped_module&#39;</span><span class="p">:</span> <span class="n">entity</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span>
+                      <span class="s">&#39;__mapped_class&#39;</span><span class="p">:</span> <span class="n">entity</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span>
+                      <span class="s">&#39;parameters&#39;</span><span class="p">:</span> <span class="n">entity</span><span class="o">.</span><span class="n">parameters</span><span class="p">}</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves an instance to an equation represented as JSON.</span>
+
+<span class="sd">        :param string: the JSON representation of the equation</span>
+<span class="sd">        :returns: a `tvb.datatypes.equations_data` equation instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">loaded_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">loaded_dict</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="n">modulename</span> <span class="o">=</span> <span class="n">loaded_dict</span><span class="p">[</span><span class="s">&#39;__mapped_module&#39;</span><span class="p">]</span>
+        <span class="n">classname</span> <span class="o">=</span> <span class="n">loaded_dict</span><span class="p">[</span><span class="s">&#39;__mapped_class&#39;</span><span class="p">]</span>
+        <span class="n">module_entity</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modulename</span><span class="p">,</span> <span class="nb">globals</span><span class="p">(),</span> <span class="nb">locals</span><span class="p">(),</span> <span class="p">[</span><span class="n">classname</span><span class="p">])</span>
+        <span class="n">class_entity</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s">&#39;module_entity.&#39;</span> <span class="o">+</span> <span class="n">classname</span><span class="p">)</span>
+        <span class="n">loaded_instance</span> <span class="o">=</span> <span class="n">class_entity</span><span class="p">()</span>
+        <span class="n">loaded_instance</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">loaded_dict</span><span class="p">[</span><span class="s">&#39;parameters&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">loaded_instance</span>
+
+
+</div>
+<div class="viewcode-block" id="DiscreteEquationFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.DiscreteEquationFramework">[docs]</a><span class="k">class</span> <span class="nc">DiscreteEquationFramework</span><span class="p">(</span><span class="n">equations_data</span><span class="o">.</span><span class="n">DiscreteEquationData</span><span class="p">,</span> <span class="n">EquationFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to DiscreteData &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="LinearFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.LinearFramework">[docs]</a><span class="k">class</span> <span class="nc">LinearFramework</span><span class="p">(</span><span class="n">equations_data</span><span class="o">.</span><span class="n">LinearData</span><span class="p">,</span> <span class="n">EquationFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to LinearData &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="GaussianFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.GaussianFramework">[docs]</a><span class="k">class</span> <span class="nc">GaussianFramework</span><span class="p">(</span><span class="n">equations_data</span><span class="o">.</span><span class="n">GaussianData</span><span class="p">,</span> <span class="n">EquationFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to GaussianData &quot;&quot;&quot;</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ui_equation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;amp * 2.71**(-((var-midpoint)**2 / (2.0 * sigma**2)))&quot;</span>
+
+
+</div>
+<div class="viewcode-block" id="DoubleGaussianFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.DoubleGaussianFramework">[docs]</a><span class="k">class</span> <span class="nc">DoubleGaussianFramework</span><span class="p">(</span><span class="n">equations_data</span><span class="o">.</span><span class="n">DoubleGaussianData</span><span class="p">,</span> <span class="n">EquationFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to DoubleGaussianData &quot;&quot;&quot;</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ui_equation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;(amp_1 * 2.71**(-((var-midpoint_1)**2 / (2.0 * sigma_1**2)))) - (amp_2 * 2.71**(-((var-midpoint_2)**2 / (2.0 * sigma_2**2))))&quot;</span>
+
+
+</div>
+<div class="viewcode-block" id="SigmoidFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.SigmoidFramework">[docs]</a><span class="k">class</span> <span class="nc">SigmoidFramework</span><span class="p">(</span><span class="n">equations_data</span><span class="o">.</span><span class="n">SigmoidData</span><span class="p">,</span> <span class="n">EquationFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to SigmoidData &quot;&quot;&quot;</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ui_equation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;amp / (1.0 + 2.71**(-1.8137993642342178 * (radius-var)/sigma))&quot;</span>
+
+
+</div>
+<div class="viewcode-block" id="GeneralizedSigmoidFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.GeneralizedSigmoidFramework">[docs]</a><span class="k">class</span> <span class="nc">GeneralizedSigmoidFramework</span><span class="p">(</span><span class="n">equations_data</span><span class="o">.</span><span class="n">GeneralizedSigmoidData</span><span class="p">,</span> <span class="n">EquationFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to GeneralizedSigmoidData &quot;&quot;&quot;</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ui_equation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;low + (high - low) / (1.0 + 2.71**(-1.8137993642342178 * (var-midpoint)/sigma))&quot;</span>
+
+
+</div>
+<div class="viewcode-block" id="SinusoidFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.SinusoidFramework">[docs]</a><span class="k">class</span> <span class="nc">SinusoidFramework</span><span class="p">(</span><span class="n">equations_data</span><span class="o">.</span><span class="n">SinusoidData</span><span class="p">,</span> <span class="n">EquationFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to SinusoidData &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="CosineFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.CosineFramework">[docs]</a><span class="k">class</span> <span class="nc">CosineFramework</span><span class="p">(</span><span class="n">equations_data</span><span class="o">.</span><span class="n">CosineData</span><span class="p">,</span> <span class="n">EquationFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to CosineData &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="AlphaFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.AlphaFramework">[docs]</a><span class="k">class</span> <span class="nc">AlphaFramework</span><span class="p">(</span><span class="n">equations_data</span><span class="o">.</span><span class="n">AlphaData</span><span class="p">,</span> <span class="n">EquationFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to AlphaData &quot;&quot;&quot;</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ui_equation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;(alpha * beta) / (beta - alpha) * (2.71**(-alpha * (var-onset)) - 2.71**(-beta * (var-onset))) if (var-onset) &gt; 0 else  0.0 * var&quot;</span>
+
+
+</div>
+<div class="viewcode-block" id="PulseTrainFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.PulseTrainFramework">[docs]</a><span class="k">class</span> <span class="nc">PulseTrainFramework</span><span class="p">(</span><span class="n">equations_data</span><span class="o">.</span><span class="n">PulseTrainData</span><span class="p">,</span> <span class="n">EquationFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to PulseTrainData &quot;&quot;&quot;</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ui_equation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;amp if (var % T) &lt;= tau and var &gt;= onset else 0.0 * var&quot;</span>
+
+
+</div>
+<div class="viewcode-block" id="GammaFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.GammaFramework">[docs]</a><span class="k">class</span> <span class="nc">GammaFramework</span><span class="p">(</span><span class="n">equations_data</span><span class="o">.</span><span class="n">GammaData</span><span class="p">,</span> <span class="n">EquationFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to GammaData &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="DoubleExponentialFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.DoubleExponentialFramework">[docs]</a><span class="k">class</span> <span class="nc">DoubleExponentialFramework</span><span class="p">(</span><span class="n">equations_data</span><span class="o">.</span><span class="n">DoubleExponentialData</span><span class="p">,</span> <span class="n">EquationFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to GammaData &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="FirstOrderVolterraFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.FirstOrderVolterraFramework">[docs]</a><span class="k">class</span> <span class="nc">FirstOrderVolterraFramework</span><span class="p">(</span><span class="n">equations_data</span><span class="o">.</span><span class="n">DoubleExponentialData</span><span class="p">,</span> <span class="n">EquationFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to GammaData &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+</div>
+<div class="viewcode-block" id="MixtureOfGammasFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations_framework.MixtureOfGammasFramework">[docs]</a><span class="k">class</span> <span class="nc">MixtureOfGammasFramework</span><span class="p">(</span><span class="n">equations_data</span><span class="o">.</span><span class="n">MixtureOfGammasData</span><span class="p">,</span> <span class="n">EquationFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to GammaData &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+    
+    </div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.adapters.uploaders.gifti.gifti &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.adapters.uploaders.gifti.gifti</h1><div class="highlight"><pre>
+<span class="c"># Gifti IO</span>
+<span class="c"># Stephan Gerhard, May 2010</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">tvb.core.utils</span> <span class="kn">import</span> <span class="n">store_list_data</span>
+<span class="kn">from</span> <span class="nn">util</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xml.dom.minidom</span> <span class="kn">import</span> <span class="n">Document</span>
+
+
+
+<div class="viewcode-block" id="GiftiMetaData"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.GiftiMetaData">[docs]</a><span class="k">class</span> <span class="nc">GiftiMetaData</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># create a list of GiftiNVPairs objects</span>
+        <span class="c"># containing the Name and the Value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        
+<div class="viewcode-block" id="GiftiMetaData.get_data_as_dict"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.GiftiMetaData.get_data_as_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_data_as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_as_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_as_dict</span><span class="p">[</span><span class="n">ele</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ele</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_as_dict</span>
+    </div>
+<div class="viewcode-block" id="GiftiMetaData.print_summary"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.GiftiMetaData.print_summary">[docs]</a>    <span class="k">def</span> <span class="nf">print_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_as_dict</span><span class="p">()</span>
+
+   </div></div>
+<div class="viewcode-block" id="GiftiNVPairs"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.GiftiNVPairs">[docs]</a><span class="k">class</span> <span class="nc">GiftiNVPairs</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    
+    <span class="n">name</span> <span class="o">=</span> <span class="nb">str</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span>
+</div>
+<div class="viewcode-block" id="GiftiLabelTable"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.GiftiLabelTable">[docs]</a><span class="k">class</span> <span class="nc">GiftiLabelTable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+        
+<div class="viewcode-block" id="GiftiLabelTable.get_labels_as_dict"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.GiftiLabelTable.get_labels_as_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_labels_as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_as_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        
+        <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">labels_as_dict</span><span class="p">[</span><span class="n">ele</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">ele</span><span class="o">.</span><span class="n">label</span>
+            
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels_as_dict</span>
+</div>
+<div class="viewcode-block" id="GiftiLabelTable.print_summary"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.GiftiLabelTable.print_summary">[docs]</a>    <span class="k">def</span> <span class="nf">print_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_labels_as_dict</span><span class="p">()</span>
+
+</div></div>
+<div class="viewcode-block" id="GiftiLabel"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.GiftiLabel">[docs]</a><span class="k">class</span> <span class="nc">GiftiLabel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    
+    <span class="n">index</span> <span class="o">=</span> <span class="nb">int</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="nb">str</span>
+</div>
+<div class="viewcode-block" id="GiftiCoordSystem"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.GiftiCoordSystem">[docs]</a><span class="k">class</span> <span class="nc">GiftiCoordSystem</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    
+    <span class="n">dataspace</span> <span class="o">=</span> <span class="nb">str</span>
+    <span class="n">xformspace</span> <span class="o">=</span> <span class="nb">str</span>
+    <span class="n">xform</span> <span class="o">=</span> <span class="bp">None</span> <span class="c"># will be numpy array</span>
+
+<div class="viewcode-block" id="GiftiCoordSystem.print_summary"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.GiftiCoordSystem.print_summary">[docs]</a>    <span class="k">def</span> <span class="nf">print_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="k">print</span> <span class="s">&#39;Dataspace: &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span>
+        <span class="k">print</span> <span class="s">&#39;XFormSpace: &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xformspace</span>
+        <span class="k">print</span> <span class="s">&#39;Affine Transformation Matrix: </span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xform</span>
+</div></div>
+<div class="viewcode-block" id="GiftiDataArray"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.GiftiDataArray">[docs]</a><span class="k">class</span> <span class="nc">GiftiDataArray</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    
+    <span class="n">intent</span> <span class="o">=</span> <span class="nb">int</span>
+    <span class="n">datatype</span> <span class="o">=</span> <span class="nb">int</span>
+    <span class="n">ind_ord</span> <span class="o">=</span> <span class="nb">int</span>
+    <span class="n">num_dim</span> <span class="o">=</span> <span class="nb">int</span>
+    <span class="n">dims</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">encoding</span> <span class="o">=</span> <span class="nb">int</span>
+    <span class="n">endian</span> <span class="o">=</span> <span class="nb">int</span>
+    <span class="n">ext_fname</span> <span class="o">=</span> <span class="nb">str</span>
+    <span class="n">ext_offset</span> <span class="o">=</span> <span class="bp">None</span>
+    
+    <span class="n">data</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">coordsys</span> <span class="o">=</span> <span class="bp">None</span> <span class="c"># GiftiCoordSystem()</span>
+        
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">dims</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="n">GiftiMetaData</span><span class="p">()</span>
+        
+<div class="viewcode-block" id="GiftiDataArray.print_summary"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.GiftiDataArray.print_summary">[docs]</a>    <span class="k">def</span> <span class="nf">print_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="k">print</span> <span class="s">&#39;Intent: &#39;</span><span class="p">,</span> <span class="n">GiftiIntentCode</span><span class="o">.</span><span class="n">intents_inv</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">intent</span><span class="p">]</span>
+        <span class="k">print</span> <span class="s">&#39;DataType: &#39;</span><span class="p">,</span> <span class="n">GiftiDataType</span><span class="o">.</span><span class="n">datatypes_inv</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">]</span>
+        <span class="k">print</span> <span class="s">&#39;ArrayIndexingOrder: &#39;</span><span class="p">,</span> <span class="n">GiftiArrayIndexOrder</span><span class="o">.</span><span class="n">ordering_inv</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ind_ord</span><span class="p">]</span>
+        <span class="k">print</span> <span class="s">&#39;Dimensionality: &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_dim</span>
+        <span class="k">print</span> <span class="s">&#39;Dimensions: &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span>
+        <span class="k">print</span> <span class="s">&#39;Encoding: &#39;</span><span class="p">,</span> <span class="n">GiftiEncoding</span><span class="o">.</span><span class="n">encodings_inv</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">encoding</span><span class="p">]</span>
+        <span class="k">print</span> <span class="s">&#39;Endian: &#39;</span><span class="p">,</span> <span class="n">GiftiEndian</span><span class="o">.</span><span class="n">endian_inv</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">endian</span><span class="p">]</span>
+        <span class="k">print</span> <span class="s">&#39;ExternalFileName: &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ext_fname</span>
+        <span class="k">print</span> <span class="s">&#39;ExternalFileOffset: &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ext_offset</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordsys</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;----&#39;</span>
+            <span class="k">print</span> <span class="s">&#39;Coordinate System:&#39;</span>
+            <span class="k">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordsys</span><span class="o">.</span><span class="n">print_summary</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="GiftiDataArray.get_meta_as_dict"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.GiftiDataArray.get_meta_as_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_meta_as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">get_data_as_dict</span><span class="p">()</span>
+</div></div>
+<div class="viewcode-block" id="GiftiImage"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.GiftiImage">[docs]</a><span class="k">class</span> <span class="nc">GiftiImage</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    
+    <span class="n">numDA</span> <span class="o">=</span> <span class="nb">int</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="nb">str</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="nb">str</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="c"># list of GiftiDataArray</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">darrays</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="n">GiftiMetaData</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labeltable</span> <span class="o">=</span> <span class="n">GiftiLabelTable</span><span class="p">()</span>
+        
+    <span class="c"># add getter and setter methods?</span>
+<div class="viewcode-block" id="GiftiImage.get_metadata"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.GiftiImage.get_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span>
+    </div>
+<div class="viewcode-block" id="GiftiImage.set_metadata"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.GiftiImage.set_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">set_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta</span><span class="p">):</span>
+        
+        <span class="c"># XXX: if it exists, make it readonly?</span>
+        <span class="c"># similar issues with nifti,</span>
+        <span class="c"># especially for GiftiDataArray metadata!</span>
+        <span class="c"># e.g. changing transformation matrix</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="n">meta</span>
+    </div>
+<div class="viewcode-block" id="GiftiImage.add_gifti_data_array"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.GiftiImage.add_gifti_data_array">[docs]</a>    <span class="k">def</span> <span class="nf">add_gifti_data_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataarr</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">darrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataarr</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">numDA</span> <span class="o">+=</span> <span class="mi">1</span>
+        
+        <span class="c"># XXX sanity checks</span>
+        </div>
+<div class="viewcode-block" id="GiftiImage.remove_gifti_data_array"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.GiftiImage.remove_gifti_data_array">[docs]</a>    <span class="k">def</span> <span class="nf">remove_gifti_data_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataarr</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">darrays</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">dataarr</span><span class="p">)</span>
+        <span class="c"># XXX update</span>
+    </div>
+<div class="viewcode-block" id="GiftiImage.getArraysFromIntent"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.GiftiImage.getArraysFromIntent">[docs]</a>    <span class="k">def</span> <span class="nf">getArraysFromIntent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a a list of GiftiDataArray elements matching</span>
+<span class="sd">        the given intent &quot;&quot;&quot;</span>
+        
+        <span class="c"># if it is integer do not convert</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">intent</span><span class="p">)</span><span class="o">==</span><span class="s">&#39;int&#39;</span><span class="p">:</span>
+            <span class="n">it</span> <span class="o">=</span> <span class="n">GiftiIntentCode</span><span class="o">.</span><span class="n">intents</span><span class="p">[</span><span class="n">intent</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">it</span> <span class="o">=</span> <span class="n">intent</span>
+            
+        <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">darrays</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">intent</span> <span class="o">==</span> <span class="n">it</span><span class="p">]</span>
+        
+    </div>
+<div class="viewcode-block" id="GiftiImage.print_summary"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.GiftiImage.print_summary">[docs]</a>    <span class="k">def</span> <span class="nf">print_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="k">print</span> <span class="s">&#39;----start----&#39;</span>
+        <span class="k">print</span> <span class="s">&#39;Source filename: &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
+        <span class="k">print</span> <span class="s">&#39;Number of data arrays: &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numDA</span>
+        <span class="k">print</span> <span class="s">&#39;Version: &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;----&#39;</span>
+            <span class="k">print</span> <span class="s">&#39;Metadata:&#39;</span>
+            <span class="k">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">print_summary</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">labeltable</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;----&#39;</span>
+            <span class="k">print</span> <span class="s">&#39;Labeltable:&#39;</span>
+            <span class="k">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">labeltable</span><span class="o">.</span><span class="n">print_summary</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">da</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">darrays</span><span class="p">):</span>
+            <span class="k">print</span> <span class="s">&#39;----&#39;</span>
+            <span class="k">print</span> <span class="s">&#39;DataArray </span><span class="si">%s</span><span class="s">:&#39;</span> <span class="o">%</span> <span class="n">i</span>
+            <span class="k">print</span> <span class="n">da</span><span class="o">.</span><span class="n">print_summary</span><span class="p">()</span>
+        <span class="k">print</span> <span class="s">&#39;----end----&#39;</span>
+    
+
+<span class="c">##############</span>
+<span class="c"># General Gifti Input - Output to the filesystem</span>
+<span class="c">##############</span>
+</div></div>
+<div class="viewcode-block" id="loadImage"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.loadImage">[docs]</a><span class="k">def</span> <span class="nf">loadImage</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Load a Gifti image from a file &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">os.path</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s">&quot;No such file or directory: &#39;</span><span class="si">%s</span><span class="s">&#39;&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">parse_gifti_fast</span> <span class="kn">as</span> <span class="nn">pg</span>
+        <span class="n">giifile</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">parse_gifti_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">giifile</span>
+     
+            </div>
+<div class="viewcode-block" id="saveImage"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.gifti.saveImage">[docs]</a><span class="k">def</span> <span class="nf">saveImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    Save the current image to a new file</span>
+<span class="sd">        </span>
+<span class="sd">	If the image was created using array data (not loaded from a file) one</span>
+<span class="sd">	has to specify a filename</span>
+<span class="sd">	</span>
+<span class="sd">	Note that the Gifti spec suggests using the following suffixes to your</span>
+<span class="sd">	filename when saving each specific type of data:</span>
+<span class="sd">    </span>
+<span class="sd">    - Generic GIFTI File    .gii</span>
+<span class="sd">	- Coordinates           .coord.gii</span>
+<span class="sd">	- Functional            .func.gii</span>
+<span class="sd">	- Labels                .label.gii</span>
+<span class="sd">	- RGB or RGBA           .rgba.gii</span>
+<span class="sd">	- Shape                 .shape.gii</span>
+<span class="sd">	- Surface               .surf.gii</span>
+<span class="sd">	- Tensors               .tensor.gii</span>
+<span class="sd">	- Time Series           .time.gii</span>
+<span class="sd">	- Topology              .topo.gii	</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+        
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
+    <span class="n">root_node</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s">&#39;GIFTI&#39;</span><span class="p">)</span>
+    <span class="n">root_node</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s">&#39;Version&#39;</span><span class="p">,</span> <span class="s">&#39;1.03&#39;</span><span class="p">)</span>
+    <span class="n">root_node</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s">&#39;NumberOfDataArrays&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">numDA</span><span class="p">))</span>
+    
+    <span class="c">#TODO Add metadata writing</span>
+    <span class="n">metadata_root</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s">&#39;MetaData&#39;</span><span class="p">)</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">get_data_as_dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
+        <span class="n">MD_node</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s">&#39;MD&#39;</span><span class="p">)</span>
+        <span class="n">name_node</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s">&#39;Name&#39;</span><span class="p">)</span>
+        <span class="n">name_value</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">createCDATASection</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+        <span class="n">name_node</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">name_value</span><span class="p">)</span>
+        <span class="n">MD_node</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">name_node</span><span class="p">)</span>
+        <span class="n">value_node</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s">&#39;Value&#39;</span><span class="p">)</span>
+        <span class="n">value_value</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">createCDATASection</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+        <span class="n">value_node</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">value_value</span><span class="p">)</span>
+        <span class="n">MD_node</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">value_node</span><span class="p">)</span>
+        <span class="n">metadata_root</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">MD_node</span><span class="p">)</span>
+    <span class="n">root_node</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">metadata_root</span><span class="p">)</span>
+    
+    <span class="c">#TODO Add label writing</span>
+    <span class="n">label_root</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s">&#39;LabelTable&#39;</span><span class="p">)</span>
+    <span class="c">#Append label data to this</span>
+    <span class="n">root_node</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">label_root</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">numDA</span><span class="p">)):</span>
+        <span class="c"># Intent code is stored in the DataArray struct</span>
+        <span class="n">darray</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">array_node</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s">&#39;DataArray&#39;</span><span class="p">)</span>
+        <span class="n">array_node</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s">&#39;Intent&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">GiftiIntentCode</span><span class="o">.</span><span class="n">intents_inv</span><span class="p">[</span><span class="n">darray</span><span class="o">.</span><span class="n">intent</span><span class="p">]))</span>
+        <span class="n">array_node</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s">&#39;DataType&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">GiftiDataType</span><span class="o">.</span><span class="n">datatypes_inv</span><span class="p">[</span><span class="n">darray</span><span class="o">.</span><span class="n">datatype</span><span class="p">]))</span>
+        <span class="n">array_node</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s">&#39;ArrayIndexingOrder&#39;</span><span class="p">,</span> <span class="s">&quot;RowMajorOrder&quot;</span><span class="p">)</span>
+        <span class="n">array_node</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s">&#39;Dimensionality&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">darray</span><span class="o">.</span><span class="n">dims</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">dim_idx</span><span class="p">,</span> <span class="n">dimension</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">darray</span><span class="o">.</span><span class="n">dims</span><span class="p">):</span>
+            <span class="n">dim_name</span> <span class="o">=</span> <span class="s">&#39;Dim&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dim_idx</span><span class="p">)</span>
+            <span class="n">array_node</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">dim_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">dimension</span><span class="p">))</span>
+        <span class="n">array_node</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s">&quot;Encoding&quot;</span><span class="p">,</span> <span class="s">&quot;ASCII&quot;</span><span class="p">)</span>
+        <span class="n">array_node</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s">&#39;endian&#39;</span><span class="p">,</span> <span class="s">&#39;LittleEndian&#39;</span><span class="p">)</span>
+        <span class="n">array_node</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s">&#39;ExternalFileName&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">array_node</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s">&#39;ExternalFileOffset&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+        
+        <span class="n">array_data_node</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s">&#39;Data&#39;</span><span class="p">)</span>
+        
+        <span class="n">folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">store_list_data</span><span class="p">(</span><span class="n">darray</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="s">&quot;tmp&quot;</span><span class="p">,</span> <span class="n">folder</span><span class="p">)</span>
+        <span class="n">tmp_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s">&quot;tmp&quot;</span><span class="p">),</span> <span class="s">&quot;r&quot;</span><span class="p">)</span>
+        <span class="n">data_string</span> <span class="o">=</span> <span class="n">tmp_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">array_data</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">createTextNode</span><span class="p">(</span><span class="n">data_string</span><span class="p">)</span>
+        <span class="n">tmp_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s">&quot;tmp&quot;</span><span class="p">))</span>
+        <span class="k">print</span> <span class="s">&quot;Created node&quot;</span>
+        <span class="n">array_data_node</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">array_data</span><span class="p">)</span>
+        <span class="n">array_node</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">array_data_node</span><span class="p">)</span>
+        <span class="n">root_node</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">array_node</span><span class="p">)</span>
+    <span class="n">doc</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">root_node</span><span class="p">)</span>
+    <span class="n">file_obj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">)</span>
+    <span class="n">doc</span><span class="o">.</span><span class="n">writexml</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">addindent</span><span class="o">=</span><span class="s">&quot;    &quot;</span><span class="p">,</span> <span class="n">newl</span><span class="o">=</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="n">file_obj</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+
+<span class="c">##############</span>
+<span class="c"># special purpose GiftiImage / GiftiDataArray creation methods</span>
+<span class="c">##############</span>
+
+<span class="c">#def GiftiImage_fromarray(data, intent = GiftiIntentCode.NIFTI_INTENT_NONE, encoding=GiftiEncoding.GIFTI_ENCODING_B64GZ, endian = GiftiEndian.GIFTI_ENDIAN_LITTLE):</span>
+<span class="c">#    &quot;&quot;&quot; Returns a GiftiImage from a Numpy array with a given intent code and</span>
+<span class="c">#    encoding &quot;&quot;&quot;</span>
+<span class="c">#    pass</span>
+<span class="c">#    </span>
+<span class="c">#def GiftiImage_fromTriangles(vertices, triangles, cs = None, encoding=GiftiEncoding.GIFTI_ENCODING_B64GZ, endian = GiftiEndian.GIFTI_ENDIAN_LITTLE):</span>
+<span class="c">#    &quot;&quot;&quot; Returns a GiftiImage from two numpy arrays representing the vertices</span>
+<span class="c">#    and the triangles. Additionally defining the coordinate system and encoding &quot;&quot;&quot;</span>
+<span class="c">#    pass</span>
+<span class="c">#    </span>
+<span class="c">#def GiftiDataArray_fromarray(self, data, intent = GiftiIntentCode.NIFTI_INTENT_NONE, encoding=GiftiEncoding.GIFTI_ENCODING_B64GZ, endian = GiftiEndian.GIFTI_ENDIAN_LITTLE):</span>
+<span class="c">#    &quot;&quot;&quot; Returns as GiftiDataArray from a Numpy array with a given intent code and</span>
+<span class="c">#    encoding &quot;&quot;&quot;</span>
+<span class="c">#    pass</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

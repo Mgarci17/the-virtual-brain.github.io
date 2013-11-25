@@ -1,0 +1,735 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.adapters.visualizers.phase_plane_interactive &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.adapters.visualizers.phase_plane_interactive</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Ionel Ortelecan &lt;ionel.ortelecan@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">pylab</span>
+<span class="kn">import</span> <span class="nn">colorsys</span>
+<span class="kn">import</span> <span class="nn">tvb.simulator.integrators</span> <span class="kn">as</span> <span class="nn">integrators_module</span>
+<span class="kn">from</span> <span class="nn">matplotlib.widgets</span> <span class="kn">import</span> <span class="n">Slider</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">RadioButtons</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span> <span class="k">as</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+
+
+<span class="c"># Define a colour theme... see: matplotlib.colors.cnames.keys()</span>
+<span class="n">BACKGROUNDCOLOUR</span> <span class="o">=</span> <span class="s">&quot;slategrey&quot;</span>   <span class="c"># &#39;gainsboro&#39;</span>
+<span class="n">EDGECOLOUR</span> <span class="o">=</span> <span class="s">&quot;darkslateblue&quot;</span>  <span class="c"># &#39;lemonchiffon&#39;</span>
+<span class="n">AXCOLOUR</span> <span class="o">=</span> <span class="s">&quot;steelblue&quot;</span>  <span class="c"># &#39;burlywood&#39;</span>
+<span class="n">BUTTONCOLOUR</span> <span class="o">=</span> <span class="s">&quot;steelblue&quot;</span>  <span class="c"># &#39;fuchsia&#39;</span>
+<span class="n">HOVERCOLOUR</span> <span class="o">=</span> <span class="s">&quot;darkred&quot;</span>  <span class="c"># &#39;chartreuse&#39;</span>
+
+<span class="c">#Set the resolution of the phase-plane and sample trajectories.</span>
+<span class="n">NUMBEROFGRIDPOINTS</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="n">TRAJ_STEPS</span> <span class="o">=</span> <span class="mi">1024</span>
+
+
+<div class="viewcode-block" id="get_color"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.phase_plane_interactive.get_color">[docs]</a><span class="k">def</span> <span class="nf">get_color</span><span class="p">(</span><span class="n">num_colours</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">hue</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_colours</span><span class="p">):</span>
+        <span class="n">hue</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">hue</span> <span class="o">/</span> <span class="n">num_colours</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">colorsys</span><span class="o">.</span><span class="n">hsv_to_rgb</span><span class="p">(</span><span class="n">hue</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mi">230</span><span class="p">)]</span>
+        <span class="k">yield</span> <span class="s">&quot;#{0:02x}{1:02x}{2:02x}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">col</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="PhasePlaneInteractive"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive">[docs]</a><span class="k">class</span> <span class="nc">PhasePlaneInteractive</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An interactive phase-plane plot generated from a TVB model object.</span>
+
+<span class="sd">    A TVB integrator object will be use for generating sample trajectories</span>
+<span class="sd">    -- not the phase-plane. This is mainly interesting for visualising</span>
+<span class="sd">    the effect of noise on a trajectory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">integrator</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">integrator</span> <span class="o">=</span> <span class="n">integrator</span>
+        <span class="c">#Make sure the model is fully configured...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">update_derived_parameters</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="PhasePlaneInteractive.get_required_memory_size"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive.get_required_memory_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_required_memory_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the required memory to run this algorithm.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Don&#39;t know how much memory is needed.</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+</div>
+<div class="viewcode-block" id="PhasePlaneInteractive.draw_phase_plane"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive.draw_phase_plane">[docs]</a>    <span class="k">def</span> <span class="nf">draw_phase_plane</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate the interactive phase-plane figure.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Plot started...&quot;</span><span class="p">)</span>
+
+        <span class="n">model_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Generating an interactive phase-plane plot for </span><span class="si">%s</span><span class="s">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="n">model_name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">svx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variables</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c"># x-axis: 1st state variable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">svy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variables</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c"># y-axis: 2nd state variable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_state_vector</span><span class="p">()</span>
+
+        <span class="c">#TODO: see how we can get the figure size from the UI to better &#39;fit&#39; the encompassing div</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ipp_fig</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+        <span class="n">pylab</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pp_ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ipp_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.265</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pp_splt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ipp_fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">212</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ipp_fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="mf">0.265</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">wspace</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">hspace</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pp_splt</span><span class="o">.</span><span class="n">set_color_cycle</span><span class="p">(</span><span class="n">get_color</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">nvar</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pp_splt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">TRAJ_STEPS</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
+                          <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">TRAJ_STEPS</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">nvar</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pp_splt</span><span class="p">,</span> <span class="s">&#39;autoscale&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pp_splt</span><span class="o">.</span><span class="n">autoscale</span><span class="p">(</span><span class="n">enable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="n">tight</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pp_splt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variables</span><span class="p">)</span>
+
+        <span class="c">#Selectors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_state_variable_selector</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_mode_selector</span><span class="p">()</span>
+
+        <span class="c">#Sliders</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_axes_range_sliders</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_state_variable_sliders</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">integrator</span><span class="p">,</span> <span class="n">integrators_module</span><span class="o">.</span><span class="n">IntegratorStochastic</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">ntau</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">integrator</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">configure_coloured</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">integrator</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
+                                                         <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">nvar</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">number_of_modes</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">integrator</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">configure_white</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">integrator</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
+                                                      <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">nvar</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">number_of_modes</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_noise_slider</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_reset_noise_button</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_reset_seed_button</span><span class="p">()</span>
+
+        <span class="c">#Reset buttons</span>
+        <span class="c">#self._add_reset_param_button()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_reset_sv_button</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_reset_axes_button</span><span class="p">()</span>
+
+        <span class="c">#Calculate the phase plane</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_mesh_grid</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calc_phase_plane</span><span class="p">()</span>
+
+        <span class="c">#Plot phase plane</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plot_phase_plane</span><span class="p">()</span>
+
+        <span class="c"># add mouse handler for trajectory clicking</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ipp_fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s">&#39;button_press_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_click_trajectory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ipp_fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">serverIp</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">SERVER_IP</span><span class="p">,</span> <span class="n">serverPort</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">MPLH5_SERVER_PORT</span><span class="p">,</span>
+                    <span class="n">figureNumber</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ipp_fig</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="n">showFullToolbar</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">_add_state_variable_selector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate radio selector buttons to set which state variable is</span>
+<span class="sd">        displayed on the x and y axis of the phase-plane plot.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">svx_ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variables</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">svx</span><span class="p">)</span>
+        <span class="n">svy_ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variables</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">svy</span><span class="p">)</span>
+
+        <span class="c">#State variable for the x axis</span>
+        <span class="n">pos_shp</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.08</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">,</span> <span class="mf">0.065</span><span class="p">,</span> <span class="mf">0.12</span> <span class="o">+</span> <span class="mf">0.006</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">nvar</span><span class="p">]</span>
+        <span class="n">rax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ipp_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">pos_shp</span><span class="p">,</span> <span class="n">axisbg</span><span class="o">=</span><span class="n">AXCOLOUR</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;x-axis&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_variable_x</span> <span class="o">=</span> <span class="n">RadioButtons</span><span class="p">(</span><span class="n">rax</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variables</span><span class="p">),</span> <span class="n">active</span><span class="o">=</span><span class="n">svx_ind</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_variable_x</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_svx</span><span class="p">)</span>
+
+        <span class="c">#State variable for the y axis</span>
+        <span class="n">pos_shp</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">,</span> <span class="mf">0.065</span><span class="p">,</span> <span class="mf">0.12</span> <span class="o">+</span> <span class="mf">0.006</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">nvar</span><span class="p">]</span>
+        <span class="n">rax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ipp_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">pos_shp</span><span class="p">,</span> <span class="n">axisbg</span><span class="o">=</span><span class="n">AXCOLOUR</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;y-axis&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_variable_y</span> <span class="o">=</span> <span class="n">RadioButtons</span><span class="p">(</span><span class="n">rax</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variables</span><span class="p">),</span> <span class="n">active</span><span class="o">=</span><span class="n">svy_ind</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_variable_y</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_svy</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_add_mode_selector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a radio button to the figure for selecting which mode of the model</span>
+<span class="sd">        should be displayed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pos_shp</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.1</span> <span class="o">+</span> <span class="mf">0.002</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">number_of_modes</span><span class="p">]</span>
+        <span class="n">rax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ipp_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">pos_shp</span><span class="p">,</span> <span class="n">axisbg</span><span class="o">=</span><span class="n">AXCOLOUR</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;Mode&quot;</span><span class="p">)</span>
+        <span class="n">mode_tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">number_of_modes</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode_selector</span> <span class="o">=</span> <span class="n">RadioButtons</span><span class="p">(</span><span class="n">rax</span><span class="p">,</span> <span class="n">mode_tuple</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode_selector</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_mode</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_add_axes_range_sliders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add sliders to the figure to allow the phase-planes axes to be set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="n">default_range_x</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svx</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svx</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">default_range_y</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svy</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svy</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">min_val_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svx</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">default_range_x</span>
+        <span class="n">max_val_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svx</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">default_range_x</span>
+        <span class="n">min_val_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svy</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">default_range_y</span>
+        <span class="n">max_val_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svy</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">default_range_y</span>
+
+        <span class="n">sax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ipp_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.835</span><span class="p">,</span> <span class="mf">0.125</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">],</span>
+                                    <span class="n">axisbg</span><span class="o">=</span><span class="n">AXCOLOUR</span><span class="p">)</span>
+        <span class="n">sl_x_min</span> <span class="o">=</span> <span class="n">Slider</span><span class="p">(</span><span class="n">sax</span><span class="p">,</span> <span class="s">&quot;xlo&quot;</span><span class="p">,</span> <span class="n">min_val_x</span><span class="p">,</span> <span class="n">max_val_x</span><span class="p">,</span>
+                          <span class="n">valinit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svx</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">sl_x_min</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_range</span><span class="p">)</span>
+
+        <span class="n">sax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ipp_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.125</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">],</span> <span class="n">axisbg</span><span class="o">=</span><span class="n">AXCOLOUR</span><span class="p">)</span>
+        <span class="n">sl_x_max</span> <span class="o">=</span> <span class="n">Slider</span><span class="p">(</span><span class="n">sax</span><span class="p">,</span> <span class="s">&quot;xhi&quot;</span><span class="p">,</span> <span class="n">min_val_x</span><span class="p">,</span> <span class="n">max_val_x</span><span class="p">,</span> <span class="n">valinit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svx</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">sl_x_max</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_range</span><span class="p">)</span>
+
+        <span class="n">sax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ipp_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.765</span><span class="p">,</span> <span class="mf">0.125</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">],</span> <span class="n">axisbg</span><span class="o">=</span><span class="n">AXCOLOUR</span><span class="p">)</span>
+        <span class="n">sl_y_min</span> <span class="o">=</span> <span class="n">Slider</span><span class="p">(</span><span class="n">sax</span><span class="p">,</span> <span class="s">&quot;ylo&quot;</span><span class="p">,</span> <span class="n">min_val_y</span><span class="p">,</span> <span class="n">max_val_y</span><span class="p">,</span> <span class="n">valinit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svy</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">sl_y_min</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_range</span><span class="p">)</span>
+
+        <span class="n">sax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ipp_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.73</span><span class="p">,</span> <span class="mf">0.125</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">],</span> <span class="n">axisbg</span><span class="o">=</span><span class="n">AXCOLOUR</span><span class="p">)</span>
+        <span class="n">sl_y_max</span> <span class="o">=</span> <span class="n">Slider</span><span class="p">(</span><span class="n">sax</span><span class="p">,</span> <span class="s">&quot;yhi&quot;</span><span class="p">,</span> <span class="n">min_val_y</span><span class="p">,</span> <span class="n">max_val_y</span><span class="p">,</span> <span class="n">valinit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svy</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">sl_y_max</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_range</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_min&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sl_x_min</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_max&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sl_x_max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_min&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sl_y_min</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_max&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sl_y_max</span>
+
+
+    <span class="k">def</span> <span class="nf">_add_state_variable_sliders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add sliders to the figure to allow default values for the models state</span>
+<span class="sd">        variable to be set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">msv_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sv_sliders</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">sv</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">nvar</span><span class="p">):</span>
+            <span class="n">offset</span> <span class="o">+=</span> <span class="mf">0.035</span>
+            <span class="n">pos_shp</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.6</span> <span class="o">-</span> <span class="n">offset</span><span class="p">,</span> <span class="mf">0.125</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">]</span>
+            <span class="n">sax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ipp_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">pos_shp</span><span class="p">,</span> <span class="n">axisbg</span><span class="o">=</span><span class="n">AXCOLOUR</span><span class="p">)</span>
+            <span class="n">sv_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variables</span><span class="p">[</span><span class="n">sv</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sv_sliders</span><span class="p">[</span><span class="n">sv_str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Slider</span><span class="p">(</span><span class="n">sax</span><span class="p">,</span> <span class="n">sv_str</span><span class="p">,</span> <span class="n">msv_range</span><span class="p">[</span><span class="n">sv_str</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                             <span class="n">msv_range</span><span class="p">[</span><span class="n">sv_str</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">valinit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">default_sv</span><span class="p">[</span><span class="n">sv</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sv_sliders</span><span class="p">[</span><span class="n">sv_str</span><span class="p">]</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_state_variables</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_add_noise_slider</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a slider to the figure to allow the integrators noise strength to</span>
+<span class="sd">        be set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pos_shp</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.365</span><span class="p">,</span> <span class="mf">0.125</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">]</span>
+        <span class="n">sax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ipp_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">pos_shp</span><span class="p">,</span> <span class="n">axisbg</span><span class="o">=</span><span class="n">AXCOLOUR</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">noise_slider</span> <span class="o">=</span> <span class="n">Slider</span><span class="p">(</span><span class="n">sax</span><span class="p">,</span> <span class="s">&quot;Noise&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">valinit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">integrator</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">nsig</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">noise_slider</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_noise</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_add_reset_sv_button</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a button to the figure for reseting the model state variables to</span>
+<span class="sd">        their default values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ipp_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.60</span><span class="p">,</span> <span class="mf">0.125</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_sv_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">bax</span><span class="p">,</span> <span class="s">&#39;Reset state-variables&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">BUTTONCOLOUR</span><span class="p">,</span> <span class="n">hovercolor</span><span class="o">=</span><span class="n">HOVERCOLOUR</span><span class="p">)</span>
+
+
+        <span class="k">def</span> <span class="nf">reset_state_variables</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">svsl</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sv_sliders</span><span class="o">.</span><span class="n">itervalues</span><span class="p">():</span>
+                <span class="n">svsl</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_sv_button</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="n">reset_state_variables</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_add_reset_noise_button</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a button to the figure for reseting the noise to its default value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ipp_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.125</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_noise_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">bax</span><span class="p">,</span> <span class="s">&#39;Reset noise strength&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">BUTTONCOLOUR</span><span class="p">,</span> <span class="n">hovercolor</span><span class="o">=</span><span class="n">HOVERCOLOUR</span><span class="p">)</span>
+
+
+        <span class="k">def</span> <span class="nf">reset_noise</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">noise_slider</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_noise_button</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="n">reset_noise</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_add_reset_seed_button</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a button to the figure for reseting the random number generator to</span>
+<span class="sd">        its intial state. For reproducible noise...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ipp_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.315</span><span class="p">,</span> <span class="mf">0.125</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_seed_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">bax</span><span class="p">,</span> <span class="s">&#39;Reset random stream&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">BUTTONCOLOUR</span><span class="p">,</span> <span class="n">hovercolor</span><span class="o">=</span><span class="n">HOVERCOLOUR</span><span class="p">)</span>
+
+
+        <span class="k">def</span> <span class="nf">reset_seed</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">integrator</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">trait</span><span class="p">[</span><span class="s">&quot;random_stream&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_seed_button</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="n">reset_seed</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_add_reset_axes_button</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a button to the figure for reseting the phase-plane axes to their</span>
+<span class="sd">        default ranges.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ipp_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.87</span><span class="p">,</span> <span class="mf">0.125</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_axes_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">bax</span><span class="p">,</span> <span class="s">&#39;Reset axes&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">BUTTONCOLOUR</span><span class="p">,</span> <span class="n">hovercolor</span><span class="o">=</span><span class="n">HOVERCOLOUR</span><span class="p">)</span>
+
+
+        <span class="k">def</span> <span class="nf">reset_ranges</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_axes_button</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="n">reset_ranges</span><span class="p">)</span>
+
+
+    <span class="c">##------------------------------------------------------------------------##</span>
+    <span class="c">##------------------- Functions for updating the figure ------------------##</span>
+    <span class="c">##------------------------------------------------------------------------##</span>
+
+    <span class="c">#NOTE: All the ax.set_xlim, poly.xy, etc, garbage below is fragile. It works </span>
+    <span class="c">#      at the moment, but there are currently bugs in Slider and the hackery</span>
+    <span class="c">#      below takes these into account... If the bugs are fixed/changed then</span>
+    <span class="c">#      this could break. As an example, the Slider doc says poly is a</span>
+    <span class="c">#      Rectangle, but it&#39;s actually a Polygon. The Slider set_val method </span>
+    <span class="c">#      assumes a Rectangle even though this is not the case, so the array </span>
+    <span class="c">#      Slider.poly.xy is corrupted by that method. The corruption isn&#39;t </span>
+    <span class="c">#      visible in the plot, which is probably why it hasn&#39;t been fixed...</span>
+
+<div class="viewcode-block" id="PhasePlaneInteractive.update_xrange_sliders"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive.update_xrange_sliders">[docs]</a>    <span class="k">def</span> <span class="nf">update_xrange_sliders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">default_range_x</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svx</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svx</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">min_val_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svx</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">default_range_x</span>
+        <span class="n">max_val_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svx</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">default_range_x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">valinit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svx</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">valmin</span> <span class="o">=</span> <span class="n">min_val_x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">valmax</span> <span class="o">=</span> <span class="n">max_val_x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">min_val_x</span><span class="p">,</span> <span class="n">max_val_x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">poly</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">min_val_x</span><span class="p">,</span> <span class="n">max_val_x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">poly</span><span class="o">.</span><span class="n">xy</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">min_val_x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">vline</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span>
+            <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">valinit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">valinit</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">valinit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svx</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">valmin</span> <span class="o">=</span> <span class="n">min_val_x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">valmax</span> <span class="o">=</span> <span class="n">max_val_x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">min_val_x</span><span class="p">,</span> <span class="n">max_val_x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">poly</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">min_val_x</span><span class="p">,</span> <span class="n">max_val_x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">poly</span><span class="o">.</span><span class="n">xy</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">min_val_x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">vline</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span>
+            <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">valinit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">valinit</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="PhasePlaneInteractive.update_yrange_sliders"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive.update_yrange_sliders">[docs]</a>    <span class="k">def</span> <span class="nf">update_yrange_sliders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">default_range_y</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svy</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svy</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">min_val_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svy</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">default_range_y</span>
+        <span class="n">max_val_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svy</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">default_range_y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">valinit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svy</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">valmin</span> <span class="o">=</span> <span class="n">min_val_y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">valmax</span> <span class="o">=</span> <span class="n">max_val_y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">min_val_y</span><span class="p">,</span> <span class="n">max_val_y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">poly</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">min_val_y</span><span class="p">,</span> <span class="n">max_val_y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">poly</span><span class="o">.</span><span class="n">xy</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">min_val_y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">vline</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span>
+            <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">valinit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">valinit</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">valinit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svy</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">valmin</span> <span class="o">=</span> <span class="n">min_val_y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">valmax</span> <span class="o">=</span> <span class="n">max_val_y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">min_val_y</span><span class="p">,</span> <span class="n">max_val_y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">poly</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">min_val_y</span><span class="p">,</span> <span class="n">max_val_y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">poly</span><span class="o">.</span><span class="n">xy</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">min_val_y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">vline</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span>
+            <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">valinit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">valinit</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">_update_svx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update state variable used for x-axis based on radio buttton selection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">svx</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_xrange_sliders</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_mesh_grid</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calc_phase_plane</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_phase_plane</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">_update_svy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update state variable used for y-axis based on radio buttton selection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">svy</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_yrange_sliders</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_mesh_grid</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calc_phase_plane</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_phase_plane</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">_update_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Update the visualised mode based on radio button selection. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_phase_plane</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">_update_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nsig</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Update integrator noise based on the noise slider value. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">integrator</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">nsig</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">nsig</span><span class="p">,</span> <span class="p">])</span>
+
+
+    <span class="k">def</span> <span class="nf">_update_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the axes ranges based on the current axes slider values.</span>
+
+<span class="sd">        NOTE: Haven&#39;t figured out how to update independently, so just update everything.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#TODO: Grab caller and use val directly, ie independent range update.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_axis_bgcolor</span><span class="p">(</span><span class="n">AXCOLOUR</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_axis_bgcolor</span><span class="p">(</span><span class="n">AXCOLOUR</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_axis_bgcolor</span><span class="p">(</span><span class="n">AXCOLOUR</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_axis_bgcolor</span><span class="p">(</span><span class="n">AXCOLOUR</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">val</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">val</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;X-axis min must be less than max...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_axis_bgcolor</span><span class="p">(</span><span class="s">&quot;Red&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_axis_bgcolor</span><span class="p">(</span><span class="s">&quot;Red&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">val</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">val</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Y-axis min must be less than max...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_axis_bgcolor</span><span class="p">(</span><span class="s">&quot;Red&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_axis_bgcolor</span><span class="p">(</span><span class="s">&quot;Red&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">msv_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span>
+        <span class="n">msv_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svx</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">val</span>
+        <span class="n">msv_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svx</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_x_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">val</span>
+        <span class="n">msv_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svy</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">val</span>
+        <span class="n">msv_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svy</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes_range_sliders</span><span class="p">[</span><span class="s">&quot;sl_y_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">val</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_mesh_grid</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calc_phase_plane</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_phase_plane</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">_update_phase_plane</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Clear the axes and redraw the phase-plane. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pp_ax</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pp_splt</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pp_splt</span><span class="o">.</span><span class="n">set_color_cycle</span><span class="p">(</span><span class="n">get_color</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">nvar</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pp_splt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">TRAJ_STEPS</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
+                          <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">TRAJ_STEPS</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">nvar</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pp_splt</span><span class="p">,</span> <span class="s">&#39;autoscale&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pp_splt</span><span class="o">.</span><span class="n">autoscale</span><span class="p">(</span><span class="n">enable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="n">tight</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pp_splt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variables</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plot_phase_plane</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">_update_state_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the default state-variable values, used for non-visualised state</span>
+<span class="sd">        variables, based of the current slider values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">sv</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sv_sliders</span><span class="p">:</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variables</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">sv</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">default_sv</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sv_sliders</span><span class="p">[</span><span class="n">sv</span><span class="p">]</span><span class="o">.</span><span class="n">val</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calc_phase_plane</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_phase_plane</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">_set_mesh_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate the phase-plane gridding based on currently selected statevariables</span>
+<span class="sd">        and their range values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">xlo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svx</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">xhi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svx</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ylo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svy</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">yhi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">svy</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span><span class="n">xlo</span><span class="p">:</span><span class="n">xhi</span><span class="p">:(</span><span class="n">NUMBEROFGRIDPOINTS</span> <span class="o">*</span> <span class="mi">1j</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Y</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span><span class="n">ylo</span><span class="p">:</span><span class="n">yhi</span><span class="p">:(</span><span class="n">NUMBEROFGRIDPOINTS</span> <span class="o">*</span> <span class="mi">1j</span><span class="p">)]</span>
+
+
+    <span class="k">def</span> <span class="nf">_set_state_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#import pdb; pdb.set_trace()</span>
+        <span class="n">svr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variable_range</span>
+        <span class="n">sv_mean</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">svr</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variables</span><span class="p">])</span>
+        <span class="n">sv_mean</span> <span class="o">=</span> <span class="n">sv_mean</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">nvar</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_sv</span> <span class="o">=</span> <span class="n">sv_mean</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">number_of_modes</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">no_coupling</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">nvar</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">number_of_modes</span><span class="p">))</span>
+
+
+    <span class="k">def</span> <span class="nf">_calc_phase_plane</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Calculate the vector field. &quot;&quot;&quot;</span>
+        <span class="n">svx_ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variables</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">svx</span><span class="p">)</span>
+        <span class="n">svy_ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variables</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">svy</span><span class="p">)</span>
+
+        <span class="c">#Calculate the vector field discretely sampled at a grid of points</span>
+        <span class="n">grid_point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_sv</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">U</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">NUMBEROFGRIDPOINTS</span><span class="p">,</span> <span class="n">NUMBEROFGRIDPOINTS</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">number_of_modes</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">V</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">NUMBEROFGRIDPOINTS</span><span class="p">,</span> <span class="n">NUMBEROFGRIDPOINTS</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">number_of_modes</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">NUMBEROFGRIDPOINTS</span><span class="p">):</span>
+            <span class="n">grid_point</span><span class="p">[</span><span class="n">svy_ind</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Y</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">NUMBEROFGRIDPOINTS</span><span class="p">):</span>
+                <span class="c">#import pdb; pdb.set_trace()</span>
+                <span class="n">grid_point</span><span class="p">[</span><span class="n">svx_ind</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">dfun</span><span class="p">(</span><span class="n">grid_point</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_coupling</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">number_of_modes</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="n">jj</span><span class="p">,</span> <span class="n">kk</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">svx_ind</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">kk</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="n">jj</span><span class="p">,</span> <span class="n">kk</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">svy_ind</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">kk</span><span class="p">]</span>
+
+        <span class="c">#self.UVmag = numpy.sqrt(self.U**2 + self.V**2)</span>
+        <span class="c">#import pdb; pdb.set_trace()</span>
+        <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="ow">or</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;NaN&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_plot_phase_plane</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Plot the vector field and its nullclines. &quot;&quot;&quot;</span>
+        <span class="c"># Set title and axis labels</span>
+        <span class="n">model_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pp_ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">model_name</span> <span class="o">+</span> <span class="s">&quot; mode &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pp_ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s">&quot;State Variable &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">svx</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pp_ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s">&quot;State Variable &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">svy</span><span class="p">)</span>
+        <span class="c">#import pdb; pdb.set_trace()</span>
+        <span class="c">#Plot a discrete representation of the vector field</span>
+        <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">[:,</span> <span class="p">:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="p">[:,</span> <span class="p">:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pp_ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">model_name</span> <span class="o">+</span> <span class="s">&quot; mode &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;: NO MOTION IN THIS PLANE&quot;</span><span class="p">)</span>
+            <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Y</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pp_quivers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pp_ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s">&quot;.&quot;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;k&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pp_quivers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pp_ax</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Y</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">[:,</span> <span class="p">:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">],</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="p">[:,</span> <span class="p">:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">],</span>
+                                                <span class="c">#self.UVmag[:, :, self.mode],</span>
+                                                <span class="n">width</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">headwidth</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+        <span class="c">#Plot the nullclines</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nullcline_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pp_ax</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">[:,</span> <span class="p">:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">colors</span><span class="o">=</span><span class="s">&quot;r&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nullcline_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pp_ax</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="p">[:,</span> <span class="p">:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">colors</span><span class="o">=</span><span class="s">&quot;g&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ipp_fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">_plot_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot a sample trajectory, starting at the position x,y in the phase-plane.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">svx_ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variables</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">svx</span><span class="p">)</span>
+        <span class="n">svy_ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_variables</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">svy</span><span class="p">)</span>
+
+        <span class="c">#Calculate an example trajectory</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_sv</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">state</span><span class="p">[</span><span class="n">svx_ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">state</span><span class="p">[</span><span class="n">svy_ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="n">scheme</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator</span><span class="o">.</span><span class="n">scheme</span>
+        <span class="n">traj</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">TRAJ_STEPS</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">nvar</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">number_of_modes</span><span class="p">))</span>
+        <span class="n">traj</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">TRAJ_STEPS</span><span class="p">):</span>
+            <span class="c">#import pdb; pdb.set_trace()</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">scheme</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">dfun</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_coupling</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+            <span class="n">traj</span><span class="p">[</span><span class="n">step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">state</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pp_ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s">&#39;g&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s">&#39;o&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pp_ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">traj</span><span class="p">[:,</span> <span class="n">svx_ind</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">],</span> <span class="n">traj</span><span class="p">[:,</span> <span class="n">svy_ind</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">])</span>
+
+        <span class="c">#Plot the selected state variable trajectories as a function of time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pp_splt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">TRAJ_STEPS</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">traj</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">])</span>
+
+        <span class="n">pylab</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">_click_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">pp_ax</span><span class="p">:</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">xdata</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">ydata</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;trajectory starting at (</span><span class="si">%f</span><span class="s">, </span><span class="si">%f</span><span class="s">)&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plot_trajectory</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="PhasePlaneInteractive.update_model_parameter"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive.update_model_parameter">[docs]</a>    <span class="k">def</span> <span class="nf">update_model_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_new_value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update model parameters based on the current parameter slider values.</span>
+
+<span class="sd">        NOTE: Haven&#39;t figured out how to update independantly, so just update</span>
+<span class="sd">            everything.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#TODO: Grab caller and use val directly, ie independent parameter update.</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">param_new_value</span><span class="p">]))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">update_derived_parameters</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calc_phase_plane</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_phase_plane</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="PhasePlaneInteractive.update_all_model_parameters"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive.update_all_model_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">update_all_model_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_instance</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">model_instance</span><span class="o">.</span><span class="n">ui_configurable_parameters</span><span class="p">:</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model_instance</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">attr</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">attr</span><span class="p">[</span><span class="mi">0</span><span class="p">]]))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">update_derived_parameters</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calc_phase_plane</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_phase_plane</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="PhasePlaneInteractive.update_model_parameters_from_dict"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive.update_model_parameters_from_dict">[docs]</a>    <span class="k">def</span> <span class="nf">update_model_parameters_from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        NOTE: I expect that the given parameters exists on the current</span>
+<span class="sd">        model and also that they are numpy arrays.</span>
+
+<span class="sd">        Sets the parameters from the given dict on the current</span>
+<span class="sd">        model instance and also updates the phase-plane.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="n">parameters_dict</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">parameters_dict</span><span class="p">[</span><span class="n">param_name</span><span class="p">]]))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">update_derived_parameters</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calc_phase_plane</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_phase_plane</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

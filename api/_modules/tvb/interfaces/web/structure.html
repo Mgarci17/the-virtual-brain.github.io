@@ -1,0 +1,343 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.interfaces.web.structure &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.interfaces.web.structure</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: lia.domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+
+<div class="viewcode-block" id="WebStructure"><a class="viewcode-back" href="../../../../tvb.interfaces.web.html#tvb.interfaces.web.structure.WebStructure">[docs]</a><span class="k">class</span> <span class="nc">WebStructure</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="c">### TVB sections. Will appear as footer entries.</span>
+    <span class="n">SECTION_USER</span> <span class="o">=</span> <span class="s">&quot;user&quot;</span>
+    <span class="n">SECTION_PROJECT</span> <span class="o">=</span> <span class="s">&quot;project&quot;</span>
+    <span class="n">SECTION_BURST</span> <span class="o">=</span> <span class="s">&quot;burst&quot;</span>
+    <span class="n">SECTION_ANALYZE</span> <span class="o">=</span> <span class="s">&quot;analyze&quot;</span>
+    <span class="n">SECTION_STIMULUS</span> <span class="o">=</span> <span class="s">&quot;stimulus&quot;</span>
+    <span class="n">SECTION_CONNECTIVITY</span> <span class="o">=</span> <span class="s">&quot;connectivity&quot;</span>
+
+    <span class="c">### Subsections for USER section</span>
+    <span class="n">SUB_SECTION_LOGIN</span> <span class="o">=</span> <span class="s">&quot;login&quot;</span>
+    <span class="n">SUB_SECTION_ACCOUNT</span> <span class="o">=</span> <span class="s">&quot;account&quot;</span>
+
+    <span class="c">### Subsections for PROJECT section.</span>
+    <span class="n">SUB_SECTION_PROJECT_MENU</span> <span class="o">=</span> <span class="s">&quot;project&quot;</span>
+    <span class="n">SUB_SECTION_OPERATIONS</span> <span class="o">=</span> <span class="s">&quot;operations&quot;</span>
+    <span class="n">SUB_SECTION_DATA_STRUCTURE</span> <span class="o">=</span> <span class="s">&quot;data&quot;</span>
+    <span class="n">SUB_SECTION_LIST_PROJECTS</span> <span class="o">=</span> <span class="s">&quot;list&quot;</span>
+    <span class="n">SUB_SECTION_PROPERTIES_PROJECT</span> <span class="o">=</span> <span class="s">&quot;properties&quot;</span>
+    <span class="n">SUB_SECTION_FIGURES</span> <span class="o">=</span> <span class="s">&quot;figures&quot;</span>
+    <span class="n">SUB_SECTION_PIPELINE</span> <span class="o">=</span> <span class="s">&quot;pipeline&quot;</span>
+
+    <span class="c">### Subsections for BURST section.</span>
+    <span class="n">SUB_SECTION_BURST</span> <span class="o">=</span> <span class="s">&quot;burst&quot;</span>
+    <span class="n">SUB_SECTION_MODEL_REGIONS</span> <span class="o">=</span> <span class="s">&quot;regionmodel&quot;</span>
+    <span class="n">SUB_SECTION_MODEL_SURFACE</span> <span class="o">=</span> <span class="s">&quot;surfacemodel&quot;</span>
+    <span class="n">SUB_SECTION_NOISE_CONFIGURATION</span> <span class="o">=</span> <span class="s">&quot;noiseconfig&quot;</span>
+
+    <span class="c">### Subsections for ANALYZE section.</span>
+    <span class="c">### These subsections can extends, and depend on existing analyzers in the system.</span>
+    <span class="n">SUB_SECTION_ANALYZE_MENU</span> <span class="o">=</span> <span class="s">&quot;analyze&quot;</span>
+    <span class="n">SUB_SECTION_ANALYZE_1</span> <span class="o">=</span> <span class="s">&quot;crosscorr&quot;</span>
+    <span class="n">SUB_SECTION_ANALYZE_2</span> <span class="o">=</span> <span class="s">&quot;ccpearson&quot;</span>
+    <span class="n">SUB_SECTION_ANALYZE_3</span> <span class="o">=</span> <span class="s">&quot;coherence&quot;</span>
+    <span class="n">SUB_SECTION_ANALYZE_4</span> <span class="o">=</span> <span class="s">&quot;complexcoherence&quot;</span>
+    <span class="n">SUB_SECTION_ANALYZE_5</span> <span class="o">=</span> <span class="s">&quot;covariance&quot;</span>
+    <span class="n">SUB_SECTION_ANALYZE_6</span> <span class="o">=</span> <span class="s">&quot;components&quot;</span>
+    <span class="n">SUB_SECTION_ANALYZE_7</span> <span class="o">=</span> <span class="s">&quot;fourier&quot;</span>
+    <span class="n">SUB_SECTION_ANALYZE_8</span> <span class="o">=</span> <span class="s">&quot;ica&quot;</span>
+    <span class="n">SUB_SECTION_ANALYZE_9</span> <span class="o">=</span> <span class="s">&quot;timeseries&quot;</span>
+    <span class="n">SUB_SECTION_ANALYZE_10</span> <span class="o">=</span> <span class="s">&quot;wavelet&quot;</span>
+    <span class="n">SUB_SECTION_ANALYZE_11</span> <span class="o">=</span> <span class="s">&quot;bct&quot;</span>
+    <span class="n">SUB_SECTION_ANALYZE_12</span> <span class="o">=</span> <span class="s">&quot;bctcentrality&quot;</span>
+    <span class="n">SUB_SECTION_ANALYZE_13</span> <span class="o">=</span> <span class="s">&quot;bctclustering&quot;</span>
+    <span class="n">SUB_SECTION_ANALYZE_14</span> <span class="o">=</span> <span class="s">&quot;bctdegree&quot;</span>
+    <span class="n">SUB_SECTION_ANALYZE_15</span> <span class="o">=</span> <span class="s">&quot;bctdensity&quot;</span>
+    <span class="n">SUB_SECTION_ANALYZE_16</span> <span class="o">=</span> <span class="s">&quot;bctdistance&quot;</span>
+
+    <span class="c">### Subsections for STIMULUS section.</span>
+    <span class="n">SUB_SECTION_STIMULUS_MENU</span> <span class="o">=</span> <span class="s">&quot;stimulus&quot;</span>
+    <span class="n">SUB_SECTION_STIMULUS_SURFACE</span> <span class="o">=</span> <span class="s">&quot;regionstim&quot;</span>
+    <span class="n">SUB_SECTION_STIMULUS_REGION</span> <span class="o">=</span> <span class="s">&quot;surfacestim&quot;</span>
+
+    <span class="c">### Subsections for CONNECTIVITY section</span>
+    <span class="n">SUB_SECTION_CONNECTIVITY_MENU</span> <span class="o">=</span> <span class="s">&quot;step&quot;</span>
+    <span class="n">SUB_SECTION_CONNECTIVITY</span> <span class="o">=</span> <span class="s">&quot;connectivity&quot;</span>
+    <span class="n">SUB_SECTION_LOCAL_CONNECTIVITY</span> <span class="o">=</span> <span class="s">&quot;local&quot;</span>
+
+    <span class="c">### Subsections used under BURST and PROJECT sections.</span>
+    <span class="c">### These subsections can extend, and depend on existing visualizers in the system.</span>
+    <span class="n">SUB_SECTION_VIEW_0</span> <span class="o">=</span> <span class="s">&quot;view_connectivity&quot;</span>
+    <span class="n">SUB_SECTION_VIEW_1</span> <span class="o">=</span> <span class="s">&quot;view_brain&quot;</span>
+    <span class="n">SUB_SECTION_VIEW_2</span> <span class="o">=</span> <span class="s">&quot;view_brain_eeg&quot;</span>
+    <span class="n">SUB_SECTION_VIEW_3</span> <span class="o">=</span> <span class="s">&quot;view_brain_seeg&quot;</span>
+    <span class="n">SUB_SECTION_VIEW_4</span> <span class="o">=</span> <span class="s">&quot;view_covariance&quot;</span>
+    <span class="n">SUB_SECTION_VIEW_5</span> <span class="o">=</span> <span class="s">&quot;view_coherence&quot;</span>
+    <span class="n">SUB_SECTION_VIEW_6</span> <span class="o">=</span> <span class="s">&quot;view_complex_coherence&quot;</span>
+    <span class="n">SUB_SECTION_VIEW_7</span> <span class="o">=</span> <span class="s">&quot;view_correlation&quot;</span>
+    <span class="n">SUB_SECTION_VIEW_8</span> <span class="o">=</span> <span class="s">&quot;view_correlation_pearson&quot;</span>
+    <span class="n">SUB_SECTION_VIEW_9</span> <span class="o">=</span> <span class="s">&quot;view_eeg&quot;</span>
+    <span class="n">SUB_SECTION_VIEW_10</span> <span class="o">=</span> <span class="s">&quot;view_fourier&quot;</span>
+    <span class="n">SUB_SECTION_VIEW_11</span> <span class="o">=</span> <span class="s">&quot;view_histogram&quot;</span>
+    <span class="n">SUB_SECTION_VIEW_12</span> <span class="o">=</span> <span class="s">&quot;view_ica&quot;</span>
+    <span class="n">SUB_SECTION_VIEW_13</span> <span class="o">=</span> <span class="s">&quot;view_pca&quot;</span>
+    <span class="n">SUB_SECTION_VIEW_14</span> <span class="o">=</span> <span class="s">&quot;view_pse&quot;</span>
+    <span class="n">SUB_SECTION_VIEW_15</span> <span class="o">=</span> <span class="s">&quot;view_pse_iso&quot;</span>
+    <span class="n">SUB_SECTION_VIEW_16</span> <span class="o">=</span> <span class="s">&quot;view_timeseries&quot;</span>
+    <span class="n">SUB_SECTION_VIEW_17</span> <span class="o">=</span> <span class="s">&quot;view_topography&quot;</span>
+    <span class="n">SUB_SECTION_VIEW_18</span> <span class="o">=</span> <span class="s">&quot;view_wavelet&quot;</span>
+
+
+    <span class="c">### Texts to appear in HTML page headers as section-title.</span>
+    <span class="n">WEB_SECTION_TITLES</span> <span class="o">=</span> <span class="p">{</span>
+
+        <span class="n">SECTION_USER</span><span class="p">:</span> <span class="s">&quot;User&quot;</span><span class="p">,</span>
+        <span class="n">SECTION_PROJECT</span><span class="p">:</span> <span class="s">&quot;Project&quot;</span><span class="p">,</span>
+        <span class="n">SECTION_BURST</span><span class="p">:</span> <span class="s">&quot;Simulator&quot;</span><span class="p">,</span>
+        <span class="n">SECTION_ANALYZE</span><span class="p">:</span> <span class="s">&quot;Analyze&quot;</span><span class="p">,</span>
+        <span class="n">SECTION_STIMULUS</span><span class="p">:</span> <span class="s">&quot;Stimulus&quot;</span><span class="p">,</span>
+        <span class="n">SECTION_CONNECTIVITY</span><span class="p">:</span> <span class="s">&#39;Connectivity&#39;</span><span class="p">}</span>
+
+
+    <span class="c">### Texts to appear in HTML page headers as subsection-title.</span>
+    <span class="c">### Attribute _ui_name in visualizer will be used as page-subtitle.</span>
+    <span class="n">WEB_SUBSECTION_TITLES</span> <span class="o">=</span> <span class="p">{</span>
+
+        <span class="n">SUB_SECTION_LOGIN</span><span class="p">:</span> <span class="s">&quot;Login&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ACCOUNT</span><span class="p">:</span> <span class="s">&quot;Register&quot;</span><span class="p">,</span>
+
+        <span class="n">SUB_SECTION_PROJECT_MENU</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_OPERATIONS</span><span class="p">:</span> <span class="s">&quot;Operations&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_DATA_STRUCTURE</span><span class="p">:</span> <span class="s">&quot;Data Structure&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_LIST_PROJECTS</span><span class="p">:</span> <span class="s">&quot;List&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_PROPERTIES_PROJECT</span><span class="p">:</span> <span class="s">&quot;Properties&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_FIGURES</span><span class="p">:</span> <span class="s">&quot;Image Archive&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_PIPELINE</span><span class="p">:</span> <span class="s">&quot;DTI Pipeline&quot;</span><span class="p">,</span>
+
+        <span class="n">SUB_SECTION_BURST</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_MODEL_REGIONS</span><span class="p">:</span> <span class="s">&quot;Region Model Parameters&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_MODEL_SURFACE</span><span class="p">:</span> <span class="s">&quot;Surface Model Parameters&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_NOISE_CONFIGURATION</span><span class="p">:</span> <span class="s">&quot;Noise dispersion configuration&quot;</span><span class="p">,</span>
+
+        <span class="n">SUB_SECTION_ANALYZE_MENU</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_1</span><span class="p">:</span> <span class="s">&quot;Cross Correlation&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_2</span><span class="p">:</span> <span class="s">&quot;Correlation Coefficients&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_3</span><span class="p">:</span> <span class="s">&quot;Coherence&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_4</span><span class="p">:</span> <span class="s">&quot;Complex Coherence&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_5</span><span class="p">:</span> <span class="s">&quot;Covariance&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_6</span><span class="p">:</span> <span class="s">&quot;Principal Components&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_7</span><span class="p">:</span> <span class="s">&quot;Fourier&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_8</span><span class="p">:</span> <span class="s">&quot;ICA&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_9</span><span class="p">:</span> <span class="s">&quot;TimeSeries&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_10</span><span class="p">:</span> <span class="s">&quot;Wavelet&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_11</span><span class="p">:</span> <span class="s">&quot;BCT&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_12</span><span class="p">:</span> <span class="s">&quot;BCT Centrality&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_13</span><span class="p">:</span> <span class="s">&quot;BCT Clustering&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_14</span><span class="p">:</span> <span class="s">&quot;BCT Degree&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_15</span><span class="p">:</span> <span class="s">&quot;BCT Density&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_16</span><span class="p">:</span> <span class="s">&quot;BCT Distance&quot;</span><span class="p">,</span>
+
+        <span class="n">SUB_SECTION_STIMULUS_MENU</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_STIMULUS_SURFACE</span><span class="p">:</span> <span class="s">&quot;Region&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_STIMULUS_REGION</span><span class="p">:</span> <span class="s">&quot;Surface&quot;</span><span class="p">,</span>
+
+        <span class="n">SUB_SECTION_CONNECTIVITY_MENU</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_CONNECTIVITY</span><span class="p">:</span> <span class="s">&quot;Large Scale&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_LOCAL_CONNECTIVITY</span><span class="p">:</span> <span class="s">&quot;Local&quot;</span><span class="p">,</span>
+
+        <span class="n">SUB_SECTION_VIEW_0</span><span class="p">:</span> <span class="s">&quot;Connectivity Viewer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_1</span><span class="p">:</span> <span class="s">&quot;Brain Viewer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_2</span><span class="p">:</span> <span class="s">&quot;EEG Viewer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_3</span><span class="p">:</span> <span class="s">&quot;SEEG Viewer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_4</span><span class="p">:</span> <span class="s">&quot;Covariance Viewer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_5</span><span class="p">:</span> <span class="s">&quot;Coherence Viewer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_6</span><span class="p">:</span> <span class="s">&quot;Complex Coherence Viewer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_7</span><span class="p">:</span> <span class="s">&quot;Cross Correlation Viewer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_8</span><span class="p">:</span> <span class="s">&quot;Pearson Correlation Coefficients Viewer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_9</span><span class="p">:</span> <span class="s">&quot;EEG Viewer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_10</span><span class="p">:</span> <span class="s">&quot;Fourier Viewer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_11</span><span class="p">:</span> <span class="s">&quot;Histogram Viewer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_12</span><span class="p">:</span> <span class="s">&quot;ICA Viewer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_13</span><span class="p">:</span> <span class="s">&quot;PCA Viewer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_14</span><span class="p">:</span> <span class="s">&quot;Discrete PSE Viewer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_15</span><span class="p">:</span> <span class="s">&quot;Isocline PSE Viewer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_16</span><span class="p">:</span> <span class="s">&quot;TimeSeries Viewer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_17</span><span class="p">:</span> <span class="s">&quot;Topography Viewer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_18</span><span class="p">:</span> <span class="s">&quot;Wavelet Viewer&quot;</span>
+    <span class="p">}</span>
+
+
+    <span class="c">### ID of the HTML generated paragraph, to jump to it directly, in the online help overlay.</span>
+    <span class="n">VISUALIZERS_ONLINE_HELP_SHORTCUTS</span> <span class="o">=</span> <span class="p">{</span>
+
+        <span class="c">## Connectivity subsection link will not be needed, as we will have a full section in the help for this.</span>
+        <span class="c">## SUB_SECTION_VIEW_0: &quot;connectivity-visualizer**&quot;,</span>
+        <span class="n">SUB_SECTION_VIEW_1</span><span class="p">:</span> <span class="s">&quot;brain-activity-visualizer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_2</span><span class="p">:</span> <span class="s">&quot;dual-brain-eeg-visualizer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_3</span><span class="p">:</span> <span class="s">&quot;dual-brain-seeg-visualizer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_4</span><span class="p">:</span> <span class="s">&quot;covariance-visualizer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_5</span><span class="p">:</span> <span class="s">&quot;cross-coherence-visualizer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_6</span><span class="p">:</span> <span class="s">&quot;complex-coherence-visualizer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_7</span><span class="p">:</span> <span class="s">&quot;cross-correlation-visualizer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_8</span><span class="p">:</span> <span class="s">&quot;pearson-coefficients-visualizer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_9</span><span class="p">:</span> <span class="s">&quot;eeg-time-series-visualizer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_10</span><span class="p">:</span> <span class="s">&quot;fourier-spectrum-visualizer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_11</span><span class="p">:</span> <span class="s">&quot;connectivity-measure-visualizer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_12</span><span class="p">:</span> <span class="s">&quot;independent-component-visualizer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_13</span><span class="p">:</span> <span class="s">&quot;principal-component-visualizer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_14</span><span class="p">:</span> <span class="s">&quot;discrete-pse-visualizer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_15</span><span class="p">:</span> <span class="s">&quot;isocline-pse-visualizer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_16</span><span class="p">:</span> <span class="s">&quot;time-series-visualizer-svg-d3&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_17</span><span class="p">:</span> <span class="s">&quot;topographic-visualizer&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_VIEW_18</span><span class="p">:</span> <span class="s">&quot;wavelet-spectrogram-visualizer&quot;</span>
+    <span class="p">}</span>
+
+
+    <span class="c">### ID of the HTML generated paragraph, to jump to it directly, in the online help overlay.</span>
+    <span class="n">ANALYZERS_ONLINE_HELP_SHORTCUTS</span> <span class="o">=</span> <span class="p">{</span>
+
+        <span class="n">SUB_SECTION_ANALYZE_1</span><span class="p">:</span> <span class="s">&quot;cross-correlation-of-nodes&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_2</span><span class="p">:</span> <span class="s">&quot;pearson-correlation-coefficient&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_3</span><span class="p">:</span> <span class="s">&quot;cross-coherence-of-nodes&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_4</span><span class="p">:</span> <span class="s">&quot;complex-coherence-of-nodes&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_5</span><span class="p">:</span> <span class="s">&quot;temporal-covariance-of-nodes&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_6</span><span class="p">:</span> <span class="s">&quot;principal-component-analysis-pca&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_7</span><span class="p">:</span> <span class="s">&quot;fourier-spectral-analysis&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_8</span><span class="p">:</span> <span class="s">&quot;independent-component-analysis-ica&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_9</span><span class="p">:</span> <span class="s">&quot;timeseries-metrics&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_10</span><span class="p">:</span> <span class="s">&quot;continuous-wavelet-transform-cwt&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_11</span><span class="p">:</span> <span class="s">&quot;brain-connectivity-toolbox-analyzers&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_12</span><span class="p">:</span> <span class="s">&quot;brain-connectivity-toolbox-analyzers&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_13</span><span class="p">:</span> <span class="s">&quot;brain-connectivity-toolbox-analyzers&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_14</span><span class="p">:</span> <span class="s">&quot;brain-connectivity-toolbox-analyzers&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_15</span><span class="p">:</span> <span class="s">&quot;brain-connectivity-toolbox-analyzers&quot;</span><span class="p">,</span>
+        <span class="n">SUB_SECTION_ANALYZE_16</span><span class="p">:</span> <span class="s">&quot;brain-connectivity-toolbox-analyzers&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+    
+    
+    </div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

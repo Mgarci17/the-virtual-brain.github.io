@@ -1,0 +1,680 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.entities.model.model_operation &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.entities.model.model_operation</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Here we define entities for Operations and Algorithms.</span>
+
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Yann Gordon &lt;yann@tvb.invalid&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">relationship</span><span class="p">,</span> <span class="n">backref</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Boolean</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">DateTime</span><span class="p">,</span> <span class="n">Column</span><span class="p">,</span> <span class="n">ForeignKey</span>
+
+<span class="kn">from</span> <span class="nn">tvb.config</span> <span class="kn">import</span> <span class="n">TVB_IMPORTER_CLASS</span><span class="p">,</span> <span class="n">TVB_IMPORTER_MODULE</span>
+<span class="kn">from</span> <span class="nn">tvb.core.utils</span> <span class="kn">import</span> <span class="n">string2date</span><span class="p">,</span> <span class="n">generate_guid</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.exportable</span> <span class="kn">import</span> <span class="n">Exportable</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.model.model_base</span> <span class="kn">import</span> <span class="n">Base</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.model.model_project</span> <span class="kn">import</span> <span class="n">Project</span><span class="p">,</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">tvb.core.utils</span> <span class="kn">import</span> <span class="n">string2bool</span><span class="p">,</span> <span class="n">date2string</span><span class="p">,</span> <span class="n">LESS_COMPLEX_TIME_FORMAT</span>
+
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+
+<div class="viewcode-block" id="AlgorithmCategory"><a class="viewcode-back" href="../../../../../tvb.core.entities.model.html#tvb.core.entities.model.model_operation.AlgorithmCategory">[docs]</a><span class="k">class</span> <span class="nc">AlgorithmCategory</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A category that will have different boolean attributes </span>
+<span class="sd">    e.g.: launchable|rawinput|</span>
+<span class="sd">    display, a displayName and a default state for data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s">&#39;ALGORITHM_CATEGORIES&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">displayname</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">launchable</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="n">rawinput</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="n">display</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Boolean</span><span class="p">)</span>
+    <span class="n">defaultdatastate</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">order_nr</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">)</span>
+    <span class="n">last_introspection_check</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">DateTime</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">displayname</span><span class="p">,</span> <span class="n">launchable</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">rawinput</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                 <span class="n">display</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">defaultdatastate</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">order_nr</span><span class="o">=</span><span class="s">&#39;999&#39;</span><span class="p">,</span>
+                 <span class="n">last_introspection_check</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">displayname</span> <span class="o">=</span> <span class="n">displayname</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">launchable</span> <span class="o">=</span> <span class="n">launchable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rawinput</span> <span class="o">=</span> <span class="n">rawinput</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span> <span class="o">=</span> <span class="n">display</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">defaultdatastate</span> <span class="o">=</span> <span class="n">defaultdatastate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">order_nr</span> <span class="o">=</span> <span class="n">order_nr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_introspection_check</span> <span class="o">=</span> <span class="n">last_introspection_check</span>
+
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;&lt;AlgorithmCategory(&#39;</span><span class="si">%s</span><span class="s">&#39;, &#39;</span><span class="si">%s</span><span class="s">&#39;, &#39;</span><span class="si">%s</span><span class="s">&#39;, &#39;</span><span class="si">%s</span><span class="s">&#39;, &#39;</span><span class="si">%s</span><span class="s">&#39;)&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">displayname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">launchable</span><span class="p">,</span>
+                                                                      <span class="bp">self</span><span class="o">.</span><span class="n">rawinput</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">,</span>
+                                                                      <span class="bp">self</span><span class="o">.</span><span class="n">defaultdatastate</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">displayname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">launchable</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rawinput</span><span class="p">,</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaultdatastate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">order_nr</span><span class="p">))</span>
+
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">AlgorithmCategory</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">displayname</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">displayname</span> <span class="ow">and</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">launchable</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">launchable</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">rawinput</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">rawinput</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">display</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">display</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaultdatastate</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">defaultdatastate</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="AlgorithmGroup"><a class="viewcode-back" href="../../../../../tvb.core.entities.model.html#tvb.core.entities.model.model_operation.AlgorithmGroup">[docs]</a><span class="k">class</span> <span class="nc">AlgorithmGroup</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Group = Simulation|Analysis|Visualization|Upload adapter group reference.</span>
+<span class="sd">    Store module, className - to rebuild a Python import string dynamically.</span>
+<span class="sd">    Store algorithm_param_name and - to launch an algorithm automatically. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s">&#39;ALGORITHM_GROUPS&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">classname</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">fk_category</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;ALGORITHM_CATEGORIES.id&#39;</span><span class="p">,</span> <span class="n">ondelete</span><span class="o">=</span><span class="s">&quot;CASCADE&quot;</span><span class="p">))</span>
+    <span class="n">algorithm_param_name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">displayname</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">subsection_name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">ui_display</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">)</span>        <span class="c"># When negative the algorithm will not be displayed on the STEPS page.</span>
+    <span class="n">init_parameter</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">last_introspection_check</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">DateTime</span><span class="p">)</span>
+
+    <span class="n">group_category</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">AlgorithmCategory</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="n">backref</span><span class="p">(</span><span class="s">&#39;ALGORITHM_GROUPS&#39;</span><span class="p">,</span>
+                                                                     <span class="n">order_by</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="s">&quot;delete, all&quot;</span><span class="p">))</span>
+    <span class="n">algorithms</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s">&#39;Algorithm&#39;</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="s">&quot;delete, all&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">classname</span><span class="p">,</span> <span class="n">category_key</span><span class="p">,</span> <span class="n">algorithm_param_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">init_parameter</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">last_introspection_check</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">subsection_name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="n">module</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">classname</span> <span class="o">=</span> <span class="n">classname</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_category</span> <span class="o">=</span> <span class="n">category_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm_param_name</span> <span class="o">=</span> <span class="n">algorithm_param_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_parameter</span> <span class="o">=</span> <span class="n">init_parameter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_introspection_check</span> <span class="o">=</span> <span class="n">last_introspection_check</span>
+        <span class="k">if</span> <span class="n">description</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+        <span class="k">if</span> <span class="n">subsection_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subsection_name</span> <span class="o">=</span> <span class="n">subsection_name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subsection_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;_adapter&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;&lt;Group(&#39;</span><span class="si">%s</span><span class="s">&#39;, &#39;</span><span class="si">%s</span><span class="s">&#39;, &#39;</span><span class="si">%s</span><span class="s">&#39;, &#39;</span><span class="si">%s</span><span class="s">&#39;, &#39;</span><span class="si">%s</span><span class="s">&#39;, &#39;</span><span class="si">%s</span><span class="s">&#39;)&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classname</span><span class="p">,</span>
+                                                                <span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fk_category</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">displayname</span><span class="p">,</span>
+                                                                <span class="bp">self</span><span class="o">.</span><span class="n">algorithm_param_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_parameter</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="Algorithm"><a class="viewcode-back" href="../../../../../tvb.core.entities.model.html#tvb.core.entities.model.model_operation.Algorithm">[docs]</a><span class="k">class</span> <span class="nc">Algorithm</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An algorithm will be part of a group. The module and ClassName are those of it&#39;s corresponding</span>
+<span class="sd">    group. It will thus have a groupId, an Identifier(none if single algorithm in module or unique</span>
+<span class="sd">    per algorithm is more than one algorithm launched from same group) additionally it will hold</span>
+<span class="sd">    the required DataType input, the input parameter name and the outputList.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s">&#39;ALGORITHMS&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">fk_algo_group</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;ALGORITHM_GROUPS.id&#39;</span><span class="p">,</span> <span class="n">ondelete</span><span class="o">=</span><span class="s">&quot;CASCADE&quot;</span><span class="p">))</span>
+    <span class="n">identifier</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">required_datatype</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">datatype_filter</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">parameter_name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">outputlist</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+
+    <span class="n">algo_group</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">AlgorithmGroup</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="n">backref</span><span class="p">(</span><span class="s">&#39;ALGORITHMS&#39;</span><span class="p">,</span> <span class="n">order_by</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="s">&quot;delete, all&quot;</span><span class="p">))</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_id</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">req_data</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">param_name</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+                 <span class="n">output</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">datatype_filter</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_algo_group</span> <span class="o">=</span> <span class="n">group_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="n">identifier</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">required_datatype</span> <span class="o">=</span> <span class="n">req_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameter_name</span> <span class="o">=</span> <span class="n">param_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputlist</span> <span class="o">=</span> <span class="n">output</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datatype_filter</span> <span class="o">=</span> <span class="n">datatype_filter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;&lt;Group(&#39;</span><span class="si">%d</span><span class="s">&#39;, &#39;</span><span class="si">%s</span><span class="s">&#39;, &#39;</span><span class="si">%s</span><span class="s">&#39;, </span><span class="si">%s</span><span class="s">&#39;, &#39;</span><span class="si">%s</span><span class="s">&#39;, &#39;</span><span class="si">%s</span><span class="s">&#39;)&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fk_algo_group</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                                               <span class="bp">self</span><span class="o">.</span><span class="n">required_datatype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_name</span><span class="p">,</span>
+                                                               <span class="bp">self</span><span class="o">.</span><span class="n">outputlist</span><span class="p">)</span>
+
+</div>
+<span class="n">RANGE_MISSING_STRING</span> <span class="o">=</span> <span class="s">&quot;-&quot;</span>
+
+
+<div class="viewcode-block" id="OperationGroup"><a class="viewcode-back" href="../../../../../tvb.core.entities.model.html#tvb.core.entities.model.model_operation.OperationGroup">[docs]</a><span class="k">class</span> <span class="nc">OperationGroup</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="n">Exportable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    We use this group entity, to map in DB a group of operations started </span>
+<span class="sd">    in the same time by the user</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s">&quot;OPERATION_GROUPS&quot;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">range1</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">range2</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">range3</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">gid</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">fk_launched_in</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;PROJECTS.id&#39;</span><span class="p">,</span> <span class="n">ondelete</span><span class="o">=</span><span class="s">&quot;CASCADE&quot;</span><span class="p">))</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">Project</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="n">backref</span><span class="p">(</span><span class="s">&#39;OPERATION_GROUPS&#39;</span><span class="p">,</span> <span class="n">order_by</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="s">&quot;all,delete&quot;</span><span class="p">))</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;incomplete&#39;</span><span class="p">,</span> <span class="n">ranges</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranges</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">range1</span> <span class="o">=</span> <span class="n">ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranges</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">range2</span> <span class="o">=</span> <span class="n">ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranges</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">range3</span> <span class="o">=</span> <span class="n">ranges</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gid</span> <span class="o">=</span> <span class="n">generate_guid</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_launched_in</span> <span class="o">=</span> <span class="n">project_id</span>
+
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;&lt;OperationGroup(</span><span class="si">%s</span><span class="s">,</span><span class="si">%s</span><span class="s">)&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gid</span><span class="p">)</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">range_references</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Memorized range starter&quot;&quot;&quot;</span>
+        <span class="n">ranges</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">range1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">range2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">range2</span> <span class="o">!=</span> <span class="s">&#39;null&#39;</span><span class="p">:</span>
+            <span class="n">ranges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">range2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">range3</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">range3</span> <span class="o">!=</span> <span class="s">&#39;null&#39;</span><span class="p">:</span>
+            <span class="n">ranges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">range3</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ranges</span>
+
+
+    <span class="k">def</span> <span class="nf">fill_operationgroup_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entities_in_group</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Display name for UI.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_name</span> <span class="o">=</span> <span class="s">&quot;of &quot;</span> <span class="o">+</span> <span class="n">entities_in_group</span> <span class="o">+</span> <span class="s">&quot; varying &quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">range1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">new_name</span> <span class="o">+=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">range1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">range2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">new_name</span> <span class="o">+=</span> <span class="s">&quot; x &quot;</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">range2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">range3</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">new_name</span> <span class="o">+=</span> <span class="s">&quot; x &quot;</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">range3</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">new_name</span> <span class="o">+=</span> <span class="s">&quot; - &quot;</span> <span class="o">+</span> <span class="n">date2string</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="n">date_format</span><span class="o">=</span><span class="n">LESS_COMPLEX_TIME_FORMAT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">new_name</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">load_range_numbers</span><span class="p">(</span><span class="n">range_value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse the range values for a given json-like string.</span>
+
+<span class="sd">        :returns: Boolean_are_all_numbers, range_field_name, array_range_values)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">range_value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="n">RANGE_MISSING_STRING</span><span class="p">,</span> <span class="p">[</span><span class="n">RANGE_MISSING_STRING</span><span class="p">]</span>
+
+        <span class="n">loaded_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">range_value</span><span class="p">)</span>
+        <span class="n">range_name</span> <span class="o">=</span> <span class="n">loaded_json</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">range_values</span> <span class="o">=</span> <span class="n">loaded_json</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">can_interpolate_range</span> <span class="o">=</span> <span class="bp">True</span>  <span class="c"># Assume this is a numeric range that we can interpolate</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">entry</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">range_values</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">range_values</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="c"># It&#39;s a DataType range</span>
+                <span class="n">can_interpolate_range</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="n">can_interpolate_range</span><span class="p">,</span> <span class="n">range_name</span><span class="p">,</span> <span class="n">range_values</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">has_only_numeric_ranges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :returns: True when all range fields are either None or could be parsed into a numeric array.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">is_numeric</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">load_range_numbers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">range1</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">load_range_numbers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">range2</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">load_range_numbers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">range3</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
+
+        <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">is_numeric</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">num</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+
+
+<span class="c">#Possible values for Operation.status field</span></div>
+<span class="n">STATUS_STARTED</span> <span class="o">=</span> <span class="s">&quot;3-STARTED&quot;</span>
+<span class="n">STATUS_FINISHED</span> <span class="o">=</span> <span class="s">&quot;4-FINISHED&quot;</span>
+<span class="n">STATUS_CANCELED</span> <span class="o">=</span> <span class="s">&quot;2-CANCELED&quot;</span>
+<span class="n">STATUS_ERROR</span> <span class="o">=</span> <span class="s">&quot;1-ERROR&quot;</span>
+
+
+
+<div class="viewcode-block" id="Operation"><a class="viewcode-back" href="../../../../../tvb.core.entities.model.html#tvb.core.entities.model.model_operation.Operation">[docs]</a><span class="k">class</span> <span class="nc">Operation</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="n">Exportable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The class used to log any action executed in Projects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s">&#39;OPERATIONS&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">fk_launched_by</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;USERS.id&#39;</span><span class="p">))</span>
+    <span class="n">fk_launched_in</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;PROJECTS.id&#39;</span><span class="p">,</span> <span class="n">ondelete</span><span class="o">=</span><span class="s">&quot;CASCADE&quot;</span><span class="p">))</span>
+    <span class="n">fk_from_algo</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;ALGORITHMS.id&#39;</span><span class="p">))</span>
+    <span class="n">fk_operation_group</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;OPERATION_GROUPS.id&#39;</span><span class="p">,</span> <span class="n">ondelete</span><span class="o">=</span><span class="s">&quot;CASCADE&quot;</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+    <span class="n">gid</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">meta_data</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">method_name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">create_date</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">DateTime</span><span class="p">)</span>       <span class="c"># Date at which the user generated this entity</span>
+    <span class="n">start_date</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">DateTime</span><span class="p">)</span>        <span class="c"># Actual time when the operation executions is started (without queue time) </span>
+    <span class="n">completion_date</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">DateTime</span><span class="p">)</span>   <span class="c"># Time when the operation got status FINISHED/ ERROR or CANCEL set.</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">visible</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Boolean</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">additional_info</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">user_group</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+    <span class="n">range_values</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+    <span class="n">result_disk_size</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">)</span>
+
+    <span class="n">algorithm</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="n">backref</span><span class="p">(</span><span class="s">&#39;OPERATIONS&#39;</span><span class="p">,</span> <span class="n">order_by</span><span class="o">=</span><span class="nb">id</span><span class="p">))</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">Project</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="n">backref</span><span class="p">(</span><span class="s">&#39;PROJECTS&#39;</span><span class="p">,</span> <span class="n">order_by</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="s">&quot;all,delete&quot;</span><span class="p">))</span>
+    <span class="n">operation_group</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">OperationGroup</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="n">backref</span><span class="p">(</span><span class="s">&#39;OPERATION_GROUPS&#39;</span><span class="p">,</span> <span class="n">order_by</span><span class="o">=</span><span class="nb">id</span><span class="p">))</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">primaryjoin</span><span class="o">=</span><span class="p">(</span><span class="n">fk_launched_by</span> <span class="o">==</span> <span class="n">User</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="n">lazy</span><span class="o">=</span><span class="s">&#39;joined&#39;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fk_launched_by</span><span class="p">,</span> <span class="n">fk_launched_in</span><span class="p">,</span> <span class="n">fk_from_algo</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">method_name</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+                 <span class="n">status</span><span class="o">=</span><span class="n">STATUS_STARTED</span><span class="p">,</span> <span class="n">start_date</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">completion_date</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">op_group_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">additional_info</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+                 <span class="n">user_group</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">range_values</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">result_disk_size</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_launched_by</span> <span class="o">=</span> <span class="n">fk_launched_by</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_launched_in</span> <span class="o">=</span> <span class="n">fk_launched_in</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_from_algo</span> <span class="o">=</span> <span class="n">fk_from_algo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meta_data</span> <span class="o">=</span> <span class="n">meta</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method_name</span> <span class="o">=</span> <span class="n">method_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span> <span class="o">=</span> <span class="n">start_date</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">completion_date</span> <span class="o">=</span> <span class="n">completion_date</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_operation_group</span> <span class="o">=</span> <span class="n">op_group_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range_values</span> <span class="o">=</span> <span class="n">range_values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_group</span> <span class="o">=</span> <span class="n">user_group</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">additional_info</span> <span class="o">=</span> <span class="n">additional_info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gid</span> <span class="o">=</span> <span class="n">generate_guid</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result_disk_size</span> <span class="o">=</span> <span class="n">result_disk_size</span>
+
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;&lt;Operation(</span><span class="si">%s</span><span class="s">,</span><span class="si">%s</span><span class="s">,&#39;</span><span class="si">%s</span><span class="s">&#39;,&#39;</span><span class="si">%s</span><span class="s">&#39;,&#39;</span><span class="si">%s</span><span class="s">&#39;,&#39;</span><span class="si">%s</span><span class="s">&#39;,&#39;</span><span class="si">%s</span><span class="s">,&#39;</span><span class="si">%s</span><span class="s">&#39;,&#39;</span><span class="si">%s</span><span class="s">&#39;,</span><span class="si">%s</span><span class="s">, &#39;</span><span class="si">%s</span><span class="s">&#39;)&gt;&quot;</span> \
+               <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fk_launched_by</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fk_launched_in</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fk_from_algo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">meta_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">method_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">completion_date</span><span class="p">,</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">fk_operation_group</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_group</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">start_now</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Update Operation fields at startup: Status and Date&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">STATUS_STARTED</span>
+
+
+    <span class="k">def</span> <span class="nf">mark_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">additional_info</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Update Operation fields on completion: Status and Date&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">completion_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">additional_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">additional_info</span> <span class="o">=</span> <span class="n">additional_info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
+
+
+    <span class="k">def</span> <span class="nf">mark_cancelled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update status into CANCELED&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">STATUS_CANCELED</span>
+
+
+    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overwrite superclass method to add required changes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">base_dict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Operation</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">excludes</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">,</span> <span class="s">&#39;fk_launched_by&#39;</span><span class="p">,</span> <span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="s">&#39;fk_launched_in&#39;</span><span class="p">,</span>
+                                                                <span class="s">&#39;project&#39;</span><span class="p">,</span> <span class="s">&#39;fk_from_algo&#39;</span><span class="p">,</span> <span class="s">&#39;algorithm&#39;</span><span class="p">,</span>
+                                                                <span class="s">&#39;fk_operation_group&#39;</span><span class="p">,</span> <span class="s">&#39;operation_group&#39;</span><span class="p">])</span>
+        <span class="n">base_dict</span><span class="p">[</span><span class="s">&#39;fk_launched_in&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">gid</span>
+        <span class="n">base_dict</span><span class="p">[</span><span class="s">&#39;fk_from_algo&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">algo_group</span><span class="o">.</span><span class="n">module</span><span class="p">,</span>
+                                                    <span class="n">classname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">algo_group</span><span class="o">.</span><span class="n">classname</span><span class="p">,</span>
+                                                    <span class="n">init_parameter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">algo_group</span><span class="o">.</span><span class="n">init_parameter</span><span class="p">,</span>
+                                                    <span class="n">identifier</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">identifier</span><span class="p">))</span>
+        <span class="c"># We keep the information for the operation_group in this place (on each operation)</span>
+        <span class="c">#because we don&#39;t have an XML file for the operation_group entity.</span>
+        <span class="c"># We don&#39;t want to keep the information about the operation groups into the project XML file</span>
+        <span class="c">#because it may be opened from different places and may produce conflicts.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">operation_group</span><span class="p">:</span>
+            <span class="n">base_dict</span><span class="p">[</span><span class="s">&#39;fk_operation_group&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">operation_group</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">base_dict</span>
+
+
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">dao</span><span class="p">,</span> <span class="n">user_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">project_gid</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add specific attributes from a input dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c"># If user id was specified try to load it, otherwise use System account</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_system_user</span><span class="p">()</span> <span class="k">if</span> <span class="n">user_id</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_user_by_id</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_launched_by</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span>
+
+        <span class="c"># Find parent Project</span>
+        <span class="n">prj_to_load</span> <span class="o">=</span> <span class="n">project_gid</span> <span class="k">if</span> <span class="n">project_gid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;fk_launched_in&#39;</span><span class="p">]</span>
+        <span class="n">parent_project</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_project_by_gid</span><span class="p">(</span><span class="n">prj_to_load</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_launched_in</span> <span class="o">=</span> <span class="n">parent_project</span><span class="o">.</span><span class="n">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">parent_project</span>
+
+        <span class="c"># Find parent Algorithm</span>
+        <span class="n">source_algorithm</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;fk_from_algo&#39;</span><span class="p">])</span>
+        <span class="n">init_parameter</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="s">&#39;init_parameter&#39;</span> <span class="ow">in</span> <span class="n">source_algorithm</span><span class="p">:</span>
+            <span class="n">init_parameter</span> <span class="o">=</span> <span class="n">source_algorithm</span><span class="p">[</span><span class="s">&#39;init_parameter&#39;</span><span class="p">]</span>
+
+        <span class="n">algo_group</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">find_group</span><span class="p">(</span><span class="n">source_algorithm</span><span class="p">[</span><span class="s">&#39;module&#39;</span><span class="p">],</span> <span class="n">source_algorithm</span><span class="p">[</span><span class="s">&#39;classname&#39;</span><span class="p">],</span> <span class="n">init_parameter</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">algo_group</span><span class="p">:</span>
+            <span class="n">algorithm</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_algorithm_by_group</span><span class="p">(</span><span class="n">algo_group</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">source_algorithm</span><span class="p">[</span><span class="s">&#39;identifier&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">algorithm</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fk_from_algo</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># The algorithm that produced this operation no longer exists most likely due to</span>
+            <span class="c"># exported operation from different version. Fallback to tvb importer.</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Algorithm group </span><span class="si">%s</span><span class="s"> was not found in DB. Most likely cause is that archive was exported &quot;</span>
+                        <span class="s">&quot;from a different TVB version. Using fallback TVB_Importer as source of &quot;</span>
+                        <span class="s">&quot;this operation.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">source_algorithm</span><span class="p">[</span><span class="s">&#39;module&#39;</span><span class="p">],))</span>
+            <span class="n">algo_group</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">find_group</span><span class="p">(</span><span class="n">TVB_IMPORTER_MODULE</span><span class="p">,</span> <span class="n">TVB_IMPORTER_CLASS</span><span class="p">)</span>
+            <span class="n">algorithm</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_algorithm_by_group</span><span class="p">(</span><span class="n">algo_group</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fk_from_algo</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">id</span>
+            <span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;additional_info&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;The original parameters for this operation were: </span><span class="se">\n</span><span class="s">Adapter: </span><span class="si">%s</span><span class="s"> &quot;</span>
+                                             <span class="s">&quot;</span><span class="se">\n</span><span class="s">Parameters </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">source_algorithm</span><span class="p">[</span><span class="s">&#39;module&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;.&#39;</span> <span class="o">+</span>
+                                                                  <span class="n">source_algorithm</span><span class="p">[</span><span class="s">&#39;classname&#39;</span><span class="p">],</span>
+                                                                  <span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;parameters&#39;</span><span class="p">]))</span>
+
+        <span class="c"># Find OperationGroup, if any</span>
+        <span class="k">if</span> <span class="s">&#39;fk_operation_group&#39;</span> <span class="ow">in</span> <span class="n">dictionary</span><span class="p">:</span>
+            <span class="n">group_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;fk_operation_group&#39;</span><span class="p">])</span>
+            <span class="n">op_group</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">if</span> <span class="n">group_dict</span><span class="p">:</span>
+                <span class="n">op_group</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operationgroup_by_gid</span><span class="p">(</span><span class="n">group_dict</span><span class="p">[</span><span class="s">&#39;gid&#39;</span><span class="p">])</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">op_group</span><span class="p">:</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">group_dict</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+                    <span class="n">ranges</span> <span class="o">=</span> <span class="p">[</span><span class="n">group_dict</span><span class="p">[</span><span class="s">&#39;range1&#39;</span><span class="p">],</span> <span class="n">group_dict</span><span class="p">[</span><span class="s">&#39;range2&#39;</span><span class="p">],</span> <span class="n">group_dict</span><span class="p">[</span><span class="s">&#39;range3&#39;</span><span class="p">]]</span>
+                    <span class="n">gid</span> <span class="o">=</span> <span class="n">group_dict</span><span class="p">[</span><span class="s">&#39;gid&#39;</span><span class="p">]</span>
+                    <span class="n">op_group</span> <span class="o">=</span> <span class="n">OperationGroup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fk_launched_in</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">ranges</span><span class="p">)</span>
+                    <span class="n">op_group</span><span class="o">.</span><span class="n">gid</span> <span class="o">=</span> <span class="n">gid</span>
+                    <span class="n">op_group</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">op_group</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">operation_group</span> <span class="o">=</span> <span class="n">op_group</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fk_operation_group</span> <span class="o">=</span> <span class="n">op_group</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">operation_group</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fk_operation_group</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;parameters&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meta_data</span> <span class="o">=</span> <span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;meta_data&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method_name</span> <span class="o">=</span> <span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;method_name&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_date</span> <span class="o">=</span> <span class="n">string2date</span><span class="p">(</span><span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;create_date&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;start_date&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&quot;None&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span> <span class="o">=</span> <span class="n">string2date</span><span class="p">(</span><span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;start_date&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;completion_date&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&quot;None&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">completion_date</span> <span class="o">=</span> <span class="n">string2date</span><span class="p">(</span><span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;completion_date&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_status</span><span class="p">(</span><span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;status&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="n">string2bool</span><span class="p">(</span><span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;visible&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range_values</span> <span class="o">=</span> <span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;range_values&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_group</span> <span class="o">=</span> <span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;user_group&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">additional_info</span> <span class="o">=</span> <span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;additional_info&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gid</span> <span class="o">=</span> <span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;gid&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span>
+    
+    
+    <span class="k">def</span> <span class="nf">_parse_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        To keep backwards compatibility, when we import an operation that did not have new </span>
+<span class="sd">        operation status.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="ow">in</span> <span class="p">(</span><span class="n">STATUS_FINISHED</span><span class="p">,</span> <span class="s">&#39;FINISHED&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">STATUS_FINISHED</span>
+        <span class="k">elif</span> <span class="n">status</span> <span class="ow">in</span> <span class="p">(</span><span class="n">STATUS_ERROR</span><span class="p">,</span> <span class="s">&#39;ERROR&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">STATUS_ERROR</span>
+        <span class="k">elif</span> <span class="n">status</span> <span class="ow">in</span> <span class="p">(</span><span class="n">STATUS_CANCELED</span><span class="p">,</span> <span class="s">&#39;CANCELED&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">STATUS_CANCELED</span>
+        <span class="k">return</span> <span class="n">STATUS_STARTED</span>
+
+
+</div>
+<div class="viewcode-block" id="OperationProcessIdentifier"><a class="viewcode-back" href="../../../../../tvb.core.entities.model.html#tvb.core.entities.model.model_operation.OperationProcessIdentifier">[docs]</a><span class="k">class</span> <span class="nc">OperationProcessIdentifier</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for storing for each operation the process identifier under which</span>
+<span class="sd">    it was launched so any operation can be stopped from tvb.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s">&quot;OPERATION_PROCESS_IDENTIFIERS&quot;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">fk_from_operation</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;OPERATIONS.id&#39;</span><span class="p">,</span> <span class="n">ondelete</span><span class="o">=</span><span class="s">&quot;CASCADE&quot;</span><span class="p">))</span>
+    <span class="n">pid</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">job_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+
+    <span class="n">operation</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">Operation</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="n">backref</span><span class="p">(</span><span class="s">&#39;OPERATION_PROCESS_IDENTIFIERS&#39;</span><span class="p">,</span> <span class="n">order_by</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="s">&quot;delete&quot;</span><span class="p">))</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation_id</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">job_id</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_from_operation</span> <span class="o">=</span> <span class="n">operation_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pid</span> <span class="o">=</span> <span class="n">pid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job_id</span> <span class="o">=</span> <span class="n">job_id</span>
+
+
+</div>
+<div class="viewcode-block" id="ResultFigure"><a class="viewcode-back" href="../../../../../tvb.core.entities.model.html#tvb.core.entities.model.model_operation.ResultFigure">[docs]</a><span class="k">class</span> <span class="nc">ResultFigure</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="n">Exportable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for storing figures from results, visualize them eventually next to each other.</span>
+<span class="sd">    A group of results, with the same session_name will be displayed </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s">&#39;RESULT_FIGURES&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">fk_from_operation</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;OPERATIONS.id&#39;</span><span class="p">,</span> <span class="n">ondelete</span><span class="o">=</span><span class="s">&quot;CASCADE&quot;</span><span class="p">))</span>
+    <span class="n">fk_for_user</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;USERS.id&#39;</span><span class="p">,</span> <span class="n">ondelete</span><span class="o">=</span><span class="s">&quot;CASCADE&quot;</span><span class="p">))</span>
+    <span class="n">fk_in_project</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;PROJECTS.id&#39;</span><span class="p">,</span> <span class="n">ondelete</span><span class="o">=</span><span class="s">&quot;CASCADE&quot;</span><span class="p">))</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">Project</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="n">backref</span><span class="p">(</span><span class="s">&#39;RESULT_FIGURES&#39;</span><span class="p">,</span> <span class="n">order_by</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="s">&quot;delete&quot;</span><span class="p">))</span>
+    <span class="n">operation</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">Operation</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="n">backref</span><span class="p">(</span><span class="s">&#39;RESULT_FIGURES&#39;</span><span class="p">,</span> <span class="n">order_by</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="s">&quot;delete&quot;</span><span class="p">))</span>
+    <span class="n">session_name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">file_path</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">file_format</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">session_name</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s">&quot;PNG&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_from_operation</span> <span class="o">=</span> <span class="n">operation_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_for_user</span> <span class="o">=</span> <span class="n">user_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_in_project</span> <span class="o">=</span> <span class="n">project_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session_name</span> <span class="o">=</span> <span class="n">session_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_format</span> <span class="o">=</span> <span class="n">file_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>          <span class="c"># some platforms have difficulties if it&#39;s not lower case</span>
+
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;&lt;ResultFigure(</span><span class="si">%d</span><span class="s">, </span><span class="si">%d</span><span class="s">, </span><span class="si">%d</span><span class="s">, </span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">)&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fk_from_operation</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fk_for_user</span><span class="p">,</span>
+                                                               <span class="bp">self</span><span class="o">.</span><span class="n">fk_in_project</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                                               <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_format</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overwrite superclass method with required additional data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">base_dict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">ResultFigure</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">excludes</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">,</span> <span class="s">&#39;fk_from_operation&#39;</span><span class="p">,</span> <span class="s">&#39;fk_for_user&#39;</span><span class="p">,</span>
+                                                                   <span class="s">&#39;fk_in_project&#39;</span><span class="p">,</span> <span class="s">&#39;operation&#39;</span><span class="p">,</span> <span class="s">&#39;project&#39;</span><span class="p">])</span>
+        <span class="n">base_dict</span><span class="p">[</span><span class="s">&#39;fk_from_operation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">operation</span><span class="o">.</span><span class="n">gid</span>
+        <span class="n">base_dict</span><span class="p">[</span><span class="s">&#39;fk_in_project&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">gid</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">base_dict</span>
+
+
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add specific attributes from a input dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_from_operation</span> <span class="o">=</span> <span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;fk_op_id&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_for_user</span> <span class="o">=</span> <span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;fk_user_id&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_in_project</span> <span class="o">=</span> <span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;fk_project_id&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session_name</span> <span class="o">=</span> <span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;session_name&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span> <span class="o">=</span> <span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;file_path&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_format</span> <span class="o">=</span> <span class="n">dictionary</span><span class="p">[</span><span class="s">&#39;file_format&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    
+    
+    
+    </div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

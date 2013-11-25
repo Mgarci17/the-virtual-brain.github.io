@@ -1,0 +1,330 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.entities.file.file_update_scripts.002_update_files &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.entities.file.file_update_scripts.002_update_files</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">tables</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span> <span class="k">as</span> <span class="n">cfg</span>
+<span class="kn">from</span> <span class="nn">tvb.core.utils</span> <span class="kn">import</span> <span class="n">string2date</span><span class="p">,</span> <span class="n">date2string</span><span class="p">,</span> <span class="n">string2bool</span><span class="p">,</span> <span class="n">bool2string</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.file.exceptions</span> <span class="kn">import</span> <span class="n">FileVersioningException</span>
+
+<span class="n">PYTHON_EXE_PATH</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">()</span><span class="o">.</span><span class="n">get_python_path</span><span class="p">()</span>
+<span class="n">DATA_BUFFER_SIZE</span> <span class="o">=</span> <span class="mi">50000000</span> <span class="o">/</span> <span class="mi">8</span> <span class="c">#500 MB maximum read at once (just assume worst case float64)</span>
+
+<span class="c"># ---------------------- TVB 1.0 Specific constants and functions start here --------------------------</span>
+<span class="c"># We duplicate these constants here since they were the ones used in TVB 1.0 and </span>
+<span class="c"># this upgrade script needs to be able to convert any data that was created in 1.0 to 1.0.1.</span>
+<span class="c"># Since this script needs to execute properly even in a latter version (e.g. 2.0) it&#39;s not</span>
+<span class="c"># feasible to use any constants currently declared in TVB, since those might change over time.</span>
+<span class="n">BOOL_VALUE_PREFIX</span> <span class="o">=</span> <span class="s">&quot;bool:&quot;</span>
+<span class="n">DATETIME_VALUE_PREFIX</span> <span class="o">=</span> <span class="s">&quot;datetime:&quot;</span>
+<span class="n">DATE_TIME_FORMAT</span> <span class="o">=</span> <span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s"> %H:%M:%S.</span><span class="si">%f</span><span class="s">&#39;</span>
+<span class="n">COMPLEX_TIME_FORMAT</span> <span class="o">=</span> <span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s">,%H-%M-%S.</span><span class="si">%f</span><span class="s">&#39;</span>
+<span class="n">SIMPLE_TIME_FORMAT</span> <span class="o">=</span> <span class="s">&quot;%m-</span><span class="si">%d</span><span class="s">-%Y&quot;</span>
+<span class="n">TVB_ATTRIBUTE_PREFIX</span> <span class="o">=</span> <span class="s">&quot;TVB_&quot;</span>
+<span class="n">DATA_VERSION_ATTRIBUTE</span> <span class="o">=</span> <span class="s">&quot;Data_version&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">_serialize_value</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This method takes a value which will be stored as meta-data and </span>
+<span class="sd">    apply some transformation if necessary</span>
+<span class="sd">    </span>
+<span class="sd">    :param value:  value which is planned to be stored</span>
+<span class="sd">    :returns: value to be stored</span>
+<span class="sd">    </span>
+<span class="sd">    NOTE: this method was a part of TVB 1.0 hdf5storage manager, but since this</span>
+<span class="sd">    script needs to be independent of current storage manager, we duplicate it here. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&#39;&#39;</span>
+    <span class="c"># Force unicode strings to simple strings.</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="c"># Transform boolean to string and prefix it</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">BOOL_VALUE_PREFIX</span> <span class="o">+</span> <span class="n">bool2string</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="c"># Transform date to string and append prefix</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">DATETIME_VALUE_PREFIX</span> <span class="o">+</span> <span class="n">date2string</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">date_format</span><span class="o">=</span><span class="n">DATE_TIME_FORMAT</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+
+<span class="k">def</span> <span class="nf">_deserialize_value</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This method takes value loaded from H5 file and transform it to TVB data. </span>
+<span class="sd">    </span>
+<span class="sd">    :param value: the value that was read from the H5 file</span>
+<span class="sd">    :returns: a TVB specific deserialized value of the input</span>
+<span class="sd">    </span>
+<span class="sd">    NOTE: this method was a part of TVB 1.0 hdf5storage manager, but since this</span>
+<span class="sd">    script needs to be independent of current storage manager, we duplicate it here. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">string_</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">BOOL_VALUE_PREFIX</span><span class="p">):</span>
+                <span class="c"># Remove bool prefix and transform to bool</span>
+                <span class="k">return</span> <span class="n">string2bool</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">BOOL_VALUE_PREFIX</span><span class="p">):])</span>
+            <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">DATETIME_VALUE_PREFIX</span><span class="p">):</span>
+                <span class="c"># Remove datetime prefix and transform to datetime</span>
+                <span class="k">return</span> <span class="n">string2date</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">DATETIME_VALUE_PREFIX</span><span class="p">):],</span> <span class="n">date_format</span> <span class="o">=</span> <span class="n">DATE_TIME_FORMAT</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">value</span>
+<span class="c"># ---------------------- TVB 1.0 Specific constants and functions end here --------------------------</span>
+
+
+<span class="k">def</span> <span class="nf">__upgrade_file</span><span class="p">(</span><span class="n">input_file_name</span><span class="p">,</span> <span class="n">output_file_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This method does any required processing in order to convert an input file stored in</span>
+<span class="sd">    TVB 1.0 format into an output_file of TVB 2.0 format. </span>
+<span class="sd">    </span>
+<span class="sd">    NOTE: This should not be used directly since the simultaneous use of pyTables and h5py </span>
+<span class="sd">    causes segmentation faults on some setups (Debian 32/65, Fedora 64, Windows 64) on file</span>
+<span class="sd">    open/close. (Probably caused by some GIL / C level incompatibilities). Instead of this </span>
+<span class="sd">    use the `upgrade(file_name)` which will call this method in a separate Python process.</span>
+<span class="sd">    </span>
+<span class="sd">    :param input_file_name: the path to a input *.h5 file from TVB 1.0 using pyTables format</span>
+<span class="sd">        for storage</span>
+<span class="sd">    :param output_file_name: the path to a output *.h5 that will be written in h5py TVB 1.0.1</span>
+<span class="sd">        specific format</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tables_h5_file</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">openFile</span><span class="p">(</span><span class="n">input_file_name</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_file_name</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">output_file_name</span><span class="p">)</span>
+    <span class="n">h5py_h5_file</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">output_file_name</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span>
+    <span class="c"># Iterate through all pyTables nodes</span>
+    <span class="k">for</span> <span class="n">tables_node</span> <span class="ow">in</span> <span class="n">tables_h5_file</span><span class="o">.</span><span class="n">walkNodes</span><span class="p">():</span>
+        <span class="n">node_path</span> <span class="o">=</span> <span class="n">tables_node</span><span class="o">.</span><span class="n">_v_pathname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">node_metadata</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c"># Get meta-data from the pyTables node. This does not change for root/group/Carray nodes</span>
+        <span class="n">all_meta_keys</span> <span class="o">=</span> <span class="n">tables_node</span><span class="o">.</span><span class="n">_v_attrs</span><span class="o">.</span><span class="n">_f_list</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">meta_key</span> <span class="ow">in</span> <span class="n">all_meta_keys</span><span class="p">:</span>
+            <span class="n">new_key</span> <span class="o">=</span> <span class="n">meta_key</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">tables_h5_file</span><span class="o">.</span><span class="n">getNodeAttr</span><span class="p">(</span><span class="n">tables_node</span><span class="p">,</span> <span class="n">meta_key</span><span class="p">)</span>
+            <span class="n">node_metadata</span><span class="p">[</span><span class="n">new_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_deserialize_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tables_node</span><span class="o">.</span><span class="n">__class__</span> <span class="ow">is</span> <span class="n">tables</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">RootGroup</span><span class="p">:</span>
+            <span class="c"># For the root the node is already created in the h5py equivalent</span>
+            <span class="n">h5py_node</span> <span class="o">=</span> <span class="n">h5py_h5_file</span><span class="p">[</span><span class="s">&#39;/&#39;</span><span class="p">]</span> 
+        <span class="k">elif</span> <span class="n">tables_node</span><span class="o">.</span><span class="n">__class__</span> <span class="ow">is</span> <span class="n">tables</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">Group</span><span class="p">:</span>
+            <span class="c"># For groups just create an empty datas-et since it&#39;s easier to handle</span>
+            <span class="c"># than sub-groups.</span>
+            <span class="n">h5py_node</span> <span class="o">=</span> <span class="n">h5py_h5_file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">node_path</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># We have a standard node (Carray), compute based on the shape if it will</span>
+            <span class="c"># fit in the DATA_BUFFER_SIZE we set or we need to read/write by chunks.</span>
+            <span class="n">node_shape</span> <span class="o">=</span> <span class="n">tables_node</span><span class="o">.</span><span class="n">shape</span>
+            <span class="n">max_dimension</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">total_size</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">node_shape</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">val</span> <span class="o">&gt;</span> <span class="n">node_shape</span><span class="p">[</span><span class="n">max_dimension</span><span class="p">]:</span>
+                    <span class="n">max_dimension</span> <span class="o">=</span> <span class="n">idx</span>
+                <span class="n">total_size</span> <span class="o">=</span> <span class="n">total_size</span> <span class="o">*</span> <span class="n">val</span>
+            <span class="k">if</span> <span class="n">total_size</span> <span class="o">&lt;=</span> <span class="n">DATA_BUFFER_SIZE</span><span class="p">:</span>
+                <span class="c"># We did not pass our buffer size, so it&#39;s save to just read/write the whole data at once</span>
+                <span class="n">node_data</span> <span class="o">=</span> <span class="n">tables_node</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="n">h5py_node</span> <span class="o">=</span> <span class="n">h5py_h5_file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">node_path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">node_data</span><span class="p">,</span> 
+                                                        <span class="n">shape</span><span class="o">=</span><span class="n">node_data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">node_data</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># We need to read in chunks. Set the dimension that is growable to None</span>
+                <span class="n">node_shape_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">node_shape</span><span class="p">)</span>
+                <span class="n">node_shape_list</span><span class="p">[</span><span class="n">max_dimension</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="n">h5py_node</span> <span class="o">=</span> <span class="n">h5py_h5_file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">node_path</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">node_shape</span><span class="p">,</span> <span class="n">maxshape</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">node_shape_list</span><span class="p">))</span>
+                <span class="n">slice_size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">DATA_BUFFER_SIZE</span> <span class="o">*</span> <span class="n">node_shape</span><span class="p">[</span><span class="n">max_dimension</span><span class="p">]</span> <span class="o">/</span> <span class="n">total_size</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">full_slice</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+                <span class="n">data_slice</span> <span class="o">=</span> <span class="p">[</span><span class="n">full_slice</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">node_shape</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">node_shape</span><span class="p">[</span><span class="n">max_dimension</span><span class="p">],</span> <span class="n">slice_size</span><span class="p">):</span>
+                    <span class="n">specific_slice</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">idx</span><span class="o">+</span><span class="n">slice_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">data_slice</span><span class="p">[</span><span class="n">max_dimension</span><span class="p">]</span> <span class="o">=</span> <span class="n">specific_slice</span>
+                    <span class="n">tables_data</span> <span class="o">=</span> <span class="n">tables_node</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">data_slice</span><span class="p">)]</span>
+                    <span class="n">h5py_node</span> <span class="o">=</span> <span class="n">h5py_h5_file</span><span class="p">[</span><span class="n">node_path</span><span class="p">]</span>
+                    <span class="n">h5py_node</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">data_slice</span><span class="p">)]</span> <span class="o">=</span> <span class="n">tables_data</span>
+        <span class="k">for</span> <span class="n">meta_key</span> <span class="ow">in</span> <span class="n">node_metadata</span><span class="p">:</span>
+            <span class="n">processed_value</span> <span class="o">=</span> <span class="n">_serialize_value</span><span class="p">(</span><span class="n">node_metadata</span><span class="p">[</span><span class="n">meta_key</span><span class="p">])</span>
+            <span class="n">h5py_node</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">meta_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">processed_value</span>
+    <span class="n">h5py_h5_file</span><span class="p">[</span><span class="s">&#39;/&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">TVB_ATTRIBUTE_PREFIX</span> <span class="o">+</span> <span class="n">DATA_VERSION_ATTRIBUTE</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">tables_h5_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="c"># Reloading h5py seems to fix the segmentation fault that used to appear.</span>
+    <span class="nb">reload</span><span class="p">(</span><span class="n">h5py</span><span class="p">)</span>
+    <span class="n">h5py_h5_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    
+
+<div class="viewcode-block" id="upgrade"><a class="viewcode-back" href="../../../../../../tvb.core.entities.file.file_update_scripts.html#tvb.core.entities.file.file_update_scripts.002_update_files.upgrade">[docs]</a><span class="k">def</span> <span class="nf">upgrade</span><span class="p">(</span><span class="n">input_file</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    In order to avoid segmentation faults when updating a batch of files just</span>
+<span class="sd">    start every conversion on a different Python process.</span>
+<span class="sd">    </span>
+<span class="sd">    :param input_file: the file that needs to be converted to a newer file storage version.</span>
+<span class="sd">        This should be a file that still uses TVB 1.0 storage (pyTables)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Just to avoid any problems about renaming open files, do a rename from the start </span>
+    <span class="c"># and if case of a fault in the os.system call just rename back and remove the output file.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">input_file</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">FileVersioningException</span><span class="p">(</span><span class="s">&quot;The input path </span><span class="si">%s</span><span class="s"> received for upgrading from 1 -&gt; 2 is not a &quot;</span>
+                                      <span class="s">&quot;valid file on the disk.&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">input_file</span><span class="p">,))</span>
+    <span class="c"># Use a file-path with no spaces both for the temporary file and the input file</span>
+    <span class="c"># that is passed to the os.system call and just rename to original file at the </span>
+    <span class="c"># end of the processing to avoid any problems with parameters passed to os.system.</span>
+    <span class="n">input_file_no_spaces</span> <span class="o">=</span> <span class="n">input_file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">path_to</span><span class="p">,</span> <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">input_file_no_spaces</span><span class="p">)</span>
+    <span class="n">tmp_convert_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_to</span><span class="p">,</span> <span class="s">&#39;tmp_&#39;</span> <span class="o">+</span> <span class="n">file_name</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">tmp_convert_file</span><span class="p">)</span>
+    <span class="n">ok_status</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">PYTHON_EXE_PATH</span> <span class="o">+</span> <span class="s">&#39; -m </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">__name__</span><span class="p">,</span> <span class="n">tmp_convert_file</span><span class="p">,</span> <span class="n">input_file_no_spaces</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">ok_status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c"># Call finished successfully</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">tmp_convert_file</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">input_file_no_spaces</span><span class="p">,</span> <span class="n">input_file</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># Call failed for some reason, just rename back the input file</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">tmp_convert_file</span><span class="p">,</span> <span class="n">input_file</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">FileVersioningException</span><span class="p">(</span><span class="s">&quot;Something went wrong during the upgrade to file </span><span class="si">%s</span><span class="s">.&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">input_file</span><span class="p">,))</span>
+    
+
+<span class="c">### This main is important, and used by the update() method from above.</span>
+<span class="c">### Do not drop this  __main__ </span></div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">FileVersioningException</span><span class="p">(</span><span class="s">&quot;Usage is `python -m tvb.core.entities.file.file_update_scripts.002_update_files&quot;</span>
+                                      <span class="s">&quot; input_file_name output_file_name`.&quot;</span><span class="p">)</span>
+    <span class="n">input_file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">output_file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">__upgrade_file</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">)</span>
+    
+    
+    
+    
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../../index.html">
+              <img class="logo" src="../../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

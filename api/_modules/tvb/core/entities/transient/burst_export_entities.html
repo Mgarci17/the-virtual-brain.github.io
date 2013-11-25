@@ -1,0 +1,402 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.entities.transient.burst_export_entities &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.entities.transient.burst_export_entities</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Entities transient and related to a Burst Configuration.</span>
+
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.storage</span> <span class="kn">import</span> <span class="n">dao</span>
+
+<div class="viewcode-block" id="BaseExportHelp"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.BaseExportHelp">[docs]</a><span class="k">class</span> <span class="nc">BaseExportHelp</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for all export helper entities. Wraps over a dictionary that is used</span>
+<span class="sd">    to later convert entities to / from json.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">):</span>
+        <span class="n">input_data</span> <span class="o">=</span> <span class="n">input_data</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span> <span class="o">=</span> <span class="n">input_data</span>
+    
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="BaseExportHelp.data"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.BaseExportHelp.data">[docs]</a>    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Property so you can easily access the dictionary as if it was a public attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span>
+</div></div>
+<div class="viewcode-block" id="BurstInformation"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.BurstInformation">[docs]</a><span class="k">class</span> <span class="nc">BurstInformation</span><span class="p">(</span><span class="n">BaseExportHelp</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper entity that hold all the information needed to build a complete burst entity</span>
+<span class="sd">    with all workflows, and workflow steps.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">KEY_BI_WORKFLOWS</span> <span class="o">=</span> <span class="s">&quot;--BI_workflows--&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BurstInformation</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">data_dict</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">KEY_BI_WORKFLOWS</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_BI_WORKFLOWS</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            
+<div class="viewcode-block" id="BurstInformation.add_workflow"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.BurstInformation.add_workflow">[docs]</a>    <span class="k">def</span> <span class="nf">add_workflow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Append a WorkflowInformation entity to the list of workflows attached to this burst.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_BI_WORKFLOWS</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">workflow</span><span class="p">)</span>
+        </div>
+<div class="viewcode-block" id="BurstInformation.set_workflows"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.BurstInformation.set_workflows">[docs]</a>    <span class="k">def</span> <span class="nf">set_workflows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wf_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the entire list of workflows attached to this burst as WorkflowInformation entities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_BI_WORKFLOWS</span><span class="p">]</span> <span class="o">=</span> <span class="n">wf_list</span>
+    </div>
+<div class="viewcode-block" id="BurstInformation.get_workflows"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.BurstInformation.get_workflows">[docs]</a>    <span class="k">def</span> <span class="nf">get_workflows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of WorkflowInformation entities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_BI_WORKFLOWS</span><span class="p">]</span>
+    </div>
+<div class="viewcode-block" id="BurstInformation.to_dict"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.BurstInformation.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert this entities to python dictionary ready to be dumped to json. Also make</span>
+<span class="sd">        sure to recursively go through all the WorkflowInformation entities.</span>
+<span class="sd">        Can later be used to rebuild the BurstInformation entity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">workflows</span> <span class="o">=</span> <span class="p">[</span><span class="n">wf</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">wf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_workflows</span><span class="p">()]</span>
+        <span class="n">dict_data</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">)</span>
+        <span class="n">dict_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_BI_WORKFLOWS</span><span class="p">]</span> <span class="o">=</span> <span class="n">workflows</span>
+        <span class="k">return</span> <span class="n">dict_data</span>
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BurstInformation.load_from_dict"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.BurstInformation.load_from_dict">[docs]</a>    <span class="k">def</span> <span class="nf">load_from_dict</span><span class="p">(</span><span class="n">input_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        From a input dictionary try to rebuild a BurstInformation entity. The dictionary must have</span>
+<span class="sd">        specific informations about the burst and it&#39;s constituent workflows. </span>
+<span class="sd">        Such a dictionary can be generated by calling &#39;to_dict&#39; on existing BurstInformation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">workflows</span> <span class="o">=</span> <span class="p">[</span><span class="n">WorkflowInformation</span><span class="o">.</span><span class="n">load_from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> 
+                                        <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">input_dict</span><span class="p">[</span><span class="n">BurstInformation</span><span class="o">.</span><span class="n">KEY_BI_WORKFLOWS</span><span class="p">]]</span>
+        <span class="n">input_dict</span><span class="p">[</span><span class="n">BurstInformation</span><span class="o">.</span><span class="n">KEY_BI_WORKFLOWS</span><span class="p">]</span> <span class="o">=</span> <span class="n">workflows</span>
+        <span class="k">return</span> <span class="n">BurstInformation</span><span class="p">(</span><span class="n">input_dict</span><span class="p">)</span>
+    
+</div></div>
+<div class="viewcode-block" id="WorkflowInformation"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.WorkflowInformation">[docs]</a><span class="k">class</span> <span class="nc">WorkflowInformation</span><span class="p">(</span><span class="n">BaseExportHelp</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper entity that hold all the information needed to build a complete workflow entity</span>
+<span class="sd">    with all it&#39;s workflow steps.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">KEY_WF_STEPS</span> <span class="o">=</span> <span class="s">&#39;--WI_workflow_steps--&#39;</span>
+    <span class="n">KEY_VIEW_STEPS</span> <span class="o">=</span> <span class="s">&#39;--WI_view_steps--&#39;</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WorkflowInformation</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">data_dict</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">KEY_VIEW_STEPS</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_VIEW_STEPS</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">KEY_WF_STEPS</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_WF_STEPS</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            
+<div class="viewcode-block" id="WorkflowInformation.add_workflow_step"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.WorkflowInformation.add_workflow_step">[docs]</a>    <span class="k">def</span> <span class="nf">add_workflow_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wf_step</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Append a WorkflowStepInformation entity to the list of steps for this workflow.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_WF_STEPS</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wf_step</span><span class="p">)</span>
+        </div>
+<div class="viewcode-block" id="WorkflowInformation.add_view_step"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.WorkflowInformation.add_view_step">[docs]</a>    <span class="k">def</span> <span class="nf">add_view_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view_step</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Append a WorkflowViewStepInformation entity to the list of view steps for this workflow.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_VIEW_STEPS</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">view_step</span><span class="p">)</span>
+        </div>
+<div class="viewcode-block" id="WorkflowInformation.set_workflow_steps"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.WorkflowInformation.set_workflow_steps">[docs]</a>    <span class="k">def</span> <span class="nf">set_workflow_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the list of steps for this workflow as WorkflowStepInformation entities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_WF_STEPS</span><span class="p">]</span> <span class="o">=</span> <span class="n">steps_list</span>
+        </div>
+<div class="viewcode-block" id="WorkflowInformation.set_view_steps"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.WorkflowInformation.set_view_steps">[docs]</a>    <span class="k">def</span> <span class="nf">set_view_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the list of view steps for this workflow as WorkflowViewStepInformation entities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_VIEW_STEPS</span><span class="p">]</span> <span class="o">=</span> <span class="n">steps_list</span>
+        </div>
+<div class="viewcode-block" id="WorkflowInformation.get_workflow_steps"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.WorkflowInformation.get_workflow_steps">[docs]</a>    <span class="k">def</span> <span class="nf">get_workflow_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the list of steps for this workflow as WorkflowStepInformation entities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_WF_STEPS</span><span class="p">]</span>
+    </div>
+<div class="viewcode-block" id="WorkflowInformation.get_view_steps"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.WorkflowInformation.get_view_steps">[docs]</a>    <span class="k">def</span> <span class="nf">get_view_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the list of view steps for this workflow as WorkflowViewStepInformation entities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_VIEW_STEPS</span><span class="p">]</span>
+    </div>
+<div class="viewcode-block" id="WorkflowInformation.to_dict"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.WorkflowInformation.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert this entities to python dictionary ready to be dumped to json. Also make</span>
+<span class="sd">        sure to recursively go through all the WorkflowStepInformation entities.</span>
+<span class="sd">        Can later be used to rebuild the WorkflowInformation entity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">view_steps</span> <span class="o">=</span> <span class="p">[</span><span class="n">view_step</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">view_step</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_view_steps</span><span class="p">()]</span>
+        <span class="n">wf_steps</span> <span class="o">=</span> <span class="p">[</span><span class="n">wf_step</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">wf_step</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_workflow_steps</span><span class="p">()]</span>
+        <span class="n">dict_data</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">)</span>
+        <span class="n">dict_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_VIEW_STEPS</span><span class="p">]</span> <span class="o">=</span> <span class="n">view_steps</span>
+        <span class="n">dict_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_WF_STEPS</span><span class="p">]</span> <span class="o">=</span> <span class="n">wf_steps</span>
+        <span class="k">return</span> <span class="n">dict_data</span>
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="WorkflowInformation.load_from_dict"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.WorkflowInformation.load_from_dict">[docs]</a>    <span class="k">def</span> <span class="nf">load_from_dict</span><span class="p">(</span><span class="n">input_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        From a input dictionary try to rebuild a WorkflowInformation entity. The dictionary must have</span>
+<span class="sd">        specific informations about the workflow and it&#39;s constituent workflow steps. </span>
+<span class="sd">        Such a dictionary can be generated by calling &#39;to_dict&#39; on existing WorkflowInformation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">view_steps</span> <span class="o">=</span> <span class="p">[</span><span class="n">WorkflowViewStepInformation</span><span class="o">.</span><span class="n">load_from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> 
+                                        <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">input_dict</span><span class="p">[</span><span class="n">WorkflowInformation</span><span class="o">.</span><span class="n">KEY_VIEW_STEPS</span><span class="p">]]</span>
+        <span class="n">wf_steps</span> <span class="o">=</span> <span class="p">[</span><span class="n">WorkflowStepInformation</span><span class="o">.</span><span class="n">load_from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                                        <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">input_dict</span><span class="p">[</span><span class="n">WorkflowInformation</span><span class="o">.</span><span class="n">KEY_WF_STEPS</span><span class="p">]]</span>
+        <span class="n">input_dict</span><span class="p">[</span><span class="n">WorkflowInformation</span><span class="o">.</span><span class="n">KEY_VIEW_STEPS</span><span class="p">]</span> <span class="o">=</span> <span class="n">view_steps</span>
+        <span class="n">input_dict</span><span class="p">[</span><span class="n">WorkflowInformation</span><span class="o">.</span><span class="n">KEY_WF_STEPS</span><span class="p">]</span> <span class="o">=</span> <span class="n">wf_steps</span>
+        <span class="k">return</span> <span class="n">WorkflowInformation</span><span class="p">(</span><span class="n">input_dict</span><span class="p">)</span>
+        
+</div></div>
+<div class="viewcode-block" id="StepInfo"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.StepInfo">[docs]</a><span class="k">class</span> <span class="nc">StepInfo</span><span class="p">(</span><span class="n">BaseExportHelp</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for workflow steps.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ALGO_INFO</span> <span class="o">=</span> <span class="s">&#39;--WVSI_algorighm_info--&#39;</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">StepInfo</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">data_dict</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="StepInfo.set_algorithm"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.StepInfo.set_algorithm">[docs]</a>    <span class="k">def</span> <span class="nf">set_algorithm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save required info about algorithm to quickly rebuild it.</span>
+<span class="sd">        Recieves a model.Algorithm entity and makes sure to store just what is needed to</span>
+<span class="sd">        later be able to re-create that entity (even if with different id).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ALGO_INFO</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;module&#39;</span> <span class="p">:</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">algo_group</span><span class="o">.</span><span class="n">module</span><span class="p">,</span>
+                                            <span class="s">&#39;class&#39;</span> <span class="p">:</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">algo_group</span><span class="o">.</span><span class="n">classname</span><span class="p">,</span>
+                                            <span class="s">&#39;init_param&#39;</span> <span class="p">:</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">algo_group</span><span class="o">.</span><span class="n">init_parameter</span><span class="p">,</span>
+                                            <span class="s">&#39;identifier&#39;</span> <span class="p">:</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">identifier</span><span class="p">}</span>
+        </div>
+<div class="viewcode-block" id="StepInfo.get_algorithm"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.StepInfo.get_algorithm">[docs]</a>    <span class="k">def</span> <span class="nf">get_algorithm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the algorithm saved in this entity.</span>
+<span class="sd">        Should be used only if previously an algorithm was saved on this entity by</span>
+<span class="sd">        calling &#39;set_algorithm&#39; method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ALGO_INFO</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="n">algo_group</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">find_group</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ALGO_INFO</span><span class="p">][</span><span class="s">&#39;module&#39;</span><span class="p">],</span> 
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ALGO_INFO</span><span class="p">][</span><span class="s">&#39;class&#39;</span><span class="p">],</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ALGO_INFO</span><span class="p">][</span><span class="s">&#39;init_param&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">algo_group</span><span class="p">:</span>
+            <span class="n">algorithm</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_algorithm_by_group</span><span class="p">(</span><span class="n">algo_group</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ALGO_INFO</span><span class="p">][</span><span class="s">&#39;identifier&#39;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">algorithm</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    </div>
+<div class="viewcode-block" id="StepInfo.to_dict"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.StepInfo.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        In case of workflow steps, the to_dict is simply returning it&#39;s data dictionary, since</span>
+<span class="sd">        no other complex entities should be present in dictionary at this point.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span>
+    </div>
+<div class="viewcode-block" id="StepInfo.index"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.StepInfo.index">[docs]</a>    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returned a tuple of the form (tab_index, index_in_tab) that can uniquely identify a workflow</span>
+<span class="sd">        step in the context of a given workflow. Used to remove the view step in case the algorithm</span>
+<span class="sd">        for the workflow step no longer exists in project we are imported to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;tab_index&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;index_in_tab&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+    
+</div></div>
+<div class="viewcode-block" id="WorkflowViewStepInformation"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.WorkflowViewStepInformation">[docs]</a><span class="k">class</span> <span class="nc">WorkflowViewStepInformation</span><span class="p">(</span><span class="n">StepInfo</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper entity that hold all the information needed to build a complete workflow step entity</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">PORTLET_IDENT</span> <span class="o">=</span> <span class="s">&#39;--WSI_portlet_id--&#39;</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WorkflowViewStepInformation</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="WorkflowViewStepInformation.set_portlet"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.WorkflowViewStepInformation.set_portlet">[docs]</a>    <span class="k">def</span> <span class="nf">set_portlet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">portlet</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Having as input a model.Portlet entity, store what is required in order to</span>
+<span class="sd">        later recreate that entity even in &#39;id&#39; from database differs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PORTLET_IDENT</span><span class="p">]</span> <span class="o">=</span> <span class="n">portlet</span><span class="o">.</span><span class="n">algorithm_identifier</span>
+    </div>
+<div class="viewcode-block" id="WorkflowViewStepInformation.get_portlet"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.WorkflowViewStepInformation.get_portlet">[docs]</a>    <span class="k">def</span> <span class="nf">get_portlet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the portlet that was saved on this entity. Should only be called if </span>
+<span class="sd">        beforehand &#39;set_portlet&#39; was called on this entity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">PORTLET_IDENT</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_portlet_by_identifier</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PORTLET_IDENT</span><span class="p">])</span>
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="WorkflowViewStepInformation.load_from_dict"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.WorkflowViewStepInformation.load_from_dict">[docs]</a>    <span class="k">def</span> <span class="nf">load_from_dict</span><span class="p">(</span><span class="n">input_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Just create a new WorkflowViewStepInformation entity with the given input dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">WorkflowViewStepInformation</span><span class="p">(</span><span class="n">input_dict</span><span class="p">)</span>
+    
+    </div></div>
+<div class="viewcode-block" id="WorkflowStepInformation"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.WorkflowStepInformation">[docs]</a><span class="k">class</span> <span class="nc">WorkflowStepInformation</span><span class="p">(</span><span class="n">StepInfo</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper entity that hold all the information needed to build a complete workflow view step entity</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">OP_GID</span> <span class="o">=</span> <span class="s">&#39;--WVSI_operation_gid--&#39;</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WorkflowStepInformation</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="WorkflowStepInformation.set_operation"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.WorkflowStepInformation.set_operation">[docs]</a>    <span class="k">def</span> <span class="nf">set_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Having a model.Operation entity as input, store it&#39;s gid so we can later</span>
+<span class="sd">        return it even if &#39;id&#39; in db has changed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">OP_GID</span><span class="p">]</span> <span class="o">=</span> <span class="n">operation</span><span class="o">.</span><span class="n">gid</span>
+        </div>
+<div class="viewcode-block" id="WorkflowStepInformation.get_operagion"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.WorkflowStepInformation.get_operagion">[docs]</a>    <span class="k">def</span> <span class="nf">get_operagion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the operation that was saved on this entity. Should only be called if </span>
+<span class="sd">        beforehand &#39;set_operation&#39; was called on this entity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">OP_GID</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operation_by_gid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">OP_GID</span><span class="p">,</span> <span class="bp">None</span><span class="p">))</span>
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="WorkflowStepInformation.load_from_dict"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.burst_export_entities.WorkflowStepInformation.load_from_dict">[docs]</a>    <span class="k">def</span> <span class="nf">load_from_dict</span><span class="p">(</span><span class="n">input_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Just create a new WorkflowStepInformation entity with the given input dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">WorkflowStepInformation</span><span class="p">(</span><span class="n">input_dict</span><span class="p">)</span>
+    
+    </div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

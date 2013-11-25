@@ -1,0 +1,421 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.datatypes.surfaces &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.datatypes.surfaces</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Surface relates DataTypes. This brings together the scientific and framework </span>
+<span class="sd">methods that are associated with the surfaces data.</span>
+
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">tvb.datatypes.surfaces_scientific</span> <span class="kn">as</span> <span class="nn">surfaces_scientific</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.surfaces_framework</span> <span class="kn">as</span> <span class="nn">surfaces_framework</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.surfaces_data</span> <span class="kn">as</span> <span class="nn">surfaces_data</span>
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.exceptions</span> <span class="kn">as</span> <span class="nn">exceptions</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span> <span class="k">as</span> <span class="n">cfg</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+<span class="n">CORTICAL</span> <span class="o">=</span> <span class="n">surfaces_data</span><span class="o">.</span><span class="n">CORTICAL</span>
+<span class="n">OUTER_SKIN</span> <span class="o">=</span> <span class="n">surfaces_data</span><span class="o">.</span><span class="n">OUTER_SKIN</span>
+<span class="n">INNER_SKULL</span> <span class="o">=</span> <span class="n">surfaces_data</span><span class="o">.</span><span class="n">INNER_SKULL</span>
+<span class="n">OUTER_SKULL</span> <span class="o">=</span> <span class="n">surfaces_data</span><span class="o">.</span><span class="n">OUTER_SKULL</span>
+<span class="n">EEG_CAP</span> <span class="o">=</span> <span class="n">surfaces_data</span><span class="o">.</span><span class="n">EEG_CAP</span>
+<span class="n">FACE</span> <span class="o">=</span> <span class="n">surfaces_data</span><span class="o">.</span><span class="n">FACE</span>
+
+
+
+<div class="viewcode-block" id="Surface"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces.Surface">[docs]</a><span class="k">class</span> <span class="nc">Surface</span><span class="p">(</span><span class="n">surfaces_scientific</span><span class="o">.</span><span class="n">SurfaceScientific</span><span class="p">,</span> <span class="n">surfaces_framework</span><span class="o">.</span><span class="n">SurfaceFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the Surface DataType.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                            SurfaceData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">                SurfaceFramework   SurfaceScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                              Surface</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make sure both Scientific and Framework configure methods are called.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">surfaces_scientific</span><span class="o">.</span><span class="n">SurfaceScientific</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">surfaces_framework</span><span class="o">.</span><span class="n">SurfaceFramework</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method checks if the data stored into this entity is valid, and ready to be stored in DB.</span>
+<span class="sd">        Method automatically called just before saving entity in DB.</span>
+<span class="sd">        In case data is not valid an Exception should be thrown.</span>
+<span class="sd">        We implement this method here, because the &quot;check&quot; method is in scientific class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Surface</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+
+        <span class="c"># First check if the surface has a valid number of vertices</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_vertices</span> <span class="o">&gt;</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MAX_SURFACE_VERTICES_NUMBER</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;This surface has too many vertices (max allowed: </span><span class="si">%d</span><span class="s">).&quot;</span> <span class="o">%</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MAX_SURFACE_VERTICES_NUMBER</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="s">&quot; Please upload a new surface or change max number in application settings.&quot;</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ValidationException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+            <span class="c"># Now check if the surface is closed</span>
+        <span class="n">is_closed</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_closed</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Could not import surface because it&#39;s not closed.Please correct the problem and upload again.&quot;</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ValidationException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="CorticalSurface"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces.CorticalSurface">[docs]</a><span class="k">class</span> <span class="nc">CorticalSurface</span><span class="p">(</span><span class="n">surfaces_scientific</span><span class="o">.</span><span class="n">CorticalSurfaceScientific</span><span class="p">,</span>
+                      <span class="n">surfaces_framework</span><span class="o">.</span><span class="n">CorticalSurfaceFramework</span><span class="p">,</span> <span class="n">Surface</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the CorticalSurface DataType.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                        CorticalSurfaceData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">        CorticalSurfaceFramework   CorticalSurfaceScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                          CorticalSurface</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;polymorphic_identity&#39;</span><span class="p">:</span> <span class="n">CORTICAL</span><span class="p">}</span>
+
+
+</div>
+<div class="viewcode-block" id="SkinAir"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces.SkinAir">[docs]</a><span class="k">class</span> <span class="nc">SkinAir</span><span class="p">(</span><span class="n">surfaces_scientific</span><span class="o">.</span><span class="n">SkinAirScientific</span><span class="p">,</span> <span class="n">surfaces_framework</span><span class="o">.</span><span class="n">SkinAirFramework</span><span class="p">,</span> <span class="n">Surface</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the SkinAir DataType.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                            SkinAirData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">                SkinAirFramework   SkinAirScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                              SkinAir</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;polymorphic_identity&#39;</span><span class="p">:</span> <span class="n">OUTER_SKIN</span><span class="p">}</span>
+
+
+</div>
+<div class="viewcode-block" id="BrainSkull"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces.BrainSkull">[docs]</a><span class="k">class</span> <span class="nc">BrainSkull</span><span class="p">(</span><span class="n">surfaces_scientific</span><span class="o">.</span><span class="n">BrainSkullScientific</span><span class="p">,</span> <span class="n">surfaces_framework</span><span class="o">.</span><span class="n">BrainSkullFramework</span><span class="p">,</span> <span class="n">Surface</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the BrainSkull dataType.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                           BrainSkullData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">             BrainSkullFramework   BrainSkullScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                             BrainSkull</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;polymorphic_identity&#39;</span><span class="p">:</span> <span class="n">INNER_SKULL</span><span class="p">}</span>
+
+
+</div>
+<div class="viewcode-block" id="SkullSkin"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces.SkullSkin">[docs]</a><span class="k">class</span> <span class="nc">SkullSkin</span><span class="p">(</span><span class="n">surfaces_scientific</span><span class="o">.</span><span class="n">SkullSkinScientific</span><span class="p">,</span> <span class="n">surfaces_framework</span><span class="o">.</span><span class="n">SkullSkinFramework</span><span class="p">,</span> <span class="n">Surface</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the SkullSkin dataType.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                           SkullSkinData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">              SkullSkinFramework   SkullSkinScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                             SkullSkin</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;polymorphic_identity&#39;</span><span class="p">:</span> <span class="n">OUTER_SKULL</span><span class="p">}</span>
+
+
+<span class="c">##--------------------- CLOSE SURFACES End Here---------------------------------------##</span>
+
+
+<span class="c">##--------------------- OPEN SURFACES Start Here---------------------------------------##</span>
+
+</div>
+<div class="viewcode-block" id="OpenSurface"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces.OpenSurface">[docs]</a><span class="k">class</span> <span class="nc">OpenSurface</span><span class="p">(</span><span class="n">surfaces_scientific</span><span class="o">.</span><span class="n">OpenSurfaceScientific</span><span class="p">,</span> <span class="n">surfaces_framework</span><span class="o">.</span><span class="n">OpenSurfaceFramework</span><span class="p">,</span> <span class="n">Surface</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the OpenSurface dataType.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                           OpenSurfaceData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">             OpenSurfaceFramework   OpenSurfaceScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                             OpenSurface</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="EEGCap"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces.EEGCap">[docs]</a><span class="k">class</span> <span class="nc">EEGCap</span><span class="p">(</span><span class="n">surfaces_scientific</span><span class="o">.</span><span class="n">EEGCapScientific</span><span class="p">,</span> <span class="n">surfaces_framework</span><span class="o">.</span><span class="n">EEGCapFramework</span><span class="p">,</span> <span class="n">OpenSurface</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the EEGCap dataType.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                           EEGCapData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">             EEGCapFramework   EEGCapScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                             EEGCap</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;polymorphic_identity&#39;</span><span class="p">:</span> <span class="n">EEG_CAP</span><span class="p">}</span>
+
+
+</div>
+<div class="viewcode-block" id="FaceSurface"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces.FaceSurface">[docs]</a><span class="k">class</span> <span class="nc">FaceSurface</span><span class="p">(</span><span class="n">surfaces_scientific</span><span class="o">.</span><span class="n">FaceSurfaceScientific</span><span class="p">,</span> <span class="n">surfaces_framework</span><span class="o">.</span><span class="n">FaceSurfaceFramework</span><span class="p">,</span> <span class="n">OpenSurface</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the FaceSurface dataType.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                           FaceSurfaceData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">             FaceSurfaceFramework   FaceSurfaceScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                             FaceSurface</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;polymorphic_identity&#39;</span><span class="p">:</span> <span class="n">FACE</span><span class="p">}</span>
+
+<span class="c">##--------------------- OPEN SURFACES End Here---------------------------------------##</span>
+
+
+<span class="c">##--------------------- SURFACES ADJIACENT classes start Here---------------------------------------##</span>
+
+</div>
+<div class="viewcode-block" id="RegionMapping"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces.RegionMapping">[docs]</a><span class="k">class</span> <span class="nc">RegionMapping</span><span class="p">(</span><span class="n">surfaces_framework</span><span class="o">.</span><span class="n">RegionMappingFramework</span><span class="p">,</span> <span class="n">surfaces_scientific</span><span class="o">.</span><span class="n">RegionMappingScientific</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the RegionMapping dataType.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                        RegionMappingData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">          RegionMappingFramework   RegionMappingScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                          RegionMapping</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="LocalConnectivity"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces.LocalConnectivity">[docs]</a><span class="k">class</span> <span class="nc">LocalConnectivity</span><span class="p">(</span><span class="n">surfaces_scientific</span><span class="o">.</span><span class="n">LocalConnectivityScientific</span><span class="p">,</span> <span class="n">surfaces_framework</span><span class="o">.</span><span class="n">LocalConnectivityFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the LocalConnectivity dataType.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                       LocalConnectivityData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">      LocalConnectivityFramework   LocalConnectivityScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                         LocalConnectivity</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="Cortex"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces.Cortex">[docs]</a><span class="k">class</span> <span class="nc">Cortex</span><span class="p">(</span><span class="n">surfaces_scientific</span><span class="o">.</span><span class="n">CortexScientific</span><span class="p">,</span> <span class="n">surfaces_framework</span><span class="o">.</span><span class="n">CortexFramework</span><span class="p">,</span> <span class="n">CorticalSurface</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the Cortex dataType.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                             CortexData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">                 CortexFramework   CortexScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                               Cortex</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

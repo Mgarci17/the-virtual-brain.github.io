@@ -1,0 +1,932 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.datatypes.surfaces_scientific &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.datatypes.surfaces_scientific</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">Scientific methods for the Surfaces datatype.</span>
+
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Ionel Ortelecan &lt;ionel.ortelecan@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;</span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia@tvb.invalid&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="kn">as</span> <span class="nn">sparse</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.surfaces_data</span> <span class="kn">as</span> <span class="nn">surfaces_data</span>
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.util</span> <span class="kn">as</span> <span class="nn">util</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>  <span class="c"># externals.geodesic_distance.</span>
+    <span class="kn">import</span> <span class="nn">gdist</span>
+    <span class="c">#NO_GEODESIC_DISTANCE = False</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="c">#NO_GEODESIC_DISTANCE = True</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Failed to import geodesic distance package from externals...&quot;</span><span class="p">)</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Check it&#39;s configured, externals/geodesic_distance/setup.py&quot;</span><span class="p">)</span>
+
+
+
+<div class="viewcode-block" id="SurfaceScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_scientific.SurfaceScientific">[docs]</a><span class="k">class</span> <span class="nc">SurfaceScientific</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">SurfaceData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add scientific methods to Surface &quot;&quot;&quot;</span>
+
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">_vertex_neighbours</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">_vertex_triangles</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">_vertex_mapping</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">_region_sum</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">_region_average</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">_triangle_centres</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">_triangle_angles</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">_triangle_areas</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">_edges</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">_number_of_edges</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">_edge_lengths</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">_edge_length_mean</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">_edge_length_min</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">_edge_length_max</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">_edge_triangles</span> <span class="o">=</span> <span class="bp">None</span>
+
+
+    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Invoke the compute methods for computable attributes that haven&#39;t been</span>
+<span class="sd">        set during initialization.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SurfaceScientific</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_vertices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_triangles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangle_normals</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Triangle normals not available. Start to compute them.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_triangle_normals</span><span class="p">()</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;End computing triangles normals&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertex_normals</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Vertex normals not available. Start to compute them.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_vertex_normals</span><span class="p">()</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;End computing vertex normals&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_find_summary_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gather scientifically interesting summary information from an instance</span>
+<span class="sd">        of this datatype.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;Surface type&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span>
+                   <span class="s">&quot;Number of vertices&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_vertices</span><span class="p">,</span>
+                   <span class="s">&quot;Number of triangles&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_triangles</span><span class="p">,</span>
+                   <span class="s">&quot;Number of edges&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">,</span>
+                   <span class="s">&quot;Edge lengths, mean (mm)&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_length_mean</span><span class="p">,</span>
+                   <span class="s">&quot;Edge lengths, shortest (mm)&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_length_min</span><span class="p">,</span>
+                   <span class="s">&quot;Edge lengths, longest (mm)&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_length_max</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">summary</span>
+
+
+    <span class="k">def</span> <span class="nf">geodesic_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">max_dist</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">targets</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the geodesic distance between vertices of the surface, </span>
+
+<span class="sd">        ``sources``: one or more indices into vertices, these are required, </span>
+<span class="sd">            they specify the vertices from which the distance is calculated.</span>
+<span class="sd">            NOTE: if multiple sources are provided then the distance returned</span>
+<span class="sd">            is the shortest from the closest source. </span>
+<span class="sd">        ``max_dist``: find the distance to vertices out as far as max_dist. </span>
+<span class="sd">        ``targets``: one or more indices into vertices,.</span>
+
+<span class="sd">        NOTE: Either ``targets`` or ``max_dist`` should be specified, but not </span>
+<span class="sd">            both, specifying neither is equivalent to max_dist=1e100.</span>
+
+<span class="sd">        NOTE: when max_dist is specifed, distances &gt; max_dist are returned as </span>
+<span class="sd">            numpy.inf</span>
+
+<span class="sd">        If end_vertex is omitted the distance from the starting vertex to all </span>
+<span class="sd">        vertices within max_dist will be returned, if max_dist is also omitted </span>
+<span class="sd">        the distance to all vertices on the surface will be returned.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#TODO: Probably should check that targets and start_vertex are less than</span>
+        <span class="c">#      number of vertices, etc...</span>
+        <span class="c">#if NO_GEODESIC_DISTANCE:</span>
+        <span class="c">#    LOG.error(&quot;%s: The geodesic distance library didn&#39;t load&quot; % repr(self))</span>
+        <span class="c">#    return</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">max_dist</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">targets</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">):</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="n">gdist</span><span class="o">.</span><span class="n">compute_gdist</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span>
+                                       <span class="n">source_indices</span><span class="o">=</span><span class="n">sources</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">max_dist</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">targets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">):</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="n">gdist</span><span class="o">.</span><span class="n">compute_gdist</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span>
+                                       <span class="n">source_indices</span><span class="o">=</span><span class="n">sources</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span>
+                                       <span class="n">target_indices</span><span class="o">=</span><span class="n">targets</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">max_dist</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">targets</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">):</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="n">gdist</span><span class="o">.</span><span class="n">compute_gdist</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span>
+                                       <span class="n">source_indices</span><span class="o">=</span><span class="n">sources</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span>
+                                       <span class="n">max_distance</span><span class="o">=</span><span class="n">max_dist</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: Specifying both targets and max_dist doesn&#39;t work.&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">return</span> <span class="n">dist</span>
+
+
+    <span class="k">def</span> <span class="nf">compute_geodesic_distance_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_dist</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate a sparse matrix of the geodesic distance from each vertex to </span>
+<span class="sd">        all vertices within max_dist of them on the surface, </span>
+
+<span class="sd">        ``max_dist``: find the distance to vertices out as far as max_dist.</span>
+
+<span class="sd">        NOTE: Compute time increases rapidly with max_dist and the memory </span>
+<span class="sd">        efficiency of the sparse matrices decreases, so, don&#39;t use too large a </span>
+<span class="sd">        value for max_dist...</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#TODO: Probably should check that max_dist isn&#39;t &quot;too&quot; large or too </span>
+        <span class="c">#      small, min should probably be max edge length...</span>
+
+        <span class="c">#if NO_GEODESIC_DISTANCE:</span>
+        <span class="c">#    LOG.error(&quot;%s: The geodesic distance library didn&#39;t load&quot; % repr(self))</span>
+        <span class="c">#    return</span>
+
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">gdist</span><span class="o">.</span><span class="n">local_gdist_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span>
+                                        <span class="n">max_distance</span><span class="o">=</span><span class="n">max_dist</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">geodesic_distance_matrix</span> <span class="o">=</span> <span class="n">dist</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">vertex_neighbours</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List of the set of neighbours for each vertex.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vertex_neighbours</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_vertex_neighbours</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_vertex_neighbours</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vertex_neighbours</span>
+
+
+    <span class="k">def</span> <span class="nf">_find_vertex_neighbours</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">neighbours</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_vertices</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_triangles</span><span class="p">):</span>
+            <span class="n">neighbours</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">neighbours</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+            <span class="n">neighbours</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">neighbours</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+            <span class="n">neighbours</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">neighbours</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">neighbours</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">frozenset</span><span class="p">,</span> <span class="n">neighbours</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">neighbours</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">vertex_triangles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List of the set of triangles surrounding each vertex.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vertex_triangles</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_vertex_triangles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_vertex_triangles</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vertex_triangles</span>
+
+
+    <span class="k">def</span> <span class="nf">_find_vertex_triangles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">triangles</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_vertices</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_triangles</span><span class="p">):</span>
+            <span class="n">triangles</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">triangles</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">triangles</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
+        <span class="n">triangles</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">frozenset</span><span class="p">,</span> <span class="n">triangles</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">triangles</span>
+
+
+    <span class="k">def</span> <span class="nf">nth_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertex</span><span class="p">,</span> <span class="n">neighbourhood</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">contains</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the vertices of the nth ring around a given vertex, defaults to </span>
+<span class="sd">        neighbourhood=2. NOTE: if you want neighbourhood=1 then you should </span>
+<span class="sd">        directly access the property vertex_neighbours, ie use</span>
+<span class="sd">        surf_obj.vertex_neighbours[vertex] setting contains=True returns all </span>
+<span class="sd">        vertices from rings 1 to n inclusive.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">ring</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">vertex</span><span class="p">])</span>
+        <span class="n">local_vertices</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">vertex</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">neighbourhood</span><span class="p">):</span>
+            <span class="n">neighbours</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">vertex_neighbours</span><span class="p">[</span><span class="n">indx</span><span class="p">]</span> <span class="k">for</span> <span class="n">indx</span> <span class="ow">in</span> <span class="n">ring</span><span class="p">]</span>
+            <span class="n">neighbours</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">vert</span> <span class="k">for</span> <span class="n">subset</span> <span class="ow">in</span> <span class="n">neighbours</span> <span class="k">for</span> <span class="n">vert</span> <span class="ow">in</span> <span class="n">subset</span><span class="p">])</span>
+            <span class="n">ring</span> <span class="o">=</span> <span class="n">neighbours</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">local_vertices</span><span class="p">)</span>
+            <span class="n">local_vertices</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ring</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">contains</span><span class="p">:</span>
+            <span class="n">local_vertices</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">vertex</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">local_vertices</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">ring</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">compute_triangle_normals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculates triangle normals.&quot;&quot;&quot;</span>
+        <span class="n">tri_u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">:]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">:]</span>
+        <span class="n">tri_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">:]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">:]</span>
+
+        <span class="n">tri_norm</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">tri_u</span><span class="p">,</span> <span class="n">tri_v</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">triangle_normals</span> <span class="o">=</span> <span class="n">tri_norm</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">tri_norm</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))[:,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">FloatingPointError</span><span class="p">:</span>
+            <span class="c">#TODO: NaN generation would stop execution, however for normals this case could maybe be </span>
+            <span class="c"># handled in a better way.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">triangle_normals</span> <span class="o">=</span> <span class="n">tri_norm</span>
+        <span class="n">util</span><span class="o">.</span><span class="n">log_debug_array</span><span class="p">(</span><span class="n">LOG</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangle_normals</span><span class="p">,</span> <span class="s">&quot;triangle_normals&quot;</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">compute_vertex_normals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Estimates vertex normals, based on triangle normals weighted by the </span>
+<span class="sd">        angle they subtend at each vertex...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">vert_norms</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_vertices</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_vertices</span><span class="p">):</span>
+            <span class="n">tri_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertex_triangles</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+            <span class="n">angle_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[</span><span class="n">tri_list</span><span class="p">,</span> <span class="p">:]</span> <span class="o">==</span> <span class="n">k</span>
+            <span class="n">angles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangle_angles</span><span class="p">[</span><span class="n">tri_list</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">angles</span> <span class="o">=</span> <span class="n">angles</span><span class="p">[</span><span class="n">angle_mask</span><span class="p">][:,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+            <span class="n">angle_scaling</span> <span class="o">=</span> <span class="n">angles</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">angles</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">vert_norms</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">angle_scaling</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangle_normals</span><span class="p">[</span><span class="n">tri_list</span><span class="p">,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c">#Scale by angle subtended.</span>
+            <span class="n">vert_norms</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">vert_norms</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">vert_norms</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="p">:]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+            <span class="c">#Normalise to unit vectors.</span>
+
+        <span class="n">util</span><span class="o">.</span><span class="n">log_debug_array</span><span class="p">(</span><span class="n">LOG</span><span class="p">,</span> <span class="n">vert_norms</span><span class="p">,</span> <span class="s">&quot;vertex_normals&quot;</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vertex_normals</span> <span class="o">=</span> <span class="n">vert_norms</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">triangle_areas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;An array specifying the area of the triangles making up a surface.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_triangle_areas</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_triangle_areas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_triangle_areas</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_triangle_areas</span>
+
+
+    <span class="k">def</span> <span class="nf">_find_triangle_areas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculates the area of triangles making up a surface.&quot;&quot;&quot;</span>
+        <span class="n">tri_u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">:]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">:]</span>
+        <span class="n">tri_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">:]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">:]</span>
+
+        <span class="n">tri_norm</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">tri_u</span><span class="p">,</span> <span class="n">tri_v</span><span class="p">)</span>
+        <span class="n">triangle_areas</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">tri_norm</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="n">triangle_areas</span> <span class="o">=</span> <span class="n">triangle_areas</span><span class="p">[:,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="n">util</span><span class="o">.</span><span class="n">log_debug_array</span><span class="p">(</span><span class="n">LOG</span><span class="p">,</span> <span class="n">triangle_areas</span><span class="p">,</span> <span class="s">&quot;triangle_areas&quot;</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">triangle_areas</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">triangle_centres</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An array specifying the location of triangle centres.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_triangle_centres</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_triangle_centres</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_triangle_centres</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_triangle_centres</span>
+
+
+    <span class="k">def</span> <span class="nf">_find_triangle_centres</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the location of the centre of all triangles comprising the mesh surface.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tri_verts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">tri_centres</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">tri_verts</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">util</span><span class="o">.</span><span class="n">log_debug_array</span><span class="p">(</span><span class="n">LOG</span><span class="p">,</span> <span class="n">tri_centres</span><span class="p">,</span> <span class="s">&quot;tri_centres&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tri_centres</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">triangle_angles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An array containing the inner angles for each triangle, same shape as triangles.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_triangle_angles</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_triangle_angles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_triangle_angles</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_triangle_angles</span>
+
+
+    <span class="k">def</span> <span class="nf">_find_triangle_angles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the inner angles of all the triangles which make up a surface</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">verts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span>
+        <span class="c"># TODO: Should be possible with arrays, ie not nested loops...</span>
+        <span class="c"># (this was a direct translation of some old matlab code)</span>
+        <span class="n">angles</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_triangles</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">tt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_triangles</span><span class="p">):</span>
+            <span class="n">triangle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[</span><span class="n">tt</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="k">for</span> <span class="n">ta</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="n">ang</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">triangle</span><span class="p">,</span> <span class="o">-</span><span class="n">ta</span><span class="p">)</span>
+                <span class="n">angles</span><span class="p">[</span><span class="n">tt</span><span class="p">,</span> <span class="n">ta</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">verts</span><span class="p">[</span><span class="n">ang</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">verts</span><span class="p">[</span><span class="n">ang</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">:])</span> <span class="o">/</span>
+                    <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">verts</span><span class="p">[</span><span class="n">ang</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">verts</span><span class="p">[</span><span class="n">ang</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">:])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)),</span>
+                    <span class="p">(</span><span class="n">verts</span><span class="p">[</span><span class="n">ang</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">verts</span><span class="p">[</span><span class="n">ang</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">:])</span> <span class="o">/</span>
+                    <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">verts</span><span class="p">[</span><span class="n">ang</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">verts</span><span class="p">[</span><span class="n">ang</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">:])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))))</span>
+
+        <span class="n">util</span><span class="o">.</span><span class="n">log_debug_array</span><span class="p">(</span><span class="n">LOG</span><span class="p">,</span> <span class="n">angles</span><span class="p">,</span> <span class="s">&quot;triangle_angles&quot;</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">angles</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A sorted list of the two element tuples(vertex_0, vertex_1) representing</span>
+<span class="sd">        the edges of the mesh.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_edges</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span>
+
+
+    <span class="k">def</span> <span class="nf">_find_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find all the edges of the mesh surface, return them sorted as a list of</span>
+<span class="sd">        two element tuple, where the elements are vertex indices.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">v0</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">][:,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">][:,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">][:,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]))</span>
+        <span class="n">v1</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">][:,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">][:,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">][:,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]))</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">v0</span><span class="p">,</span> <span class="n">v1</span><span class="p">))</span>
+        <span class="n">edges</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">edges</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+        <span class="n">edges</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">edges</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">number_of_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The number of edges making up the mesh surface.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_number_of_edges</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_number_of_edges</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_number_of_edges</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">edge_lengths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The length of the edges defined in the ``edges`` attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_lengths</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_edge_lengths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_edge_lengths</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_lengths</span>
+
+
+    <span class="k">def</span> <span class="nf">_find_edge_lengths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the Euclidean distance between the pair of vertices that </span>
+<span class="sd">        define the edges in the ``edges`` attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#TODO: Would a Sparse matrix be a more useful data structure for these??? </span>
+        <span class="n">elem</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(((</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">,</span> <span class="p">:][:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">,</span> <span class="p">:][:,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">elem</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">edge_length_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The mean length of the edges of the mesh.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_length_mean</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_edge_length_mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_lengths</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_length_mean</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">edge_length_min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The length of the shortest edge in the mesh.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_length_min</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_edge_length_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_lengths</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_length_min</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">edge_length_max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The length of the longest edge in the mesh.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_length_max</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_edge_length_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_lengths</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_length_max</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">edge_triangles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List of the pairs of triangles sharing an edge.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_triangles</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_edge_triangles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_edge_triangles</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_triangles</span>
+
+
+    <span class="k">def</span> <span class="nf">_find_edge_triangles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">triangles</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">):</span>
+            <span class="n">tris</span> <span class="o">=</span> <span class="nb">set</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertex_triangles</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">]]),</span>
+                                    <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertex_triangles</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">1</span><span class="p">]]))</span>
+            <span class="n">triangles</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">tris</span>
+
+        <span class="n">triangles</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">frozenset</span><span class="p">,</span> <span class="n">triangles</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">triangles</span>
+
+
+    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check the surface under the assumption of topologically spherical closed</span>
+<span class="sd">        triangular mesh. Returns a 5 element tuple: 1) A boolean, True if no </span>
+<span class="sd">        checks failed False otherwise; 2) The Euler characteristic number for</span>
+<span class="sd">        the mesh surface, this should be 2 or 4 -- meaning one or two closed</span>
+<span class="sd">        topologically spherical surfaces; 3) a list of indices for any isolated</span>
+<span class="sd">        vertices; 4) a list of indices of edges where the surface is pinched; </span>
+<span class="sd">        and 5) a list of indices of edges that border holes in the surface.</span>
+
+<span class="sd">        The allowance for one or two closed surfaces is because the skull/etc</span>
+<span class="sd">        should be represented by a single closed surface and we typically </span>
+<span class="sd">        represent the cortex as one closed surface per hemisphere.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">is_good</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">isolated</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">pinched_off</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">holes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c">#The Euler characteristic for a 2D sphere embedded in a 3D space is 2.</span>
+        <span class="n">euler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_vertices</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_triangles</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_edges</span>
+        <span class="k">if</span> <span class="n">euler</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;The surface is expected to be 1 or 2 closed spheres.&quot;</span><span class="p">)</span>
+            <span class="n">is_good</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_vertices</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;There are triangles that index nonexistent vertices.&quot;</span><span class="p">)</span>
+            <span class="n">is_good</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="n">triangles_per_vertex</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">len</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertex_triangles</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">triangles_per_vertex</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;The surface contains isolated vertices.&quot;</span><span class="p">)</span>
+            <span class="n">is_good</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">isolated</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">triangles_per_vertex</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">)</span>
+
+        <span class="n">triangles_per_edge</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">len</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_triangles</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">triangles_per_edge</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;There are edges with more than 2 triangles, part of the surface is pinched off.&quot;</span><span class="p">)</span>
+            <span class="n">is_good</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">pinched_off</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">triangles_per_edge</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">triangles_per_edge</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Free boundaries, there are holes in the surface.&quot;</span><span class="p">)</span>
+            <span class="n">is_good</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">holes</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">triangles_per_edge</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">is_good</span><span class="p">,</span> <span class="n">euler</span><span class="p">,</span> <span class="n">isolated</span><span class="p">,</span> <span class="n">pinched_off</span><span class="p">,</span> <span class="n">holes</span>
+
+
+    <span class="k">def</span> <span class="nf">compute_equation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">focal_points</span><span class="p">,</span> <span class="n">equation</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        focal_points - a list of focal points. Used for specifying the vertices</span>
+<span class="sd">        from which the distance is calculated.</span>
+<span class="sd">        equation - the equation which should be evaluated</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">focal_points</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">focal_points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodesic_distance</span><span class="p">(</span><span class="n">focal_points</span><span class="p">)</span>
+        <span class="n">equation</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">dist</span>
+        <span class="k">return</span> <span class="n">equation</span><span class="o">.</span><span class="n">pattern</span>
+
+
+</div>
+<div class="viewcode-block" id="CorticalSurfaceScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_scientific.CorticalSurfaceScientific">[docs]</a><span class="k">class</span> <span class="nc">CorticalSurfaceScientific</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">CorticalSurfaceData</span><span class="p">,</span> <span class="n">SurfaceScientific</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add scientific methods to CorticalSurface &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="SkinAirScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_scientific.SkinAirScientific">[docs]</a><span class="k">class</span> <span class="nc">SkinAirScientific</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">SkinAirData</span><span class="p">,</span> <span class="n">SurfaceScientific</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add scientific methods to SkinAir &quot;&quot;&quot;</span>
+
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
+
+
+</div>
+<div class="viewcode-block" id="BrainSkullScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_scientific.BrainSkullScientific">[docs]</a><span class="k">class</span> <span class="nc">BrainSkullScientific</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">BrainSkullData</span><span class="p">,</span> <span class="n">SurfaceScientific</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add scientific methods to BrainSkull &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="SkullSkinScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_scientific.SkullSkinScientific">[docs]</a><span class="k">class</span> <span class="nc">SkullSkinScientific</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">SkullSkinData</span><span class="p">,</span> <span class="n">SurfaceScientific</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add scientific methods to SkullSkin &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+<span class="c">##--------------------- CLOSE SURFACES End Here---------------------------------------##</span>
+
+<span class="c">##--------------------- OPEN SURFACES Start Here---------------------------------------##</span>
+
+</div>
+<div class="viewcode-block" id="OpenSurfaceScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_scientific.OpenSurfaceScientific">[docs]</a><span class="k">class</span> <span class="nc">OpenSurfaceScientific</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">OpenSurfaceData</span><span class="p">,</span> <span class="n">SurfaceScientific</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add scientific methods to OpenSurface &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="EEGCapScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_scientific.EEGCapScientific">[docs]</a><span class="k">class</span> <span class="nc">EEGCapScientific</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">EEGCapData</span><span class="p">,</span> <span class="n">OpenSurfaceScientific</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add scientific methods to EEGCap &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="FaceSurfaceScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_scientific.FaceSurfaceScientific">[docs]</a><span class="k">class</span> <span class="nc">FaceSurfaceScientific</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">FaceSurfaceData</span><span class="p">,</span> <span class="n">OpenSurfaceScientific</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add scientific methods to FaceSurface &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+<span class="c">##--------------------- OPEN SURFACES End Here---------------------------------------##</span>
+
+<span class="c">##--------------------- SURFACES ADJIACENT classes start Here---------------------------------------##</span>
+
+</div>
+<div class="viewcode-block" id="RegionMappingScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_scientific.RegionMappingScientific">[docs]</a><span class="k">class</span> <span class="nc">RegionMappingScientific</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">RegionMappingData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    Scientific methods regarding RegionMapping DataType.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
+
+
+</div>
+<div class="viewcode-block" id="LocalConnectivityScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_scientific.LocalConnectivityScientific">[docs]</a><span class="k">class</span> <span class="nc">LocalConnectivityScientific</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">LocalConnectivityData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add scientific methods to LocalConnectivity &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
+
+
+    <span class="k">def</span> <span class="nf">compute_sparse_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        NOTE: Before calling this method, the surface field</span>
+<span class="sd">        should already be set on the local connectivity.</span>
+
+<span class="sd">        Computes the sparse matrix for this local connectivity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot; Before calling &#39;compute_sparse_matrix&#39; method, the surface field should already be set.&quot;</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span> <span class="o">=</span> <span class="n">gdist</span><span class="o">.</span><span class="n">local_gdist_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+                                               <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">triangles</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span> <span class="n">max_distance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="CortexScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_scientific.CortexScientific">[docs]</a><span class="k">class</span> <span class="nc">CortexScientific</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">CortexData</span><span class="p">,</span> <span class="n">SurfaceScientific</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add scientific methods to Cortex &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="c">#TODO: Prob. should implement these in the @property way...</span>
+    <span class="n">region_areas</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">region_orientation</span> <span class="o">=</span> <span class="bp">None</span>
+
+
+    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Invoke the compute methods for computable attributes that haven&#39;t been</span>
+<span class="sd">        set during initialisation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CortexScientific</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">region_average</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">region_mapping</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">region_orientation</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_region_orientation</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">region_areas</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_region_areas</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_connectivity</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c"># TODO: Switch to degree weighted nearest neighbour, or store a default,</span>
+            <span class="c"># computing this every time I want a configured Cortex is a pain...</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">local_connectivity</span> <span class="o">=</span> <span class="n">surfaces_data</span><span class="o">.</span><span class="n">LocalConnectivityData</span><span class="p">(</span><span class="n">cutoff</span><span class="o">=</span><span class="mf">40.0</span><span class="p">,</span> <span class="n">use_storage</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">cutoff</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">cutoff</span> <span class="o">=</span> <span class="mf">40.0</span>
+            <span class="c">#TODO: Temporary hack</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_local_connectivity</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">_find_summary_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extend the base class&#39;s scientific summary information dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">CortexScientific</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_find_summary_info</span><span class="p">()</span>
+        <span class="n">summary</span><span class="p">[</span><span class="s">&quot;Number of regions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region_areas</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">summary</span><span class="p">[</span><span class="s">&quot;Region area, mean (mm:math:`^2`)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">region_areas</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">summary</span><span class="p">[</span><span class="s">&quot;Region area, minimum (mm:math:`^2`)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">region_areas</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">summary</span><span class="p">[</span><span class="s">&quot;Region area, maximum (mm:math:`^2`)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">region_areas</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">summary</span>
+
+
+    <span class="k">def</span> <span class="nf">compute_local_connectivity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Computing local connectivity matrix&quot;</span><span class="p">)</span>
+        <span class="c">#TODO: Better to put this in configure, then callers job, if change cutoff, to explicit call compute...matrix </span>
+        <span class="n">loc_con_cutoff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">cutoff</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_geodesic_distance_matrix</span><span class="p">(</span><span class="n">max_dist</span><span class="o">=</span><span class="n">loc_con_cutoff</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodesic_distance_matrix</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>  <span class="c"># Evaluate equation based distance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">trait</span><span class="p">[</span><span class="s">&quot;matrix&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">log_debug</span><span class="p">(</span><span class="n">owner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">+</span> <span class="s">&quot;.local_connectivity&quot;</span><span class="p">)</span>
+
+        <span class="c">#HACK FOR DEBUGGING CAUSE TRAITS REPORTS self.local_connectivity.trait[&quot;matrix&quot;] AS BEING EMPTY...</span>
+        <span class="n">lcmat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">matrix</span>
+        <span class="n">sts</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">lcmat</span><span class="o">.</span><span class="n">__class__</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">+</span> <span class="s">&quot;.local_connectivity&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">lcmat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">sparse_format</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">lcmat</span><span class="o">.</span><span class="n">format</span><span class="p">)</span>
+        <span class="n">nnz</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">lcmat</span><span class="o">.</span><span class="n">nnz</span><span class="p">)</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">lcmat</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">lcmat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="ow">and</span> <span class="n">lcmat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">array_max</span> <span class="o">=</span> <span class="n">lcmat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+            <span class="n">array_min</span> <span class="o">=</span> <span class="n">lcmat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">array_max</span> <span class="o">=</span> <span class="n">array_min</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s"> shape: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sts</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="p">))</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s"> format: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sts</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">sparse_format</span><span class="p">))</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s"> number of non-zeros: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sts</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">nnz</span><span class="p">))</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s"> dtype: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sts</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">dtype</span><span class="p">))</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s"> maximum: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sts</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">array_max</span><span class="p">))</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s"> minimum: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sts</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">array_min</span><span class="p">))</span>
+
+        <span class="c"># Pad the local connectivity matrix with zeros when non-cortical regions</span>
+        <span class="c"># are included in the long range connectivity...</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">region_mapping</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;There are non-cortical regions, will pad local connectivity&quot;</span><span class="p">)</span>
+            <span class="n">padding</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">region_mapping</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">matrix</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">matrix</span><span class="p">,</span> <span class="n">padding</span><span class="p">])</span>
+
+            <span class="n">padding</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">region_mapping</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">matrix</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">matrix</span><span class="p">,</span> <span class="n">padding</span><span class="p">])</span>
+
+
+    <span class="c">#----------------------------- region_average -----------------------------#</span>
+    <span class="k">def</span> <span class="nf">_get_region_average</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An array that ...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region_average</span>
+
+
+    <span class="k">def</span> <span class="nf">_set_region_average</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spatial_mask</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        .d..</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">region_sum</span> <span class="o">=</span> <span class="n">spatial_mask</span>
+
+        <span class="n">nodes_per_area</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region_sum</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_region_average</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">region_sum</span> <span class="o">/</span> <span class="n">nodes_per_area</span>
+        <span class="c">#import pdb; pdb.set_trace()</span>
+
+        <span class="n">util</span><span class="o">.</span><span class="n">log_debug_array</span><span class="p">(</span><span class="n">LOG</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region_average</span><span class="p">,</span> <span class="s">&quot;region_average&quot;</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+
+
+    <span class="n">region_average</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_region_average</span><span class="p">,</span> <span class="n">fset</span><span class="o">=</span><span class="n">_set_region_average</span><span class="p">)</span>
+    <span class="c">#--------------------------------------------------------------------------#</span>
+
+
+    <span class="c">#------------------------------- region_sum -------------------------------#</span>
+    <span class="k">def</span> <span class="nf">_get_region_sum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An array that ...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region_sum</span>
+
+
+    <span class="k">def</span> <span class="nf">_set_region_sum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spatial_mask</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">         Set self._region_average attribute based on region mapping...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vertex_mapping</span> <span class="o">=</span> <span class="n">spatial_mask</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_region_sum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertex_mapping</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="n">util</span><span class="o">.</span><span class="n">log_debug_array</span><span class="p">(</span><span class="n">LOG</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region_sum</span><span class="p">,</span> <span class="s">&quot;region_sum&quot;</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+
+
+    <span class="n">region_sum</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_region_sum</span><span class="p">,</span> <span class="n">fset</span><span class="o">=</span><span class="n">_set_region_sum</span><span class="p">)</span>
+    <span class="c">#--------------------------------------------------------------------------#</span>
+
+
+    <span class="c">#----------------------------- vertex_mapping -----------------------------#</span>
+    <span class="k">def</span> <span class="nf">_get_vertex_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A two dimensional array that can be used, via matrix multiplication, to</span>
+<span class="sd">        map a vector of length number_of_regions to a vector of length </span>
+<span class="sd">        number_of_vertices.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vertex_mapping</span>
+
+
+    <span class="k">def</span> <span class="nf">_set_vertex_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spatial_mask</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Set self._region_average attribute based on region mapping...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">number_of_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">region_mapping</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c"># TODO: need to support non-cortical regions here</span>
+        <span class="n">number_of_areas</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">spatial_mask</span><span class="p">))</span>  <span class="c"># TODO: need to support non-cortical regions here</span>
+        <span class="c">#import pdb; pdb.set_trace()</span>
+        <span class="n">vertex_mapping</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">number_of_nodes</span><span class="p">,</span> <span class="n">number_of_areas</span><span class="p">))</span>
+        <span class="n">vertex_mapping</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">number_of_nodes</span><span class="p">),</span> <span class="n">spatial_mask</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vertex_mapping</span> <span class="o">=</span> <span class="n">vertex_mapping</span>
+
+        <span class="n">util</span><span class="o">.</span><span class="n">log_debug_array</span><span class="p">(</span><span class="n">LOG</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vertex_mapping</span><span class="p">,</span> <span class="s">&quot;vertex_mapping&quot;</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+
+
+    <span class="n">vertex_mapping</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_vertex_mapping</span><span class="p">,</span> <span class="n">fset</span><span class="o">=</span><span class="n">_set_vertex_mapping</span><span class="p">)</span>
+    <span class="c">#--------------------------------------------------------------------------#</span>
+
+    <span class="c">#TODO: May be better to have these return values for assignment to the</span>
+    <span class="c">#      associated Connectivity...</span>
+    <span class="c">#TODO: These will need to do something sensible with non-cortical regions.</span>
+    <span class="k">def</span> <span class="nf">compute_region_areas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">regions</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region_mapping</span><span class="p">)</span>
+        <span class="n">region_surface_area</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">regions</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">avt</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertex_triangles</span><span class="p">)</span>
+        <span class="c">#NOTE: Slightly overestimates as it counts overlapping border triangles,</span>
+        <span class="c">#      but, not really a problem provided triangle-size &lt;&lt; region-size.</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">regions</span><span class="p">:</span>
+            <span class="n">regs</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="n">avt</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">region_mapping</span> <span class="o">==</span> <span class="n">k</span><span class="p">])</span>
+            <span class="n">region_triangles</span> <span class="o">=</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">regs</span><span class="p">)</span>
+            <span class="n">region_surface_area</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangle_areas</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">region_triangles</span><span class="p">)]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="n">util</span><span class="o">.</span><span class="n">log_debug_array</span><span class="p">(</span><span class="n">LOG</span><span class="p">,</span> <span class="n">region_surface_area</span><span class="p">,</span> <span class="s">&quot;region_areas&quot;</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">region_areas</span> <span class="o">=</span> <span class="n">region_surface_area</span>
+
+
+    <span class="k">def</span> <span class="nf">compute_region_orientation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">regions</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region_mapping</span><span class="p">)</span>
+        <span class="n">average_orientation</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">regions</span><span class="p">),</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="c">#Average orientation of the region</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">regions</span><span class="p">:</span>
+            <span class="n">orient</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertex_normals</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">region_mapping</span> <span class="o">==</span> <span class="n">k</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">avg_orient</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">orient</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">average_orientation</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">avg_orient</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">avg_orient</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="n">util</span><span class="o">.</span><span class="n">log_debug_array</span><span class="p">(</span><span class="n">LOG</span><span class="p">,</span> <span class="n">average_orientation</span><span class="p">,</span> <span class="s">&quot;region_orientation&quot;</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">region_orientation</span> <span class="o">=</span> <span class="n">average_orientation</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

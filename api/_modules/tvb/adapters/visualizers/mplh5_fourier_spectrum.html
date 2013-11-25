@@ -1,0 +1,348 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.adapters.visualizers.mplh5_fourier_spectrum &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.adapters.visualizers.mplh5_fourier_spectrum</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Stuart A. Knock &lt;stuart.knock@gmail.com&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">matplotlib.widgets</span> <span class="kn">import</span> <span class="n">RadioButtons</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.abcdisplayer</span> <span class="kn">import</span> <span class="n">ABCMPLH5Displayer</span>
+<span class="kn">from</span> <span class="nn">tvb.datatypes.spectral</span> <span class="kn">import</span> <span class="n">FourierSpectrum</span>
+
+
+<span class="n">BACKGROUNDCOLOUR</span> <span class="o">=</span> <span class="s">&quot;slategrey&quot;</span>
+<span class="n">EDGECOLOUR</span> <span class="o">=</span> <span class="s">&quot;darkslateblue&quot;</span>
+<span class="n">AXCOLOUR</span> <span class="o">=</span> <span class="s">&quot;steelblue&quot;</span>
+<span class="n">BUTTONCOLOUR</span> <span class="o">=</span> <span class="s">&quot;steelblue&quot;</span>
+<span class="n">HOVERCOLOUR</span> <span class="o">=</span> <span class="s">&quot;blue&quot;</span>
+
+<span class="n">CONTOLS_START_X</span> <span class="o">=</span> <span class="mf">0.02</span>
+<span class="n">CONTROLS_WIDTH</span> <span class="o">=</span> <span class="mf">0.06</span>
+<span class="n">CONTROLS_HEIGHT</span> <span class="o">=</span> <span class="mf">0.104</span>
+
+<span class="n">NR_OF_PREVIEW_CHANS</span> <span class="o">=</span> <span class="mi">5</span>
+
+
+
+<div class="viewcode-block" id="FourierSpectrumDisplay"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.mplh5_fourier_spectrum.FourierSpectrumDisplay">[docs]</a><span class="k">class</span> <span class="nc">FourierSpectrumDisplay</span><span class="p">(</span><span class="n">ABCMPLH5Displayer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This viewer takes as inputs a result form FFT analysis, and returns</span>
+<span class="sd">    required parameters for a MatplotLib representation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_ui_name</span> <span class="o">=</span> <span class="s">&quot;Fourier Visualizer&quot;</span>
+    <span class="n">_ui_subsection</span> <span class="o">=</span> <span class="s">&quot;fourier&quot;</span>
+
+
+<div class="viewcode-block" id="FourierSpectrumDisplay.get_input_tree"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.mplh5_fourier_spectrum.FourierSpectrumDisplay.get_input_tree">[docs]</a>    <span class="k">def</span> <span class="nf">get_input_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Accept as input result from FFT Analysis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;input_data&#39;</span><span class="p">,</span> <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Fourier Result&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">FourierSpectrum</span><span class="p">,</span> <span class="s">&#39;required&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+                 <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Fourier Analysis to display&#39;</span><span class="p">}]</span>
+
+</div>
+<div class="viewcode-block" id="FourierSpectrumDisplay.get_required_memory_size"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.mplh5_fourier_spectrum.FourierSpectrumDisplay.get_required_memory_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_required_memory_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the required memory to run this algorithm.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;input_data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">read_data_shape</span><span class="p">())</span> <span class="o">*</span> <span class="mi">8</span>
+
+</div>
+<div class="viewcode-block" id="FourierSpectrumDisplay.plot"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.mplh5_fourier_spectrum.FourierSpectrumDisplay.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draw interactive display.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Plot started...&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_data</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;input_data&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure</span> <span class="o">=</span> <span class="n">figure</span>
+        <span class="n">figure</span><span class="o">.</span><span class="n">facecolor</span> <span class="o">=</span> <span class="n">BACKGROUNDCOLOUR</span>
+        <span class="n">figure</span><span class="o">.</span><span class="n">edgecolor</span> <span class="o">=</span> <span class="n">EDGECOLOUR</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span> <span class="o">=</span> <span class="n">figure</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="n">CONTOLS_START_X</span> <span class="o">+</span> <span class="n">CONTROLS_WIDTH</span> <span class="o">+</span> <span class="mf">0.065</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">,</span> <span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.85</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">xscale</span> <span class="o">=</span> <span class="s">&quot;log&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yscale</span> <span class="o">=</span> <span class="s">&quot;log&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variable</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalise_power</span> <span class="o">=</span> <span class="s">&quot;no&quot;</span>
+
+        <span class="c">#Selectors</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_preview</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_xscale_selector</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_yscale_selector</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_mode_selector</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_variable_selector</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_normalise_power_selector</span><span class="p">()</span>
+        <span class="c">#Plot timeSeries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_spectra</span><span class="p">()</span>
+
+
+    <span class="c">#------------------------------- X_SCALE ---------------------------------#</span></div>
+    <span class="k">def</span> <span class="nf">_add_xscale_selector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a radio button to the figure for selecting which scaling the x-axes</span>
+<span class="sd">        should use.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pos_shp</span> <span class="o">=</span> <span class="p">[</span><span class="n">CONTOLS_START_X</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">CONTROLS_WIDTH</span><span class="p">,</span> <span class="n">CONTROLS_HEIGHT</span><span class="p">]</span>
+        <span class="n">rax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">pos_shp</span><span class="p">,</span> <span class="n">axisbg</span><span class="o">=</span><span class="n">AXCOLOUR</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;X Scale&quot;</span><span class="p">)</span>
+        <span class="n">xscale_tuple</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;log&quot;</span><span class="p">,</span> <span class="s">&quot;linear&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xscale_selector</span> <span class="o">=</span> <span class="n">RadioButtons</span><span class="p">(</span><span class="n">rax</span><span class="p">,</span> <span class="n">xscale_tuple</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="n">xscale_tuple</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xscale</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xscale_selector</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_xscale</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_update_xscale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xscale</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Update the FFT axes&#39; xscale to either log or linear based on radio</span>
+<span class="sd">        button selection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xscale</span> <span class="o">=</span> <span class="n">xscale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xscale</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+
+    <span class="c">#------------------------------- Y_SCALE ---------------------------------#</span>
+    <span class="k">def</span> <span class="nf">_add_yscale_selector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a radio button to the figure for selecting which scaling the y-axes</span>
+<span class="sd">        should use.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pos_shp</span> <span class="o">=</span> <span class="p">[</span><span class="n">CONTOLS_START_X</span><span class="p">,</span> <span class="mf">0.65</span><span class="p">,</span> <span class="n">CONTROLS_WIDTH</span><span class="p">,</span> <span class="n">CONTROLS_HEIGHT</span><span class="p">]</span>
+        <span class="n">rax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">pos_shp</span><span class="p">,</span> <span class="n">axisbg</span><span class="o">=</span><span class="n">AXCOLOUR</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;Y Scale&quot;</span><span class="p">)</span>
+        <span class="n">yscale_tuple</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;log&quot;</span><span class="p">,</span> <span class="s">&quot;linear&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yscale_selector</span> <span class="o">=</span> <span class="n">RadioButtons</span><span class="p">(</span><span class="n">rax</span><span class="p">,</span> <span class="n">yscale_tuple</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="n">yscale_tuple</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">yscale</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yscale_selector</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_yscale</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_update_yscale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yscale</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Update the FFT axes&#39; yscale to either log or linear based on radio</span>
+<span class="sd">        button selection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yscale</span> <span class="o">=</span> <span class="n">yscale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">yscale</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+
+    <span class="c">#---------------------------- MODE SELECTOR ------------------------------#</span>
+    <span class="k">def</span> <span class="nf">_add_mode_selector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a radio button to the figure for selecting which mode of the model</span>
+<span class="sd">        should be displayed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pos_shp</span> <span class="o">=</span> <span class="p">[</span><span class="n">CONTOLS_START_X</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">,</span> <span class="n">CONTROLS_WIDTH</span><span class="p">,</span> <span class="mf">0.1</span> <span class="o">+</span> <span class="mf">0.002</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="o">.</span><span class="n">read_data_shape</span><span class="p">()[</span><span class="mi">3</span><span class="p">]]</span>
+        <span class="n">rax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">pos_shp</span><span class="p">,</span> <span class="n">axisbg</span><span class="o">=</span><span class="n">AXCOLOUR</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;Mode&quot;</span><span class="p">)</span>
+        <span class="n">mode_tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="o">.</span><span class="n">read_data_shape</span><span class="p">()[</span><span class="mi">3</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode_selector</span> <span class="o">=</span> <span class="n">RadioButtons</span><span class="p">(</span><span class="n">rax</span><span class="p">,</span> <span class="n">mode_tuple</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="n">mode_tuple</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode_selector</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_mode</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_update_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Update the visualized mode based on radio button selection. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_spectra</span><span class="p">()</span>
+
+
+    <span class="c">#-------------------------- VARIABLE SELECTOR ----------------------------#</span>
+    <span class="k">def</span> <span class="nf">_add_variable_selector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate radio selector buttons to set which state variable is </span>
+<span class="sd">        displayed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">noc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="o">.</span><span class="n">read_data_shape</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>  <span class="c"># number of choices</span>
+        <span class="c">#State variable for the x axis</span>
+        <span class="n">pos_shp</span> <span class="o">=</span> <span class="p">[</span><span class="n">CONTOLS_START_X</span><span class="p">,</span> <span class="mf">0.22</span><span class="p">,</span> <span class="n">CONTROLS_WIDTH</span><span class="p">,</span> <span class="mf">0.12</span> <span class="o">+</span> <span class="mf">0.008</span> <span class="o">*</span> <span class="n">noc</span><span class="p">]</span>
+        <span class="n">rax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">pos_shp</span><span class="p">,</span> <span class="n">axisbg</span><span class="o">=</span><span class="n">AXCOLOUR</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;State Variable&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variable_selector</span> <span class="o">=</span> <span class="n">RadioButtons</span><span class="p">(</span><span class="n">rax</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">noc</span><span class="p">)),</span> <span class="n">active</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variable_selector</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_variable</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_update_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Update state variable being plotted based on radio button selection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variable</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">variable</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_spectra</span><span class="p">()</span>
+
+
+    <span class="c">#-------------------------- NORMALIZE SELECTOR ---------------------------#</span>
+    <span class="k">def</span> <span class="nf">_add_normalise_power_selector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a radio button to chose whether or not the power of all spectra </span>
+<span class="sd">        should be normalized to 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pos_shp</span> <span class="o">=</span> <span class="p">[</span><span class="n">CONTOLS_START_X</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">CONTROLS_WIDTH</span><span class="p">,</span> <span class="n">CONTROLS_HEIGHT</span><span class="p">]</span>
+        <span class="n">rax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">pos_shp</span><span class="p">,</span> <span class="n">axisbg</span><span class="o">=</span><span class="n">AXCOLOUR</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;Normalise&quot;</span><span class="p">)</span>
+        <span class="n">np_tuple</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;yes&quot;</span><span class="p">,</span> <span class="s">&quot;no&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalise_power_selector</span> <span class="o">=</span> <span class="n">RadioButtons</span><span class="p">(</span><span class="n">rax</span><span class="p">,</span> <span class="n">np_tuple</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="n">np_tuple</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">normalise_power</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalise_power_selector</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_normalise_power</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_update_normalise_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">normalise_power</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Update whether to normalize based on radio button selection. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalise_power</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">normalise_power</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_spectra</span><span class="p">()</span>
+
+
+    <span class="c">#------------------------------ MAIN PLOT --------------------------------#</span>
+<div class="viewcode-block" id="FourierSpectrumDisplay.plot_spectra"><a class="viewcode-back" href="../../../../tvb.adapters.visualizers.html#tvb.adapters.visualizers.mplh5_fourier_spectrum.FourierSpectrumDisplay.plot_spectra">[docs]</a>    <span class="k">def</span> <span class="nf">plot_spectra</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Main plot.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="c"># Set title and axis labels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s">&quot;Frequency (kHz)&quot;</span><span class="p">)</span>  <span class="c"># TODO: Somewhere we should convert requencies back to Hz...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s">&quot;Power&quot;</span><span class="p">)</span>
+
+        <span class="c"># Set x and y scale based on current radio button selection.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xscale</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">yscale</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">,</span> <span class="s">&#39;autoscale&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">autoscale</span><span class="p">(</span><span class="n">enable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s">&#39;both&#39;</span><span class="p">,</span> <span class="n">tight</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="n">shape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="o">.</span><span class="n">read_data_shape</span><span class="p">())</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_preview</span><span class="p">:</span>
+            <span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">NR_OF_PREVIEW_CHANS</span>
+
+        <span class="n">slices</span> <span class="o">=</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                  <span class="nb">slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variable</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variable</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="bp">None</span><span class="p">),</span>
+                  <span class="nb">slice</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                  <span class="nb">slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span> <span class="bp">None</span><span class="p">))</span>
+
+        <span class="c">#Plot the power spectra</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalise_power</span> <span class="o">==</span> <span class="s">&quot;yes&quot;</span><span class="p">:</span>
+            <span class="n">data_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s">&#39;normalised_average_power&#39;</span><span class="p">,</span> <span class="n">slices</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s">&#39;average_power&#39;</span><span class="p">,</span> <span class="n">slices</span><span class="p">)</span>
+
+        <span class="n">data_matrix</span> <span class="o">=</span> <span class="n">data_matrix</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="o">.</span><span class="n">frequency</span><span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span> <span class="n">data_matrix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

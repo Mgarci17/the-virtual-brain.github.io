@@ -1,0 +1,219 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.datatypes.mode_decompositions_data &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.datatypes.mode_decompositions_data</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The Data component of Spectral datatypes.</span>
+
+<span class="sd">.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;</span>
+<span class="sd">.. moduleauthor:: Paula Sanz Leon &lt;Paula@tvb.invalid&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.core</span> <span class="kn">as</span> <span class="nn">core</span>
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.types_basic</span> <span class="kn">as</span> <span class="nn">basic</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.arrays</span> <span class="kn">as</span> <span class="nn">arrays</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.time_series</span> <span class="kn">as</span> <span class="nn">time_series</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.traits.types_mapped</span> <span class="kn">import</span> <span class="n">MappedType</span>
+
+
+
+<div class="viewcode-block" id="PrincipalComponentsData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.mode_decompositions_data.PrincipalComponentsData">[docs]</a><span class="k">class</span> <span class="nc">PrincipalComponentsData</span><span class="p">(</span><span class="n">MappedType</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Result of a Principal Component Analysis (PCA).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">source</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Source time-series&quot;</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;Links to the time-series on which the PCA is applied.&quot;</span><span class="p">)</span>
+
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Principal vectors&quot;</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;The vectors of the &#39;weights&#39; with which each time-series is</span>
+<span class="s">            represented in each component.&quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">file_storage</span><span class="o">=</span><span class="n">core</span><span class="o">.</span><span class="n">FILE_STORAGE_EXPAND</span><span class="p">)</span>
+
+    <span class="n">fractions</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Fraction explained&quot;</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;A vector or collection of vectors representing the fraction of</span>
+<span class="s">            the variance explained by each principal component.&quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">file_storage</span><span class="o">=</span><span class="n">core</span><span class="o">.</span><span class="n">FILE_STORAGE_EXPAND</span><span class="p">)</span>
+
+    <span class="n">norm_source</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Normalised source time series&quot;</span><span class="p">,</span>
+        <span class="n">file_storage</span><span class="o">=</span><span class="n">core</span><span class="o">.</span><span class="n">FILE_STORAGE_EXPAND</span><span class="p">)</span>
+
+    <span class="n">component_time_series</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Component time series&quot;</span><span class="p">,</span>
+        <span class="n">file_storage</span><span class="o">=</span><span class="n">core</span><span class="o">.</span><span class="n">FILE_STORAGE_EXPAND</span><span class="p">)</span>
+
+    <span class="n">normalised_component_time_series</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Normalised component time series&quot;</span><span class="p">,</span>
+        <span class="n">file_storage</span><span class="o">=</span><span class="n">core</span><span class="o">.</span><span class="n">FILE_STORAGE_EXPAND</span><span class="p">)</span>
+
+    <span class="n">__generate_table__</span> <span class="o">=</span> <span class="bp">True</span>
+
+
+</div>
+<div class="viewcode-block" id="IndependentComponentsData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.mode_decompositions_data.IndependentComponentsData">[docs]</a><span class="k">class</span> <span class="nc">IndependentComponentsData</span><span class="p">(</span><span class="n">MappedType</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Result of TEMPORAL (Fast) Independent Component Analysis</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">source</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Source time-series&quot;</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;Links to the time-series on which the ICA is applied.&quot;</span><span class="p">)</span>
+
+    <span class="n">mixing_matrix</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Mixing matrix - Spatial Maps&quot;</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;The linear mixing matrix (Mixing matrix) &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">unmixing_matrix</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Unmixing matrix - Spatial maps&quot;</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;The estimated unmixing matrix used to obtain the unmixed</span>
+<span class="s">            sources from the data&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">prewhitening_matrix</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Pre-whitening matrix&quot;</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot; &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">n_components</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Integer</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Number of independent components&quot;</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot; Observed data matrix is considered to be a linear combination</span>
+<span class="s">        of :math:`n` non-Gaussian independent components&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">norm_source</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Normalised source time series. Zero centered and whitened.&quot;</span><span class="p">,</span>
+        <span class="n">file_storage</span><span class="o">=</span><span class="n">core</span><span class="o">.</span><span class="n">FILE_STORAGE_EXPAND</span><span class="p">)</span>
+
+    <span class="n">component_time_series</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Component time series. Unmixed sources.&quot;</span><span class="p">,</span>
+        <span class="n">file_storage</span><span class="o">=</span><span class="n">core</span><span class="o">.</span><span class="n">FILE_STORAGE_EXPAND</span><span class="p">)</span>
+
+    <span class="n">normalised_component_time_series</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Normalised component time series&quot;</span><span class="p">,</span>
+        <span class="n">file_storage</span><span class="o">=</span><span class="n">core</span><span class="o">.</span><span class="n">FILE_STORAGE_EXPAND</span><span class="p">)</span>
+
+    <span class="n">__generate_table__</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Demo corrcoeff_analyse_view_region.py &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../index.html" />
+    <link rel="up" title="demos" href="../demos.html" />
+    <link rel="next" title="Demo gpu_parsweep.py" href="gpu_parsweep.html" />
+    <link rel="prev" title="Demo region_stochastic_reducedwongwang.py" href="region_stochastic_reducedwongwang.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="gpu_parsweep.html" title="Demo gpu_parsweep.py"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="region_stochastic_reducedwongwang.html" title="Demo region_stochastic_reducedwongwang.py"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../demos.html" accesskey="U">demos</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="demo-corrcoeff-analyse-view-region-py">
+<h1>Demo corrcoeff_analyse_view_region.py<a class="headerlink" href="#demo-corrcoeff-analyse-view-region-py" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Make use of the correlation_coefficient analyzer to compute functional connectivity, using</span>
+<span class="sd">the demo data at the region level.</span>
+<span class="sd">``Run time``: </span>
+
+<span class="sd">``Memory requirement``: </span>
+
+<span class="sd">.. moduleauthor:: Paula Sanz Leon &lt;paula.sanz-leon@univ-amu.fr&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">tvb.basic.profile</span> <span class="kn">import</span> <span class="n">TvbProfile</span>
+<span class="n">TvbProfile</span><span class="o">.</span><span class="n">set_profile</span><span class="p">([</span><span class="s">&quot;-profile&quot;</span><span class="p">,</span> <span class="s">&quot;LIBRARY_PROFILE&quot;</span><span class="p">],</span> <span class="n">try_reload</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.connectivity</span> <span class="kn">as</span> <span class="nn">connectivity</span>
+<span class="kn">import</span> <span class="nn">tvb.analyzers.correlation_coefficient</span> <span class="kn">as</span> <span class="nn">corr_coeff</span>
+<span class="kn">from</span> <span class="nn">tvb.datatypes.time_series</span> <span class="kn">import</span> <span class="n">TimeSeriesRegion</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">tvb.simulator.plot.tools</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+<span class="c">#Load the demo region timeseries dataset </span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;demo_data_region_16s_2048Hz.npy&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Can&#39;t load demo data. Run demos/generate_region_demo_data.py&quot;</span><span class="p">)</span>
+    <span class="k">raise</span>
+
+<span class="n">period</span> <span class="o">=</span> <span class="mf">0.00048828125</span>  <span class="c"># s</span>
+
+<span class="c">#Put the data into a TimeSeriesRegion datatype</span>
+<span class="n">white_matter</span> <span class="o">=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">Connectivity</span><span class="p">()</span>
+<span class="n">tsr</span> <span class="o">=</span> <span class="n">TimeSeriesRegion</span><span class="p">(</span><span class="n">connectivity</span><span class="o">=</span><span class="n">white_matter</span><span class="p">,</span>
+                       <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                       <span class="n">sample_period</span><span class="o">=</span><span class="n">period</span><span class="p">)</span>
+<span class="n">tsr</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+
+<span class="c">#Create and run the analyser</span>
+<span class="n">corrcoeff_analyser</span> <span class="o">=</span> <span class="n">corr_coeff</span><span class="o">.</span><span class="n">CorrelationCoefficient</span><span class="p">(</span><span class="n">time_series</span><span class="o">=</span><span class="n">tsr</span><span class="p">)</span>
+<span class="n">corrcoeff_data</span> <span class="o">=</span> <span class="n">corrcoeff_analyser</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
+
+<span class="c">#Generate derived data, if any...</span>
+<span class="n">corrcoeff_data</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+
+<span class="c"># Plot matrix with numbers</span>
+<span class="c"># For visualization purposes, the diagonal is set to zero.</span>
+<span class="n">FC</span> <span class="o">=</span> <span class="n">corrcoeff_data</span><span class="o">.</span><span class="n">array_data</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">numpy</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">FC</span><span class="p">,</span> <span class="mf">0.</span><span class="p">)</span>
+<span class="n">pyplot</span><span class="o">.</span><span class="n">matshow</span><span class="p">(</span><span class="n">FC</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s">&#39;RdBu&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;nearest&#39;</span><span class="p">)</span>
+<span class="n">pyplot</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+<span class="n">pyplot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="region_stochastic_reducedwongwang.html"
+                        title="previous chapter">Demo region_stochastic_reducedwongwang.py</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gpu_parsweep.html"
+                        title="next chapter">Demo gpu_parsweep.py</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/demos/corrcoeff_analyse_view_region.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="gpu_parsweep.html" title="Demo gpu_parsweep.py"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="region_stochastic_reducedwongwang.html" title="Demo region_stochastic_reducedwongwang.py"
+             >previous</a> |</li>
+        <li><a href="../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../demos.html" >demos</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

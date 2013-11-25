@@ -1,0 +1,867 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>analyzers Package &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="index.html" />
+    <link rel="up" title="tvb Package" href="tvb.html" />
+    <link rel="next" title="basic Package" href="tvb.basic.html" />
+    <link rel="prev" title="tvb Package" href="tvb.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.basic.html" title="basic Package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tvb.html" title="tvb Package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" accesskey="U"><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">tvb</span></tt> Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="analyzers-package">
+<h1><tt class="xref py py-mod docutils literal"><span class="pre">analyzers</span></tt> Package<a class="headerlink" href="#analyzers-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-tvb.analyzers.api_analyzers">
+<span id="api-analyzers-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">api_analyzers</span></tt> Module<a class="headerlink" href="#module-tvb.analyzers.api_analyzers" title="Permalink to this headline">¶</a></h2>
+<p>Define what Analyzers classes will be included in the UI / Online help 
+documentation. Python docstring from the classes listed below will be included.</p>
+</div>
+<div class="section" id="module-tvb.analyzers.correlation_coefficient">
+<span id="correlation-coefficient-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">correlation_coefficient</span></tt> Module<a class="headerlink" href="#module-tvb.analyzers.correlation_coefficient" title="Permalink to this headline">¶</a></h2>
+<p>Calculate temporal cross correlation coefficients (Pearson&#8217;s
+coefficient) on a TimeSeries datatype and return a
+graph.CorrelationCoefficients dataype. The correlation matrix is
+widely used to represent functional connectivity (FC).</p>
+<dl class="attribute">
+<dt id="tvb.analyzers.correlation_coefficient.CorrelationCoefficient">
+<tt class="descclassname">tvb.analyzers.correlation_coefficient.</tt><tt class="descname">CorrelationCoefficient</tt><a class="reference internal" href="_modules/tvb/analyzers/correlation_coefficient.html#CorrelationCoefficient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.analyzers.correlation_coefficient.CorrelationCoefficient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the node-pairwise pearson correlation coefficient of the
+given input 4D TimeSeries  datatype.</p>
+<p>Return a CrossCorrelation datatype, whose values of are between -1
+and 1, inclusive.</p>
+<p>See: <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.corrcoef.html">http://docs.scipy.org/doc/numpy/reference/generated/numpy.corrcoef.html</a></p>
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">t_end</span></tt> (<span class="math">\(t_{end}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line-block">
+<div class="line">End time point (ms) </div>
+</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  1000.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">t_start</span></tt> (<span class="math">\(t_{start}\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">Time start point (ms). By default it uses the default Monitor sample period.         The starting time point of a time series is not zero, but the monitor&#8217;s sample period. </div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.9765625 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">time_series</span></tt> (Time Series)</dt>
+<dd><div class="first last line-block">
+<div class="line">The time-series for which the cross correlation matrices are         calculated.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.analyzers.cross_correlation">
+<span id="cross-correlation-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">cross_correlation</span></tt> Module<a class="headerlink" href="#module-tvb.analyzers.cross_correlation" title="Permalink to this headline">¶</a></h2>
+<p>Calculate temporal cross correlation on a TimeSeries datatype and return a 
+temporal_correlations.CrossCorrelation dataype.</p>
+<dl class="attribute">
+<dt id="tvb.analyzers.cross_correlation.CrossCorrelate">
+<tt class="descclassname">tvb.analyzers.cross_correlation.</tt><tt class="descname">CrossCorrelate</tt><a class="reference internal" href="_modules/tvb/analyzers/cross_correlation.html#CrossCorrelate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.analyzers.cross_correlation.CrossCorrelate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the node-pairwise cross-correlation of the given input 4D TimeSeries 
+datatype.</p>
+<p>Return a CrossCorrelation datatype. It contains the cross-correlation 
+sequences for all possible combinations of the nodes.</p>
+<p>See: <a class="reference external" href="http://www.scipy.org/doc/api_docs/SciPy.signal.signaltools.html#correlate">http://www.scipy.org/doc/api_docs/SciPy.signal.signaltools.html#correlate</a></p>
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">time_series</span></tt> (Time Series)</dt>
+<dd><div class="first last line-block">
+<div class="line">The time-series for which the cross correlation sequences are          calculated.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.analyzers.fft">
+<span id="fft-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">fft</span></tt> Module<a class="headerlink" href="#module-tvb.analyzers.fft" title="Permalink to this headline">¶</a></h2>
+<p>Calculate an FFT on a TimeSeries datatype and return a FourierSpectrum datatype.</p>
+<dl class="attribute">
+<dt id="tvb.analyzers.fft.FFT">
+<tt class="descclassname">tvb.analyzers.fft.</tt><tt class="descname">FFT</tt><a class="reference internal" href="_modules/tvb/analyzers/fft.html#FFT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.analyzers.fft.FFT" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class for calculating the FFT of a TimeSeries object of TVB and returning
+a FourierSpectrum object. A segment length and windowing function can be
+optionally specified. By default the time series is segmented into 1 second
+blocks and no windowing function is applied.</p>
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">segment_length</span></tt> (Segment(window) length (ms))</dt>
+<dd><div class="first last line-block">
+<div class="line">The timeseries can be segmented into equally sized blocks             (overlapping if necessary). The segement length determines the             frequency resolution of the resulting power spectra &#8211; longer             windows produce finer frequency resolution.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  1000.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">time_series</span></tt> (Time Series)</dt>
+<dd><div class="first last line-block">
+<div class="line">The timeseries to which the FFT is to be applied.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">window_function</span></tt> (Windowing function)</dt>
+<dd><div class="first last line-block">
+<div class="line">Windowing functions can be applied before the FFT is performed.              Default is None, possibilities are: &#8216;hamming&#8217;; &#8216;bartlett&#8217;;             &#8216;blackman&#8217;; and &#8216;hanning&#8217;. See, numpy.&lt;function_name&gt;.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.analyzers.fmri_balloon">
+<span id="fmri-balloon-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">fmri_balloon</span></tt> Module<a class="headerlink" href="#module-tvb.analyzers.fmri_balloon" title="Permalink to this headline">¶</a></h2>
+<p>Implementation of differet BOLD signal models. Four different models are distinguished:</p>
+<ul class="simple">
+<li>CBM_N: Classical BOLD Model Non-linear</li>
+<li>CBM_L: Classical BOLD Model Linear</li>
+<li>RBM_N: Revised   BOLD Model Non-linear (default)</li>
+<li>RBM_L: Revised   BOLD Model Linear</li>
+</ul>
+<p><tt class="docutils literal"><span class="pre">Classical</span></tt> means that the coefficients used to compute the BOLD signal are
+derived as described in <a class="reference internal" href="#obata2004" id="id1">[Obata2004]</a> . <tt class="docutils literal"><span class="pre">Revised</span></tt> coefficients are defined in
+<a class="reference internal" href="#stephan2007" id="id2">[Stephan2007]</a></p>
+<p>References:</p>
+<table class="docutils citation" frame="void" id="stephan2007" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[Stephan2007]</a></td><td>Stephan KE, Weiskopf N, Drysdale PM, Robinson PA,
+Friston KJ (2007) Comparing hemodynamic models with 
+DCM. NeuroImage 38: 387-401.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="obata2004" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[Obata2004]</a></td><td>Obata, T.; Liu, T. T.; Miller, K. L.; Luh, W. M.; Wong, E. C.; Frank, L. R. &amp;
+Buxton, R. B. (2004) <strong>Discrepancies between BOLD and flow dynamics in primary and
+supplementary motor areas: application of the balloon model to the
+interpretation of BOLD transients.</strong> Neuroimage, 21:144-153</td></tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="tvb.analyzers.fmri_balloon.BalloonModel">
+<tt class="descclassname">tvb.analyzers.fmri_balloon.</tt><tt class="descname">BalloonModel</tt><a class="reference internal" href="_modules/tvb/analyzers/fmri_balloon.html#BalloonModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.analyzers.fmri_balloon.BalloonModel" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>A class for calculating the simulated BOLD signal given a TimeSeries
+object of TVB and returning another TimeSeries object.</p>
+<p>The haemodynamic model parameters based on constants for a 1.5 T scanner.</p>
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">E0</span></tt> (<span class="math">\(E_0\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">BOLD parameter. Resting oxygen extraction fraction.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.4 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">RBM</span></tt> (Revised BOLD Model)</dt>
+<dd><div class="first last line-block">
+<div class="line">Select classical vs revised BOLD model (CBM or RBM).          Coefficients  k1, k2 and k3 will be derived accordingly.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  True </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">TE</span></tt> (<span class="math">\(TE\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">BOLD parameter. Echo Time</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.04 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">V0</span></tt> (<span class="math">\(V_0\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">BOLD parameter. Resting blood volume fraction.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  4.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">alpha</span></tt> (:math:`      au_f`)</dt>
+<dd><div class="first last line-block">
+<div class="line">Balloon model parameter. Stiffness parameter. Grubb&#8217;s exponent.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.32 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">dt</span></tt> (<span class="math">\(dt\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line">The integration time step size for the balloon model (s)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">epsilon</span></tt> (<span class="math">\(\epsilon\)</span>)</dt>
+<dd><div class="first last line-block">
+<div class="line-block">
+<div class="line">BOLD parameter. Ratio of intra- and extravascular signals. In principle  this         parameter could be derived from empirical data and spatialized.</div>
+</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.5] </div>
+<div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.5 ; high = 2.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">integrator</span></tt> (Integration scheme)</dt>
+<dd><div class="first last line-block">
+<div class="line-block">
+<div class="line">A tvb.simulator.Integrator object which is         an integration scheme with supporting attributes such as          integration step size and noise specification for stochastic          methods. It is used to compute the time courses of the balloon model state          variables.</div>
+</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.simulator.integrators.HeunDeterministic&#8217;&gt; </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">neural_input_transformation</span></tt> (Neural input)</dt>
+<dd><div class="first last line-block">
+<div class="line-block">
+<div class="line">This represents the operation to perform on the state-variable(s) of         the model used to generate the input TimeSeries. <tt class="docutils literal"><span class="pre">none</span></tt> takes the         first state-variable as neural input; `` abs_diff`` is the absolute         value of the derivative (first order difference); <tt class="docutils literal"><span class="pre">sum</span></tt>: sum all the         state-variables in the input TimeSeries.</div>
+</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [&#8216;none&#8217;] </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">non_linear</span></tt> (Select non_linear or linear BOLD equations)</dt>
+<dd><div class="first last line-block">
+<div class="line">Select the non-linear or linear set of equations for the          BOLD model (N or L).</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  True </div>
+</div>
+</dd>
+</dl>
+<p><tt class="docutils literal"><span class="pre">nu_0</span></tt> (:math:<a href="#id3"><span class="problematic" id="id4">`</span></a></p>
+</div></blockquote>
+</div></blockquote>
+<dl class="docutils">
+<dt>u_0`)</dt>
+<dd><blockquote class="first">
+<div><div class="line-block">
+<div class="line">BOLD parameter. Frequency offset at the outer surface of magnetized vessels (Hz).</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  40.3 </div>
+</div>
+</div></blockquote>
+<p class="last"><tt class="docutils literal"><span class="pre">r_0</span></tt> (:math:<a href="#id5"><span class="problematic" id="id6">`</span></a></p>
+</dd>
+<dt>u_0`)</dt>
+<dd><blockquote class="first">
+<div><div class="line-block">
+<div class="line-block">
+<div class="line">BOLD parameter. Slope r0 of intravascular relaxation rate (Hz). Only used for         <tt class="docutils literal"><span class="pre">revised</span></tt> coefficients. </div>
+</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  25.0 </div>
+</div>
+</div></blockquote>
+<dl class="last docutils">
+<dt><tt class="docutils literal"><span class="pre">tau_f</span></tt> (:math:`      au_f`)</dt>
+<dd><div class="first last line-block">
+<div class="line-block">
+<div class="line">Balloon model parameter. Time of flow-dependent elimination or         feedback regulation (s). The average  time blood take to traverse the         venous compartment. It is the  ratio of resting blood volume (V0) to         resting blood flow (F0).</div>
+</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.41 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">tau_o</span></tt> (:math:`      au_o`)</dt>
+<dd><div class="first last line-block">
+<div class="line-block">
+<div class="line">Balloon model parameter. Haemodynamic transit time (s). The average         time blood take to traverse the venous compartment. It is the  ratio         of resting blood volume (V0) to resting blood flow (F0).</div>
+</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.98 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">tau_s</span></tt> (:math:`      au_s`)</dt>
+<dd><div class="first last line-block">
+<div class="line">Balloon model parameter. Time of signal decay (s)</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.65 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">time_series</span></tt> (Time Series)</dt>
+<dd><div class="first last line-block">
+<div class="line">The timeseries that represents the input neural activity</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.analyzers.ica">
+<span id="ica-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">ica</span></tt> Module<a class="headerlink" href="#module-tvb.analyzers.ica" title="Permalink to this headline">¶</a></h2>
+<p>Perform Independent Component Analysis on a TimeSeries Object and returns an
+IndependentComponents datatype.</p>
+<dl class="attribute">
+<dt id="tvb.analyzers.ica.fastICA">
+<tt class="descclassname">tvb.analyzers.ica.</tt><tt class="descname">fastICA</tt><a class="reference internal" href="_modules/tvb/analyzers/ica.html#fastICA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.analyzers.ica.fastICA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a TimeSeries datatype (x) and returns the unmixed temporal sources (S) 
+and the estimated mixing matrix (A).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Math :</th><td class="field-body">x = AS</td>
+</tr>
+</tbody>
+</table>
+<p>ICA takes time-points as observations and nodes as variables.</p>
+<p>It uses the fastICA algorithm implemented in the scikit-learn toolkit, and 
+its intended usage is as a <cite>blind source separation</cite> method.</p>
+<p>See also: <a class="reference external" href="http://scikit-learn.org/stable/modules/generated/sklearn.decomposition.fastica.html#sklearn.decomposition.fastica">http://scikit-learn.org/stable/modules/generated/sklearn.decomposition.fastica.html#sklearn.decomposition.fastica</a></p>
+<p>Before the fastICA algorithm can be applied, the input vector data 
+should be whitened (<cite>sphering</cite>). This means that any correlations in the 
+data are removed, i.e. the signals are forced to be uncorrelated. To this end,
+the <cite>whiten</cite> parameter is always set to <cite>True</cite>.</p>
+<dl class="docutils">
+<dt>NOTE: As for PCA the TimeSeries datatype must be longer (more time-points)</dt>
+<dd>than the number of nodes &#8211; Mostly a problem for TimeSeriesSurface 
+datatypes, which, if sampled at 1024Hz, would need to be greater than 
+16 seconds long.</dd>
+</dl>
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">n_components</span></tt> (Number of components to extract)</dt>
+<dd><div class="first last line-block">
+<div class="line">Number of components to extract and to perform dimension reduction.             The number of components must be less than the number of variables.             By default it takes number of components = number of nodes. Definitely             a problem for surface time-series.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">time_series</span></tt> (Time Series)</dt>
+<dd><div class="first last line-block">
+<div class="line">The timeseries to which the ICA is to be applied. NOTE: The              TimeSeries must be longer(more time-points) than the number of nodes             &#8211; Mostly a problem for surface times-series, which, if sampled at             1024Hz, would need to be greater than 16 seconds long.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.analyzers.info">
+<span id="info-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">info</span></tt> Module<a class="headerlink" href="#module-tvb.analyzers.info" title="Permalink to this headline">¶</a></h2>
+<p>This module implements information theoretic analyses.</p>
+<p>TODO: Fix docstring of sampen
+TODO: Convert sampen to a traited class</p>
+<dl class="function">
+<dt id="tvb.analyzers.info.sampen">
+<tt class="descclassname">tvb.analyzers.info.</tt><tt class="descname">sampen</tt><big>(</big><em>y</em>, <em>m=2</em>, <em>r=None</em>, <em>qse=False</em>, <em>taus=1</em>, <em>info=False</em>, <em>tile=&lt;function tile at 0x23ffc08&gt;</em>, <em>na=None</em>, <em>abs=&lt;ufunc 'absolute'&gt;</em>, <em>log=&lt;ufunc 'log'&gt;</em>, <em>r_=&lt;numpy.lib.index_tricks.RClass object at 0x23fc650&gt;</em><big>)</big><a class="reference internal" href="_modules/tvb/analyzers/info.html#sampen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.analyzers.info.sampen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes (quadratic) sample entropy of a given input signal y, with
+embedding dimension n, and a match tolerance of r (ref 2). If an array
+of scale factors, taus, are given, the signal will be coarsened by each
+factor and a corresponding entropy will be computed (ref 1). If no value
+for r is given, it will be set to 0.15*y.std().</p>
+<p>Currently, the implementation is lazy and expects or coerces scale factors
+to integer values.</p>
+<p>With qse=True (default) the probability p is normalized for the value
+of r, giving the quadratic sample entropy, such that results from different
+values of r can be meaningfully compared (ref 2).</p>
+<dl class="docutils">
+<dt>ref 1: Costa, M., Goldberger, A. L., and Peng C.-K. (2002) Multiscale Entropy</dt>
+<dd>Analysis of Complex Physiologic Time Series. Phys Rev Lett 89 (6).</dd>
+<dt>ref 2: Lake, D. E. and Moorman, J. R. (2010) Accurate estimation of entropy</dt>
+<dd>in very short physiological time series. Am J Physiol Heart Circ Physiol</dd>
+</dl>
+<p>To check that algorithm is working, look at ref 1, fig 1, and run</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">sampen</span><span class="p">(</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="mi">10000</span><span class="p">),</span> <span class="n">r</span><span class="o">=.</span><span class="mi">15</span><span class="p">,</span> <span class="n">taus</span><span class="o">=</span><span class="n">r_</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">20</span><span class="p">],</span> <span class="n">qse</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.analyzers.metric_kuramoto_index">
+<span id="metric-kuramoto-index-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">metric_kuramoto_index</span></tt> Module<a class="headerlink" href="#module-tvb.analyzers.metric_kuramoto_index" title="Permalink to this headline">¶</a></h2>
+<p>Filler analyzer: Takes a TimeSeries object and returns a Float.</p>
+<dl class="attribute">
+<dt id="tvb.analyzers.metric_kuramoto_index.KuramotoIndex">
+<tt class="descclassname">tvb.analyzers.metric_kuramoto_index.</tt><tt class="descname">KuramotoIndex</tt><a class="reference internal" href="_modules/tvb/analyzers/metric_kuramoto_index.html#KuramotoIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.analyzers.metric_kuramoto_index.KuramotoIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the Kuramoto synchronization index.</p>
+<p>Useful metric for a parameter analysis when the collective brain dynamics
+represent coupled oscillatory processes.</p>
+<p>The <em>order</em> parameters are <span class="math">\(r\)</span> and <span class="math">\(Psi\)</span>.</p>
+<div class="math">
+\[r e^{i * \psi} = \frac{1}{N}\,\sum_{k=1}^N(e^{i*\theta_k})\]</div>
+<p>The first is the phase coherence of the population of oscillators (KSI) 
+and the second is the average phase.</p>
+<p>When <span class="math">\(r=0\)</span> means 0 coherence among oscillators.</p>
+<p>Input:
+TimeSeries datatype</p>
+<p>Output: 
+Float</p>
+<p>This is a crude indicator of synchronization among nodes over the entire 
+network.</p>
+<p>#NOTE: For the time being it is meant to be another global metric.
+However, it should be consider to have a sort of TimeSeriesDatatype for this
+analyzer.</p>
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">time_series</span></tt> (Time Series)</dt>
+<dd><div class="first last line-block">
+<div class="line">The TimeSeries for which the Kuramoto Synchronization Index         will be computed</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.analyzers.metric_variance_global">
+<span id="metric-variance-global-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">metric_variance_global</span></tt> Module<a class="headerlink" href="#module-tvb.analyzers.metric_variance_global" title="Permalink to this headline">¶</a></h2>
+<p>Filler analyzer: Takes a TimeSeries object and returns a Float.</p>
+<dl class="attribute">
+<dt id="tvb.analyzers.metric_variance_global.GlobalVariance">
+<tt class="descclassname">tvb.analyzers.metric_variance_global.</tt><tt class="descname">GlobalVariance</tt><a class="reference internal" href="_modules/tvb/analyzers/metric_variance_global.html#GlobalVariance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.analyzers.metric_variance_global.GlobalVariance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Zero-centres all the time-series and then calculates the variance over all 
+data points.</p>
+<p>Input:
+TimeSeries datatype</p>
+<p>Output: 
+Float</p>
+<p>This is a crude indicator of &#8220;excitability&#8221; or oscillation amplitude of the
+models over the entire network.</p>
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">time_series</span></tt> (Time Series)</dt>
+<dd><div class="first last line-block">
+<div class="line">The TimeSeries for which the zero centered Global Variance is to             be computed.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.analyzers.metric_variance_of_node_variance">
+<span id="metric-variance-of-node-variance-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">metric_variance_of_node_variance</span></tt> Module<a class="headerlink" href="#module-tvb.analyzers.metric_variance_of_node_variance" title="Permalink to this headline">¶</a></h2>
+<p>Filler analyzer: Takes a TimeSeries object and returns a Float.</p>
+<dl class="attribute">
+<dt id="tvb.analyzers.metric_variance_of_node_variance.VarianceNodeVariance">
+<tt class="descclassname">tvb.analyzers.metric_variance_of_node_variance.</tt><tt class="descname">VarianceNodeVariance</tt><a class="reference internal" href="_modules/tvb/analyzers/metric_variance_of_node_variance.html#VarianceNodeVariance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.analyzers.metric_variance_of_node_variance.VarianceNodeVariance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Zero-centres all the time-series, calculates the variance for each node 
+time-series and returns the variance of the node variances.</p>
+<p>Input:
+TimeSeries datatype</p>
+<p>Output: 
+Float</p>
+<p>This is a crude indicator of how different the &#8220;excitability&#8221; of the model is
+from node to node.</p>
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">time_series</span></tt> (Time Series)</dt>
+<dd><div class="first last line-block">
+<div class="line">The TimeSeries for which the variance of the zero centered node             variance is to be computed.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.analyzers.metrics_base">
+<span id="metrics-base-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">metrics_base</span></tt> Module<a class="headerlink" href="#module-tvb.analyzers.metrics_base" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt id="tvb.analyzers.metrics_base.BaseTimeseriesMetricAlgorithm">
+<tt class="descclassname">tvb.analyzers.metrics_base.</tt><tt class="descname">BaseTimeseriesMetricAlgorithm</tt><a class="reference internal" href="_modules/tvb/analyzers/metrics_base.html#BaseTimeseriesMetricAlgorithm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.analyzers.metrics_base.BaseTimeseriesMetricAlgorithm" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a base class for all metrics on timeSeries dataTypes.
+Metric means an algorithm computing a single value for an entire TimeSeries.</p>
+<p><strong>traits on this class:</strong></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.analyzers.node_coherence">
+<span id="node-coherence-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">node_coherence</span></tt> Module<a class="headerlink" href="#module-tvb.analyzers.node_coherence" title="Permalink to this headline">¶</a></h2>
+<p>Calculate a ... on a .. datatype and return a ...</p>
+<dl class="attribute">
+<dt id="tvb.analyzers.node_coherence.NodeCoherence">
+<tt class="descclassname">tvb.analyzers.node_coherence.</tt><tt class="descname">NodeCoherence</tt><a class="reference internal" href="_modules/tvb/analyzers/node_coherence.html#NodeCoherence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.analyzers.node_coherence.NodeCoherence" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">nfft</span></tt> (Data-points per block)</dt>
+<dd><div class="first last line-block">
+<div class="line">Should be a power of 2...</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  256 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">time_series</span></tt> (Time Series)</dt>
+<dd><div class="first last line-block">
+<div class="line">The timeseries to which the FFT is to be applied.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.analyzers.node_complex_coherence">
+<span id="node-complex-coherence-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">node_complex_coherence</span></tt> Module<a class="headerlink" href="#module-tvb.analyzers.node_complex_coherence" title="Permalink to this headline">¶</a></h2>
+<p>Calculate the cross spectrum and complex coherence on a TimeSeries datatype and 
+return a ComplexCoherence datatype.</p>
+<dl class="attribute">
+<dt id="tvb.analyzers.node_complex_coherence.NodeComplexCoherence">
+<tt class="descclassname">tvb.analyzers.node_complex_coherence.</tt><tt class="descname">NodeComplexCoherence</tt><a class="reference internal" href="_modules/tvb/analyzers/node_complex_coherence.html#NodeComplexCoherence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.analyzers.node_complex_coherence.NodeComplexCoherence" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class for calculating the FFT of a TimeSeries and returning
+a ComplexCoherenceSpectrum datatype.</p>
+<dl class="docutils">
+<dt>This algorithm is based on the matlab function data2cs_event.m written by Guido Nolte:</dt>
+<dd><table class="first last docutils citation" frame="void" id="freyer-2012" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[Freyer_2012]</td><td>Freyer, F.; Reinacher, M.; Nolte, G.; Dinse, H. R. and
+Ritter, P. * Repetitive tactile stimulation changes resting-state
+functional connectivity-implications for treatment of sensorimotor decline.*
+Front Hum Neurosci, Bernstein Focus State Dependencies of Learning and
+Bernstein Center for Computational Neuroscience Berlin, Germany., 2012, 6, 144</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p>Input: 
+originally the input could be 2D (tpts x nodes/channels), and it was possible
+to give a 3D array (e.g., tpspt x nodes/cahnnels x trials) via the segment_length
+attribute. 
+Current TVB implementation can handle 4D or 2D TimeSeries datatypes. 
+Be warned: the 4D TimeSeries will be averaged and squeezed.</p>
+<p>Output: (main arrays)
+- the cross-spectrum
+- the complex coherence, from which the imaginary part can be extracted</p>
+<p>By default the time series is segmented into 1 second <cite>epoch</cite> blocks and 0.5
+second 50% overlapping <cite>segments</cite> to which a Hanning function is applied.</p>
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">average_segments</span></tt> (Average across segments)</dt>
+<dd><div class="first last line-block">
+<div class="line">Flag. If <cite>True</cite>, compute the mean Cross Spectrum across                  segments.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  True </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">detrend_ts</span></tt> (Detrend time series)</dt>
+<dd><div class="first last line-block">
+<div class="line">Flag. If <cite>True</cite> removes linear trend along the time dimension                  before applying FFT.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  False </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">epoch_length</span></tt> (Epoch length [ms])</dt>
+<dd><div class="first last line-block">
+<div class="line">In general for lengthy EEG recordings (~30 min), the timeseries          are divided into equally sized segments (~ 20-40s). These contain the          event that is to be characterized by means of the cross coherence.          Additionally each epoch block will be further divided into segments to          which the FFT will be applied.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  1000.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">max_freq</span></tt> (Maximum frequency)</dt>
+<dd><div class="first last line-block">
+<div class="line">Maximum frequency points (e.g. 32., 64., 128.) represented in                  the output. Default is segment_length / 2 + 1.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  1024.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">npat</span></tt> (dummy variable)</dt>
+<dd><div class="first last line-block">
+<div class="line">This attribute appears to be related to an input projection              matrix... Which is not yet implemented</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">segment_length</span></tt> (Segment length [ms])</dt>
+<dd><div class="first last line-block">
+<div class="line">The timeseries can be segmented into equally sized blocks             (overlapping if necessary). The segement length determines the             frequency resolution of the resulting power spectra &#8211; longer             windows produce finer frequency resolution. </div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  500.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">segment_shift</span></tt> (Segment shift [ms])</dt>
+<dd><div class="first last line-block">
+<div class="line">Time length by which neighboring segments are shifted. e.g.                 <cite>segment shift</cite> = <cite>segment_length</cite> / 2 means 50% overlapping                  segments.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  250.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">subtract_epoch_average</span></tt> (Subtract average across epochs)</dt>
+<dd><div class="first last line-block">
+<div class="line">Flag. If <cite>True</cite> and if the number of epochs is &gt; 1, you can                  optionally subtract the mean across epochs before computing the                  complex coherence.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  True </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">time_series</span></tt> (Time Series)</dt>
+<dd><div class="first last line-block">
+<div class="line">The timeseries for which the CrossCoherence and ComplexCoherence         is to be computed.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">window_function</span></tt> (Windowing function)</dt>
+<dd><div class="first last line-block">
+<div class="line">Windowing functions can be applied before the FFT is performed.              Default is <cite>hanning</cite>, possibilities are: &#8216;hamming&#8217;; &#8216;bartlett&#8217;;             &#8216;blackman&#8217;; and &#8216;hanning&#8217;. See, numpy.&lt;function_name&gt;.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  hanning </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">zeropad</span></tt> (Zeropadding)</dt>
+<dd><div class="first last line-block">
+<div class="line">Adds <cite>n</cite> zeros at the end of each segment and at the end          of window_function. It is not yet functional.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0 </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.analyzers.node_covariance">
+<span id="node-covariance-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">node_covariance</span></tt> Module<a class="headerlink" href="#module-tvb.analyzers.node_covariance" title="Permalink to this headline">¶</a></h2>
+<p>Calculate a ... on a .. datatype and return a ...</p>
+<dl class="attribute">
+<dt id="tvb.analyzers.node_covariance.NodeCovariance">
+<tt class="descclassname">tvb.analyzers.node_covariance.</tt><tt class="descname">NodeCovariance</tt><a class="reference internal" href="_modules/tvb/analyzers/node_covariance.html#NodeCovariance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.analyzers.node_covariance.NodeCovariance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the temporal covariance of nodes in a TimeSeries dataType.
+A nodes x nodes matrix is returned for each (state-variable, mode).</p>
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">time_series</span></tt> (Time Series)</dt>
+<dd><div class="first last line-block">
+<div class="line">The timeseries to which the NodeCovariance is to be applied.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.analyzers.pca">
+<span id="pca-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">pca</span></tt> Module<a class="headerlink" href="#module-tvb.analyzers.pca" title="Permalink to this headline">¶</a></h2>
+<p>Perform Principal Component Analysis (PCA) on a TimeSeries datatype and return
+a PrincipalComponents datatype.</p>
+<dl class="attribute">
+<dt id="tvb.analyzers.pca.PCA">
+<tt class="descclassname">tvb.analyzers.pca.</tt><tt class="descname">PCA</tt><a class="reference internal" href="_modules/tvb/analyzers/pca.html#PCA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.analyzers.pca.PCA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return principal component weights and the fraction of the variance that 
+they explain.</p>
+<p>PCA takes time-points as observations and nodes as variables.</p>
+<dl class="docutils">
+<dt>NOTE: The TimeSeries must be longer(more time-points) than the number of</dt>
+<dd>nodes &#8211; Mostly a problem for TimeSeriesSurface datatypes, which, if 
+sampled at 1024Hz, would need to be greater than 16 seconds long.</dd>
+</dl>
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">time_series</span></tt> (Time Series)</dt>
+<dd><div class="first last line-block">
+<div class="line">The timeseries to which the PCA is to be applied. NOTE: The              TimeSeries must be longer(more time-points) than the number of nodes             &#8211; Mostly a problem for surface times-series, which, if sampled at             1024Hz, would need to be greater than 16 seconds long.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.analyzers.wavelet">
+<span id="wavelet-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">wavelet</span></tt> Module<a class="headerlink" href="#module-tvb.analyzers.wavelet" title="Permalink to this headline">¶</a></h2>
+<p>Calculate a wavelet transform on a TimeSeries datatype and return a
+WaveletSpectrum datatype.</p>
+<dl class="attribute">
+<dt id="tvb.analyzers.wavelet.ContinuousWaveletTransform">
+<tt class="descclassname">tvb.analyzers.wavelet.</tt><tt class="descname">ContinuousWaveletTransform</tt><a class="reference internal" href="_modules/tvb/analyzers/wavelet.html#ContinuousWaveletTransform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.analyzers.wavelet.ContinuousWaveletTransform" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class for calculating the wavelet transform of a TimeSeries object of TVB
+and returning a WaveletSpectrum object. The sampling period and frequency
+range of the result can be specified. The mother wavelet can also be 
+specified... (So far, only Morlet.)</p>
+<dl class="docutils">
+<dt>References:</dt>
+<dd><table class="first docutils citation" frame="void" id="tbetal-1996" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[TBetal_1996]</td><td>C. Tallon-Baudry et al, <em>Stimulus Specificity of 
+Phase-Locked and Non-Phase-Locked 40 Hz Visual Responses in Human.</em>,
+J Neurosci 16(13):4240-4249, 1996.</td></tr>
+</tbody>
+</table>
+<table class="last docutils citation" frame="void" id="mallat-1999" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[Mallat_1999]</td><td>S. Mallat, <em>A wavelet tour of signal processing.</em>,
+book, Academic Press, 1999.</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">frequencies</span></tt> (Frequency range of result (kHz).)</dt>
+<dd><div class="first last line-block">
+<div class="line">The frequency resolution and range returned. Requested             frequencies are converted internally into appropriate scales.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  Range(bound=False, value=None) </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">mother</span></tt> (Wavelet function)</dt>
+<dd><div class="first last line-block">
+<div class="line">The mother wavelet function used in the transform. Default is             &#8216;morlet&#8217;, possibilities are: &#8216;morlet&#8217;...</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  morlet </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">normalisation</span></tt> (Normalisation)</dt>
+<dd><div class="first last line-block">
+<div class="line">The type of normalisation for the resulting wavet spectrum.             Default is &#8216;energy&#8217;, options are: &#8216;energy&#8217;; &#8216;gabor&#8217;.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  energy </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">q_ratio</span></tt> (Q-ratio)</dt>
+<dd><div class="first last line-block">
+<div class="line">NFC. Must be greater than 5.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  5.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">sample_period</span></tt> (Sample period of result (ms))</dt>
+<dd><div class="first last line-block">
+<div class="line">The sampling period of the computed wavelet spectrum. NOTE:             This should be an integral multiple of the of the sampling period              of the source time series, otherwise the actual resulting sample             period will be the first correct value below that requested.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  7.8125 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">time_series</span></tt> (Time Series)</dt>
+<dd><div class="first last line-block">
+<div class="line">The timeseries to which the wavelet is to be applied.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">analyzers</span></tt> Package</a><ul>
+<li><a class="reference internal" href="#module-tvb.analyzers.api_analyzers"><tt class="docutils literal"><span class="pre">api_analyzers</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.analyzers.correlation_coefficient"><tt class="docutils literal"><span class="pre">correlation_coefficient</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.analyzers.cross_correlation"><tt class="docutils literal"><span class="pre">cross_correlation</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.analyzers.fft"><tt class="docutils literal"><span class="pre">fft</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.analyzers.fmri_balloon"><tt class="docutils literal"><span class="pre">fmri_balloon</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.analyzers.ica"><tt class="docutils literal"><span class="pre">ica</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.analyzers.info"><tt class="docutils literal"><span class="pre">info</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.analyzers.metric_kuramoto_index"><tt class="docutils literal"><span class="pre">metric_kuramoto_index</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.analyzers.metric_variance_global"><tt class="docutils literal"><span class="pre">metric_variance_global</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.analyzers.metric_variance_of_node_variance"><tt class="docutils literal"><span class="pre">metric_variance_of_node_variance</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.analyzers.metrics_base"><tt class="docutils literal"><span class="pre">metrics_base</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.analyzers.node_coherence"><tt class="docutils literal"><span class="pre">node_coherence</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.analyzers.node_complex_coherence"><tt class="docutils literal"><span class="pre">node_complex_coherence</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.analyzers.node_covariance"><tt class="docutils literal"><span class="pre">node_covariance</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.analyzers.pca"><tt class="docutils literal"><span class="pre">pca</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.analyzers.wavelet"><tt class="docutils literal"><span class="pre">wavelet</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tvb.html"
+                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">tvb</span></tt> Package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tvb.basic.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">basic</span></tt> Package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tvb.analyzers.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.basic.html" title="basic Package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tvb.html" title="tvb Package"
+             >previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">tvb</span></tt> Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

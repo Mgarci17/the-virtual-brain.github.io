@@ -1,0 +1,340 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>backend Package &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-tvb.simulator.backend">
+<span id="backend-package"></span><h1><tt class="xref py py-mod docutils literal"><span class="pre">backend</span></tt> Package<a class="headerlink" href="#module-tvb.simulator.backend" title="Permalink to this headline">¶</a></h1>
+<p>This module is an experimental simulation &#8220;compiler&#8221; that enables the 
+simulator to generate and use C and CUDA code to reduce execution times.</p>
+<div class="section" id="module-tvb.simulator.backend.cee">
+<span id="cee-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">cee</span></tt> Module<a class="headerlink" href="#module-tvb.simulator.backend.cee" title="Permalink to this headline">¶</a></h2>
+<p>This module enables execution of generated C code.</p>
+<dl class="class">
+<dt id="tvb.simulator.backend.cee.Array">
+<em class="property">class </em><tt class="descclassname">tvb.simulator.backend.cee.</tt><tt class="descname">Array</tt><big>(</big><em>name</em>, <em>type</em>, <em>dimensions</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/backend/cee.html#Array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.cee.Array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.simulator.backend.driver.Array" title="tvb.simulator.backend.driver.Array"><tt class="xref py py-class docutils literal"><span class="pre">tvb.simulator.backend.driver.Array</span></tt></a></p>
+<p>Encapsulates an array that is on the device</p>
+<dl class="attribute">
+<dt id="tvb.simulator.backend.cee.Array.device">
+<tt class="descname">device</tt><a class="reference internal" href="_modules/tvb/simulator/backend/cee.html#Array.device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.cee.Array.device" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.backend.cee.Array.set">
+<tt class="descname">set</tt><big>(</big><em>ary</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/backend/cee.html#Array.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.cee.Array.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>In place update the device array.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.backend.cee.Array.value">
+<tt class="descname">value</tt><a class="reference internal" href="_modules/tvb/simulator/backend/cee.html#Array.value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.cee.Array.value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.simulator.backend.cee.Code">
+<em class="property">class </em><tt class="descclassname">tvb.simulator.backend.cee.</tt><tt class="descname">Code</tt><big>(</big><em>*args</em>, <em>**kwds</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/backend/cee.html#Code"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.cee.Code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.simulator.backend.driver.Code" title="tvb.simulator.backend.driver.Code"><tt class="xref py py-class docutils literal"><span class="pre">tvb.simulator.backend.driver.Code</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.simulator.backend.cee.Global">
+<em class="property">class </em><tt class="descclassname">tvb.simulator.backend.cee.</tt><tt class="descname">Global</tt><big>(</big><em>name</em>, <em>dtype</em>, <em>code</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/backend/cee.html#Global"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.cee.Global" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.simulator.backend.driver.Global" title="tvb.simulator.backend.driver.Global"><tt class="xref py py-class docutils literal"><span class="pre">tvb.simulator.backend.driver.Global</span></tt></a></p>
+<p>Encapsulates a source module C static in a Python data descriptor
+for easy handling</p>
+<dl class="method">
+<dt id="tvb.simulator.backend.cee.Global.post_init">
+<tt class="descname">post_init</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/simulator/backend/cee.html#Global.post_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.cee.Global.post_init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.simulator.backend.cee.Handler">
+<em class="property">class </em><tt class="descclassname">tvb.simulator.backend.cee.</tt><tt class="descname">Handler</tt><big>(</big><em>*args</em>, <em>**kwds</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/backend/cee.html#Handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.cee.Handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.simulator.backend.driver.Handler" title="tvb.simulator.backend.driver.Handler"><tt class="xref py py-class docutils literal"><span class="pre">tvb.simulator.backend.driver.Handler</span></tt></a></p>
+<dl class="attribute">
+<dt id="tvb.simulator.backend.cee.Handler.extra_args">
+<tt class="descname">extra_args</tt><a class="reference internal" href="_modules/tvb/simulator/backend/cee.html#Handler.extra_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.cee.Handler.extra_args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.backend.cee.Handler.i_step_type">
+<tt class="descname">i_step_type</tt><a class="headerlink" href="#tvb.simulator.backend.cee.Handler.i_step_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">c_int</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.backend.cee.Handler.mem_info">
+<tt class="descname">mem_info</tt><a class="reference internal" href="_modules/tvb/simulator/backend/cee.html#Handler.mem_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.cee.Handler.mem_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.backend.cee.Handler.occupancy">
+<tt class="descname">occupancy</tt><a class="reference internal" href="_modules/tvb/simulator/backend/cee.html#Handler.occupancy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.cee.Handler.occupancy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.simulator.backend.cee.dll">
+<tt class="descclassname">tvb.simulator.backend.cee.</tt><tt class="descname">dll</tt><big>(</big><em>src</em>, <em>libname</em>, <em>compiler=None</em>, <em>debug=False</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/backend/cee.html#dll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.cee.dll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write src to a temporary file and compile as shared
+library that can be loaded afterwards.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.simulator.backend.cee.gen_noise_into">
+<tt class="descclassname">tvb.simulator.backend.cee.</tt><tt class="descname">gen_noise_into</tt><big>(</big><em>devary</em>, <em>dt</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/backend/cee.html#gen_noise_into"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.cee.gen_noise_into" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate additive white noise into arrays.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.simulator.backend.cee.srcmod">
+<em class="property">class </em><tt class="descclassname">tvb.simulator.backend.cee.</tt><tt class="descname">srcmod</tt><big>(</big><em>src</em>, <em>fns</em>, <em>debug=False</em>, <em>printsrc=False</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/backend/cee.html#srcmod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.cee.srcmod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+</dd></dl>
+
+</div>
+<div class="section" id="cuda-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">cuda</span></tt> Module<a class="headerlink" href="#cuda-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-tvb.simulator.backend.driver">
+<span id="driver-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">driver</span></tt> Module<a class="headerlink" href="#module-tvb.simulator.backend.driver" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="tvb-simulator-backend-driver">
+<h3>tvb.simulator.backend.driver<a class="headerlink" href="#tvb-simulator-backend-driver" title="Permalink to this headline">¶</a></h3>
+<p>This modules defines several classes that are informally base
+or abstract classes for various actual backends. Backend specific
+code is provided by subclassing the classes in this module, and in
+most cases, the classes here don&#8217;t function at all, so the user 
+should e.g. import backend.cee directly.</p>
+<p>class Code -       Setup and load template code on device
+class Global -     Setup &amp; access global variables in code
+class Array -      Alloc, free, set, get main data storage
+class Handler -    Coordinate code &amp; data on device</p>
+<dl class="class">
+<dt id="tvb.simulator.backend.driver.Array">
+<em class="property">class </em><tt class="descclassname">tvb.simulator.backend.driver.</tt><tt class="descname">Array</tt><big>(</big><em>name</em>, <em>type</em>, <em>dimensions</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/backend/driver.html#Array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.driver.Array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Encapsulates an array that is on the device</p>
+<dl class="attribute">
+<dt id="tvb.simulator.backend.driver.Array.cpu">
+<tt class="descname">cpu</tt><a class="reference internal" href="_modules/tvb/simulator/backend/driver.html#Array.cpu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.driver.Array.cpu" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.backend.driver.Array.nbytes">
+<tt class="descname">nbytes</tt><a class="reference internal" href="_modules/tvb/simulator/backend/driver.html#Array.nbytes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.driver.Array.nbytes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.backend.driver.Array.shape">
+<tt class="descname">shape</tt><a class="reference internal" href="_modules/tvb/simulator/backend/driver.html#Array.shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.driver.Array.shape" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.simulator.backend.driver.Code">
+<em class="property">class </em><tt class="descclassname">tvb.simulator.backend.driver.</tt><tt class="descname">Code</tt><big>(</big><em>fns=</em><span class="optional">[</span><span class="optional">]</span>, <em>T=&lt;class 'string.Template'&gt;</em>, <em>**kwds</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/backend/driver.html#Code"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.driver.Code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="attribute">
+<dt id="tvb.simulator.backend.driver.Code.defaults">
+<tt class="descname">defaults</tt><em class="property"> = {'integrate': '\n        float dt = P(0);\n        model_dfun(dx1, x, mmpr, input);\n        noise_gfun(gx, x, nspr);\n        for (int i_svar=0; i_svar&lt;n_svar; i_svar++)\n            X(i_svar) += dt*(DX1(i_svar) + STIM(i_svar)) + GX(i_svar)*NS(i_svar);\n        ', 'noise_gfun': '\n        float nsig;\n        for (int i_svar=0; i_svar&lt;n_svar; i_svar++)\n        {\n            nsig = P(i_svar);\n            GX(i_svar) = sqrt(2.0*nsig);\n        }\n        ', 'model_dfun': '\n        float a   = P(0)\n            , b   = P(1)\n            , tau = P(2)\n            , x   = X(0)\n            , y   = X(1) ;\n\n        DX(0) = (x - x*x*x/3.0 + y)*tau;\n        DX(1) = (a + b*y - x + I(0))/tau;\n        ', 'coupling': '\n        // parameters\n        float a = P(0);\n\n        I = 0.0;\n        for (int j_node=0; j_node&lt;n_node; j_node++, idel++, conn++)\n            I += a*GIJ*XJ;\n\n\n        '}</em><a class="headerlink" href="#tvb.simulator.backend.driver.Code.defaults" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.backend.driver.Code.here">
+<tt class="descname">here</tt><em class="property"> = '/opt/tvb/hudson_home/workspace/TVB - Linux64/scientific_library/tvb/simulator/backend/'</em><a class="headerlink" href="#tvb.simulator.backend.driver.Code.here" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.backend.driver.Code.sources">
+<tt class="descname">sources</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/simulator/backend/driver.html#Code.sources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.driver.Code.sources" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.simulator.backend.driver.Global">
+<em class="property">class </em><tt class="descclassname">tvb.simulator.backend.driver.</tt><tt class="descname">Global</tt><big>(</big><em>name</em>, <em>dtype</em>, <em>code</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/backend/driver.html#Global"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.driver.Global" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Encapsulates a source module device global in a Python data descriptor
+for easy handling</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.simulator.backend.driver.Handler">
+<em class="property">class </em><tt class="descclassname">tvb.simulator.backend.driver.</tt><tt class="descname">Handler</tt><big>(</big><em>code_args={}</em>, <em>Code=&lt;class 'tvb.simulator.backend.driver.Code'&gt;</em>, <em>Global=&lt;class 'tvb.simulator.backend.driver.Global'&gt;</em>, <em>Array=&lt;class 'tvb.simulator.backend.driver.Array'&gt;</em>, <em>**kwds</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/backend/driver.html#Handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.driver.Handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>The device_handler class is a convenience class designed around the
+kernel functions implemented in the tvb.cu file.</p>
+<dl class="attribute">
+<dt id="tvb.simulator.backend.driver.Handler.block_dim">
+<tt class="descname">block_dim</tt><a class="headerlink" href="#tvb.simulator.backend.driver.Handler.block_dim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.backend.driver.Handler.device_state">
+<tt class="descname">device_state</tt><em class="property"> = ['idel', 'cvars', 'inpr', 'conn', 'cfpr', 'nspr', 'mmpr', 'input', 'x', 'hist', 'dx1', 'dx2', 'gx', 'ns', 'stim', 'tavg']</em><a class="headerlink" href="#tvb.simulator.backend.driver.Handler.device_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.backend.driver.Handler.fill_with">
+<tt class="descname">fill_with</tt><big>(</big><em>idx</em>, <em>sim</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/backend/driver.html#Handler.fill_with"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.driver.Handler.fill_with" title="Permalink to this definition">¶</a></dt>
+<dd><p>fill_with extracts the necessary workspace arrays from the 
+sequence of simulators, and packs the data into the device&#8217;s 
+workspace arrays.</p>
+<p>conn and idelays are transposed because the simulator uses the 
+convention that weights[i, j] is the weight from i to j, where
+the device code sez that the weight is from j to i. Go figure.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.backend.driver.Handler.init_arrays">
+<tt class="descname">init_arrays</tt><big>(</big><em>Array=&lt;class 'tvb.simulator.backend.driver.Array'&gt;</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/backend/driver.html#Handler.init_arrays"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.driver.Handler.init_arrays" title="Permalink to this definition">¶</a></dt>
+<dd><p>initialize arrays</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.backend.driver.Handler.init_globals">
+<tt class="descname">init_globals</tt><big>(</big><em>Global=&lt;class 'tvb.simulator.backend.driver.Global'&gt;</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/backend/driver.html#Handler.init_globals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.driver.Handler.init_globals" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate accessors for global constants</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="tvb.simulator.backend.driver.Handler.init_like">
+<em class="property">classmethod </em><tt class="descname">init_like</tt><big>(</big><em>sim</em>, <em>n_msik=1</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/backend/driver.html#Handler.init_like"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.driver.Handler.init_like" title="Permalink to this definition">¶</a></dt>
+<dd><p>The init_from classmethod builds a device_handler based on a 
+prototype template</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.backend.driver.Handler.nbytes">
+<tt class="descname">nbytes</tt><a class="reference internal" href="_modules/tvb/simulator/backend/driver.html#Handler.nbytes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.driver.Handler.nbytes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.backend.driver.Handler.nbytes1">
+<tt class="descname">nbytes1</tt><a class="reference internal" href="_modules/tvb/simulator/backend/driver.html#Handler.nbytes1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.driver.Handler.nbytes1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.simulator.backend.driver.cpp">
+<tt class="descclassname">tvb.simulator.backend.driver.</tt><tt class="descname">cpp</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/backend/driver.html#cpp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.backend.driver.cpp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">backend</span></tt> Package</a><ul>
+<li><a class="reference internal" href="#module-tvb.simulator.backend.cee"><tt class="docutils literal"><span class="pre">cee</span></tt> Module</a></li>
+<li><a class="reference internal" href="#cuda-module"><tt class="docutils literal"><span class="pre">cuda</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.simulator.backend.driver"><tt class="docutils literal"><span class="pre">driver</span></tt> Module</a><ul>
+<li><a class="reference internal" href="#tvb-simulator-backend-driver">tvb.simulator.backend.driver</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tvb.simulator.backend.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

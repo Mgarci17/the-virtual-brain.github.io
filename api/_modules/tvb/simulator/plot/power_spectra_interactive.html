@@ -1,0 +1,602 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.simulator.plot.power_spectra_interactive &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.simulator.plot.power_spectra_interactive</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">An interactive power spectra plot generated from a TVB TimeSeries datatype.</span>
+
+<span class="sd">Usage</span>
+<span class="sd">::</span>
+
+<span class="sd">    #Load the demo data</span>
+<span class="sd">    import numpy</span>
+<span class="sd">    data = numpy.load(&quot;demos/demo_data_region_16s_2048Hz.npy&quot;)</span>
+<span class="sd">    period = 0.00048828125 #NOTE: Providing period in seconds</span>
+
+<span class="sd">    #Create a tvb TimeSeries object</span>
+<span class="sd">    import tvb.datatypes.time_series</span>
+<span class="sd">    tsr = tvb.datatypes.time_series.TimeSeriesRegion()</span>
+<span class="sd">    tsr.data = data</span>
+<span class="sd">    tsr.sample_period = period</span>
+
+<span class="sd">    #Create and launch the interactive visualiser</span>
+<span class="sd">    import tvb.simulator.power_spectra_interactive as ps_int</span>
+<span class="sd">    psi = ps_int.PowerSpectraInteractive(time_series=tsr)</span>
+<span class="sd">    psi.show()</span>
+
+
+<span class="sd">.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c">#TODO: There are fence-posts...</span>
+<span class="c">#TODO: add a save button, for current powerspectra view (data more than fig)</span>
+<span class="c">#TODO: channel/region selection, with surface time-series vertex slection </span>
+<span class="c">#      grouped by region </span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">pylab</span>
+<span class="kn">import</span> <span class="nn">matplotlib.widgets</span> <span class="kn">as</span> <span class="nn">widgets</span>
+
+<span class="c">#The Virtual Brain</span>
+<span class="kn">from</span> <span class="nn">tvb.simulator.common</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">tvb.datatypes.time_series</span> <span class="kn">as</span> <span class="nn">time_series_datatypes</span>
+
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.core</span> <span class="kn">as</span> <span class="nn">core</span>
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.types_basic</span> <span class="kn">as</span> <span class="nn">basic</span>
+
+<span class="c"># Define a colour theme... see: matplotlib.colors.cnames.keys()</span>
+<span class="n">BACKGROUNDCOLOUR</span> <span class="o">=</span> <span class="s">&quot;slategrey&quot;</span>
+<span class="n">EDGECOLOUR</span> <span class="o">=</span> <span class="s">&quot;darkslateblue&quot;</span>
+<span class="n">AXCOLOUR</span> <span class="o">=</span> <span class="s">&quot;steelblue&quot;</span>
+<span class="n">BUTTONCOLOUR</span> <span class="o">=</span> <span class="s">&quot;steelblue&quot;</span>
+<span class="n">HOVERCOLOUR</span> <span class="o">=</span> <span class="s">&quot;blue&quot;</span>
+
+
+<div class="viewcode-block" id="PowerSpectraInteractive"><a class="viewcode-back" href="../../../../tvb.simulator.power_spectra_interactive.html#tvb.simulator.plot.power_spectra_interactive.PowerSpectraInteractive">[docs]</a><span class="k">class</span> <span class="nc">PowerSpectraInteractive</span><span class="p">(</span><span class="n">core</span><span class="o">.</span><span class="n">Type</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The graphical interface for visualising the power-spectra (FFT) of a</span>
+<span class="sd">    timeseries provide controls for setting:</span>
+
+<span class="sd">        - which state-variable and mode to display [sets]</span>
+<span class="sd">        - log or linear scaling for the power or frequency axis [binary]</span>
+<span class="sd">        - sementation lenth [set]</span>
+<span class="sd">        - windowing function [set]</span>
+<span class="sd">        - power normalisation [binary] (emphasise relative frequency contribution)</span>
+<span class="sd">        - show std or sem [binary]</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">time_series</span> <span class="o">=</span> <span class="n">time_series_datatypes</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Timeseries&quot;</span><span class="p">,</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+        <span class="n">required</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot; The timeseries to which the FFT is to be applied.&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">first_n</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Integer</span><span class="p">(</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Display the first &#39;n&#39;&quot;</span><span class="p">,</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">required</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;Primarily intended for displaying the first N components of a </span>
+<span class="s">            surface PCA timeseries. Defaults to -1, meaning it&#39;ll display all</span>
+<span class="s">            of &#39;space&#39; (ie, regions or vertices or channels). In other words,</span>
+<span class="s">            for Region or M/EEG timeseries you can ignore this, but, for a </span>
+<span class="s">            surface timeseries it really must be set.&quot;&quot;&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialise based on provided keywords or their traited defaults. Also,</span>
+<span class="sd">        initialise the place-holder attributes that aren&#39;t filled until the</span>
+<span class="sd">        show() method is called.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#figure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ifft_fig</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c">#time-series</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fft_ax</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c">#Current state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xscale</span> <span class="o">=</span> <span class="s">&quot;linear&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yscale</span> <span class="o">=</span> <span class="s">&quot;log&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variable</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_sem</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_std</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalise_power</span> <span class="o">=</span> <span class="s">&quot;no&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window_length</span> <span class="o">=</span> <span class="mf">0.25</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window_function</span> <span class="o">=</span> <span class="s">&quot;None&quot;</span>
+
+        <span class="c">#Selectors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xscale_selector</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yscale_selector</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode_selector</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variable_selector</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_sem_selector</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_std_selector</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalise_power_selector</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window_length_selector</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window_function_selector</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c">#</span>
+        <span class="n">possible_freq_steps</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="o">**</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">)]</span> <span class="c">#Hz</span>
+        <span class="c">#possible_freq_steps.append(1.0 / self.time_series_length) #Hz</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">possible_window_lengths</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">possible_freq_steps</span><span class="p">)</span> <span class="c">#s</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">freq_step</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spectra</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spectra_norm</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c">#Sliders</span>
+        <span class="c">#self.window_length_slider = None</span>
+
+
+    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Seperate configure cause ttraits be busted... &quot;&quot;&quot;</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;time_series shape: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+        <span class="c">#TODO: if isinstance(self.time_series, TimeSeriesSurface) and self.first_n == -1: #LOG.error, return.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">first_n</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">period</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">sample_period</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_freq</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">period</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s">&quot;Hz&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tpts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nsrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_series_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tpts</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">period</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tpts</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">period</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;channel_</span><span class="si">%0.3d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nsrs</span><span class="p">)]</span>
+
+
+    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Generate the interactive power-spectra figure. &quot;&quot;&quot;</span>
+        <span class="c">#Make sure everything is configured</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+
+        <span class="c">#Make the figure:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_figure</span><span class="p">()</span>
+
+        <span class="c">#Selectors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_xscale_selector</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_yscale_selector</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_mode_selector</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_variable_selector</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_normalise_power_selector</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_window_length_selector</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_window_function_selector</span><span class="p">()</span>
+
+        <span class="c">#Sliders</span>
+        <span class="c">#self.add_window_length_slider() #Want discrete values</span>
+        <span class="c">#self.add_scaling_slider()</span>
+
+        <span class="c">#...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calc_fft</span><span class="p">()</span>
+
+        <span class="c">#Plot timeseries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_spectra</span><span class="p">()</span>
+
+        <span class="n">pylab</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="c">##------------------------------------------------------------------------##</span>
+    <span class="c">##------------------ Functions for building the figure -------------------##</span>
+    <span class="c">##------------------------------------------------------------------------##</span>
+    <span class="k">def</span> <span class="nf">create_figure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Create the figure and time-series axes. &quot;&quot;&quot;</span>
+        <span class="n">time_series_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">figure_window_title</span> <span class="o">=</span> <span class="s">&quot;Interactive power spectra: &quot;</span> <span class="o">+</span> <span class="n">time_series_type</span>
+            <span class="n">pylab</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">figure_window_title</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ifft_fig</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">num</span> <span class="o">=</span> <span class="n">figure_window_title</span><span class="p">,</span>
+                                        <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+                                        <span class="n">facecolor</span> <span class="o">=</span> <span class="n">BACKGROUNDCOLOUR</span><span class="p">,</span> 
+                                        <span class="n">edgecolor</span> <span class="o">=</span> <span class="n">EDGECOLOUR</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;My life would be easier if you&#39;d update your PyLab...&quot;</span><span class="p">)</span>
+            <span class="n">figure_number</span> <span class="o">=</span> <span class="mi">42</span>
+            <span class="n">pylab</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">figure_number</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ifft_fig</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">num</span> <span class="o">=</span> <span class="n">figure_number</span><span class="p">,</span> 
+                                         <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> 
+                                         <span class="n">facecolor</span> <span class="o">=</span> <span class="n">BACKGROUNDCOLOUR</span><span class="p">,</span> 
+                                         <span class="n">edgecolor</span> <span class="o">=</span> <span class="n">EDGECOLOUR</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fft_ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ifft_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">])</span>
+
+
+    <span class="k">def</span> <span class="nf">add_xscale_selector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a radio button to the figure for selecting which scaling the x-axes</span>
+<span class="sd">        should use.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pos_shp</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.104</span><span class="p">]</span>
+        <span class="n">rax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ifft_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">pos_shp</span><span class="p">,</span> <span class="n">axisbg</span><span class="o">=</span><span class="n">AXCOLOUR</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;xscale&quot;</span><span class="p">)</span>
+        <span class="n">xscale_tuple</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;log&quot;</span><span class="p">,</span> <span class="s">&quot;linear&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xscale_selector</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">RadioButtons</span><span class="p">(</span><span class="n">rax</span><span class="p">,</span> <span class="n">xscale_tuple</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xscale_selector</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_xscale</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">add_yscale_selector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a radio button to the figure for selecting which scaling the y-axes</span>
+<span class="sd">        should use.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pos_shp</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.104</span><span class="p">]</span>
+        <span class="n">rax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ifft_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">pos_shp</span><span class="p">,</span> <span class="n">axisbg</span><span class="o">=</span><span class="n">AXCOLOUR</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;yscale&quot;</span><span class="p">)</span>
+        <span class="n">yscale_tuple</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;log&quot;</span><span class="p">,</span> <span class="s">&quot;linear&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yscale_selector</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">RadioButtons</span><span class="p">(</span><span class="n">rax</span><span class="p">,</span> <span class="n">yscale_tuple</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yscale_selector</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_yscale</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">add_mode_selector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a radio button to the figure for selecting which mode of the model</span>
+<span class="sd">        should be displayed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pos_shp</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.1</span><span class="o">+</span><span class="mf">0.002</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span>
+        <span class="n">rax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ifft_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">pos_shp</span><span class="p">,</span> <span class="n">axisbg</span><span class="o">=</span><span class="n">AXCOLOUR</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;Mode&quot;</span><span class="p">)</span>
+        <span class="n">mode_tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode_selector</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">RadioButtons</span><span class="p">(</span><span class="n">rax</span><span class="p">,</span> <span class="n">mode_tuple</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode_selector</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_mode</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">add_variable_selector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate radio selector buttons to set which state variable is </span>
+<span class="sd">        displayed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">noc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c"># number of choices</span>
+        <span class="c">#State variable for the x axis</span>
+        <span class="n">pos_shp</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.22</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.12</span><span class="o">+</span><span class="mf">0.008</span><span class="o">*</span><span class="n">noc</span><span class="p">]</span>
+        <span class="n">rax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ifft_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">pos_shp</span><span class="p">,</span> <span class="n">axisbg</span><span class="o">=</span><span class="n">AXCOLOUR</span><span class="p">,</span> 
+                                     <span class="n">title</span><span class="o">=</span><span class="s">&quot;state variable&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variable_selector</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">RadioButtons</span><span class="p">(</span><span class="n">rax</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">noc</span><span class="p">)),</span> 
+                                                    <span class="n">active</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variable_selector</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_variable</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">add_window_length_selector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate radio selector buttons to set the window length is seconds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">noc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">possible_window_lengths</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c"># number of choices</span>
+        <span class="c">#State variable for the x axis</span>
+        <span class="n">pos_shp</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.88</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.12</span><span class="o">+</span><span class="mf">0.02</span><span class="o">*</span><span class="n">noc</span><span class="p">]</span>
+        <span class="n">rax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ifft_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">pos_shp</span><span class="p">,</span> <span class="n">axisbg</span><span class="o">=</span><span class="n">AXCOLOUR</span><span class="p">,</span> 
+                                     <span class="n">title</span><span class="o">=</span><span class="s">&quot;Segment length&quot;</span><span class="p">)</span>
+        <span class="n">wl_tup</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">possible_window_lengths</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window_length_selector</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">RadioButtons</span><span class="p">(</span><span class="n">rax</span><span class="p">,</span> <span class="n">wl_tup</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window_length_selector</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_window_length</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">add_window_function_selector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate radio selector buttons to set the windowing function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#TODO: add support for kaiser, requiers specification of beta.</span>
+        <span class="n">wf_tup</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;None&quot;</span><span class="p">,</span> <span class="s">&quot;hamming&quot;</span><span class="p">,</span> <span class="s">&quot;bartlett&quot;</span><span class="p">,</span> <span class="s">&quot;blackman&quot;</span><span class="p">,</span> <span class="s">&quot;hanning&quot;</span><span class="p">)</span> 
+        <span class="n">noc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">wf_tup</span><span class="p">)</span> <span class="c"># number of choices</span>
+        <span class="c">#State variable for the x axis</span>
+        <span class="n">pos_shp</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.88</span><span class="p">,</span> <span class="mf">0.77</span><span class="p">,</span> <span class="mf">0.085</span><span class="p">,</span> <span class="mf">0.12</span><span class="o">+</span><span class="mf">0.01</span><span class="o">*</span><span class="n">noc</span><span class="p">]</span>
+        <span class="n">rax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ifft_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">pos_shp</span><span class="p">,</span> <span class="n">axisbg</span><span class="o">=</span><span class="n">AXCOLOUR</span><span class="p">,</span> 
+                                    <span class="n">title</span><span class="o">=</span><span class="s">&quot;Windowing function&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window_function_selector</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">RadioButtons</span><span class="p">(</span><span class="n">rax</span><span class="p">,</span> <span class="n">wf_tup</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window_function_selector</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_window_function</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">add_normalise_power_selector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a radio button to chose whether or not the power of all spectra </span>
+<span class="sd">        shouold be normalised to 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pos_shp</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.104</span><span class="p">]</span>
+        <span class="n">rax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ifft_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">pos_shp</span><span class="p">,</span> <span class="n">axisbg</span><span class="o">=</span><span class="n">AXCOLOUR</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;normalise&quot;</span><span class="p">)</span>
+        <span class="n">np_tuple</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;yes&quot;</span><span class="p">,</span> <span class="s">&quot;no&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalise_power_selector</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">RadioButtons</span><span class="p">(</span><span class="n">rax</span><span class="p">,</span> <span class="n">np_tuple</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalise_power_selector</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_normalise_power</span><span class="p">)</span>
+
+
+    <span class="c">##------------------------------------------------------------------------##</span>
+    <span class="c">##------------------ Functions for updating the state --------------------##</span>
+    <span class="c">##------------------------------------------------------------------------##</span>
+    <span class="k">def</span> <span class="nf">calc_fft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate FFT using current state of the window_length, window_function,</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#Segment time-series, overlapping if necessary</span>
+        <span class="n">nseg</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_series_length</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_length</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">nseg</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">seg_tpts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_length</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">period</span>
+            <span class="n">overlap</span> <span class="o">=</span> <span class="p">((</span><span class="n">seg_tpts</span> <span class="o">*</span> <span class="n">nseg</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">tpts</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">nseg</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">starts</span> <span class="o">=</span> <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="n">seg</span><span class="o">*</span><span class="p">(</span><span class="n">seg_tpts</span> <span class="o">-</span> <span class="n">overlap</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nseg</span><span class="p">)]</span>
+            <span class="n">segments</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">start</span><span class="o">+</span><span class="n">seg_tpts</span><span class="p">]</span> <span class="k">for</span> <span class="n">start</span> <span class="ow">in</span> <span class="n">starts</span><span class="p">]</span> 
+            <span class="n">segments</span> <span class="o">=</span> <span class="p">[</span><span class="n">segment</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">segments</span><span class="p">]</span>
+            <span class="n">time_series</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">segments</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">time_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+            <span class="n">seg_tpts</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c">#Base-line correct segmented time-series</span>
+        <span class="n">time_series</span> <span class="o">=</span> <span class="n">time_series</span> <span class="o">-</span> <span class="n">time_series</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="n">numpy</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="c">#Apply windowing function</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_function</span> <span class="o">!=</span> <span class="s">&quot;None&quot;</span><span class="p">:</span>
+            <span class="n">window_function</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s">&quot;numpy.&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_function</span><span class="p">)))</span>
+            <span class="n">window_mask</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">window_function</span><span class="p">(</span><span class="n">seg_tpts</span><span class="p">),</span> 
+                                        <span class="p">(</span><span class="n">seg_tpts</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">time_series</span> <span class="o">=</span> <span class="n">time_series</span> <span class="o">*</span> <span class="n">window_mask</span>
+
+        <span class="c">#Calculate the FFT</span>
+        <span class="n">result</span> <span class="o">=</span>  <span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">time_series</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">nfreq</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_freq</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">freq_step</span><span class="p">)</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;frequency shape: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">spectra</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">nfreq</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;spectra shape: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spectra</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">spectra_norm</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spectra</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spectra</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;spectra_norm shape: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spectra_norm</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+
+        <span class="c">#import pdb; pdb.set_trace()</span>
+<span class="c">#        self.spectra_std = numpy.std(numpy.abs(result[:nfreq]), axis=4)</span>
+<span class="c">#        self.spectra_sem = self.spectra_std / time_series.shape[4]</span>
+
+    <span class="c">##------------------------------------------------------------------------##</span>
+    <span class="c">##------------------ Functions for updating the figure -------------------##</span>
+    <span class="c">##------------------------------------------------------------------------##</span>
+    <span class="k">def</span> <span class="nf">update_xscale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xscale</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Update the FFT axes&#39; xscale to either log or linear based on radio</span>
+<span class="sd">        button selection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xscale</span> <span class="o">=</span> <span class="n">xscale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fft_ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xscale</span><span class="p">)</span>
+        <span class="n">pylab</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">update_yscale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yscale</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Update the FFT axes&#39; yscale to either log or linear based on radio</span>
+<span class="sd">        button selection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yscale</span> <span class="o">=</span> <span class="n">yscale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fft_ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">yscale</span><span class="p">)</span>
+        <span class="n">pylab</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">update_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Update the visualised mode based on radio button selection. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_spectra</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">update_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Update state variable being plotted based on radio buttton selection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variable</span> <span class="o">=</span> <span class="n">variable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_spectra</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">update_normalise_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">normalise_power</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Update whether to normalise based on radio button selection. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalise_power</span> <span class="o">=</span> <span class="n">normalise_power</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_spectra</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">update_window_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update timeseries window length based on the selected value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#TODO: need this casting but not sure why, don&#39;t need int() with mode...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window_length</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">length</span><span class="p">)</span> 
+        <span class="c">#import pdb; pdb.set_trace()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">freq_step</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_spectra</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">update_window_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window_function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update windowing function based on the radio button selection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window_function</span> <span class="o">=</span> <span class="n">window_function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_spectra</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">update_spectra</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Clear the axes and redraw the power-spectra. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calc_fft</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_spectra</span><span class="p">()</span>
+
+
+<span class="c">#    def plot_std(self):</span>
+<span class="c">#        &quot;&quot;&quot; Plot &quot;&quot;&quot;</span>
+<span class="c">#        std = (self.spectra[:, self.variable, :, self.mode] +</span>
+<span class="c">#               self.spectra_std[:, self.variable, :, self.mode])</span>
+<span class="c">#        self.fft_ax.plot(self.frequency, std, &quot;--&quot;)</span>
+<span class="c">#    </span>
+<span class="c">#    </span>
+<span class="c">#    def plot_sem(self):</span>
+<span class="c">#        &quot;&quot;&quot;  &quot;&quot;&quot;</span>
+<span class="c">#        sem = (self.spectra[:, self.variable, :, self.mode] +</span>
+<span class="c">#               self.spectra_sem[:, self.variable, :, self.mode])</span>
+<span class="c">#        self.fft_ax.plot(self.frequency, sem, &quot;:&quot;)</span>
+
+
+    <span class="k">def</span> <span class="nf">plot_spectra</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Plot the power spectra. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fft_ax</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="c"># Set title and axis labels</span>
+        <span class="n">time_series_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fft_ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">title</span> <span class="o">=</span> <span class="n">time_series_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fft_ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span> <span class="o">=</span> <span class="s">&quot;Frequency (</span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fft_ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span> <span class="o">=</span> <span class="s">&quot;Power&quot;</span><span class="p">)</span>
+
+        <span class="c"># Set x and y scale based on curent radio button selection.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fft_ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xscale</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fft_ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">yscale</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fft_ax</span><span class="p">,</span> <span class="s">&#39;autoscale&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fft_ax</span><span class="o">.</span><span class="n">autoscale</span><span class="p">(</span><span class="n">enable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s">&#39;both&#39;</span><span class="p">,</span> <span class="n">tight</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="c">#import pdb; pdb.set_trace()</span>
+        <span class="c">#Plot the power spectra</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalise_power</span> <span class="o">==</span> <span class="s">&quot;yes&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fft_ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="p">,</span> 
+                             <span class="bp">self</span><span class="o">.</span><span class="n">spectra_norm</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">variable</span><span class="p">,</span> <span class="p">:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fft_ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="p">,</span> 
+                             <span class="bp">self</span><span class="o">.</span><span class="n">spectra</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">variable</span><span class="p">,</span> <span class="p">:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">])</span>
+
+<span class="c">#        #TODO: Need to ensure colour matching... and allow region selection.</span>
+<span class="c">#        #If requested, add standard deviation</span>
+<span class="c">#        if self.show_std:</span>
+<span class="c">#            self.plot_std(self)</span>
+<span class="c">#            </span>
+<span class="c">#        #If requested, add standard error in mean</span>
+<span class="c">#        if self.show_sem:</span>
+<span class="c">#            self.plot_sem(self)</span>
+
+        <span class="n">pylab</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c"># Do some stuff that tests or makes use of this module...</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Testing </span><span class="si">%s</span><span class="s"> module...&quot;</span> <span class="o">%</span> <span class="n">__file__</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;../demos/demo_data_region_16s_2048Hz.npy&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Can&#39;t load demo data. Run demos/generate_region_demo_data.py&quot;</span><span class="p">)</span>
+        <span class="k">raise</span>
+
+    <span class="n">period</span> <span class="o">=</span> <span class="mf">0.00048828125</span> <span class="c">#NOTE: Providing period in seconds</span>
+    <span class="n">tsr</span> <span class="o">=</span> <span class="n">time_series_datatypes</span><span class="o">.</span><span class="n">TimeSeriesRegion</span><span class="p">()</span>
+    <span class="n">tsr</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+    <span class="n">tsr</span><span class="o">.</span><span class="n">sample_period</span> <span class="o">=</span> <span class="n">period</span>
+
+    <span class="n">psi</span> <span class="o">=</span> <span class="n">PowerSpectraInteractive</span><span class="p">(</span><span class="n">time_series</span><span class="o">=</span><span class="n">tsr</span><span class="p">)</span>
+    <span class="n">psi</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.entities.transient.context_stimulus &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.entities.transient.context_stimulus</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Aug 21, 2012</span>
+
+<span class="sd">.. moduleauthor:: bogdan.neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.abcadapter</span> <span class="kn">import</span> <span class="n">ABCAdapter</span>
+
+<span class="n">SURFACE_PARAMETER</span> <span class="o">=</span> <span class="s">&#39;surface&#39;</span>
+<span class="n">CONNECTIVITY_PARAMETER</span> <span class="o">=</span> <span class="s">&#39;connectivity&#39;</span>
+<span class="n">FOCAL_POINTS_PARAMETER</span> <span class="o">=</span> <span class="s">&#39;focal_points_triangles&#39;</span>
+<span class="n">SCALING_PARAMETER</span> <span class="o">=</span> <span class="s">&#39;weight&#39;</span>
+
+<div class="viewcode-block" id="SurfaceStimulusContext"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.context_stimulus.SurfaceStimulusContext">[docs]</a><span class="k">class</span> <span class="nc">SurfaceStimulusContext</span><span class="p">():</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected_stimulus</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">equation_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">focal_points_list</span> <span class="o">=</span> <span class="p">[]</span>
+    
+<div class="viewcode-block" id="SurfaceStimulusContext.get_session_surface"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.context_stimulus.SurfaceStimulusContext.get_session_surface">[docs]</a>    <span class="k">def</span> <span class="nf">get_session_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SURFACE_PARAMETER</span><span class="p">)</span>
+    </div>
+<div class="viewcode-block" id="SurfaceStimulusContext.get_selected_stimulus"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.context_stimulus.SurfaceStimulusContext.get_selected_stimulus">[docs]</a>    <span class="k">def</span> <span class="nf">get_selected_stimulus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_stimulus</span>
+    </div>
+<div class="viewcode-block" id="SurfaceStimulusContext.set_active_stimulus"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.context_stimulus.SurfaceStimulusContext.set_active_stimulus">[docs]</a>    <span class="k">def</span> <span class="nf">set_active_stimulus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stimulus_gid</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected_stimulus</span> <span class="o">=</span> <span class="n">stimulus_gid</span>
+    </div>
+<div class="viewcode-block" id="SurfaceStimulusContext.set_focal_points"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.context_stimulus.SurfaceStimulusContext.set_focal_points">[docs]</a>    <span class="k">def</span> <span class="nf">set_focal_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">focal_points_json</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">focal_points_list</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">focal_points_json</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">equation_kwargs</span><span class="p">[</span><span class="s">&#39;focal_points_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">focal_points_json</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">equation_kwargs</span><span class="p">[</span><span class="s">&#39;focal_points_triangles&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">focal_points_json</span>
+        </div>
+<div class="viewcode-block" id="SurfaceStimulusContext.update_eq_kwargs"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.context_stimulus.SurfaceStimulusContext.update_eq_kwargs">[docs]</a>    <span class="k">def</span> <span class="nf">update_eq_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_eq_kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        We need this since when you pass from step1 -&gt; step2 you don&#39;t want to remove</span>
+<span class="sd">        the focal_points previously defined, so we can&#39;t just reassign equation_kwargs = new_eq_kwargs</span>
+<span class="sd">        but we can&#39;t use update either since that would leave the collapsed dictionaries from a previosly</span>
+<span class="sd">        loaded stimulus.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">previous_keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation_kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">previous_keys</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">entry</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new_eq_kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">entry</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;focal_points_surface&#39;</span><span class="p">,</span> <span class="s">&#39;focal_points_triangles&#39;</span><span class="p">):</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation_kwargs</span><span class="p">[</span><span class="n">entry</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">new_eq_kwargs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">equation_kwargs</span><span class="p">[</span><span class="n">entry</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_eq_kwargs</span><span class="p">[</span><span class="n">entry</span><span class="p">]</span>
+    </div>
+<div class="viewcode-block" id="SurfaceStimulusContext.update_from_interface"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.context_stimulus.SurfaceStimulusContext.update_from_interface">[docs]</a>    <span class="k">def</span> <span class="nf">update_from_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stimuli_interface</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        From a stimulus interface, update this context.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">stimuli_interface</span><span class="p">:</span>
+            <span class="c">#Update this entry</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span> <span class="ow">in</span> <span class="n">entry</span> <span class="ow">and</span> <span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_TYPE</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&#39;dict&#39;</span> <span class="ow">or</span> 
+                                                     <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_TYPE</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;dict&#39;</span><span class="p">))):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">equation_kwargs</span><span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_NAME</span><span class="p">]]</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span><span class="p">]</span>
+            <span class="c">#To cover more complex trees</span>
+            <span class="k">if</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_OPTIONS</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_OPTIONS</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span> <span class="ow">in</span> <span class="n">option</span> <span class="ow">and</span> 
+                        <span class="p">(</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">entry</span> <span class="ow">or</span> <span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span><span class="p">]</span> <span class="o">==</span> <span class="n">option</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_VALUE</span><span class="p">])):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">update_from_interface</span><span class="p">(</span><span class="n">option</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span><span class="p">])</span>
+            <span class="c">#To cover equation parameters that are of type dict</span>
+            <span class="k">if</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span> <span class="ow">in</span> <span class="n">entry</span> <span class="ow">and</span> <span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_from_interface</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">FOCAL_POINTS_PARAMETER</span> <span class="o">==</span> <span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_NAME</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">focal_points_list</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span><span class="p">])</span>
+                </div>
+<div class="viewcode-block" id="SurfaceStimulusContext.reset"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.context_stimulus.SurfaceStimulusContext.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">equation_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">focal_points_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected_stimulus</span> <span class="o">=</span> <span class="bp">None</span>
+        
+</div></div>
+<div class="viewcode-block" id="RegionStimulusContext"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.context_stimulus.RegionStimulusContext">[docs]</a><span class="k">class</span> <span class="nc">RegionStimulusContext</span><span class="p">():</span>
+    
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected_stimulus</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">equation_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected_regions</span> <span class="o">=</span> <span class="p">[]</span>
+    
+<div class="viewcode-block" id="RegionStimulusContext.reset"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.context_stimulus.RegionStimulusContext.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected_stimulus</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">equation_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected_regions</span> <span class="o">=</span> <span class="p">[]</span>
+        </div>
+<div class="viewcode-block" id="RegionStimulusContext.get_session_connectivity"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.context_stimulus.RegionStimulusContext.get_session_connectivity">[docs]</a>    <span class="k">def</span> <span class="nf">get_session_connectivity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CONNECTIVITY_PARAMETER</span><span class="p">)</span>
+ </div>
+<div class="viewcode-block" id="RegionStimulusContext.get_weights"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.context_stimulus.RegionStimulusContext.get_weights">[docs]</a>    <span class="k">def</span> <span class="nf">get_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_regions</span>
+    </div>
+<div class="viewcode-block" id="RegionStimulusContext.set_weights"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.context_stimulus.RegionStimulusContext.set_weights">[docs]</a>    <span class="k">def</span> <span class="nf">set_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_weights</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected_regions</span> <span class="o">=</span> <span class="n">new_weights</span>
+    </div>
+<div class="viewcode-block" id="RegionStimulusContext.set_active_stimulus"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.context_stimulus.RegionStimulusContext.set_active_stimulus">[docs]</a>    <span class="k">def</span> <span class="nf">set_active_stimulus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stimulus_gid</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected_stimulus</span> <span class="o">=</span> <span class="n">stimulus_gid</span>
+        </div>
+<div class="viewcode-block" id="RegionStimulusContext.update_from_interface"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.context_stimulus.RegionStimulusContext.update_from_interface">[docs]</a>    <span class="k">def</span> <span class="nf">update_from_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stimuli_interface</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        From a stimulus interface, update this context.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">stimuli_interface</span><span class="p">:</span>
+            <span class="c">#Update this entry</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span> <span class="ow">in</span> <span class="n">entry</span> <span class="ow">and</span> <span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_TYPE</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&#39;dict&#39;</span> <span class="ow">or</span> 
+                                                     <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_TYPE</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;dict&#39;</span><span class="p">))):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">equation_kwargs</span><span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_NAME</span><span class="p">]]</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span><span class="p">]</span>
+            <span class="c">#To cover more complex trees</span>
+            <span class="k">if</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_OPTIONS</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_OPTIONS</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span> <span class="ow">in</span> <span class="n">option</span> <span class="ow">and</span> 
+                        <span class="p">(</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">entry</span> <span class="ow">or</span> <span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span><span class="p">]</span> <span class="o">==</span> <span class="n">option</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_VALUE</span><span class="p">])):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">update_from_interface</span><span class="p">(</span><span class="n">option</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span><span class="p">])</span>
+            <span class="c">#To cover equation parameters that are of type dict</span>
+            <span class="k">if</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span> <span class="ow">in</span> <span class="n">entry</span> <span class="ow">and</span> <span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_from_interface</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_ATTRIBUTES</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">SCALING_PARAMETER</span> <span class="o">==</span> <span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_NAME</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">selected_regions</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span><span class="p">])</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

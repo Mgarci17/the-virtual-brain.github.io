@@ -1,0 +1,622 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.datatypes.surfaces_framework &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.datatypes.surfaces_framework</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Framework methods for the Surface DataTypes.</span>
+
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.surfaces_data</span> <span class="kn">as</span> <span class="nn">surfaces_data</span>
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.exceptions</span> <span class="kn">as</span> <span class="nn">exceptions</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span> <span class="k">as</span> <span class="n">cfg</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+
+<span class="c"># TODO: This is just a temporary solution placed here to remove dependency from tvb.basic to tvb framework.</span>
+<span class="c"># As soon as we implement a better solution to the datatype framework diamond problem this should be removed.</span>
+<div class="viewcode-block" id="paths2url"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_framework.paths2url">[docs]</a><span class="k">def</span> <span class="nf">paths2url</span><span class="p">(</span><span class="n">datatype_entity</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">datatype_kwargs</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare a File System Path for passing into an URL.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">parameter</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">cfg</span><span class="o">.</span><span class="n">WEB_VISUALIZERS_URL_PREFIX</span> <span class="o">+</span> <span class="n">datatype_entity</span><span class="o">.</span><span class="n">gid</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span><span class="o">+</span> <span class="n">attribute_name</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">flatten</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">datatype_kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">WEB_VISUALIZERS_URL_PREFIX</span> <span class="o">+</span> <span class="n">datatype_entity</span><span class="o">.</span><span class="n">gid</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">attribute_name</span> <span class="o">+</span> 
+            <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">flatten</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">datatype_kwargs</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;?&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">parameter</span><span class="p">))</span>
+
+<span class="c">##--------------------- CLOSE SURFACES Start Here---------------------------------------##</span>
+</div>
+<div class="viewcode-block" id="SurfaceFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_framework.SurfaceFramework">[docs]</a><span class="k">class</span> <span class="nc">SurfaceFramework</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">SurfaceData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    This class exists to add framework methods to SurfacesData.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
+    
+    <span class="n">SPLIT_MAX_SIZE</span> <span class="o">=</span> <span class="mi">40000</span>          <span class="c">#### Slices are for vertices [0.....SPLIT_MAX_SIZE + SPLIT_BUFFER_SIZE] </span>
+    <span class="n">SPLIT_BUFFER_SIZE</span> <span class="o">=</span> <span class="mi">15000</span>       <span class="c">#### [SPLIT_MAX_SIZE ..... 2 * SPLIT_BUFFER_SIZE + SPLIT_BUFFER_SIZE]</span>
+    
+    <span class="n">SPLIT_PICK_MAX_TRIANGLE</span> <span class="o">=</span> <span class="mi">20000</span>     <span class="c">#### Triangles [0, 1, 2], [3, 4, 5], [6, 7, 8].....</span>
+                                        <span class="c">#### Vertices -  no of triangles * 3</span>
+     
+     
+    <span class="k">def</span> <span class="nf">get_vertices_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slice_number</span><span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read vertices slice, to be used by WebGL visualizer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">slice_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">slice_number</span><span class="p">)</span>
+        <span class="n">start_idx</span> <span class="o">=</span> <span class="n">slice_number</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_MAX_SIZE</span>
+        <span class="n">end_idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">slice_number</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_MAX_SIZE</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_BUFFER_SIZE</span>
+        <span class="n">end_idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">end_idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_vertices</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s">&#39;vertices&#39;</span><span class="p">,</span> <span class="nb">slice</span><span class="p">(</span><span class="n">start_idx</span><span class="p">,</span> <span class="n">end_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    
+    
+    <span class="k">def</span> <span class="nf">get_vertex_normals_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slice_number</span><span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read vertex-normal slice, to be used by WebGL visualizer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">slice_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">slice_number</span><span class="p">)</span>
+        <span class="n">start_idx</span> <span class="o">=</span> <span class="n">slice_number</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_MAX_SIZE</span>
+        <span class="n">end_idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">slice_number</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_MAX_SIZE</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_BUFFER_SIZE</span>
+        <span class="n">end_idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">end_idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_vertices</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s">&#39;vertex_normals&#39;</span><span class="p">,</span> <span class="nb">slice</span><span class="p">(</span><span class="n">start_idx</span><span class="p">,</span> <span class="n">end_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    
+    
+    <span class="k">def</span> <span class="nf">get_triangles_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slice_number</span><span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read split-triangles slice, to be used by WebGL visualizer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_split_slices</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangles</span>
+        <span class="n">slice_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">slice_number</span><span class="p">)</span>
+        <span class="n">start_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_triangles_indices</span><span class="p">[</span><span class="n">slice_number</span><span class="p">]</span>
+        <span class="n">end_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_triangles_indices</span><span class="p">[</span><span class="n">slice_number</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s">&#39;split_triangles&#39;</span><span class="p">,</span> <span class="nb">slice</span><span class="p">(</span><span class="n">start_idx</span><span class="p">,</span> <span class="n">end_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    
+    
+    <span class="k">def</span> <span class="nf">get_lines_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slice_number</span><span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read the gl lines values for the current slice number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_triangles_to_lines</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_triangles_slice</span><span class="p">(</span><span class="n">slice_number</span><span class="p">))</span>
+    
+    
+    <span class="k">def</span> <span class="nf">_triangles_to_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triangles</span><span class="p">):</span>
+        <span class="n">lines_array</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">triangle</span> <span class="ow">in</span> <span class="n">triangles</span><span class="p">:</span>
+            <span class="n">lines_array</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">triangle</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">triangle</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">triangle</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">triangle</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">triangle</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">triangle</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lines_array</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">get_flatten_triangles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a flatten list of all the triangles to be used for stimulus view.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">all_triangles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s">&#39;triangles&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">all_triangles</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        
+    
+    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Before storing Surface in DB, make sure vertices/triangles are split in</span>
+<span class="sd">        slices that are readable by WebGL.</span>
+<span class="sd">        WebGL only supports triangle indices in interval [0.... 2^16] </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SurfaceFramework</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+        
+        <span class="c">### Don&#39;t split when size is convenient</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_vertices</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_MAX_SIZE</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_BUFFER_SIZE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">number_of_split_slices</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">return</span>
+        
+        <span class="c">### Compute the number of split slices.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_split_slices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_vertices</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_MAX_SIZE</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_vertices</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_MAX_SIZE</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_BUFFER_SIZE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">number_of_split_slices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_split_slices</span> <span class="o">+</span> <span class="mi">1</span>
+        
+        <span class="c">### Do not split again, if split-data is already loaded:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">split_triangles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_triangles_indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> 
+            <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">split_triangles_indices</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_split_slices</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">return</span>
+        
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Start to compute surface split triangles and vertices&quot;</span><span class="p">)</span>
+        <span class="n">split_triangles</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_split_slices</span><span class="p">):</span>
+            <span class="n">split_triangles</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+        <span class="c">### Iterate Triangles and find the slice where it fits, based on its vertices    </span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_triangles</span><span class="p">):</span>
+            <span class="n">current_slice</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">transformed_triangle</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+            <span class="k">while</span> <span class="nb">min</span><span class="p">(</span><span class="n">transformed_triangle</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_MAX_SIZE</span> <span class="ow">and</span> <span class="n">current_slice</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_split_slices</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">transformed_triangle</span> <span class="o">=</span> <span class="p">[</span><span class="n">transformed_triangle</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_MAX_SIZE</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+                <span class="n">current_slice</span> <span class="o">=</span> <span class="n">current_slice</span> <span class="o">+</span> <span class="mi">1</span>
+            
+            <span class="k">if</span> <span class="nb">max</span><span class="p">(</span><span class="n">transformed_triangle</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_MAX_SIZE</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_BUFFER_SIZE</span><span class="p">:</span>
+                <span class="c"># triangle ignored, as it has vertices over multiple slices.</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">split_triangles</span><span class="p">[</span><span class="n">current_slice</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transformed_triangle</span><span class="p">)</span>
+         
+        <span class="n">final_split_triangles</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">triangles_split_indices</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c">### Concatenate triangles, to be stored in a single HDF5 array.</span>
+        <span class="k">for</span> <span class="n">split_</span> <span class="ow">in</span> <span class="n">split_triangles</span><span class="p">:</span>
+            <span class="n">triangles_split_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">triangles_split_indices</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">split_</span><span class="p">))</span>
+            <span class="n">final_split_triangles</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">split_</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">split_triangles</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">final_split_triangles</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">split_triangles_indices</span> <span class="o">=</span> <span class="n">triangles_split_indices</span>
+       
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;End compute surface split triangles and vertices&quot;</span><span class="p">)</span>
+       
+       
+    <span class="k">def</span> <span class="nf">get_urls_for_rendering</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_alphas</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">region_mapping</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span> 
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compose URLs for the JS code to retrieve a surface from the UI for</span>
+<span class="sd">        rendering.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url_vertices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">url_triangles</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">url_normals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">url_lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">alphas</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">alphas_indices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_split_slices</span><span class="p">):</span>
+            <span class="n">param</span> <span class="o">=</span> <span class="s">&quot;slice_number=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">url_vertices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">paths2url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;get_vertices_slice&#39;</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="n">param</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+            <span class="n">url_triangles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">paths2url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;get_triangles_slice&#39;</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="n">param</span><span class="p">,</span> <span class="n">flatten</span> <span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+            <span class="n">url_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">paths2url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;get_lines_slice&#39;</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="n">param</span><span class="p">,</span> <span class="n">flatten</span> <span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+            <span class="n">url_normals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">paths2url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;get_vertex_normals_slice&#39;</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="n">param</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">include_alphas</span> <span class="ow">or</span> <span class="n">region_mapping</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">alphas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">paths2url</span><span class="p">(</span><span class="n">region_mapping</span><span class="p">,</span> <span class="s">&quot;get_alpha_array&quot;</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> 
+                                                 <span class="n">parameter</span><span class="o">=</span><span class="s">&quot;size=&quot;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_vertices</span><span class="p">)))</span>
+            <span class="n">start_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_MAX_SIZE</span> <span class="o">*</span> <span class="n">i</span> 
+            <span class="n">end_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_MAX_SIZE</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_BUFFER_SIZE</span>
+            <span class="n">end_idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">end_idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_vertices</span><span class="p">)</span>
+            <span class="n">alphas_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">paths2url</span><span class="p">(</span><span class="n">region_mapping</span><span class="p">,</span> <span class="s">&quot;get_alpha_indices_array&quot;</span><span class="p">,</span> 
+                                                                      <span class="n">flatten</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="s">&quot;start_idx=&quot;</span><span class="o">+</span> 
+                                                                      <span class="nb">str</span><span class="p">(</span><span class="n">start_idx</span><span class="p">)</span> <span class="o">+</span><span class="s">&quot;;end_idx=&quot;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">end_idx</span><span class="p">)))</span>
+          
+        <span class="k">if</span> <span class="n">include_alphas</span><span class="p">:</span>  
+            <span class="k">return</span> <span class="n">url_vertices</span><span class="p">,</span> <span class="n">url_normals</span><span class="p">,</span> <span class="n">url_lines</span><span class="p">,</span> <span class="n">url_triangles</span><span class="p">,</span> <span class="n">alphas</span><span class="p">,</span> <span class="n">alphas_indices</span>
+        <span class="k">return</span> <span class="n">url_vertices</span><span class="p">,</span> <span class="n">url_normals</span><span class="p">,</span> <span class="n">url_lines</span><span class="p">,</span> <span class="n">url_triangles</span>
+
+
+    <span class="c">####################################### Split for Picking</span>
+    <span class="c">#######################################</span>
+    <span class="k">def</span> <span class="nf">get_pick_vertices_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slice_number</span><span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read vertices slice, to be used by WebGL visualizer with pick.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">slice_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">slice_number</span><span class="p">)</span>
+        <span class="n">slice_triangles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s">&#39;triangles&#39;</span><span class="p">,</span> <span class="nb">slice</span><span class="p">(</span><span class="n">slice_number</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_PICK_MAX_TRIANGLE</span><span class="p">,</span> 
+                                                           <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_triangles</span><span class="p">,</span> 
+                                                               <span class="p">(</span><span class="n">slice_number</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_PICK_MAX_TRIANGLE</span><span class="p">)))</span>
+        <span class="n">result_vertices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">triang</span> <span class="ow">in</span> <span class="n">slice_triangles</span><span class="p">:</span>
+            <span class="n">result_vertices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="n">triang</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+            <span class="n">result_vertices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="n">triang</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+            <span class="n">result_vertices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="n">triang</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">result_vertices</span><span class="p">)</span>
+       
+       
+    <span class="k">def</span> <span class="nf">get_pick_vertex_normals_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slice_number</span><span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read vertex-normals slice, to be used by WebGL visualizer with pick.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">slice_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">slice_number</span><span class="p">)</span>
+        <span class="n">slice_triangles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s">&#39;triangles&#39;</span><span class="p">,</span> <span class="nb">slice</span><span class="p">(</span><span class="n">slice_number</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_PICK_MAX_TRIANGLE</span><span class="p">,</span> 
+                                                           <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_triangles</span><span class="p">,</span> 
+                                                               <span class="p">(</span><span class="n">slice_number</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_PICK_MAX_TRIANGLE</span><span class="p">)))</span>
+        <span class="n">result_normals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">triang</span> <span class="ow">in</span> <span class="n">slice_triangles</span><span class="p">:</span>
+            <span class="n">result_normals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertex_normals</span><span class="p">[</span><span class="n">triang</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+            <span class="n">result_normals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertex_normals</span><span class="p">[</span><span class="n">triang</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+            <span class="n">result_normals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertex_normals</span><span class="p">[</span><span class="n">triang</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">result_normals</span><span class="p">)</span> 
+         
+         
+    <span class="k">def</span> <span class="nf">get_pick_triangles_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slice_number</span><span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read triangles slice, to be used by WebGL visualizer with pick.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">slice_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">slice_number</span><span class="p">)</span>
+        <span class="n">no_of_triangles</span> <span class="o">=</span> <span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_triangles</span><span class="p">,</span> <span class="p">(</span><span class="n">slice_number</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_PICK_MAX_TRIANGLE</span><span class="p">)</span> 
+                           <span class="o">-</span> <span class="n">slice_number</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_PICK_MAX_TRIANGLE</span><span class="p">)</span>
+        <span class="n">triangles_array</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">no_of_triangles</span> <span class="o">*</span> <span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">no_of_triangles</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">triangles_array</span>
+            
+         
+    <span class="k">def</span> <span class="nf">get_urls_for_pick_rendering</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compose URLS for the JS code to retrieve a surface for picking.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">vertices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">triangles</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">normals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">number_of_split</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_triangles</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_PICK_MAX_TRIANGLE</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_triangles</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_PICK_MAX_TRIANGLE</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">number_of_split</span> <span class="o">=</span> <span class="n">number_of_split</span> <span class="o">+</span> <span class="mi">1</span>
+            
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_split</span><span class="p">):</span>
+            <span class="n">param</span> <span class="o">=</span> <span class="s">&quot;slice_number=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">vertices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">paths2url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;get_pick_vertices_slice&#39;</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="n">param</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+            <span class="n">triangles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">paths2url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;get_pick_triangles_slice&#39;</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="n">param</span><span class="p">,</span> <span class="n">flatten</span> <span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+            <span class="n">normals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">paths2url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;get_pick_vertex_normals_slice&#39;</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="n">param</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+            
+        <span class="k">return</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">normals</span><span class="p">,</span> <span class="n">triangles</span>
+    
+    
+    <span class="k">def</span> <span class="nf">get_url_for_region_boundaries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region_mapping</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">paths2url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;generate_region_boundaries&#39;</span><span class="p">,</span> <span class="n">datatype_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;region_mapping&#39;</span> <span class="p">:</span> <span class="n">region_mapping</span><span class="o">.</span><span class="n">gid</span><span class="p">})</span>
+    
+    
+    <span class="k">def</span> <span class="nf">center</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the center of the surface as the median spot on all the three axes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])),</span> <span class="nb">float</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])),</span> <span class="nb">float</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]))]</span>
+    
+    
+    <span class="k">def</span> <span class="nf">generate_region_boundaries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region_mapping</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the full region boundaries, including: vertices, normals and lines indices.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">boundary_vertices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">boundary_lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">boundary_normals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">slice_idx</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_split_slices</span><span class="p">):</span>
+            <span class="c"># Generate the boundaries sliced for the off case where we might overflow the buffer capacity</span>
+            <span class="n">slice_triangles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_triangles_slice</span><span class="p">(</span><span class="n">slice_idx</span><span class="p">)</span>
+            <span class="n">slice_vertices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_vertices_slice</span><span class="p">(</span><span class="n">slice_idx</span><span class="p">)</span>
+            <span class="n">slice_normals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_vertex_normals_slice</span><span class="p">(</span><span class="n">slice_idx</span><span class="p">)</span>
+            <span class="n">first_index_in_slice</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_MAX_SIZE</span> <span class="o">*</span> <span class="n">slice_idx</span>
+            <span class="c"># These will keep track of the vertices / triangles / normals for this slice that have</span>
+            <span class="c"># been processed and were found as a part of the boundary</span>
+            <span class="n">processed_vertices</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">processed_triangles</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">processed_normals</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">triangle</span> <span class="ow">in</span> <span class="n">slice_triangles</span><span class="p">:</span>
+                <span class="n">triangle</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">first_index_in_slice</span>
+                <span class="n">triangle</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">first_index_in_slice</span>
+                <span class="n">triangle</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">first_index_in_slice</span>
+                <span class="c"># Check if there are two points from a triangles that are in separate regions</span>
+                <span class="c"># then send this to further processing that will generate the coresponding</span>
+                <span class="c"># region separation lines depending on the 3rd point from the triangle</span>
+                <span class="k">if</span> <span class="n">region_mapping</span><span class="o">.</span><span class="n">array_data</span><span class="p">[</span><span class="n">triangle</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">-</span> <span class="n">region_mapping</span><span class="o">.</span><span class="n">array_data</span><span class="p">[</span><span class="n">triangle</span><span class="p">[</span><span class="mi">1</span><span class="p">]]:</span>
+                    <span class="n">lines_vert</span><span class="p">,</span> <span class="n">lines_ind</span><span class="p">,</span> <span class="n">lines_norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_triangle</span><span class="p">(</span><span class="n">triangle</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">first_index_in_slice</span><span class="p">,</span> 
+                                                                   <span class="n">region_mapping</span><span class="p">,</span> <span class="n">slice_vertices</span><span class="p">,</span> <span class="n">slice_normals</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">region_mapping</span><span class="o">.</span><span class="n">array_data</span><span class="p">[</span><span class="n">triangle</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">-</span> <span class="n">region_mapping</span><span class="o">.</span><span class="n">array_data</span><span class="p">[</span><span class="n">triangle</span><span class="p">[</span><span class="mi">2</span><span class="p">]]:</span>
+                    <span class="n">lines_vert</span><span class="p">,</span> <span class="n">lines_ind</span><span class="p">,</span> <span class="n">lines_norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_triangle</span><span class="p">(</span><span class="n">triangle</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">first_index_in_slice</span><span class="p">,</span> 
+                                                                   <span class="n">region_mapping</span><span class="p">,</span> <span class="n">slice_vertices</span><span class="p">,</span> <span class="n">slice_normals</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">region_mapping</span><span class="o">.</span><span class="n">array_data</span><span class="p">[</span><span class="n">triangle</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">-</span> <span class="n">region_mapping</span><span class="o">.</span><span class="n">array_data</span><span class="p">[</span><span class="n">triangle</span><span class="p">[</span><span class="mi">0</span><span class="p">]]:</span>
+                    <span class="n">lines_vert</span><span class="p">,</span> <span class="n">lines_ind</span><span class="p">,</span> <span class="n">lines_norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_triangle</span><span class="p">(</span><span class="n">triangle</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">first_index_in_slice</span><span class="p">,</span> 
+                                                                   <span class="n">region_mapping</span><span class="p">,</span> <span class="n">slice_vertices</span><span class="p">,</span> <span class="n">slice_normals</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">ind_offset</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">processed_vertices</span><span class="p">)</span> <span class="o">/</span> <span class="mi">3</span>
+                <span class="n">processed_vertices</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">lines_vert</span><span class="p">)</span>
+                <span class="n">processed_normals</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">lines_norm</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">lines_ind</span><span class="p">:</span>
+                    <span class="n">processed_triangles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="n">ind_offset</span><span class="p">)</span>
+            <span class="n">boundary_vertices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">processed_vertices</span><span class="p">)</span>
+            <span class="n">boundary_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">processed_triangles</span><span class="p">)</span>
+            <span class="n">boundary_normals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">processed_normals</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">boundary_vertices</span><span class="p">,</span> <span class="n">boundary_lines</span><span class="p">,</span> <span class="n">boundary_normals</span><span class="p">])</span>
+                    
+                    
+            
+    <span class="k">def</span> <span class="nf">_process_triangle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triangle</span><span class="p">,</span> <span class="n">reg_idx1</span><span class="p">,</span> <span class="n">reg_idx2</span><span class="p">,</span> <span class="n">dangling_idx</span><span class="p">,</span> <span class="n">indices_offset</span><span class="p">,</span> <span class="n">region_mapping</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">normals</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process a triangle and generate the required data for a region separation.</span>
+<span class="sd">        :param triangle: the actual triangle as a 3 element vector</span>
+<span class="sd">        :param reg_idx1: the first vertex that is in a &#39;conflicting&#39; region</span>
+<span class="sd">        :param reg_idx2: the second vertex that is in a &#39;conflicting&#39; region</span>
+<span class="sd">        :param dangling_idx: the third vector for which we know nothing yet. Depening on this we might generate a line, or a 3 star centered</span>
+<span class="sd">                             in the triangle</span>
+<span class="sd">        :param indices_offset: to take into account the slicing</span>
+<span class="sd">        :param region_mapping: the region mapping for which the regions are computed</span>
+<span class="sd">        :param vertices: the current vertex slice</span>
+<span class="sd">        :param normals: the current normals slice</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">_star_triangle</span><span class="p">(</span><span class="n">point0</span><span class="p">,</span> <span class="n">point1</span><span class="p">,</span> <span class="n">point2</span><span class="p">,</span> <span class="n">result_array</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Helper function that for a given triangle generates a 3-way star centered in the triangle center</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">center_vertex</span> <span class="o">=</span> <span class="p">[(</span><span class="n">point0</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">point1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">point2</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="mi">3</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+            <span class="n">mid_line1</span> <span class="o">=</span> <span class="p">[(</span><span class="n">point0</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">point1</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+            <span class="n">mid_line2</span> <span class="o">=</span> <span class="p">[(</span><span class="n">point1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">point2</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+            <span class="n">mid_line3</span> <span class="o">=</span> <span class="p">[(</span><span class="n">point2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">point0</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+            <span class="n">result_array</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">center_vertex</span><span class="p">)</span>
+            <span class="n">result_array</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">mid_line1</span><span class="p">)</span>
+            <span class="n">result_array</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">mid_line2</span><span class="p">)</span>
+            <span class="n">result_array</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">mid_line3</span><span class="p">)</span>
+            
+        <span class="k">def</span> <span class="nf">_slice_triangle</span><span class="p">(</span><span class="n">point0</span><span class="p">,</span> <span class="n">point1</span><span class="p">,</span> <span class="n">point2</span><span class="p">,</span> <span class="n">result_array</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Helper function that for a given triangle generates a line cutting thtough the middle of two edges.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">mid_line1</span> <span class="o">=</span> <span class="p">[(</span><span class="n">point0</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">point1</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+            <span class="n">mid_line2</span> <span class="o">=</span> <span class="p">[(</span><span class="n">point0</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">point2</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+            <span class="n">result_array</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">mid_line1</span><span class="p">)</span>
+            <span class="n">result_array</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">mid_line2</span><span class="p">)</span>
+        
+        <span class="n">p0</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="n">triangle</span><span class="p">[</span><span class="n">reg_idx1</span><span class="p">]</span> <span class="o">-</span> <span class="n">indices_offset</span><span class="p">]</span>
+        <span class="n">p1</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="n">triangle</span><span class="p">[</span><span class="n">reg_idx2</span><span class="p">]</span> <span class="o">-</span> <span class="n">indices_offset</span><span class="p">]</span>
+        <span class="n">p2</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="n">triangle</span><span class="p">[</span><span class="n">dangling_idx</span><span class="p">]</span> <span class="o">-</span> <span class="n">indices_offset</span><span class="p">]</span>
+        <span class="n">n0</span> <span class="o">=</span> <span class="n">normals</span><span class="p">[</span><span class="n">triangle</span><span class="p">[</span><span class="n">reg_idx1</span><span class="p">]</span> <span class="o">-</span> <span class="n">indices_offset</span><span class="p">]</span>
+        <span class="n">n1</span> <span class="o">=</span> <span class="n">normals</span><span class="p">[</span><span class="n">triangle</span><span class="p">[</span><span class="n">reg_idx2</span><span class="p">]</span> <span class="o">-</span> <span class="n">indices_offset</span><span class="p">]</span>
+        <span class="n">n2</span> <span class="o">=</span> <span class="n">normals</span><span class="p">[</span><span class="n">triangle</span><span class="p">[</span><span class="n">dangling_idx</span><span class="p">]</span> <span class="o">-</span> <span class="n">indices_offset</span><span class="p">]</span>
+        <span class="n">result_vertices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">result_normals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">result_lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">region_mapping</span><span class="o">.</span><span class="n">array_data</span><span class="p">[</span><span class="n">triangle</span><span class="p">[</span><span class="n">dangling_idx</span><span class="p">]]</span> <span class="o">!=</span> <span class="n">region_mapping</span><span class="o">.</span><span class="n">array_data</span><span class="p">[</span><span class="n">triangle</span><span class="p">[</span><span class="n">reg_idx1</span><span class="p">]]</span>
+            <span class="ow">and</span> <span class="n">region_mapping</span><span class="o">.</span><span class="n">array_data</span><span class="p">[</span><span class="n">triangle</span><span class="p">[</span><span class="n">dangling_idx</span><span class="p">]]</span> <span class="o">!=</span> <span class="n">region_mapping</span><span class="o">.</span><span class="n">array_data</span><span class="p">[</span><span class="n">triangle</span><span class="p">[</span><span class="n">reg_idx2</span><span class="p">]]):</span>
+            <span class="c"># Triangle is actually spanning 3 regions. Create a vertex in the center of the triangle, which connects to</span>
+            <span class="c"># the middle of each edge</span>
+            <span class="n">_star_triangle</span><span class="p">(</span><span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">result_vertices</span><span class="p">)</span>
+            <span class="n">_star_triangle</span><span class="p">(</span><span class="n">n0</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">result_normals</span><span class="p">)</span>
+            <span class="n">result_lines</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">region_mapping</span><span class="o">.</span><span class="n">array_data</span><span class="p">[</span><span class="n">triangle</span><span class="p">[</span><span class="n">dangling_idx</span><span class="p">]]</span> <span class="o">==</span> <span class="n">region_mapping</span><span class="o">.</span><span class="n">array_data</span><span class="p">[</span><span class="n">triangle</span><span class="p">[</span><span class="n">reg_idx1</span><span class="p">]]):</span>
+            <span class="c"># Triangle spanning only 2 regions, draw a line through the middle of the triangle</span>
+            <span class="n">_slice_triangle</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">result_vertices</span><span class="p">)</span>
+            <span class="n">_slice_triangle</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n0</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">result_normals</span><span class="p">)</span>
+            <span class="n">result_lines</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># Triangle spanning only 2 regions, draw a line through the middle of the triangle</span>
+            <span class="n">_slice_triangle</span><span class="p">(</span><span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">result_vertices</span><span class="p">)</span>
+            <span class="n">_slice_triangle</span><span class="p">(</span><span class="n">n0</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">result_normals</span><span class="p">)</span>
+            <span class="n">result_lines</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">result_vertices</span><span class="p">,</span> <span class="n">result_lines</span><span class="p">,</span> <span class="n">result_normals</span>
+    
+        
+</div>
+<div class="viewcode-block" id="CorticalSurfaceFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_framework.CorticalSurfaceFramework">[docs]</a><span class="k">class</span> <span class="nc">CorticalSurfaceFramework</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">CorticalSurfaceData</span><span class="p">,</span> <span class="n">SurfaceFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to CorticalSurfaceData &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+</div>
+<div class="viewcode-block" id="SkinAirFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_framework.SkinAirFramework">[docs]</a><span class="k">class</span> <span class="nc">SkinAirFramework</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">SkinAirData</span><span class="p">,</span> <span class="n">SurfaceFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to SkinAirData &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
+
+</div>
+<div class="viewcode-block" id="BrainSkullFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_framework.BrainSkullFramework">[docs]</a><span class="k">class</span> <span class="nc">BrainSkullFramework</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">BrainSkullData</span><span class="p">,</span> <span class="n">SurfaceFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to BrainSkullData &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="SkullSkinFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_framework.SkullSkinFramework">[docs]</a><span class="k">class</span> <span class="nc">SkullSkinFramework</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">SkullSkinData</span><span class="p">,</span> <span class="n">SurfaceFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to SkullSkinData &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+<span class="c">##--------------------- CLOSE SURFACES End Here---------------------------------------##</span>
+
+<span class="c">##--------------------- OPEN SURFACES Start Here---------------------------------------##</span>
+</div>
+<div class="viewcode-block" id="OpenSurfaceFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_framework.OpenSurfaceFramework">[docs]</a><span class="k">class</span> <span class="nc">OpenSurfaceFramework</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">OpenSurfaceData</span><span class="p">,</span> <span class="n">SurfaceFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to OpenSurfaceData &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method checks if the data stored into this entity is valid, and is ready to be stored in DB.</span>
+<span class="sd">        Method automatically called just before saving entity in DB.</span>
+<span class="sd">        In case data is not valid a ValidationException is thrown.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Check if the surface has a valid number of vertices (not more than the configured maximum).</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_vertices</span> <span class="o">&gt;</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MAX_SURFACE_VERTICES_NUMBER</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;This surface has too many vertices (max allowed: </span><span class="si">%d</span><span class="s">).&quot;</span><span class="o">%</span><span class="n">cfg</span><span class="o">.</span><span class="n">MAX_SURFACE_VERTICES_NUMBER</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="s">&quot; Please upload a new surface or change max number in application settings.&quot;</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ValidationException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="EEGCapFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_framework.EEGCapFramework">[docs]</a><span class="k">class</span> <span class="nc">EEGCapFramework</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">EEGCapData</span><span class="p">,</span> <span class="n">OpenSurfaceFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to EEGCapData &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="FaceSurfaceFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_framework.FaceSurfaceFramework">[docs]</a><span class="k">class</span> <span class="nc">FaceSurfaceFramework</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">FaceSurfaceData</span><span class="p">,</span> <span class="n">OpenSurfaceFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to FaceSurface &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+<span class="c">##--------------------- OPEN SURFACES End Here---------------------------------------##</span>
+
+<span class="c">##--------------------- SURFACES ADJIACENT classes start Here---------------------------------------##</span>
+</div>
+<div class="viewcode-block" id="RegionMappingFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_framework.RegionMappingFramework">[docs]</a><span class="k">class</span> <span class="nc">RegionMappingFramework</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">RegionMappingData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    Framework methods regarding RegionMapping DataType.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
+    
+       
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_alpha_array</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute alpha weights.</span>
+<span class="sd">        When displaying region-based results, we need to compute color for each</span>
+<span class="sd">        surface vertex based on a gradient of the neighbor region(s).</span>
+<span class="sd">        Currently only one vertex is used for determining color (the one </span>
+<span class="sd">        indicated by the RegionMapping).</span>
+<span class="sd">        :return: NumPy array with [[1, 0], [1, 0] ....] of length :param size</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">)):</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">size</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+    
+    
+    <span class="k">def</span> <span class="nf">get_alpha_indices_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_idx</span><span class="p">,</span> <span class="n">end_idx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute alpha indices.</span>
+<span class="sd">        When displaying region-based results, we need to compute color for each</span>
+<span class="sd">        surface vertex based on a gradient of the neighbor region(s).</span>
+<span class="sd">        For each vertex on the surface, alpha-indices will be the closest</span>
+<span class="sd">        region-indices</span>
+
+<span class="sd">        :param start_idx: vertex index on the surface</span>
+<span class="sd">        :param end_idx: vertex index on the surface</span>
+<span class="sd">        :return: NumPy array with [[colosest_reg_idx, 0, 0] ....]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_idx</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">)):</span>
+            <span class="n">start_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">start_idx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">end_idx</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">)):</span>
+            <span class="n">end_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">end_idx</span><span class="p">)</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">end_idx</span> <span class="o">-</span> <span class="n">start_idx</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array_data</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span> <span class="n">end_idx</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">size</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">result</span>
+    
+    
+    <span class="k">def</span> <span class="nf">generate_new_region_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connectivity_gid</span><span class="p">,</span> <span class="n">storage_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a new region mapping with the given connectivity gid from an </span>
+<span class="sd">        existing mapping corresponding to the parent connectivity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_region_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">()</span>
+        <span class="n">new_region_map</span><span class="o">.</span><span class="n">storage_path</span> <span class="o">=</span> <span class="n">storage_path</span>
+        <span class="n">new_region_map</span><span class="o">.</span><span class="n">_connectivity</span> <span class="o">=</span> <span class="n">connectivity_gid</span>
+        <span class="n">new_region_map</span><span class="o">.</span><span class="n">_surface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span>
+        <span class="n">new_region_map</span><span class="o">.</span><span class="n">array_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_data</span>
+        <span class="n">new_region_map</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span>
+        <span class="k">return</span> <span class="n">new_region_map</span>
+    
+    </div>
+<div class="viewcode-block" id="LocalConnectivityFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_framework.LocalConnectivityFramework">[docs]</a><span class="k">class</span> <span class="nc">LocalConnectivityFramework</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">LocalConnectivityData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to LocalConnectivityData &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
+    
+    </div>
+<div class="viewcode-block" id="CortexFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.surfaces_framework.CortexFramework">[docs]</a><span class="k">class</span> <span class="nc">CortexFramework</span><span class="p">(</span><span class="n">surfaces_data</span><span class="o">.</span><span class="n">CortexData</span><span class="p">,</span> <span class="n">CorticalSurfaceFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to CortexData &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
+    
+    </div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

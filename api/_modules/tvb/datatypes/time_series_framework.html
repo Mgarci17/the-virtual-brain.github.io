@@ -1,0 +1,384 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.datatypes.time_series_framework &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.datatypes.time_series_framework</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">Framework methods for the TimeSeries datatypes.</span>
+
+<span class="sd">.. moduleauthor:: Ciprian Tomoiaga &lt;ciprian.tomoiaga@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;</span>
+<span class="sd">.. moduleauthor:: Marmaduke Woodman &lt;mw@eml.cc&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.time_series_data</span> <span class="kn">as</span> <span class="nn">time_series_data</span>
+
+
+
+<div class="viewcode-block" id="TimeSeriesFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.time_series_framework.TimeSeriesFramework">[docs]</a><span class="k">class</span> <span class="nc">TimeSeriesFramework</span><span class="p">(</span><span class="n">time_series_data</span><span class="o">.</span><span class="n">TimeSeriesData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class exists to add framework methods to TimeSeriesData.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
+
+
+    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        After populating few fields, compute the rest of the fields</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TimeSeriesFramework</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+        <span class="n">data_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_data_shape</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nr_dimensions</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_shape</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_period</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nr_dimensions</span><span class="p">,</span> <span class="mi">4</span><span class="p">)):</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;length_</span><span class="si">%d</span><span class="s">d&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">data_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+
+    <span class="k">def</span> <span class="nf">read_data_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Expose shape read on field data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_shape</span><span class="p">(</span><span class="s">&#39;data&#39;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">read_data_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_slice</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Expose chunked-data access.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="n">data_slice</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">read_data_shape1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is a hack around the fact that FlowController.read_datatype_attribute</span>
+<span class="sd">        will not call a method on an entity if there are no kwargs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_data_shape</span><span class="p">())</span>
+
+
+    <span class="k">def</span> <span class="nf">read_time_page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_page</span><span class="p">,</span> <span class="n">page_size</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute time for current page.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_page</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">current_page</span><span class="p">)</span>
+        <span class="n">page_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">page_size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">max_size</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">max_size</span> <span class="o">=</span> <span class="n">page_size</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">max_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_size</span><span class="p">)</span>
+        <span class="n">page_real_size</span> <span class="o">=</span> <span class="n">page_size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_period</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">+</span> <span class="n">current_page</span> <span class="o">*</span> <span class="n">page_real_size</span>
+        <span class="n">end_time</span> <span class="o">=</span> <span class="n">start_time</span> <span class="o">+</span> <span class="nb">min</span><span class="p">(</span><span class="n">page_real_size</span><span class="p">,</span> <span class="n">max_size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_period</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_period</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">read_channels_page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_idx</span><span class="p">,</span> <span class="n">to_idx</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">specific_slices</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">channels_list</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read and return only the data page for the specified channels list.</span>
+<span class="sd">        </span>
+<span class="sd">        :param from_idx: the starting time idx from which to read data</span>
+<span class="sd">        :param to_idx: the end time idx up until to which you read data</span>
+<span class="sd">        :param step: increments in which to read the data. Optional, default to 1.</span>
+<span class="sd">        :param specific_slices: optional parameter. If speficied slices the data accordingly.</span>
+<span class="sd">        :param channels_list: the list of channels for which we want data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">channels_list</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">channels_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">channels_list</span><span class="p">:</span>
+            <span class="n">channels_list</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">channels_list</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">channels_list</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+        <span class="n">data_page</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_data_page</span><span class="p">(</span><span class="n">from_idx</span><span class="p">,</span> <span class="n">to_idx</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">specific_slices</span><span class="p">)</span>
+        <span class="c"># This is just a 1D array like in the case of Global Average monitor. No need for the channels list</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_page</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data_page</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">data_page</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data_page</span><span class="p">[:,</span> <span class="n">channels_list</span><span class="p">]</span>
+
+
+    <span class="k">def</span> <span class="nf">read_data_page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_idx</span><span class="p">,</span> <span class="n">to_idx</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">specific_slices</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve one page of data (paging done based on time).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">from_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">from_idx</span><span class="p">)</span>
+        <span class="n">to_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">to_idx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">specific_slices</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">specific_slices</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">):</span>
+            <span class="n">specific_slices</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">specific_slices</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">step</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+        <span class="n">slices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">overall_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_data_shape</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">overall_shape</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c">## Time slice</span>
+                <span class="n">slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">from_idx</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">to_idx</span><span class="p">,</span> <span class="n">overall_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">step</span><span class="p">))</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="c">## Read full of the main_dimension (space for the simulator)</span>
+                <span class="n">slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">overall_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">specific_slices</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">specific_slices</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">min</span><span class="p">(</span><span class="n">specific_slices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">overall_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_data_slice</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slices</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c">## Do not allow time dimension to get squeezed, a 2D result need to come out of this method.</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+
+    <span class="k">def</span> <span class="nf">write_time_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partial_result</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Append a new value to the ``time`` attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">store_data_chunk</span><span class="p">(</span><span class="s">&quot;time&quot;</span><span class="p">,</span> <span class="n">partial_result</span><span class="p">,</span> <span class="n">grow_dimension</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">close_file</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">write_data_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partial_result</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Append a chunk of time-series data to the ``data`` attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">store_data_chunk</span><span class="p">(</span><span class="s">&quot;data&quot;</span><span class="p">,</span> <span class="n">partial_result</span><span class="p">,</span> <span class="n">grow_dimension</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">close_file</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">get_min_max_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve the minimum and maximum values from the metadata.</span>
+<span class="sd">        :returns: (minimum_value, maximum_value)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span><span class="s">&#39;data&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">metadata</span><span class="p">[</span><span class="s">&quot;Minimum&quot;</span><span class="p">],</span> <span class="n">metadata</span><span class="p">[</span><span class="s">&quot;Maximum&quot;</span><span class="p">]</span>
+
+
+    <span class="k">def</span> <span class="nf">get_space_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: An array of strings. Default empty.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">accepted_filters</span><span class="p">():</span>
+        <span class="n">filters</span> <span class="o">=</span> <span class="n">time_series_data</span><span class="o">.</span><span class="n">TimeSeriesData</span><span class="o">.</span><span class="n">accepted_filters</span><span class="p">()</span>
+        <span class="n">filters</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;datatype_class._nr_dimensions&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;int&#39;</span><span class="p">,</span> <span class="s">&#39;display&#39;</span><span class="p">:</span> <span class="s">&#39;No of Dimensions&#39;</span><span class="p">,</span>
+                                                          <span class="s">&#39;operations&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;==&#39;</span><span class="p">,</span> <span class="s">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&#39;</span><span class="p">]},</span>
+                        <span class="s">&#39;datatype_class._sample_period&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;float&#39;</span><span class="p">,</span> <span class="s">&#39;display&#39;</span><span class="p">:</span> <span class="s">&#39;Sample Period&#39;</span><span class="p">,</span>
+                                                          <span class="s">&#39;operations&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;==&#39;</span><span class="p">,</span> <span class="s">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&#39;</span><span class="p">]},</span>
+                        <span class="s">&#39;datatype_class._sample_rate&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;float&#39;</span><span class="p">,</span> <span class="s">&#39;display&#39;</span><span class="p">:</span> <span class="s">&#39;Sample Rate&#39;</span><span class="p">,</span>
+                                                        <span class="s">&#39;operations&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;==&#39;</span><span class="p">,</span> <span class="s">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&#39;</span><span class="p">]},</span>
+                        <span class="s">&#39;datatype_class._title&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;string&#39;</span><span class="p">,</span> <span class="s">&#39;display&#39;</span><span class="p">:</span> <span class="s">&#39;Title&#39;</span><span class="p">,</span>
+                                                  <span class="s">&#39;operations&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;==&#39;</span><span class="p">,</span> <span class="s">&#39;!=&#39;</span><span class="p">,</span> <span class="s">&#39;like&#39;</span><span class="p">]}})</span>
+        <span class="k">return</span> <span class="n">filters</span>
+
+
+</div>
+<div class="viewcode-block" id="TimeSeriesEEGFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.time_series_framework.TimeSeriesEEGFramework">[docs]</a><span class="k">class</span> <span class="nc">TimeSeriesEEGFramework</span><span class="p">(</span><span class="n">time_series_data</span><span class="o">.</span><span class="n">TimeSeriesEEGData</span><span class="p">,</span> <span class="n">TimeSeriesFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class exists to add framework methods to TimeSeriesEEGData.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">get_space_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: An array of strings with the sensors labels.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sensors</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+
+</div>
+<div class="viewcode-block" id="TimeSeriesMEGFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.time_series_framework.TimeSeriesMEGFramework">[docs]</a><span class="k">class</span> <span class="nc">TimeSeriesMEGFramework</span><span class="p">(</span><span class="n">time_series_data</span><span class="o">.</span><span class="n">TimeSeriesMEGData</span><span class="p">,</span> <span class="n">TimeSeriesFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class exists to add framework methods to TimeSeriesMEGData.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">get_space_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: An array of strings with the sensors labels.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sensors</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    
+    </div>
+<div class="viewcode-block" id="TimeSeriesSEEGFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.time_series_framework.TimeSeriesSEEGFramework">[docs]</a><span class="k">class</span> <span class="nc">TimeSeriesSEEGFramework</span><span class="p">(</span><span class="n">time_series_data</span><span class="o">.</span><span class="n">TimeSeriesSEEGData</span><span class="p">,</span> <span class="n">TimeSeriesFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class exists to add framework methods to TimeSeriesMEGData.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">get_space_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: An array of strings with the sensors labels.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sensors</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+
+</div>
+<div class="viewcode-block" id="TimeSeriesRegionFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.time_series_framework.TimeSeriesRegionFramework">[docs]</a><span class="k">class</span> <span class="nc">TimeSeriesRegionFramework</span><span class="p">(</span><span class="n">time_series_data</span><span class="o">.</span><span class="n">TimeSeriesRegionData</span><span class="p">,</span> <span class="n">TimeSeriesFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class exists to add framework methods to TimeSeriesRegionData.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">get_space_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: An array of strings with the connectivity node labels.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connectivity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connectivity</span><span class="o">.</span><span class="n">region_labels</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+
+</div>
+<div class="viewcode-block" id="TimeSeriesSurfaceFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.time_series_framework.TimeSeriesSurfaceFramework">[docs]</a><span class="k">class</span> <span class="nc">TimeSeriesSurfaceFramework</span><span class="p">(</span><span class="n">time_series_data</span><span class="o">.</span><span class="n">TimeSeriesSurfaceData</span><span class="p">,</span> <span class="n">TimeSeriesFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to TimeSeriesSurfaceData. &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="TimeSeriesVolumeFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.time_series_framework.TimeSeriesVolumeFramework">[docs]</a><span class="k">class</span> <span class="nc">TimeSeriesVolumeFramework</span><span class="p">(</span><span class="n">time_series_data</span><span class="o">.</span><span class="n">TimeSeriesVolumeData</span><span class="p">,</span> <span class="n">TimeSeriesFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to TimeSeriesVolumeData. &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_volume_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_idx</span><span class="p">,</span> <span class="n">to_idx</span><span class="p">):</span>
+        <span class="n">from_idx</span><span class="p">,</span> <span class="n">to_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">from_idx</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">to_idx</span><span class="p">)</span>
+        <span class="n">overall_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_data_shape</span><span class="p">()</span>
+
+        <span class="n">slices</span> <span class="o">=</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">from_idx</span><span class="p">,</span> <span class="n">to_idx</span><span class="p">),</span> <span class="nb">slice</span><span class="p">(</span><span class="n">overall_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">slice</span><span class="p">(</span><span class="n">overall_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="nb">slice</span><span class="p">(</span><span class="n">overall_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_data_slice</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slices</span><span class="p">))</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

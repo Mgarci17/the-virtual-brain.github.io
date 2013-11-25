@@ -1,0 +1,345 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.services.workflow_service &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.services.workflow_service</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Ionel Ortelecan &lt;ionel.ortelecan@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.storage</span> <span class="kn">import</span> <span class="n">dao</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities</span> <span class="kn">import</span> <span class="n">model</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.exceptions</span> <span class="kn">import</span> <span class="n">WorkflowInterStepsException</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.transient.burst_configuration_entities</span> <span class="kn">import</span> <span class="n">WorkflowStepConfiguration</span> <span class="k">as</span> <span class="n">wf_cfg</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">IntType</span>
+
+
+<span class="n">DYNAMIC_PARAMS_KEY</span> <span class="o">=</span> <span class="s">&quot;dynamic_params&quot;</span>
+<span class="n">STATIC_PARAMS_KEY</span> <span class="o">=</span> <span class="s">&quot;static_params&quot;</span>
+<span class="n">EMPTY_OPTION</span> <span class="o">=</span> <span class="s">&quot;empty&quot;</span>
+
+
+<div class="viewcode-block" id="WorkflowService"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.workflow_service.WorkflowService">[docs]</a><span class="k">class</span> <span class="nc">WorkflowService</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    service layer for work-flow entity.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span><span class="p">)</span>
+        
+    
+    <span class="nd">@staticmethod</span>    
+<div class="viewcode-block" id="WorkflowService.store_workflow_step"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.workflow_service.WorkflowService.store_workflow_step">[docs]</a>    <span class="k">def</span> <span class="nf">store_workflow_step</span><span class="p">(</span><span class="n">workflow_step</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Store a workflow step entity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">workflow_step</span><span class="p">)</span>
+    
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="WorkflowService.create_and_store_workflow"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.workflow_service.WorkflowService.create_and_store_workflow">[docs]</a>    <span class="k">def</span> <span class="nf">create_and_store_workflow</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">burst_id</span><span class="p">,</span> <span class="n">simulator_index</span><span class="p">,</span> <span class="n">simulator_id</span><span class="p">,</span> <span class="n">operations</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create and store the workflow given the project, user and burst in which the workflow is created.</span>
+<span class="sd">        :param simulator_index: the index of the simulator in the workflow</span>
+<span class="sd">        :param simulator_id: the id of the simulator adapter</span>
+<span class="sd">        :param operations: a list with the operations created for the simulator steps</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">workflows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">operation</span> <span class="ow">in</span> <span class="n">operations</span><span class="p">:</span>
+            <span class="n">new_workflow</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">Workflow</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">burst_id</span><span class="p">)</span>
+            <span class="n">new_workflow</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">new_workflow</span><span class="p">)</span>
+            <span class="n">workflows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_workflow</span><span class="p">)</span>
+            <span class="n">simulation_step</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">WorkflowStep</span><span class="p">(</span><span class="n">algorithm_id</span><span class="o">=</span><span class="n">simulator_id</span><span class="p">,</span> <span class="n">workflow_id</span><span class="o">=</span><span class="n">new_workflow</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                                                 <span class="n">step_index</span><span class="o">=</span><span class="n">simulator_index</span><span class="p">,</span> <span class="n">static_param</span><span class="o">=</span><span class="n">operation</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+            <span class="n">simulation_step</span><span class="o">.</span><span class="n">fk_operation</span> <span class="o">=</span> <span class="n">operation</span><span class="o">.</span><span class="n">id</span>
+            <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">simulation_step</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">workflows</span>
+        
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="WorkflowService.set_dynamic_step_references"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.workflow_service.WorkflowService.set_dynamic_step_references">[docs]</a>    <span class="k">def</span> <span class="nf">set_dynamic_step_references</span><span class="p">(</span><span class="n">workflow_step</span><span class="p">,</span> <span class="n">step_reference</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param workflow_step: a valid instance of a workflow_step</span>
+<span class="sd">        :param step_reference: the step to which every dataType reference index should be set</span>
+<span class="sd">        </span>
+<span class="sd">        For each dynamic parameter of the given workflow_step set the &#39;step_index&#39; at step_reference. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dynamic_params</span> <span class="o">=</span> <span class="n">workflow_step</span><span class="o">.</span><span class="n">dynamic_param</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">dynamic_params</span><span class="p">:</span>
+            <span class="n">dynamic_params</span><span class="p">[</span><span class="n">entry</span><span class="p">][</span><span class="n">wf_cfg</span><span class="o">.</span><span class="n">STEP_INDEX_KEY</span><span class="p">]</span> <span class="o">=</span> <span class="n">step_reference</span>
+        <span class="n">workflow_step</span><span class="o">.</span><span class="n">dynamic_param</span> <span class="o">=</span> <span class="n">dynamic_params</span>
+
+</div>
+<div class="viewcode-block" id="WorkflowService.prepare_next_step"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.workflow_service.WorkflowService.prepare_next_step">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_next_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">last_executed_op_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If the operation with id &#39;last_executed_op_id&#39; resulted after</span>
+<span class="sd">        the execution of a workflow step then this method will launch</span>
+<span class="sd">        the operation corresponding to the next step from the workflow.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">current_step</span><span class="p">,</span> <span class="n">next_workflow_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data</span><span class="p">(</span><span class="n">last_executed_op_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">next_workflow_step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">operation</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operation_by_id</span><span class="p">(</span><span class="n">next_workflow_step</span><span class="o">.</span><span class="n">fk_operation</span><span class="p">)</span>
+                <span class="n">dynamic_param_names</span> <span class="o">=</span> <span class="n">next_workflow_step</span><span class="o">.</span><span class="n">dynamic_workflow_param_names</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dynamic_param_names</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">op_params</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">operation</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="n">dynamic_param_names</span><span class="p">:</span>
+                        <span class="n">dynamic_param</span> <span class="o">=</span> <span class="n">op_params</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span>
+                        <span class="n">former_step</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_workflow_step_by_step_index</span><span class="p">(</span><span class="n">next_workflow_step</span><span class="o">.</span><span class="n">fk_workflow</span><span class="p">,</span>
+                                                                          <span class="n">dynamic_param</span><span class="p">[</span><span class="n">wf_cfg</span><span class="o">.</span><span class="n">STEP_INDEX_KEY</span><span class="p">])</span>
+                        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">dynamic_param</span><span class="p">[</span><span class="n">wf_cfg</span><span class="o">.</span><span class="n">DATATYPE_INDEX_KEY</span><span class="p">])</span> <span class="ow">is</span> <span class="n">IntType</span><span class="p">:</span> 
+                            <span class="n">datatypes</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_results_for_operation</span><span class="p">(</span><span class="n">former_step</span><span class="o">.</span><span class="n">fk_operation</span><span class="p">)</span>
+                            <span class="n">op_params</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">datatypes</span><span class="p">[</span><span class="n">dynamic_param</span><span class="p">[</span><span class="n">wf_cfg</span><span class="o">.</span><span class="n">DATATYPE_INDEX_KEY</span><span class="p">]]</span><span class="o">.</span><span class="n">gid</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">previous_operation</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operation_by_id</span><span class="p">(</span><span class="n">former_step</span><span class="o">.</span><span class="n">fk_operation</span><span class="p">)</span>
+                            <span class="n">op_params</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">previous_operation</span><span class="o">.</span><span class="n">parameters</span><span class="p">)[</span>
+                                <span class="n">dynamic_param</span><span class="p">[</span><span class="n">wf_cfg</span><span class="o">.</span><span class="n">DATATYPE_INDEX_KEY</span><span class="p">]]</span>
+                    <span class="n">operation</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">op_params</span><span class="p">)</span>
+                    <span class="n">operation</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">operation</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">operation</span><span class="o">.</span><span class="n">id</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">current_step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">current_workflow</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_workflow_by_id</span><span class="p">(</span><span class="n">current_step</span><span class="o">.</span><span class="n">fk_workflow</span><span class="p">)</span>
+                    <span class="n">current_workflow</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">current_workflow</span><span class="o">.</span><span class="n">STATUS_FINISHED</span>
+                    <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">current_workflow</span><span class="p">)</span>
+                    <span class="n">burst_entity</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_burst_by_id</span><span class="p">(</span><span class="n">current_workflow</span><span class="o">.</span><span class="n">fk_burst</span><span class="p">)</span>
+                    <span class="n">parallel_workflows</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_workflows_for_burst</span><span class="p">(</span><span class="n">burst_entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                    <span class="n">all_finished</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="k">for</span> <span class="n">workflow</span> <span class="ow">in</span> <span class="n">parallel_workflows</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">workflow</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">workflow</span><span class="o">.</span><span class="n">STATUS_STARTED</span><span class="p">:</span>
+                            <span class="n">all_finished</span> <span class="o">=</span> <span class="bp">False</span>
+                    <span class="k">if</span> <span class="n">all_finished</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">mark_burst_finished</span><span class="p">(</span><span class="n">burst_entity</span><span class="p">,</span> <span class="n">success</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                        <span class="n">disk_size</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_burst_disk_size</span><span class="p">(</span><span class="n">burst_entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>  <span class="c"># Transform from kB to MB</span>
+                        <span class="k">if</span> <span class="n">disk_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">user</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_project_by_id</span><span class="p">(</span><span class="n">burst_entity</span><span class="o">.</span><span class="n">fk_project</span><span class="p">)</span><span class="o">.</span><span class="n">administrator</span>
+                            <span class="n">user</span><span class="o">.</span><span class="n">used_disk_space</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">used_disk_space</span> <span class="o">+</span> <span class="n">disk_size</span>
+                            <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">operation</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operation_by_id</span><span class="p">(</span><span class="n">last_executed_op_id</span><span class="p">)</span>
+                    <span class="n">disk_size</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_disk_size_for_operation</span><span class="p">(</span><span class="n">operation</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>  <span class="c"># Transform from kB to MB</span>
+                    <span class="k">if</span> <span class="n">disk_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">user</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_user_by_id</span><span class="p">(</span><span class="n">operation</span><span class="o">.</span><span class="n">fk_launched_by</span><span class="p">)</span>
+                        <span class="n">user</span><span class="o">.</span><span class="n">used_disk_space</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">used_disk_space</span> <span class="o">+</span> <span class="n">disk_size</span>
+                        <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">WorkflowInterStepsException</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="WorkflowService.update_executed_workflow_state"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.workflow_service.WorkflowService.update_executed_workflow_state">[docs]</a>    <span class="k">def</span> <span class="nf">update_executed_workflow_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Used for updating the state of an executed workflow.</span>
+<span class="sd">        Only if the operation with the specified id has resulted after the execution</span>
+<span class="sd">        of an ExecutedWorkflowStep than the state of the ExecutedWorkflow</span>
+<span class="sd">        to which belongs the step will be updated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">executed_step</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data</span><span class="p">(</span><span class="n">operation_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">executed_step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">operation</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operation_by_id</span><span class="p">(</span><span class="n">operation_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">operation</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">STATUS_ERROR</span><span class="p">:</span>
+                <span class="n">all_executed_steps</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_workflow_steps</span><span class="p">(</span><span class="n">executed_step</span><span class="o">.</span><span class="n">fk_workflow</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">all_executed_steps</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">step</span><span class="o">.</span><span class="n">step_index</span> <span class="o">&gt;</span> <span class="n">executed_step</span><span class="o">.</span><span class="n">step_index</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Marking unreached operation </span><span class="si">%s</span><span class="s"> with error.&quot;</span> <span class="o">%</span> <span class="n">step</span><span class="o">.</span><span class="n">fk_operation</span><span class="p">)</span>
+                        <span class="n">unreached_operation</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operation_by_id</span><span class="p">(</span><span class="n">step</span><span class="o">.</span><span class="n">fk_operation</span><span class="p">)</span>
+                        <span class="n">unreached_operation</span><span class="o">.</span><span class="n">mark_complete</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">STATUS_ERROR</span><span class="p">,</span> 
+                                                          <span class="s">&quot;Blocked by failure in step </span><span class="si">%s</span><span class="s"> with message: </span><span class="se">\n\n</span><span class="si">%s</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                                                          <span class="n">executed_step</span><span class="o">.</span><span class="n">step_index</span><span class="p">,</span> <span class="n">operation</span><span class="o">.</span><span class="n">additional_info</span><span class="p">))</span>
+                        <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">unreached_operation</span><span class="p">)</span>
+            <span class="n">workflow</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_workflow_by_id</span><span class="p">(</span><span class="n">executed_step</span><span class="o">.</span><span class="n">fk_workflow</span><span class="p">)</span>
+            <span class="n">burst</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_burst_by_id</span><span class="p">(</span><span class="n">workflow</span><span class="o">.</span><span class="n">fk_burst</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mark_burst_finished</span><span class="p">(</span><span class="n">burst</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">error_message</span><span class="o">=</span><span class="n">operation</span><span class="o">.</span><span class="n">additional_info</span><span class="p">)</span>
+            <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">burst</span><span class="p">)</span>
+
+</div>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_data</span><span class="p">(</span><span class="n">operation_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For a given operation id, return the corresponding WorkflowStep and the NextWorkflowStep to be executed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">executed_step</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_workflow_step_for_operation</span><span class="p">(</span><span class="n">operation_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">executed_step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">next_workflow_step</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_workflow_step_by_step_index</span><span class="p">(</span><span class="n">executed_step</span><span class="o">.</span><span class="n">fk_workflow</span><span class="p">,</span>
+                                                                     <span class="n">executed_step</span><span class="o">.</span><span class="n">step_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">executed_step</span><span class="p">,</span> <span class="n">next_workflow_step</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+        
+        
+<div class="viewcode-block" id="WorkflowService.mark_burst_finished"><a class="viewcode-back" href="../../../../tvb.core.services.html#tvb.core.services.workflow_service.WorkflowService.mark_burst_finished">[docs]</a>    <span class="k">def</span> <span class="nf">mark_burst_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">burst_entity</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">success</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">cancel</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">error_message</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Mark Burst status field.</span>
+<span class="sd">        Also compute &#39;weight&#39; for current burst: no of operations inside, estimate time on disk...</span>
+<span class="sd">        </span>
+<span class="sd">        :param burst_entity: BurstConfiguration to be updated, at finish time.</span>
+<span class="sd">        :param error: When True, burst will be marked as finished with error.</span>
+<span class="sd">        :param success: When True, burst will be marked successfully.</span>
+<span class="sd">        :param cancel: When True, burst will be marked as user-canceled.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">linked_ops_number</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_operations_in_burst</span><span class="p">(</span><span class="n">burst_entity</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">is_count</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">linked_datatypes</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_generic_entity</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">DataType</span><span class="p">,</span> <span class="n">burst_entity</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s">&quot;fk_parent_burst&quot;</span><span class="p">)</span>
+            
+            <span class="n">disk_size</span> <span class="o">=</span> <span class="n">linked_ops_number</span>   <span class="c"># 1KB for each dataType, considered for operation.xml files</span>
+            <span class="n">dt_group_sizes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">linked_datatypes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">disk_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">disk_size</span> <span class="o">=</span> <span class="n">disk_size</span> <span class="o">+</span> <span class="n">dtype</span><span class="o">.</span><span class="n">disk_size</span>
+                    <span class="c">### Prepare and compute DataTypeGroup sizes, in case of ranges.</span>
+                    <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">fk_datatype_group</span><span class="p">:</span>
+                        <span class="n">previous_group_size</span> <span class="o">=</span> <span class="n">dt_group_sizes</span><span class="p">[</span><span class="n">dtype</span><span class="o">.</span><span class="n">fk_datatype_group</span><span class="p">]</span> <span class="k">if</span> <span class="p">(</span><span class="n">dtype</span><span class="o">.</span><span class="n">fk_datatype_group</span> 
+                                                                                          <span class="ow">in</span> <span class="n">dt_group_sizes</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
+                        <span class="n">dt_group_sizes</span><span class="p">[</span><span class="n">dtype</span><span class="o">.</span><span class="n">fk_datatype_group</span><span class="p">]</span> <span class="o">=</span> <span class="n">previous_group_size</span> <span class="o">+</span> <span class="n">dtype</span><span class="o">.</span><span class="n">disk_size</span>
+                             
+            <span class="c">### If there are any DataType Groups in current Burst, update their counter.</span>
+            <span class="n">burst_dt_groups</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_generic_entity</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">DataTypeGroup</span><span class="p">,</span> <span class="n">burst_entity</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s">&quot;fk_parent_burst&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">burst_dt_groups</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">dt_group</span> <span class="ow">in</span> <span class="n">burst_dt_groups</span><span class="p">:</span>
+                    <span class="n">dt_group</span><span class="o">.</span><span class="n">count_results</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">count_datatypes_in_group</span><span class="p">(</span><span class="n">dt_group</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                    <span class="n">dt_group</span><span class="o">.</span><span class="n">disk_size</span> <span class="o">=</span> <span class="n">dt_group_sizes</span><span class="p">[</span><span class="n">dt_group</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="k">if</span> <span class="p">(</span><span class="n">dt_group</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">dt_group_sizes</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
+                    <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">dt_group</span><span class="p">)</span>
+                    
+            <span class="c">### Update actual Burst entity fields    </span>
+            <span class="n">burst_entity</span><span class="o">.</span><span class="n">disk_size</span> <span class="o">=</span> <span class="n">disk_size</span>          <span class="c"># In KB</span>
+            <span class="n">burst_entity</span><span class="o">.</span><span class="n">datatypes_number</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">linked_datatypes</span><span class="p">)</span> 
+            <span class="n">burst_entity</span><span class="o">.</span><span class="n">workflows_number</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dao</span><span class="o">.</span><span class="n">get_workflows_for_burst</span><span class="p">(</span><span class="n">burst_entity</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>  
+            <span class="n">burst_entity</span><span class="o">.</span><span class="n">mark_status</span><span class="p">(</span><span class="n">success</span><span class="o">=</span><span class="n">success</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span> <span class="n">cancel</span><span class="o">=</span><span class="n">cancel</span><span class="p">)</span>
+            <span class="n">burst_entity</span><span class="o">.</span><span class="n">error_message</span> <span class="o">=</span> <span class="n">error_message</span>
+            
+            <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">burst_entity</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s">&quot;Could not correctly update Burst status and meta-data!&quot;</span><span class="p">)</span>
+            <span class="n">burst_entity</span><span class="o">.</span><span class="n">mark_status</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">burst_entity</span><span class="o">.</span><span class="n">error_message</span> <span class="o">=</span> <span class="s">&quot;Error when updating Burst Status&quot;</span>
+            <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">burst_entity</span><span class="p">)</span>
+                
+                
+        
+        </div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

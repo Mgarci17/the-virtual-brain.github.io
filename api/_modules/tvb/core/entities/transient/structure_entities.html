@@ -1,0 +1,504 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.entities.transient.structure_entities &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.entities.transient.structure_entities</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Ionel Ortelecan &lt;ionel.ortelecan@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">EnhancedDictionary</span>
+
+
+
+<div class="viewcode-block" id="StructureNode"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.structure_entities.StructureNode">[docs]</a><span class="k">class</span> <span class="nc">StructureNode</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This entity represents a node in the Tree of a Project related Structure.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">TYPE_FOLDER</span> <span class="o">=</span> <span class="s">&quot;Folder&quot;</span>
+    <span class="n">TYPE_FILE</span> <span class="o">=</span> <span class="s">&quot;File&quot;</span>
+    <span class="n">TYPE_INVALID</span> <span class="o">=</span> <span class="s">&quot;Invalid&quot;</span>
+    
+    <span class="n">PREFIX_ID_NODE</span> <span class="o">=</span> <span class="s">&quot;node_&quot;</span>
+    <span class="n">PREFIX_ID_LEAF</span> <span class="o">=</span> <span class="s">&quot;leaf_&quot;</span>
+    <span class="n">PREFIX_ID_PROJECT</span> <span class="o">=</span> <span class="s">&quot;projectID&quot;</span>
+    
+    <span class="n">SEP</span> <span class="o">=</span> <span class="s">&quot;__&quot;</span>
+
+    
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nid</span><span class="p">,</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">ntype</span> <span class="o">=</span> <span class="n">TYPE_FOLDER</span><span class="p">,</span> <span class="n">meta</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor </span>
+<span class="sd">        </span>
+<span class="sd">        :param nid: Node Identifier (needs to be UQ)</span>
+<span class="sd">        :param node_name: Node Display Name </span>
+<span class="sd">        :param ntype: Node Type (influences the display mode in UI).</span>
+<span class="sd">        :param meta: DataTypeMetaData instance.</span>
+<span class="sd">        :param children: List of StructureNode entities or None.</span>
+<span class="sd">          </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">nid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">node_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="n">ntype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">meta</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="n">children</span>
+
+        
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="StructureNode.has_children"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.structure_entities.StructureNode.has_children">[docs]</a>    <span class="k">def</span> <span class="nf">has_children</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return TRUE when current node is with Child nodes.</span>
+<span class="sd">        Return FALSE when current node is a leaf in Tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    </div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="StructureNode.is_link"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.structure_entities.StructureNode.is_link">[docs]</a>    <span class="k">def</span> <span class="nf">is_link</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if meta_data has the transient is_link attribute set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> 
+                <span class="ow">and</span> <span class="n">DataTypeMetaData</span><span class="o">.</span><span class="n">KEY_LINK</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">and</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">DataTypeMetaData</span><span class="o">.</span><span class="n">KEY_LINK</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        </div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="StructureNode.is_irelevant"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.structure_entities.StructureNode.is_irelevant">[docs]</a>    <span class="k">def</span> <span class="nf">is_irelevant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check that current node is marked as not-relevant.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span>  <span class="n">DataTypeMetaData</span><span class="o">.</span><span class="n">KEY_RELEVANCY</span> <span class="ow">in</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">DataTypeMetaData</span><span class="o">.</span><span class="n">KEY_RELEVANCY</span><span class="p">]</span><span class="o">==</span><span class="bp">False</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">False</span>
+        </div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="StructureNode.is_group"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.structure_entities.StructureNode.is_group">[docs]</a>    <span class="k">def</span> <span class="nf">is_group</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if meta_data has the transient is_link attribute set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> 
+                <span class="ow">and</span> <span class="n">DataTypeMetaData</span><span class="o">.</span><span class="n">KEY_OP_GROUP_ID</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">and</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">DataTypeMetaData</span><span class="o">.</span><span class="n">KEY_OP_GROUP_ID</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span>
+    </div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="StructureNode.type"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.structure_entities.StructureNode.type">[docs]</a>    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Type of a node it can be FOLDER, FILE or INVALID.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span>
+    
+    </div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="StructureNode.metadata2tree"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.structure_entities.StructureNode.metadata2tree">[docs]</a>    <span class="k">def</span> <span class="nf">metadata2tree</span><span class="p">(</span><span class="n">metadatas</span><span class="p">,</span> <span class="n">first_level</span><span class="p">,</span> <span class="n">second_level</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">project_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Take a list of DataTypeMetaData entities as input.</span>
+<span class="sd">        Create a tree of StructureNode entities, then convert it in JSON to display in UI.</span>
+
+<span class="sd">        first_level and second_level represents the fields by which</span>
+<span class="sd">        should be structured the tree. Those fields should exists</span>
+<span class="sd">        into the data dict of each DataTypeMetaData object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">levels</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">meta</span> <span class="ow">in</span> <span class="n">metadatas</span><span class="p">:</span>
+            <span class="n">level_one</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">meta</span><span class="p">[</span><span class="n">first_level</span><span class="p">])</span>
+            <span class="n">level_two</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">meta</span><span class="p">[</span><span class="n">second_level</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">level_one</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">levels</span><span class="p">:</span>
+                <span class="n">levels</span><span class="p">[</span><span class="n">level_one</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">level_two</span><span class="p">:[</span><span class="n">meta</span><span class="p">]}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">existent_sublevels</span> <span class="o">=</span> <span class="n">levels</span><span class="p">[</span><span class="n">level_one</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">level_two</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">existent_sublevels</span><span class="p">:</span>
+                    <span class="n">levels</span><span class="p">[</span><span class="n">level_one</span><span class="p">][</span><span class="n">level_two</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">meta</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">levels</span><span class="p">[</span><span class="n">level_one</span><span class="p">][</span><span class="n">level_two</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">meta</span><span class="p">)</span>
+
+        <span class="n">forest</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">level</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">levels</span><span class="o">.</span><span class="n">iterkeys</span><span class="p">()):</span>
+            <span class="n">sublevels</span> <span class="o">=</span> <span class="n">levels</span><span class="p">[</span><span class="n">level</span><span class="p">]</span>
+            <span class="n">level_children</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">sublevel</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">sublevels</span><span class="o">.</span><span class="n">iterkeys</span><span class="p">()):</span>
+                <span class="n">metas</span> <span class="o">=</span> <span class="n">sublevels</span><span class="p">[</span><span class="n">sublevel</span><span class="p">]</span>
+                <span class="n">datas</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">meta</span> <span class="ow">in</span> <span class="n">metas</span><span class="p">:</span>
+                    <span class="n">parent_name</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="n">meta</span><span class="o">.</span><span class="n">KEY_NODE_TYPE</span><span class="p">]</span> <span class="o">+</span> <span class="s">&quot; &quot;</span>
+
+                    <span class="k">if</span> <span class="n">meta</span><span class="p">[</span><span class="n">meta</span><span class="o">.</span><span class="n">KEY_TAG_1</span><span class="p">]:</span>
+                        <span class="n">parent_name</span> <span class="o">=</span> <span class="n">parent_name</span> <span class="o">+</span> <span class="s">&quot; - &quot;</span> <span class="o">+</span> <span class="n">meta</span><span class="p">[</span><span class="n">meta</span><span class="o">.</span><span class="n">KEY_TAG_1</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">meta</span><span class="p">[</span><span class="n">meta</span><span class="o">.</span><span class="n">KEY_OPERATION_TAG</span><span class="p">]:</span>
+                        <span class="n">parent_name</span> <span class="o">=</span> <span class="n">parent_name</span> <span class="o">+</span> <span class="s">&quot; - &quot;</span> <span class="o">+</span> <span class="n">meta</span><span class="p">[</span><span class="n">meta</span><span class="o">.</span><span class="n">KEY_OPERATION_TAG</span><span class="p">]</span>
+                    
+                    <span class="n">parent</span> <span class="o">=</span> <span class="n">StructureNode</span><span class="p">(</span><span class="n">meta</span><span class="o">.</span><span class="n">gid</span><span class="p">,</span> <span class="n">parent_name</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">meta</span><span class="o">.</span><span class="n">invalid</span><span class="p">:</span>
+                        <span class="n">parent</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="n">StructureNode</span><span class="o">.</span><span class="n">TYPE_INVALID</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">parent</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="n">meta</span><span class="o">.</span><span class="n">KEY_NODE_TYPE</span><span class="p">]</span>
+                    <span class="n">datas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+                <span class="n">sublevel_id</span> <span class="o">=</span> <span class="n">level</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">StructureNode</span><span class="o">.</span><span class="n">SEP</span> <span class="o">+</span> <span class="n">sublevel</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+                <span class="n">sublevel_name</span> <span class="o">=</span> <span class="n">StructureNode</span><span class="o">.</span><span class="n">_prepare_node_name</span><span class="p">(</span><span class="n">sublevel</span><span class="p">,</span> <span class="n">second_level</span><span class="p">)</span>
+                <span class="n">sublevel_node</span> <span class="o">=</span> <span class="n">StructureNode</span><span class="p">(</span><span class="n">sublevel_id</span><span class="p">,</span> <span class="n">sublevel_name</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span> <span class="n">datas</span><span class="p">)</span>
+                <span class="n">sublevel_node</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="n">StructureNode</span><span class="o">.</span><span class="n">_capitalize_first_letter</span><span class="p">(</span><span class="n">second_level</span><span class="p">)</span>
+                <span class="n">level_children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sublevel_node</span><span class="p">)</span>
+                
+            <span class="n">dir_name</span> <span class="o">=</span> <span class="n">StructureNode</span><span class="o">.</span><span class="n">_prepare_node_name</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">first_level</span><span class="p">)</span>
+            <span class="n">level_node</span> <span class="o">=</span> <span class="n">StructureNode</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">dir_name</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="n">level_children</span><span class="p">)</span>
+            <span class="n">level_node</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="n">StructureNode</span><span class="o">.</span><span class="n">_capitalize_first_letter</span><span class="p">(</span><span class="n">first_level</span><span class="p">)</span>
+            <span class="n">forest</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">level_node</span><span class="p">)</span>
+            
+        <span class="n">json_children</span> <span class="o">=</span> <span class="n">StructureNode</span><span class="o">.</span><span class="n">__convert2json</span><span class="p">(</span><span class="n">forest</span><span class="p">,</span> <span class="n">project_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">json_children</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="s">&#39;{data: [{ data: {title: &quot;&#39;</span> <span class="o">+</span> <span class="n">project_name</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s">&#39;,icon: &quot;/static/style/nodes/nodeRoot.png&quot;},&#39;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s">&#39;state:&quot;open&quot;, attr:{id:&quot;&#39;</span> <span class="o">+</span> <span class="n">StructureNode</span><span class="o">.</span><span class="n">PREFIX_ID_PROJECT</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s">&#39;&quot;}, children: [&#39;</span> <span class="o">+</span> <span class="n">json_children</span> <span class="o">+</span> <span class="s">&#39;] } ] }&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="s">&#39;{data: [{ data: {title: &quot;&#39;</span> <span class="o">+</span> <span class="n">project_name</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s">&#39;,icon: &quot;/static/style/nodes/nodeRoot.png&quot;}&#39;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s">&#39;,attr:{id:&quot;&#39;</span> <span class="o">+</span> <span class="n">StructureNode</span><span class="o">.</span><span class="n">PREFIX_ID_PROJECT</span> <span class="o">+</span> <span class="s">&#39;&quot;}}]}&#39;</span>
+            
+        <span class="k">return</span> <span class="n">result</span>
+
+</div>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_prepare_node_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">level_filter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process name. In case filter corresponds to STATE, then return display value for it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">level_filter</span> <span class="o">==</span> <span class="n">DataTypeMetaData</span><span class="o">.</span><span class="n">KEY_STATE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">DataTypeMetaData</span><span class="o">.</span><span class="n">STATES</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">name</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_capitalize_first_letter</span><span class="p">(</span><span class="n">word</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :returns: same string, but with first letter capitalized.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">word</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="n">word</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    
+    
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__convert2json</span><span class="p">(</span><span class="n">nodes_list</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Local method, for converting an internal Tree structure (of StructureNode entities)</span>
+<span class="sd">        into a JSON object, ready for display into UI with JSTree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="n">place_comma</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes_list</span><span class="p">:</span>
+            <span class="n">json_node</span> <span class="o">=</span> <span class="s">&#39;{data: {title:&quot;&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">100</span> <span class="k">else</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="mi">95</span><span class="p">]</span> <span class="o">+</span> <span class="s">&quot;...&quot;</span><span class="p">)</span>
+            <span class="n">json_node</span> <span class="o">=</span> <span class="n">json_node</span> <span class="o">+</span> <span class="s">&#39;&quot;,icon: &quot;/static/style/nodes/node&#39;</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_group</span><span class="p">:</span>
+                <span class="n">json_node</span> <span class="o">=</span> <span class="n">json_node</span> <span class="o">+</span> <span class="s">&#39;Group.png&quot;},&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">json_node</span> <span class="o">=</span> <span class="n">json_node</span> <span class="o">+</span> <span class="n">node</span><span class="o">.</span><span class="n">type</span> <span class="o">+</span><span class="s">&#39;.png&quot;},&#39;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">node</span><span class="o">.</span><span class="n">has_children</span><span class="p">):</span>
+                <span class="n">json_node</span> <span class="o">=</span> <span class="n">json_node</span> <span class="o">+</span> <span class="s">&#39; state:&quot;open&quot;, &#39;</span>
+
+            <span class="n">json_node</span> <span class="o">=</span> <span class="p">(</span><span class="n">json_node</span> <span class="o">+</span> <span class="s">&#39;attr:{id:&quot;&#39;</span> <span class="o">+</span> <span class="n">StructureNode</span><span class="o">.</span><span class="n">PREFIX_ID_NODE</span> <span class="o">+</span> 
+                         <span class="n">node</span><span class="o">.</span><span class="n">id</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span><span class="p">)</span>
+            <span class="n">json_node</span> <span class="o">=</span> <span class="n">json_node</span> <span class="o">+</span> <span class="s">&#39;, separator: &quot;&gt;&gt;&quot;, projectId:&quot;&#39;</span> 
+            <span class="n">json_node</span> <span class="o">=</span> <span class="n">json_node</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">meta_str</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+                <span class="n">meta_str</span> <span class="o">=</span> <span class="n">meta_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;{&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;}&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+                <span class="n">json_node</span> <span class="o">=</span> <span class="n">json_node</span> <span class="o">+</span> <span class="s">&#39;,&#39;</span> <span class="o">+</span> <span class="n">meta_str</span>
+                
+            <span class="n">json_node</span> <span class="o">=</span> <span class="n">json_node</span> <span class="o">+</span> <span class="s">&#39;, style: &quot;&#39;</span>    
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_irelevant</span><span class="p">:</span>
+                <span class="n">json_node</span> <span class="o">=</span> <span class="n">json_node</span> <span class="o">+</span> <span class="s">&#39;background-color: #666;&#39;</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_link</span><span class="p">:</span>
+                <span class="n">json_node</span> <span class="o">=</span> <span class="n">json_node</span> <span class="o">+</span> <span class="s">&#39;font-style: italic;&#39;</span>
+            <span class="n">json_node</span> <span class="o">=</span> <span class="n">json_node</span> <span class="o">+</span> <span class="s">&#39;&quot; }&#39;</span>
+            
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">has_children</span><span class="p">:</span>
+                <span class="n">json_node</span> <span class="o">=</span> <span class="n">json_node</span> <span class="o">+</span> <span class="s">&#39;, children:[&#39;</span> 
+                <span class="n">json_node</span> <span class="o">=</span> <span class="n">json_node</span> <span class="o">+</span> <span class="n">StructureNode</span><span class="o">.</span><span class="n">__convert2json</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">,</span> <span class="n">project_id</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;]&#39;</span>
+
+            <span class="n">json_node</span> <span class="o">=</span> <span class="n">json_node</span> <span class="o">+</span> <span class="s">&#39;}&#39;</span>
+            <span class="k">if</span> <span class="n">place_comma</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s">&#39;,&#39;</span>
+            <span class="n">place_comma</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="n">json_node</span>
+        <span class="k">return</span> <span class="n">result</span>  
+
+
+
+
+</div>
+<div class="viewcode-block" id="GenericMetaData"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.structure_entities.GenericMetaData">[docs]</a><span class="k">class</span> <span class="nc">GenericMetaData</span><span class="p">(</span><span class="n">EnhancedDictionary</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wrap a dictionary of meta-data for generic entities </span>
+<span class="sd">    - Operations, Project, or DataType.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">KEY_GID</span> <span class="o">=</span> <span class="s">&quot;Gid&quot;</span>
+    <span class="n">KEY_FILENAME</span> <span class="o">=</span> <span class="s">&quot;file_name&quot;</span>
+    
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param data: THe actual dictionary to be wrapped by current entity. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="GenericMetaData.gid"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.structure_entities.GenericMetaData.gid">[docs]</a>    <span class="k">def</span> <span class="nf">gid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :returns: current Global Identifier or None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">KEY_GID</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_GID</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    </div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="GenericMetaData.file_name"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.structure_entities.GenericMetaData.file_name">[docs]</a>    <span class="k">def</span> <span class="nf">file_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :returns: name of the file where to store current data, or None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">KEY_FILENAME</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_FILENAME</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+
+    </div></div>
+<div class="viewcode-block" id="DataTypeMetaData"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.structure_entities.DataTypeMetaData">[docs]</a><span class="k">class</span> <span class="nc">DataTypeMetaData</span><span class="p">(</span><span class="n">GenericMetaData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This object will be populated from meta-data stored on a particular DataType/Operation.</span>
+<span class="sd">    It should contain enough information, to restore a DataType entity, without DB previous data required.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">KEY_STATE</span> <span class="o">=</span> <span class="s">&quot;Data_State&quot;</span>
+    <span class="n">STATES</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;RAW_DATA&#39;</span><span class="p">:</span> <span class="s">&#39;Raw Data&#39;</span><span class="p">,</span>
+              <span class="s">&#39;INTERMEDIATE&#39;</span><span class="p">:</span> <span class="s">&#39;Intermediate&#39;</span><span class="p">,</span>
+              <span class="s">&#39;FINAL&#39;</span><span class="p">:</span> <span class="s">&#39;Final&#39;</span><span class="p">}</span>
+    <span class="n">KEY_SUBJECT</span> <span class="o">=</span> <span class="s">&quot;Data_Subject&quot;</span>
+    <span class="n">DEFAULT_SUBJECT</span> <span class="o">=</span> <span class="s">&quot;John Doe&quot;</span>
+    <span class="n">KEY_BURST</span> <span class="o">=</span> <span class="s">&quot;Burst_Reference&quot;</span>
+    <span class="n">KEY_TAG_1</span> <span class="o">=</span> <span class="s">&quot;User_Tag_1_Perpetuated&quot;</span>
+    <span class="n">KEY_TAG_2</span> <span class="o">=</span> <span class="s">&quot;User_Tag_2&quot;</span>
+    <span class="n">KEY_TAG_3</span> <span class="o">=</span> <span class="s">&quot;User_Tag_3&quot;</span>
+    <span class="n">KEY_TAG_4</span> <span class="o">=</span> <span class="s">&quot;User_Tag_4&quot;</span>
+    <span class="n">KEY_TAG_5</span> <span class="o">=</span> <span class="s">&quot;User_Tag_5&quot;</span>
+    <span class="n">KEY_MODULE</span> <span class="o">=</span> <span class="s">&quot;Module&quot;</span>
+    <span class="n">KEY_CLASS_NAME</span> <span class="o">=</span> <span class="s">&quot;Type&quot;</span>
+    <span class="n">KEY_AUTHOR</span> <span class="o">=</span> <span class="s">&quot;Source_Author&quot;</span>
+    <span class="n">KEY_OPERATION_TYPE</span> <span class="o">=</span> <span class="s">&quot;Source_Operation_Category&quot;</span>
+    <span class="n">KEY_DATE</span> <span class="o">=</span> <span class="s">&quot;Creation_Date&quot;</span>
+    <span class="n">KEY_OPERATION_TAG</span> <span class="o">=</span> <span class="s">&quot;user_group&quot;</span>
+    <span class="n">KEY_OP_GROUP_ID</span> <span class="o">=</span> <span class="s">&quot;groupId&quot;</span>
+    <span class="n">KEY_RELEVANCY</span> <span class="o">=</span> <span class="s">&quot;Relevant&quot;</span>
+    <span class="n">KEY_TITLE</span> <span class="o">=</span> <span class="s">&quot;title&quot;</span>
+
+    <span class="c">#Transient attributes</span>
+    <span class="n">KEY_NODE_TYPE</span> <span class="o">=</span> <span class="s">&quot;DataType&quot;</span>
+    <span class="n">KEY_DATATYPE_ID</span> <span class="o">=</span> <span class="s">&quot;Datatypeid&quot;</span>
+    <span class="n">KEY_INVALID</span> <span class="o">=</span> <span class="s">&quot;datatype_invalid&quot;</span>
+    <span class="n">KEY_COUNT</span> <span class="o">=</span> <span class="s">&quot;count&quot;</span>
+    <span class="n">KEY_LINK</span> <span class="o">=</span> <span class="s">&quot;link&quot;</span>
+    <span class="n">KEY_CREATE_DATA_MONTH</span> <span class="o">=</span> <span class="s">&quot;createDataMonth&quot;</span>
+    <span class="n">KEY_CREATE_DATA_DAY</span> <span class="o">=</span> <span class="s">&quot;createDataDay&quot;</span>
+    
+    <span class="c">#operation details</span>
+    <span class="n">KEY_OPERATION_GROUP_NAME</span> <span class="o">=</span> <span class="s">&quot;op_group_name&quot;</span>
+    <span class="n">KEY_OPERATION_ALGORITHM</span> <span class="o">=</span> <span class="s">&quot;Operation_Algorithm&quot;</span>
+    <span class="n">KEY_FK_OPERATION_GROUP</span> <span class="o">=</span> <span class="s">&#39;fk_operation_group&#39;</span>
+
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
+        <span class="n">GenericMetaData</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">invalid</span> <span class="o">=</span> <span class="n">invalid</span>
+        
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="DataTypeMetaData.subject"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.structure_entities.DataTypeMetaData.subject">[docs]</a>    <span class="k">def</span> <span class="nf">subject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the name of the Subject if defined, or Default &quot;John Doe&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">KEY_SUBJECT</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_SUBJECT</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_SUBJECT</span><span class="p">]</span>
+    </div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="DataTypeMetaData.create_date"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.structure_entities.DataTypeMetaData.create_date">[docs]</a>    <span class="k">def</span> <span class="nf">create_date</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the create date of this entity, if stored, or None otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">KEY_DATE</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_DATE</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    </div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="DataTypeMetaData.group"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.structure_entities.DataTypeMetaData.group">[docs]</a>    <span class="k">def</span> <span class="nf">group</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the group tag in which the operation was launched</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_OPERATION_TAG</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_OPERATION_TAG</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    </div>
+<div class="viewcode-block" id="DataTypeMetaData.mark_invalid"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.structure_entities.DataTypeMetaData.mark_invalid">[docs]</a>    <span class="k">def</span> <span class="nf">mark_invalid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Mark current meta-data as invalid.</span>
+<span class="sd">        e.g. Because of a missing associated file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">invalid</span> <span class="o">=</span> <span class="bp">True</span>
+        </div>
+<div class="viewcode-block" id="DataTypeMetaData.merge_data"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.structure_entities.DataTypeMetaData.merge_data">[docs]</a>    <span class="k">def</span> <span class="nf">merge_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update current state, from an external dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">new_data</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">new_data</span><span class="p">:</span>
+            <span class="c">#Ignore transient entities</span>
+            <span class="k">if</span> <span class="n">val</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">KEY_COUNT</span> <span class="ow">and</span> <span class="n">val</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">KEY_OP_GROUP_ID</span><span class="p">:</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">val</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_data</span><span class="p">[</span><span class="n">val</span><span class="p">]</span> 
+               
+               
+    <span class="c">#####   CLASS METHODS start Here ########################################</span>
+    </div>
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="DataTypeMetaData.get_filterable_meta"><a class="viewcode-back" href="../../../../../tvb.core.entities.transient.html#tvb.core.entities.transient.structure_entities.DataTypeMetaData.get_filterable_meta">[docs]</a>    <span class="k">def</span> <span class="nf">get_filterable_meta</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Contains all the attributes by which the user can structure the tree of DataTypes.</span>
+<span class="sd">    </span>
+<span class="sd">        All the returned attributes should exists into the &#39;data&#39; field of its </span>
+<span class="sd">        corresponding DataTypeMetaData object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+                <span class="p">{</span><span class="n">cls</span><span class="o">.</span><span class="n">KEY_NODE_TYPE</span><span class="p">:</span> <span class="s">&quot;Data Type&quot;</span><span class="p">},</span>
+                <span class="p">{</span><span class="n">cls</span><span class="o">.</span><span class="n">KEY_SUBJECT</span><span class="p">:</span> <span class="s">&quot;Subject&quot;</span><span class="p">},</span>
+                <span class="p">{</span><span class="n">cls</span><span class="o">.</span><span class="n">KEY_STATE</span><span class="p">:</span> <span class="s">&quot;State&quot;</span><span class="p">},</span>
+                <span class="p">{</span><span class="n">cls</span><span class="o">.</span><span class="n">KEY_OPERATION_TAG</span><span class="p">:</span> <span class="s">&quot;Operation group name&quot;</span><span class="p">},</span>
+                <span class="p">{</span><span class="n">cls</span><span class="o">.</span><span class="n">KEY_GID</span><span class="p">:</span> <span class="s">&quot;Unique Global Identifier&quot;</span><span class="p">},</span>
+                <span class="p">{</span><span class="n">cls</span><span class="o">.</span><span class="n">KEY_DATATYPE_ID</span><span class="p">:</span> <span class="s">&quot;Entity id&quot;</span><span class="p">},</span>
+                <span class="p">{</span><span class="n">cls</span><span class="o">.</span><span class="n">KEY_CREATE_DATA_DAY</span><span class="p">:</span> <span class="s">&quot;Create data day&quot;</span><span class="p">},</span>
+                <span class="p">{</span><span class="n">cls</span><span class="o">.</span><span class="n">KEY_CREATE_DATA_MONTH</span><span class="p">:</span> <span class="s">&quot;Create data month&quot;</span><span class="p">},</span>
+                <span class="p">{</span><span class="n">cls</span><span class="o">.</span><span class="n">KEY_OPERATION_ALGORITHM</span><span class="p">:</span> <span class="s">&quot;Operation algorithm&quot;</span><span class="p">},</span>
+                <span class="p">{</span><span class="n">cls</span><span class="o">.</span><span class="n">KEY_BURST</span><span class="p">:</span> <span class="s">&quot;Simulation name&quot;</span><span class="p">},</span>
+                <span class="p">{</span><span class="n">cls</span><span class="o">.</span><span class="n">KEY_TAG_1</span><span class="p">:</span> <span class="s">&quot;DataType Tag 1&quot;</span><span class="p">},</span>
+                <span class="p">{</span><span class="n">cls</span><span class="o">.</span><span class="n">KEY_TAG_2</span><span class="p">:</span> <span class="s">&quot;DataType Tag 2&quot;</span><span class="p">},</span>
+                <span class="p">{</span><span class="n">cls</span><span class="o">.</span><span class="n">KEY_TAG_3</span><span class="p">:</span> <span class="s">&quot;DataType Tag 3&quot;</span><span class="p">},</span>
+                <span class="p">{</span><span class="n">cls</span><span class="o">.</span><span class="n">KEY_TAG_4</span><span class="p">:</span> <span class="s">&quot;DataType Tag 4&quot;</span><span class="p">},</span>
+                <span class="p">{</span><span class="n">cls</span><span class="o">.</span><span class="n">KEY_TAG_5</span><span class="p">:</span> <span class="s">&quot;DataType Tag 5&quot;</span><span class="p">}</span>
+                <span class="p">]</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

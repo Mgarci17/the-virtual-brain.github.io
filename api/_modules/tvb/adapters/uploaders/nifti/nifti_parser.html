@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.adapters.uploaders.nifti.nifti_parser &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.adapters.uploaders.nifti.nifti_parser</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Calin Pavel &lt;calin.pavel@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">nibabel</span> <span class="kn">as</span> <span class="nn">nib</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.exceptions</span> <span class="kn">import</span> <span class="n">ParseException</span>
+<span class="kn">from</span> <span class="nn">tvb.datatypes.time_series</span> <span class="kn">import</span> <span class="n">TimeSeriesVolume</span>
+<span class="kn">from</span> <span class="nn">tvb.datatypes.volumes</span> <span class="kn">import</span> <span class="n">Volume</span>
+
+
+<div class="viewcode-block" id="NIFTIParser"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.nifti.html#tvb.adapters.uploaders.nifti.nifti_parser.NIFTIParser">[docs]</a><span class="k">class</span> <span class="nc">NIFTIParser</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class reads content of a NIFTI file and builds / returns a TimeSeries instance </span>
+<span class="sd">    filled with details.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage_path</span><span class="p">,</span> <span class="n">operation_id</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span> <span class="o">=</span> <span class="n">storage_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operation_id</span> <span class="o">=</span> <span class="n">operation_id</span>
+        
+<div class="viewcode-block" id="NIFTIParser.parse"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.nifti.html#tvb.adapters.uploaders.nifti.nifti_parser.NIFTIParser.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_file</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Parse NIFTI file and returns TimeSeries for it. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">data_file</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ParseException</span> <span class="p">(</span><span class="s">&quot;Please select NIFTI file which contains data to import&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">data_file</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ParseException</span> <span class="p">(</span><span class="s">&quot;Provided file </span><span class="si">%s</span><span class="s"> does not exists&quot;</span><span class="o">%</span><span class="n">data_file</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">nifti_image</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">data_file</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">nib</span><span class="o">.</span><span class="n">spatialimages</span><span class="o">.</span><span class="n">ImageFileError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;File: </span><span class="si">%s</span><span class="s"> does not have a valid NIFTI-1 format.&quot;</span> <span class="o">%</span> <span class="n">data_file</span>
+            <span class="k">raise</span> <span class="n">ParseException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        
+        <span class="n">nifti_image_hdr</span> <span class="o">=</span> <span class="n">nifti_image</span><span class="o">.</span><span class="n">get_header</span><span class="p">()</span>
+        
+        <span class="c"># Create volume for time series</span>
+        <span class="n">volume</span> <span class="o">=</span> <span class="n">Volume</span><span class="p">(</span><span class="n">storage_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span><span class="p">)</span>
+        <span class="n">volume</span><span class="o">.</span><span class="n">set_operation_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">operation_id</span><span class="p">)</span>
+        <span class="n">volume</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]]</span>
+        
+        <span class="c"># Now create TimeSeries and fill it with data from NIFTI image                </span>
+        <span class="n">time_series</span> <span class="o">=</span> <span class="n">TimeSeriesVolume</span><span class="p">(</span><span class="n">storage_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_path</span><span class="p">)</span>
+        <span class="n">time_series</span><span class="o">.</span><span class="n">set_operation_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">operation_id</span><span class="p">)</span>
+        <span class="n">time_series</span><span class="o">.</span><span class="n">volume</span> <span class="o">=</span> <span class="n">volume</span>
+        <span class="n">time_series</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">&quot;NIFTI Import - &quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">data_file</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">time_series</span><span class="o">.</span><span class="n">labels_ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;Time&quot;</span><span class="p">,</span> <span class="s">&quot;X&quot;</span><span class="p">,</span> <span class="s">&quot;Y&quot;</span><span class="p">,</span> <span class="s">&quot;Z&quot;</span><span class="p">]</span>
+        <span class="n">time_series</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+        
+        
+        <span class="c"># Copy data from NIFTI file to our TVB storage</span>
+        <span class="c"># In NIFTI format time si the 4th dimension, while our TimeSeries has</span>
+        <span class="c"># it as first dimension, so we have to adapt imported data</span>
+        
+        <span class="c"># Check if there is a time dimensions (4th dimension).</span>
+        <span class="n">nifti_data_shape</span> <span class="o">=</span> <span class="n">nifti_image_hdr</span><span class="o">.</span><span class="n">get_data_shape</span><span class="p">()</span>
+        <span class="n">has_time_dimension</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nifti_data_shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span>
+        <span class="n">time_dim_size</span> <span class="o">=</span> <span class="n">nifti_data_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="k">if</span> <span class="n">has_time_dimension</span> <span class="k">else</span> <span class="mi">1</span>
+        
+        <span class="n">nifti_data</span> <span class="o">=</span> <span class="n">nifti_image</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">has_time_dimension</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">time_dim_size</span><span class="p">):</span>
+                <span class="n">time_series</span><span class="o">.</span><span class="n">write_data_slice</span><span class="p">([</span><span class="n">nifti_data</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">,</span> <span class="o">...</span><span class="p">]])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">time_series</span><span class="o">.</span><span class="n">write_data_slice</span><span class="p">([</span><span class="n">nifti_data</span><span class="p">])</span>
+        <span class="n">time_series</span><span class="o">.</span><span class="n">close_file</span><span class="p">()</span> <span class="c"># Force closing HDF5 file </span>
+            
+        <span class="c"># Extract sample unit measure</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="n">nifti_image_hdr</span><span class="o">.</span><span class="n">get_xyzt_units</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">units</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">units</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">volume</span><span class="o">.</span><span class="n">voxel_unit</span> <span class="o">=</span> <span class="n">units</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">time_series</span><span class="o">.</span><span class="n">sample_period_unit</span> <span class="o">=</span> <span class="n">units</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        
+        <span class="c"># Extract sample rate</span>
+        <span class="c"># Usually zooms defines values for x, y, z, time and other dimensions</span>
+        <span class="n">zooms</span> <span class="o">=</span> <span class="n">nifti_image_hdr</span><span class="o">.</span><span class="n">get_zooms</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">has_time_dimension</span><span class="p">:</span>
+            <span class="n">time_series</span><span class="o">.</span><span class="n">sample_period</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">zooms</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">time_series</span><span class="o">.</span><span class="n">sample_period</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c"># If no time dim, set sampling to 1 sec</span>
+              
+        <span class="c"># Get voxtel dimensions for x,y, z</span>
+        <span class="n">volume</span><span class="o">.</span><span class="n">voxel_size</span> <span class="o">=</span> <span class="p">[</span><span class="n">zooms</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">zooms</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">zooms</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
+        
+        <span class="k">return</span> <span class="n">time_series</span>      </div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

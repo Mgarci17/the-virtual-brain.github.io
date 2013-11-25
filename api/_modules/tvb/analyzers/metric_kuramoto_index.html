@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.analyzers.metric_kuramoto_index &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.analyzers.metric_kuramoto_index</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Filler analyzer: Takes a TimeSeries object and returns a Float.</span>
+
+<span class="sd">.. moduleauthor:: Paula Sanz Leon &lt;Paula@tvb.invalid&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># standard library</span>
+<span class="kn">import</span> <span class="nn">cmath</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">tvb.analyzers.metrics_base</span> <span class="kn">as</span> <span class="nn">metrics_base</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.time_series</span> <span class="kn">as</span> <span class="nn">time_series_module</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.filters.chain</span> <span class="kn">import</span> <span class="n">FilterChain</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+
+<div class="viewcode-block" id="KuramotoIndex"><a class="viewcode-back" href="../../../tvb.analyzers.html#tvb.analyzers.metric_kuramoto_index.KuramotoIndex">[docs]</a><span class="k">class</span> <span class="nc">KuramotoIndex</span><span class="p">(</span><span class="n">metrics_base</span><span class="o">.</span><span class="n">BaseTimeseriesMetricAlgorithm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the Kuramoto synchronization index. </span>
+<span class="sd">    </span>
+<span class="sd">    Useful metric for a parameter analysis when the collective brain dynamics</span>
+<span class="sd">    represent coupled oscillatory processes.</span>
+<span class="sd">    </span>
+<span class="sd">    The *order* parameters are :math:`r` and :math:`Psi`.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">		r e^{i * \\psi} = \\frac{1}{N}\\,\\sum_{k=1}^N(e^{i*\\theta_k})</span>
+<span class="sd">    </span>
+<span class="sd">    The first is the phase coherence of the population of oscillators (KSI) </span>
+<span class="sd">    and the second is the average phase.</span>
+<span class="sd">    </span>
+<span class="sd">    When :math:`r=0` means 0 coherence among oscillators.</span>
+<span class="sd">    </span>
+<span class="sd">    </span>
+<span class="sd">    Input:</span>
+<span class="sd">    TimeSeries datatype </span>
+<span class="sd">    </span>
+<span class="sd">    Output: </span>
+<span class="sd">    Float</span>
+<span class="sd">    </span>
+<span class="sd">    This is a crude indicator of synchronization among nodes over the entire </span>
+<span class="sd">    network.</span>
+
+<span class="sd">    #NOTE: For the time being it is meant to be another global metric.</span>
+<span class="sd">    However, it should be consider to have a sort of TimeSeriesDatatype for this</span>
+<span class="sd">    analyzer.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">time_series</span> <span class="o">=</span> <span class="n">time_series_module</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Time Series&quot;</span><span class="p">,</span> 
+        <span class="n">required</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;The TimeSeries for which the Kuramoto Synchronization Index</span>
+<span class="s">        will be computed&quot;&quot;&quot;</span><span class="p">)</span>
+        
+    
+    <span class="n">accept_filter</span> <span class="o">=</span> <span class="n">FilterChain</span><span class="p">(</span><span class="n">operations</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;==&quot;</span><span class="p">,</span> <span class="s">&quot;&gt;=&quot;</span><span class="p">],</span> <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+                                <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="n">FilterChain</span><span class="o">.</span><span class="n">datatype</span> <span class="o">+</span> <span class="s">&#39;._nr_dimensions&#39;</span><span class="p">,</span> <span class="n">FilterChain</span><span class="o">.</span><span class="n">datatype</span> <span class="o">+</span> <span class="s">&#39;._length_2d&#39;</span><span class="p">])</span>
+    
+    
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Kuramoto Synchronization Index</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cls_attr_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="o">+</span><span class="s">&quot;.time_series&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">trait</span><span class="p">[</span><span class="s">&quot;data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">log_debug</span><span class="p">(</span><span class="n">owner</span> <span class="o">=</span> <span class="n">cls_attr_name</span><span class="p">)</span>
+        
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot; The number of state variables should be at least 2.&quot;</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">msg</span>
+                
+        <span class="c">#TODO: Should be computed for each possible combination of var, mode</span>
+        <span class="c">#      for var, mode in itertools.product(range(self.time_series.data.shape[1]), </span>
+        <span class="c">#                                         range(self.time_series.data.shape[3])):</span>
+        
+        <span class="c">#TODO: Generalise. The Kuramoto order parameter is computed over sliding </span>
+        <span class="c">#      time windows and then normalised    </span>
+        
+        <span class="n">theta_sum</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.0</span> <span class="o">+</span> <span class="mi">1j</span> <span class="o">*</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">cmath</span><span class="o">.</span><span class="n">polar</span><span class="p">)</span>
+                    <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="nb">complex</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">],</span> 
+                     <span class="bp">self</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]))[</span><span class="mi">1</span><span class="p">])),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                     
+        <span class="n">result</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">cmath</span><span class="o">.</span><span class="n">polar</span><span class="p">)(</span><span class="n">theta_sum</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>   
+    
+    
+    <span class="k">def</span> <span class="nf">result_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the shape of the main result of the ... </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">result_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the storage size in Bytes of the results of the ... .</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mf">8.0</span> <span class="c">#Bytes</span>
+    
+    
+    <span class="k">def</span> <span class="nf">extended_result_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the storage size in Bytes of the extended result of the ....</span>
+<span class="sd">        That is, it includes storage of the evaluated ...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mf">8.0</span> <span class="c">#Bytes</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

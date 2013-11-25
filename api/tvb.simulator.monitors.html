@@ -1,0 +1,948 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Monitors &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="index.html" />
+    <link rel="up" title="Welcome to tvb.simulator’s documentation!" href="tvb.simulator.html" />
+    <link rel="next" title="Phase-Plane Interactive" href="tvb.simulator.phase_plane_interactive.html" />
+    <link rel="prev" title="Noise" href="tvb.simulator.noise.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.simulator.phase_plane_interactive.html" title="Phase-Plane Interactive"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tvb.simulator.noise.html" title="Noise"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">tvb</span></tt> Package</a> &raquo;</li>
+          <li><a href="tvb.simulator.html" accesskey="U">Welcome to tvb.simulator&#8217;s documentation!</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="monitors">
+<h1><tt class="xref py py-mod docutils literal"><span class="pre">Monitors</span></tt><a class="headerlink" href="#monitors" title="Permalink to this headline">¶</a></h1>
+<a class="reference external image-reference" href="_images/classes_monitors.svg"><div align="center" class="align-center"><img alt="Class diagram for tvb.simulator.monitors" height="400px" src="_images/classes_monitors.svg" /></div>
+</a>
+<span class="target" id="module-tvb.simulator.monitors"></span><p>Monitors record significant values from the simulation. In their simplest form
+they return all the simulated data, Raw(), directly subsampled data, SubSample()
+spatially averaged temporally subsampled, GlobalAverage(), or temporally
+averaged subsamples, TemporalAverage(). The more elaborate monitors instantiate
+a physically realistic measurement process on the simulation, such as EEG, MEG,
+and fMRI (BOLD).</p>
+<p>Conversion of power of 2 sample-rates(Hz) to Monitor periods(ms)</p>
+<div class="highlight-python"><pre>4096 Hz =&gt; 0.244140625 ms
+2048 Hz =&gt; 0.48828125 ms
+1024 Hz =&gt; 0.9765625 ms
+ 512 Hz =&gt; 1.953125 ms
+ 256 Hz =&gt; 3.90625 ms
+ 128 Hz =&gt; 7.8125 ms</pre>
+</div>
+<dl class="attribute">
+<dt id="tvb.simulator.monitors.Monitor">
+<tt class="descclassname">tvb.simulator.monitors.</tt><tt class="descname">Monitor</tt><a class="reference internal" href="_modules/tvb/simulator/monitors.html#Monitor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.Monitor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base Monitor class, all Monitors inherit from this class.</p>
+<dl class="docutils">
+<dt><strong>private attribute:</strong></dt>
+<dd><dl class="first last docutils">
+<dt><tt class="docutils literal"><span class="pre">_stock</span></tt>: </dt>
+<dd>A kind of internal memory of the monitor, used for when monitors
+are non-instantaneous, such as TemporalAverage or fMRI.</dd>
+</dl>
+</dd>
+</dl>
+<dl class="method">
+<dt id="tvb.simulator.monitors.Monitor.__init__">
+<tt class="descclassname">Monitor.</tt><tt class="descname">__init__</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#Monitor.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.Monitor.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise the place holder attributes that will be filled when the
+Monitor is configured for a given Simulation &#8211; ie, for a specific
+Model, Connectivity, Integrator, etc.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.monitors.Monitor.config_for_sim">
+<tt class="descclassname">Monitor.</tt><tt class="descname">config_for_sim</tt><big>(</big><em>simulator</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#Monitor.config_for_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.Monitor.config_for_sim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grab the Simulator&#8217;s integration step size. Set the monitor&#8217;s variables
+of interest based on the Monitor&#8217;s &#8216;variables_of_interest&#8217; attribute, if
+it was specified, otherwise use the &#8216;variables_of_interest&#8217; specified 
+for the Model. Calculate the number of integration steps (isteps)
+between returns by the record method. This method is called from within
+the the Simulator&#8217;s configure() method.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><tt class="docutils literal"><span class="pre">simulator</span></tt> (Simulator): a Simulator object.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.monitors.Monitor.record">
+<tt class="descclassname">Monitor.</tt><tt class="descname">record</tt><big>(</big><em>step</em>, <em>state</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#Monitor.record"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.Monitor.record" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the method where the specific Monitor&#8217;s recording/monitoring
+function is defined, that is, it defines the return of a subset or
+projection of the state_variables of the Simulator&#8217;s Model.</p>
+</dd></dl>
+
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">period</span></tt> (Sampling period (ms))</dt>
+<dd><div class="first last line-block">
+<div class="line">Sampling period in milliseconds, must be an integral multiple         of integration-step size. As a guide: 2048 Hz =&gt; 0.48828125 ms ;           1024 Hz =&gt; 0.9765625 ms ; 512 Hz =&gt; 1.953125 ms.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.9765625 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Model variables to watch)</dt>
+<dd><div class="first last line-block">
+<div class="line">This can be used to override, for each Monitor, the default          monitored state-variables. NOTE: Any specified indices must be consistent          with the Model being monitored. By default, if left unspecified, this will         be set based on the variables_of_interest attribute on the Model.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.monitors.Raw">
+<tt class="descclassname">tvb.simulator.monitors.</tt><tt class="descname">Raw</tt><a class="reference internal" href="_modules/tvb/simulator/monitors.html#Raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.Raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>A monitor that records the output raw data from a tvb simulation:
+It collects:</p>
+<blockquote>
+<div><ul class="simple">
+<li>all state variables and modes from class :Model:</li>
+<li>all nodes of a region or surface based</li>
+<li>all the integration time steps</li>
+</ul>
+</div></blockquote>
+<dl class="method">
+<dt id="tvb.simulator.monitors.Raw.__init__">
+<tt class="descclassname">Raw.</tt><tt class="descname">__init__</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#Raw.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.Raw.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise the Raw monitor from the base Monitor class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.monitors.Raw.config_for_sim">
+<tt class="descclassname">Raw.</tt><tt class="descname">config_for_sim</tt><big>(</big><em>simulator</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#Raw.config_for_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.Raw.config_for_sim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise the istep to 1, regardless of any <tt class="docutils literal"><span class="pre">period</span></tt> provided. Also,
+sets the monitor&#8217;s variables of interest to be all state variables, 
+regardless of any <tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> provided.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.monitors.Raw.record">
+<tt class="descclassname">Raw.</tt><tt class="descname">record</tt><big>(</big><em>step</em>, <em>state</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#Raw.record"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.Raw.record" title="Permalink to this definition">¶</a></dt>
+<dd><p>Records all state-variables, nodes and modes for every step of the
+integration.</p>
+</dd></dl>
+
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">period</span></tt> (Sampling period is ignored for Raw Monitor)</dt>
+<dd><div class="first last line-block">
+<div class="line"><br /></div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Raw Monitor sees all!!! Resistance is futile...)</dt>
+<dd><div class="first last line-block">
+<div class="line"><br /></div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.monitors.SubSample">
+<tt class="descclassname">tvb.simulator.monitors.</tt><tt class="descname">SubSample</tt><a class="reference internal" href="_modules/tvb/simulator/monitors.html#SubSample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.SubSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Discretely sub-sample the simulation every <cite>istep</cite> integration steps. Time 
+steps that are not modulo <cite>istep</cite> are completely ignored.</p>
+<dl class="method">
+<dt id="tvb.simulator.monitors.SubSample.__init__">
+<tt class="descclassname">SubSample.</tt><tt class="descname">__init__</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#SubSample.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.SubSample.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise a SubSample monitor from the base Monitor class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.monitors.SubSample.config_for_sim">
+<tt class="descclassname">SubSample.</tt><tt class="descname">config_for_sim</tt><big>(</big><em>simulator</em><big>)</big><a class="headerlink" href="#tvb.simulator.monitors.SubSample.config_for_sim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grab the Simulator&#8217;s integration step size. Set the monitor&#8217;s variables
+of interest based on the Monitor&#8217;s &#8216;variables_of_interest&#8217; attribute, if
+it was specified, otherwise use the &#8216;variables_of_interest&#8217; specified 
+for the Model. Calculate the number of integration steps (isteps)
+between returns by the record method. This method is called from within
+the the Simulator&#8217;s configure() method.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><tt class="docutils literal"><span class="pre">simulator</span></tt> (Simulator): a Simulator object.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.monitors.SubSample.record">
+<tt class="descclassname">SubSample.</tt><tt class="descname">record</tt><big>(</big><em>step</em>, <em>state</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#SubSample.record"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.SubSample.record" title="Permalink to this definition">¶</a></dt>
+<dd><p>Records if integration step corresponds to sampling period.</p>
+</dd></dl>
+
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">period</span></tt> (Sampling period (ms))</dt>
+<dd><div class="first last line-block">
+<div class="line">Sampling period in milliseconds, must be an integral multiple         of integration-step size. As a guide: 2048 Hz =&gt; 0.48828125 ms ;           1024 Hz =&gt; 0.9765625 ms ; 512 Hz =&gt; 1.953125 ms.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.9765625 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Model variables to watch)</dt>
+<dd><div class="first last line-block">
+<div class="line">This can be used to override, for each Monitor, the default          monitored state-variables. NOTE: Any specified indices must be consistent          with the Model being monitored. By default, if left unspecified, this will         be set based on the variables_of_interest attribute on the Model.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.monitors.SpatialAverage">
+<tt class="descclassname">tvb.simulator.monitors.</tt><tt class="descname">SpatialAverage</tt><a class="reference internal" href="_modules/tvb/simulator/monitors.html#SpatialAverage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.SpatialAverage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Monitors the averaged value for the models variable of interest over sets of
+nodes &#8211; defined by spatial_mask. This is primarily intended for use with
+surface simulations, with a default behaviour, when no spatial_mask is
+specified, of using surface.region_mapping in order to reduce a surface
+simulation back to a single average timeseries for each region in the
+associated Connectivity. However, any vector of length nodes containing
+integers, from a set contiguous from zero, specifying the new grouping to
+which each node belongs should work.</p>
+<p>Additionally, this monitor temporally sub-samples the simulation every <cite>istep</cite> 
+integration steps.</p>
+<dl class="method">
+<dt id="tvb.simulator.monitors.SpatialAverage.__init__">
+<tt class="descclassname">SpatialAverage.</tt><tt class="descname">__init__</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#SpatialAverage.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.SpatialAverage.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise a SpatialAverage monitor from the base Monitor class. Add an
+additional place holder attribute, specific to this Monitor, for the
+array which averages nodes of the simulation to the new set of
+time-series specified by the spatial_mask.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.monitors.SpatialAverage.config_for_sim">
+<tt class="descclassname">SpatialAverage.</tt><tt class="descname">config_for_sim</tt><big>(</big><em>simulator</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#SpatialAverage.config_for_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.SpatialAverage.config_for_sim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets sampling period, variable/s of interest, and the array used to
+group nodes, by default the surface&#8217;s region_mapping is used.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.monitors.SpatialAverage.record">
+<tt class="descclassname">SpatialAverage.</tt><tt class="descname">record</tt><big>(</big><em>step</em>, <em>state</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#SpatialAverage.record"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.SpatialAverage.record" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method records the state of the simulation if the integration step
+corresponds to the sampling period of this Monitor. The nodes of the
+simulation are effectively combined into groups, and then time-series
+representing the average activity within these groups is returned.</p>
+</dd></dl>
+
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">default_mask</span></tt> (Default Mask)</dt>
+<dd><div class="first last line-block">
+<div class="line">Fallback in case spatial mask is none and no surface provided                                to use either connectivity hemispheres or cortical attributes.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [&#8216;hemispheres&#8217;] </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">period</span></tt> (Sampling period (ms))</dt>
+<dd><div class="first last line-block">
+<div class="line">Sampling period in milliseconds, must be an integral multiple         of integration-step size. As a guide: 2048 Hz =&gt; 0.48828125 ms ;           1024 Hz =&gt; 0.9765625 ms ; 512 Hz =&gt; 1.953125 ms.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.9765625 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">spatial_mask</span></tt> (An index mask of nodes into areas)</dt>
+<dd><div class="first last line-block">
+<div class="line">A vector of length==nodes that assigns an index to each node             specifying the &#8220;region&#8221; to which it belongs. The default usage is             for mapping a surface based simulation back to the regions used in              its <cite>Long-range Connectivity.</cite></div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Model variables to watch)</dt>
+<dd><div class="first last line-block">
+<div class="line">This can be used to override, for each Monitor, the default          monitored state-variables. NOTE: Any specified indices must be consistent          with the Model being monitored. By default, if left unspecified, this will         be set based on the variables_of_interest attribute on the Model.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.monitors.GlobalAverage">
+<tt class="descclassname">tvb.simulator.monitors.</tt><tt class="descname">GlobalAverage</tt><a class="reference internal" href="_modules/tvb/simulator/monitors.html#GlobalAverage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.GlobalAverage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Monitors the averaged value for the model&#8217;s variables of interest over all
+the nodes at each sampling period. This mainly exists as a &#8220;convenience&#8221;
+monitor for quickly checking the &#8220;global&#8221; state of a simulation.</p>
+<dl class="method">
+<dt id="tvb.simulator.monitors.GlobalAverage.__init__">
+<tt class="descclassname">GlobalAverage.</tt><tt class="descname">__init__</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#GlobalAverage.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.GlobalAverage.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise a GlobalAverage monitor from the base Monitor class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.monitors.GlobalAverage.config_for_sim">
+<tt class="descclassname">GlobalAverage.</tt><tt class="descname">config_for_sim</tt><big>(</big><em>simulator</em><big>)</big><a class="headerlink" href="#tvb.simulator.monitors.GlobalAverage.config_for_sim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grab the Simulator&#8217;s integration step size. Set the monitor&#8217;s variables
+of interest based on the Monitor&#8217;s &#8216;variables_of_interest&#8217; attribute, if
+it was specified, otherwise use the &#8216;variables_of_interest&#8217; specified 
+for the Model. Calculate the number of integration steps (isteps)
+between returns by the record method. This method is called from within
+the the Simulator&#8217;s configure() method.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><tt class="docutils literal"><span class="pre">simulator</span></tt> (Simulator): a Simulator object.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.monitors.GlobalAverage.record">
+<tt class="descclassname">GlobalAverage.</tt><tt class="descname">record</tt><big>(</big><em>step</em>, <em>state</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#GlobalAverage.record"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.GlobalAverage.record" title="Permalink to this definition">¶</a></dt>
+<dd><p>Records if integration step corresponds to sampling period.</p>
+</dd></dl>
+
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">period</span></tt> (Sampling period (ms))</dt>
+<dd><div class="first last line-block">
+<div class="line">Sampling period in milliseconds, must be an integral multiple         of integration-step size. As a guide: 2048 Hz =&gt; 0.48828125 ms ;           1024 Hz =&gt; 0.9765625 ms ; 512 Hz =&gt; 1.953125 ms.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.9765625 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Model variables to watch)</dt>
+<dd><div class="first last line-block">
+<div class="line">This can be used to override, for each Monitor, the default          monitored state-variables. NOTE: Any specified indices must be consistent          with the Model being monitored. By default, if left unspecified, this will         be set based on the variables_of_interest attribute on the Model.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.monitors.TemporalAverage">
+<tt class="descclassname">tvb.simulator.monitors.</tt><tt class="descname">TemporalAverage</tt><a class="reference internal" href="_modules/tvb/simulator/monitors.html#TemporalAverage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.TemporalAverage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Monitors the averaged value for the model&#8217;s variable/s of interest over all
+the nodes at each sampling period. Time steps that are not modulo <tt class="docutils literal"><span class="pre">istep</span></tt>
+are stored temporarily in the <tt class="docutils literal"><span class="pre">_stock</span></tt> attribute and then that temporary
+store is averaged and returned when time step is modulo <tt class="docutils literal"><span class="pre">istep</span></tt>.</p>
+<dl class="method">
+<dt id="tvb.simulator.monitors.TemporalAverage.__init__">
+<tt class="descclassname">TemporalAverage.</tt><tt class="descname">__init__</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#TemporalAverage.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.TemporalAverage.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise a TemporalAverage monitor from the base Monitor class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.monitors.TemporalAverage.config_for_sim">
+<tt class="descclassname">TemporalAverage.</tt><tt class="descname">config_for_sim</tt><big>(</big><em>simulator</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#TemporalAverage.config_for_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.TemporalAverage.config_for_sim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the monitor&#8217;s variables of interest based on the model
+specification. Calculates the number of integration steps (isteps)
+between returns by the record method. And initialises the stock array
+over which the temporal averaging will be performed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.monitors.TemporalAverage.record">
+<tt class="descclassname">TemporalAverage.</tt><tt class="descname">record</tt><big>(</big><em>step</em>, <em>state</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#TemporalAverage.record"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.TemporalAverage.record" title="Permalink to this definition">¶</a></dt>
+<dd><p>Records if integration step corresponds to sampling period, Otherwise
+just update the monitor&#8217;s stock. When the step corresponds to the sample
+period, the <tt class="docutils literal"><span class="pre">_stock</span></tt> is averaged over time for return.</p>
+</dd></dl>
+
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">period</span></tt> (Sampling period (ms))</dt>
+<dd><div class="first last line-block">
+<div class="line">Sampling period in milliseconds, must be an integral multiple         of integration-step size. As a guide: 2048 Hz =&gt; 0.48828125 ms ;           1024 Hz =&gt; 0.9765625 ms ; 512 Hz =&gt; 1.953125 ms.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.9765625 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Model variables to watch)</dt>
+<dd><div class="first last line-block">
+<div class="line">This can be used to override, for each Monitor, the default          monitored state-variables. NOTE: Any specified indices must be consistent          with the Model being monitored. By default, if left unspecified, this will         be set based on the variables_of_interest attribute on the Model.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.monitors.EEG">
+<tt class="descclassname">tvb.simulator.monitors.</tt><tt class="descname">EEG</tt><a class="reference internal" href="_modules/tvb/simulator/monitors.html#EEG"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.EEG" title="Permalink to this definition">¶</a></dt>
+<dd><p>Monitors the temporally averaged value for the models variable of interest
+projected to sensors on the head surface at each sampling period.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For the moment, this returns idealised (reference free) EEG.</p>
+</div>
+<dl class="method">
+<dt id="tvb.simulator.monitors.EEG.__init__">
+<tt class="descclassname">EEG.</tt><tt class="descname">__init__</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#EEG.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.EEG.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise EEG monitor from the base Monitor class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.monitors.EEG.config_for_sim">
+<tt class="descclassname">EEG.</tt><tt class="descname">config_for_sim</tt><big>(</big><em>simulator</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#EEG.config_for_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.EEG.config_for_sim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the monitor&#8217;s variables of interest based on the model
+specification. Calculates the number of integration steps (isteps)
+between returns by the record method. And initialises the stock array
+over which the simulation state will be temporally averaged before the 
+projection_matrix is applied.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.monitors.EEG.record">
+<tt class="descclassname">EEG.</tt><tt class="descname">record</tt><big>(</big><em>step</em>, <em>state</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#EEG.record"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.EEG.record" title="Permalink to this definition">¶</a></dt>
+<dd><p>Records if integration step corresponds to sampling period. Otherwise
+just update the monitor&#8217;s stock.</p>
+</dd></dl>
+
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">period</span></tt> (Sampling period (ms))</dt>
+<dd><div class="first last line-block">
+<div class="line">Sampling period in milliseconds, must be an integral multiple         of integration-step size. As a guide: 2048 Hz =&gt; 0.48828125 ms ;           1024 Hz =&gt; 0.9765625 ms ; 512 Hz =&gt; 1.953125 ms.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.9765625 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">projection_matrix_data</span></tt> (EEG Projection Matrix)</dt>
+<dd><div class="first last line-block">
+<div class="line">An array that is used to                                                  map activity from nodes of the                                                  simulation to a set of EEG                                                  sensors.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Model variables to watch)</dt>
+<dd><div class="first last line-block">
+<div class="line">This can be used to override, for each Monitor, the default          monitored state-variables. NOTE: Any specified indices must be consistent          with the Model being monitored. By default, if left unspecified, this will         be set based on the variables_of_interest attribute on the Model.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.monitors.SphericalEEG">
+<tt class="descclassname">tvb.simulator.monitors.</tt><tt class="descname">SphericalEEG</tt><a class="reference internal" href="_modules/tvb/simulator/monitors.html#SphericalEEG"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.SphericalEEG" title="Permalink to this definition">¶</a></dt>
+<dd><p>Monitors the temporally averaged value for the models variable of interest 
+projected to sensors on the head surface at each sampling period.</p>
+<table class="docutils citation" frame="void" id="sarvas-1987" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[Sarvas_1987]</td><td><em>(<a class="fn-backref" href="#id2">1</a>, <a class="fn-backref" href="#id3">2</a>)</em> Sarvas, J., <em>Basic mathematical and electromagnetic
+concepts of the biomagnetic inverse problem</em>, Physics in Medicine and
+Biology, 1987.</td></tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For the moment, this returns idealised (reference free) EEG.</p>
+</div>
+<dl class="method">
+<dt id="tvb.simulator.monitors.SphericalEEG.__init__">
+<tt class="descclassname">SphericalEEG.</tt><tt class="descname">__init__</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#SphericalEEG.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.SphericalEEG.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise from the base Monitor class. Setting sampling period.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.monitors.SphericalEEG.config_for_sim">
+<tt class="descclassname">SphericalEEG.</tt><tt class="descname">config_for_sim</tt><big>(</big><em>simulator</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#SphericalEEG.config_for_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.SphericalEEG.config_for_sim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Equation 12 of <a class="reference internal" href="#sarvas-1987" id="id2">[Sarvas_1987]</a></p>
+<p>TODO: add equations...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.monitors.SphericalEEG.record">
+<tt class="descclassname">SphericalEEG.</tt><tt class="descname">record</tt><big>(</big><em>step</em>, <em>state</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#SphericalEEG.record"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.SphericalEEG.record" title="Permalink to this definition">¶</a></dt>
+<dd><p>Records if integration step corresponds to sampling period.</p>
+</dd></dl>
+
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">period</span></tt> (Sampling period (ms))</dt>
+<dd><div class="first last line-block">
+<div class="line">Sampling period in milliseconds, must be an integral multiple         of integration-step size. As a guide: 2048 Hz =&gt; 0.48828125 ms ;           1024 Hz =&gt; 0.9765625 ms ; 512 Hz =&gt; 1.953125 ms.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.9765625 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">sensors</span></tt> (EEG Sensors)</dt>
+<dd><div class="first last line-block">
+<div class="line">The set of EEG sensors for which the forward solution will be         calculated.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">sigma</span></tt> (conductivity)</dt>
+<dd><div class="first last line-block">
+<div class="line"><br /></div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Model variables to watch)</dt>
+<dd><div class="first last line-block">
+<div class="line">This can be used to override, for each Monitor, the default          monitored state-variables. NOTE: Any specified indices must be consistent          with the Model being monitored. By default, if left unspecified, this will         be set based on the variables_of_interest attribute on the Model.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.monitors.SphericalMEG">
+<tt class="descclassname">tvb.simulator.monitors.</tt><tt class="descname">SphericalMEG</tt><a class="reference internal" href="_modules/tvb/simulator/monitors.html#SphericalMEG"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.SphericalMEG" title="Permalink to this definition">¶</a></dt>
+<dd><p>Monitors the temporally averaged value for the models variable of interest 
+projected to sensors on the head surface at each sampling period.</p>
+<dl class="method">
+<dt id="tvb.simulator.monitors.SphericalMEG.__init__">
+<tt class="descclassname">SphericalMEG.</tt><tt class="descname">__init__</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#SphericalMEG.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.SphericalMEG.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise from the base Monitor class. Add a placeholder attribute for
+the projectin matrix.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.monitors.SphericalMEG.config_for_sim">
+<tt class="descclassname">SphericalMEG.</tt><tt class="descname">config_for_sim</tt><big>(</big><em>simulator</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#SphericalMEG.config_for_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.SphericalMEG.config_for_sim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Equation 25 of <a class="reference internal" href="#sarvas-1987" id="id3">[Sarvas_1987]</a></p>
+<p>TODO: add equation...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.monitors.SphericalMEG.record">
+<tt class="descclassname">SphericalMEG.</tt><tt class="descname">record</tt><big>(</big><em>step</em>, <em>state</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#SphericalMEG.record"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.SphericalMEG.record" title="Permalink to this definition">¶</a></dt>
+<dd><p>Records if integration step corresponds to sampling period. The 
+projection_matrix generated by the config_for_sim method is used to map
+activity at nodes of the simulation to a set of MEG sensors.</p>
+</dd></dl>
+
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">period</span></tt> (Sampling period (ms))</dt>
+<dd><div class="first last line-block">
+<div class="line">Sampling period in milliseconds, must be an integral multiple         of integration-step size. As a guide: 2048 Hz =&gt; 0.48828125 ms ;           1024 Hz =&gt; 0.9765625 ms ; 512 Hz =&gt; 1.953125 ms.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.9765625 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">sensors</span></tt> (MEG Sensors)</dt>
+<dd><div class="first last line-block">
+<div class="line">The set of MEG sensors for which the forward solution will be         calculated.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Model variables to watch)</dt>
+<dd><div class="first last line-block">
+<div class="line">This can be used to override, for each Monitor, the default          monitored state-variables. NOTE: Any specified indices must be consistent          with the Model being monitored. By default, if left unspecified, this will         be set based on the variables_of_interest attribute on the Model.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.monitors.Bold">
+<tt class="descclassname">tvb.simulator.monitors.</tt><tt class="descname">Bold</tt><a class="reference internal" href="_modules/tvb/simulator/monitors.html#Bold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.Bold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for the Bold monitor.</p>
+<p><strong>Attributes</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt>hrf_kernel: the haemodynamic response function (HRF) used to compute </dt>
+<dd>the BOLD (Blood Oxygenation Level Dependent) signal.</dd>
+</dl>
+<p>length    : duration of the hrf in seconds.</p>
+<p>period    : the monitor&#8217;s period</p>
+</div></blockquote>
+<p><strong>References</strong>:</p>
+<table class="docutils citation" frame="void" id="b-1997" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[B_1997]</td><td>Buxton, R. and Frank, L., <em>A Model for the Coupling between 
+Cerebral Blood Flow and Oxygen Metabolism During Neural Stimulation</em>,
+17:64-72, 1997.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="f-2000" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[F_2000]</td><td>Friston, K., Mechelli, A., Turner, R., and Price, C., <em>Nonlinear 
+Responses in fMRI: The Balloon Model, Volterra Kernels, and Other 
+Hemodynamics</em>, NeuroImage, 12, 466 - 477, 2000.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="b-1996" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[B_1996]</td><td>Geoffrey M. Boynton, Stephen A. Engel, Gary H. Glover and David 
+J. Heeger (1996). Linear Systems Analysis of Functional Magnetic Resonance 
+Imaging in Human V1. J Neurosci 16: 4207-4221</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="p-2000" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[P_2000]</td><td>Alex Polonsky, Randolph Blake, Jochen Braun and David J. Heeger
+(2000). Neuronal activity in human primary visual cortex correlates with
+perception during binocular rivalry. Nature Neuroscience 3: 1153-1159</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="g-1999" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[G_1999]</td><td>Glover, G. <em>Deconvolution of Impulse Response in Event-Related BOLD fMRI</em>.
+NeuroImage 9, 416-429, 1999.</td></tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">LIMITATIONS: sampling period must be integer multiple of 500ms</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">CONSIDERATIONS: It is  sensible to use this monitor if your 
+simulation length is &gt; 30s (30000ms)</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">gamma and polonsky are based on the nitime implementation
+<a class="reference external" href="http://nipy.org/nitime/api/generated/nitime.fmri.hrf.html">http://nipy.org/nitime/api/generated/nitime.fmri.hrf.html</a></p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">see Tutorial_Exploring_The_Bold_Monitor</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Not yet tested, debugged, generalised etc...</p>
+</div>
+<dl class="method">
+<dt id="tvb.simulator.monitors.Bold.__init__">
+<tt class="descclassname">Bold.</tt><tt class="descname">__init__</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#Bold.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.Bold.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise from the base Monitor class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.monitors.Bold.config_for_sim">
+<tt class="descclassname">Bold.</tt><tt class="descname">config_for_sim</tt><big>(</big><em>simulator</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#Bold.config_for_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.Bold.config_for_sim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up stock arrays</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.simulator.monitors.Bold.record">
+<tt class="descclassname">Bold.</tt><tt class="descname">record</tt><big>(</big><em>step</em>, <em>state</em><big>)</big><a class="reference internal" href="_modules/tvb/simulator/monitors.html#Bold.record"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.Bold.record" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a result if integration step corresponds to sampling period.
+Updates the interim-stock on every step and updates the stock if the 
+step corresponds to the interim period.</p>
+</dd></dl>
+
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">hrf_kernel</span></tt> (Haemodynamic Response Function)</dt>
+<dd><div class="first last line-block">
+<div class="line">A tvb.datatypes.equation object which describe the haemodynamic         response function used to compute the BOLD signal.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.datatypes.equations.FirstOrderVolterra&#8217;&gt; </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">hrf_length</span></tt> (Duration (ms))</dt>
+<dd><div class="first last line-block">
+<div class="line">Duration of the hrf kernel</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  20000.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">period</span></tt> (Sampling period (ms))</dt>
+<dd><div class="first last line-block">
+<div class="line">For the BOLD monitor, sampling period in milliseconds must be         an integral multiple of 500. Typical measurment interval (repetition          time TR) is between 1-3 s. If TR is 2s, then Bold period is 2000ms.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  2000.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Model variables to watch)</dt>
+<dd><div class="first last line-block">
+<div class="line">This can be used to override, for each Monitor, the default          monitored state-variables. NOTE: Any specified indices must be consistent          with the Model being monitored. By default, if left unspecified, this will         be set based on the variables_of_interest attribute on the Model.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.monitors.BoldRegionROI">
+<tt class="descclassname">tvb.simulator.monitors.</tt><tt class="descname">BoldRegionROI</tt><a class="reference internal" href="_modules/tvb/simulator/monitors.html#BoldRegionROI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.BoldRegionROI" title="Permalink to this definition">¶</a></dt>
+<dd><p>The BoldRegionROI monitor assumes that it is being used on a surface and 
+uses the region mapping of the surface to generate regional signals which
+are the spatial average of all vertices in the region.</p>
+<p>This was originated to compare the results of a Bold monitor with a 
+region level simulation with that of an otherwise identical surface
+simulation.</p>
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">hrf_kernel</span></tt> (Haemodynamic Response Function)</dt>
+<dd><div class="first last line-block">
+<div class="line">A tvb.datatypes.equation object which describe the haemodynamic         response function used to compute the BOLD signal.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.datatypes.equations.FirstOrderVolterra&#8217;&gt; </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">hrf_length</span></tt> (Duration (ms))</dt>
+<dd><div class="first last line-block">
+<div class="line">Duration of the hrf kernel</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  20000.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">period</span></tt> (Sampling period (ms))</dt>
+<dd><div class="first last line-block">
+<div class="line">For the BOLD monitor, sampling period in milliseconds must be         an integral multiple of 500. Typical measurment interval (repetition          time TR) is between 1-3 s. If TR is 2s, then Bold period is 2000ms.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  2000.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Model variables to watch)</dt>
+<dd><div class="first last line-block">
+<div class="line">This can be used to override, for each Monitor, the default          monitored state-variables. NOTE: Any specified indices must be consistent          with the Model being monitored. By default, if left unspecified, this will         be set based on the variables_of_interest attribute on the Model.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.monitors.BoldMultithreaded">
+<tt class="descclassname">tvb.simulator.monitors.</tt><tt class="descname">BoldMultithreaded</tt><a class="reference internal" href="_modules/tvb/simulator/monitors.html#BoldMultithreaded"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.BoldMultithreaded" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is another Bold clone built to work with the GPU parameter sweep
+simulator. Design criteria</p>
+<ul>
+<li><p class="first">we&#8217;re doing a temporal downsampling before passing into this monitor
+so we need to specify the internal sampling rate using in the stock.
+We assume for now that the downsampled signal&#8217;s Nyquist frequency is 
+outside the range of significant response of the HRF.</p>
+<p>As a quick workaround, just set Bold.dt to the temporal averaged sampling
+frequency.</p>
+</li>
+<li><p class="first">we&#8217;ll be passing state to this monitor where there&#8217;s an additional 
+index for the GPU thread, i.e.</p>
+<blockquote>
+<div><p>stock.shape == (n_stock, nodes, vars, modes, threads)</p>
+</div></blockquote>
+<p>where threads is a multiple of 32, up to even 2**15 (in extreme
+cases), so algorithm etc needs to handle this extra 
+dimension.</p>
+</li>
+</ul>
+<dl class="docutils">
+<dt>PS After rewriting a few lines from the Bold class, it seems that</dt>
+<dd>taking advantage of NumPy style indexing, the array handling can
+be general to whether we&#8217;re using the threads dimension or not; it
+simply doesn&#8217;t touch it, but operations automatically work correctly.</dd>
+</dl>
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">hrf_kernel</span></tt> (Haemodynamic Response Function)</dt>
+<dd><div class="first last line-block">
+<div class="line">A tvb.datatypes.equation object which describe the haemodynamic         response function used to compute the BOLD signal.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.datatypes.equations.FirstOrderVolterra&#8217;&gt; </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">hrf_length</span></tt> (Duration (ms))</dt>
+<dd><div class="first last line-block">
+<div class="line">Duration of the hrf kernel</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  20000.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">period</span></tt> (Sampling period (ms))</dt>
+<dd><div class="first last line-block">
+<div class="line">For the BOLD monitor, sampling period in milliseconds must be         an integral multiple of 500. Typical measurment interval (repetition          time TR) is between 1-3 s. If TR is 2s, then Bold period is 2000ms.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  2000.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Model variables to watch)</dt>
+<dd><div class="first last line-block">
+<div class="line">This can be used to override, for each Monitor, the default          monitored state-variables. NOTE: Any specified indices must be consistent          with the Model being monitored. By default, if left unspecified, this will         be set based on the variables_of_interest attribute on the Model.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.monitors.BalloonWindkesselAccordingToKJFristonEtAl2003NeuroImage">
+<tt class="descclassname">tvb.simulator.monitors.</tt><tt class="descname">BalloonWindkesselAccordingToKJFristonEtAl2003NeuroImage</tt><a class="reference internal" href="_modules/tvb/simulator/monitors.html#BalloonWindkesselAccordingToKJFristonEtAl2003NeuroImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.BalloonWindkesselAccordingToKJFristonEtAl2003NeuroImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>The full Balloon-Windkessel model, following Friston et al&#8217;s paper
+detailing the equations describing hemodynamic state.</p>
+<p>Currently, this monitor models the BOLD activity of the nodes of the
+simulation, not voxels.</p>
+<table class="docutils citation" frame="void" id="f-2003" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[F_2003]</td><td>Friston, K., Harrison, L., and Penny, W., <em>Dynamic causal
+modeling</em>, NeuroImage, 19, 1273 - 1302, 2003.</td></tr>
+</tbody>
+</table>
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">period</span></tt> (Sampling period (ms))</dt>
+<dd><div class="first last line-block">
+<div class="line">Sampling period in milliseconds, must be an integral multiple         of integration-step size. As a guide: 2048 Hz =&gt; 0.48828125 ms ;           1024 Hz =&gt; 0.9765625 ms ; 512 Hz =&gt; 1.953125 ms.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.9765625 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Model variables to watch)</dt>
+<dd><div class="first last line-block">
+<div class="line">This can be used to override, for each Monitor, the default          monitored state-variables. NOTE: Any specified indices must be consistent          with the Model being monitored. By default, if left unspecified, this will         be set based on the variables_of_interest attribute on the Model.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.simulator.monitors.SEEG">
+<tt class="descclassname">tvb.simulator.monitors.</tt><tt class="descname">SEEG</tt><a class="reference internal" href="_modules/tvb/simulator/monitors.html#SEEG"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.simulator.monitors.SEEG" title="Permalink to this definition">¶</a></dt>
+<dd><p>Monitors electrophysiological signals from depth electrodes (intended for stereo-EEG).</p>
+<p><strong>traits on this class:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">period</span></tt> (Sampling period (ms))</dt>
+<dd><div class="first last line-block">
+<div class="line">Sampling period in milliseconds, must be an integral multiple         of integration-step size. As a guide: 2048 Hz =&gt; 0.48828125 ms ;           1024 Hz =&gt; 0.9765625 ms ; 512 Hz =&gt; 1.953125 ms.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  0.9765625 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">sensors</span></tt> (Internal brain sensors)</dt>
+<dd><div class="first last line-block">
+<div class="line">The set of SEEG sensors for which the forward solution will be         calculated.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">sigma</span></tt> (conductivity)</dt>
+<dd><div class="first last line-block">
+<div class="line"><br /></div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  1.0 </div>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Model variables to watch)</dt>
+<dd><div class="first last line-block">
+<div class="line">This can be used to override, for each Monitor, the default          monitored state-variables. NOTE: Any specified indices must be consistent          with the Model being monitored. By default, if left unspecified, this will         be set based on the variables_of_interest attribute on the Model.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  None </div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tvb.simulator.noise.html"
+                        title="previous chapter"><tt class="docutils literal docutils literal"><span class="pre">Noise</span></tt></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tvb.simulator.phase_plane_interactive.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">Phase-Plane</span> <span class="pre">Interactive</span></tt></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tvb.simulator.monitors.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.simulator.phase_plane_interactive.html" title="Phase-Plane Interactive"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tvb.simulator.noise.html" title="Noise"
+             >previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">tvb</span></tt> Package</a> &raquo;</li>
+          <li><a href="tvb.simulator.html" >Welcome to tvb.simulator&#8217;s documentation!</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.datatypes.mode_decompositions_scientific &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.datatypes.mode_decompositions_scientific</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Scientific methods for the Spectral datatypes.</span>
+
+<span class="sd">.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;</span>
+<span class="sd">.. moduleauthor:: Paula Sanz Leon &lt;Paula@tvb.invalid&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.mode_decompositions_data</span> <span class="kn">as</span> <span class="nn">mode_decompositions_data</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="PrincipalComponentsScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.mode_decompositions_scientific.PrincipalComponentsScientific">[docs]</a><span class="k">class</span> <span class="nc">PrincipalComponentsScientific</span><span class="p">(</span><span class="n">mode_decompositions_data</span><span class="o">.</span><span class="n">PrincipalComponentsData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class exists to add scientific methods to PrincipalComponentsData.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
+    
+    
+    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Invoke the compute methods for computable attributes that haven&#39;t been</span>
+<span class="sd">        set during initialization.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PrincipalComponentsScientific</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">use_storage</span> <span class="ow">is</span> <span class="bp">False</span> <span class="ow">and</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_data_shape</span><span class="p">(</span><span class="s">&#39;weights&#39;</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm_source</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">compute_norm_source</span><span class="p">()</span>
+            
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">component_time_series</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">compute_component_time_series</span><span class="p">()</span>
+            
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalised_component_time_series</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">compute_normalised_component_time_series</span><span class="p">()</span>
+    
+    
+    <span class="k">def</span> <span class="nf">_find_summary_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gather scientifically interesting summary information from an instance</span>
+<span class="sd">        of this datatype.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;Mode decomposition type&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">}</span>
+        <span class="n">summary</span><span class="p">[</span><span class="s">&quot;Source&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">title</span>
+        <span class="c">#summary[&quot;Number of variables&quot;] = self...</span>
+        <span class="c">#summary[&quot;Number of mewasurements&quot;] = self...</span>
+        <span class="c">#summary[&quot;Number of components&quot;] = self...</span>
+        <span class="c">#summary[&quot;Number required for 95%&quot;] = self...</span>
+        <span class="k">return</span> <span class="n">summary</span>
+    
+    
+    <span class="k">def</span> <span class="nf">compute_norm_source</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Normalised source time-series.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">norm_source</span> <span class="o">=</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">data</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span> <span class="o">/</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="p">[</span><span class="s">&quot;norm_source&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">log_debug</span><span class="p">(</span><span class="n">owner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+    
+    
+    <span class="c">#TODO: ??? Any value in making this a TimeSeries datatypes ???</span>
+    <span class="k">def</span> <span class="nf">compute_component_time_series</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compnent time-series.&quot;&quot;&quot;</span>
+        <span class="c">#TODO: Generalise -- it currently assumes 4D TimeSeriesSimulator...</span>
+        <span class="n">ts_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">component_ts</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">ts_shape</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ts_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ts_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]):</span>
+                <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">var</span><span class="p">,</span> <span class="n">mode</span><span class="p">]</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="n">var</span><span class="p">,</span> <span class="p">:,</span> <span class="n">mode</span><span class="p">]</span>
+                <span class="n">component_ts</span><span class="p">[:,</span> <span class="n">var</span><span class="p">,</span> <span class="p">:,</span> <span class="n">mode</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">component_time_series</span> <span class="o">=</span> <span class="n">component_ts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="p">[</span><span class="s">&quot;component_time_series&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">log_debug</span><span class="p">(</span><span class="n">owner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+    
+    
+    <span class="c">#TODO: ??? Any value in making this a TimeSeries datatypes ???</span>
+    <span class="k">def</span> <span class="nf">compute_normalised_component_time_series</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;normalised_Compnent time-series.&quot;&quot;&quot;</span>
+        <span class="c">#TODO: Generalise -- it currently assumes 4D TimeSeriesSimulator...</span>
+        <span class="n">ts_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">component_ts</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">ts_shape</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ts_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ts_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]):</span>
+                <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">var</span><span class="p">,</span> <span class="n">mode</span><span class="p">]</span>
+                <span class="n">nts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm_source</span><span class="p">[:,</span> <span class="n">var</span><span class="p">,</span> <span class="p">:,</span> <span class="n">mode</span><span class="p">]</span>
+                <span class="n">component_ts</span><span class="p">[:,</span> <span class="n">var</span><span class="p">,</span> <span class="p">:,</span> <span class="n">mode</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">nts</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalised_component_time_series</span> <span class="o">=</span> <span class="n">component_ts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="p">[</span><span class="s">&quot;normalised_component_time_series&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">log_debug</span><span class="p">(</span><span class="n">owner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="IndependentComponentsScientific"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.mode_decompositions_scientific.IndependentComponentsScientific">[docs]</a><span class="k">class</span> <span class="nc">IndependentComponentsScientific</span><span class="p">(</span><span class="n">mode_decompositions_data</span><span class="o">.</span><span class="n">IndependentComponentsData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class exists to add scientific methods to IndependentComponentsData.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
+    
+    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Invoke the compute methods for computable attributes that haven&#39;t been</span>
+<span class="sd">        set during initialisation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">IndependentComponentsScientific</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">use_storage</span> <span class="ow">is</span> <span class="bp">False</span> <span class="ow">and</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_data_shape</span><span class="p">(</span><span class="s">&#39;unmixing_matrix&#39;</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm_source</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">compute_norm_source</span><span class="p">()</span>
+            
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">component_time_series</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">compute_component_time_series</span><span class="p">()</span>
+            
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalised_component_time_series</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">compute_normalised_component_time_series</span><span class="p">()</span>
+                
+                
+    <span class="k">def</span> <span class="nf">compute_norm_source</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Normalised source time-series.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">norm_source</span> <span class="o">=</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">data</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span> <span class="o">/</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="p">[</span><span class="s">&quot;norm_source&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">log_debug</span><span class="p">(</span><span class="n">owner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        
+    <span class="c">#TODO: ??? Any value in making this a TimeSeries datatypes ??? -- </span>
+    <span class="c"># (PAULA) &gt;&gt; a component time-series datatype?</span>
+    <span class="k">def</span> <span class="nf">compute_component_time_series</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Component time-series.&quot;&quot;&quot;</span>
+        <span class="c">#TODO: Generalise -- it currently assumes 4D TimeSeriesSimulator...</span>
+        <span class="n">ts_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">component_ts_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">ts_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ts_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span> <span class="n">ts_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="n">component_ts</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">component_ts_shape</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ts_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ts_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]):</span>
+                <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unmixing_matrix</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">var</span><span class="p">,</span> <span class="n">mode</span><span class="p">]</span>
+                <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prewhitening_matrix</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">var</span><span class="p">,</span> <span class="n">mode</span><span class="p">]</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="n">var</span><span class="p">,</span> <span class="p">:,</span> <span class="n">mode</span><span class="p">]</span>
+                <span class="n">component_ts</span><span class="p">[:,</span> <span class="n">var</span><span class="p">,</span> <span class="p">:</span> <span class="p">,</span> <span class="n">mode</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">T</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>         
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">component_time_series</span> <span class="o">=</span> <span class="n">component_ts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="p">[</span><span class="s">&quot;component_time_series&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">log_debug</span><span class="p">(</span><span class="n">owner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        
+        
+    <span class="c">#TODO: ??? Any value in making this a TimeSeries datatypes ???</span>
+    <span class="k">def</span> <span class="nf">compute_normalised_component_time_series</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;normalised_component time-series.&quot;&quot;&quot;</span>
+        <span class="c">#TODO: Generalise -- it currently assumes 4D TimeSeriesSimulator...</span>
+        <span class="n">ts_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">component_ts_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">ts_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ts_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span> <span class="n">ts_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="n">component_nts</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">component_ts_shape</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ts_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ts_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]):</span>
+                <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unmixing_matrix</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">var</span><span class="p">,</span> <span class="n">mode</span><span class="p">]</span>
+                <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prewhitening_matrix</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">var</span><span class="p">,</span> <span class="n">mode</span><span class="p">]</span>
+                <span class="n">nts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm_source</span><span class="p">[:,</span> <span class="n">var</span><span class="p">,</span> <span class="p">:,</span> <span class="n">mode</span><span class="p">]</span>
+                <span class="n">component_nts</span><span class="p">[:,</span> <span class="n">var</span><span class="p">,</span> <span class="p">:,</span> <span class="n">mode</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">nts</span><span class="o">.</span><span class="n">T</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>              
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalised_component_time_series</span> <span class="o">=</span> <span class="n">component_nts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="p">[</span><span class="s">&quot;normalised_component_time_series&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">log_debug</span><span class="p">(</span><span class="n">owner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">compute_mixing_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Compute the linear mixing matrix A, so X = A * S , </span>
+<span class="sd">        where X is the observed data and S contain the independent components </span>
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="n">ts_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">mixing_matrix_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">ts_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span> <span class="n">ts_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ts_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="n">mixing_matrix</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">mixing_matrix_shape</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ts_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ts_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]):</span>
+                <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unmixing_matrix</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">var</span><span class="p">,</span> <span class="n">mode</span><span class="p">]</span>
+                <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prewhitening_matrix</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">var</span><span class="p">,</span> <span class="n">mode</span><span class="p">]</span>
+                <span class="n">temp</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+                <span class="n">mixing_matrix</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">var</span><span class="p">,</span> <span class="n">mode</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">T</span> <span class="p">,(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">temp</span><span class="o">.</span><span class="n">T</span><span class="p">))</span><span class="o">.</span><span class="n">I</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mixing_matrix</span> <span class="o">=</span> <span class="n">mixing_matrix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="p">[</span><span class="s">&quot;mixing_matrix&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">log_debug</span><span class="p">(</span><span class="n">owner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_find_summary_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gather scientifically interesting summary information from an instance</span>
+<span class="sd">        of this datatype.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;Mode decomposition type&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">}</span>
+        <span class="n">summary</span><span class="p">[</span><span class="s">&quot;Source&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">title</span>
+        <span class="c">#summary[&quot;Number of variables&quot;] = str(self.source.read_data_shape()[2])</span>
+        <span class="c">#summary[&quot;Number of measurements&quot;] = str(self.source.read_data_shape()[0])</span>
+        <span class="c">#summary[&quot;Number of components&quot;] = str(self.n_components)</span>
+        <span class="c">#summary.update(self.get_info_about_array(&#39;array_data&#39;))</span>
+        <span class="k">return</span> <span class="n">summary</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

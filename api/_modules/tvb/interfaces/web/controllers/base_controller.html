@@ -1,0 +1,674 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.interfaces.web.controllers.base_controller &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.interfaces.web.controllers.base_controller</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The Main class in this file is initialized in web/run.py to be </span>
+<span class="sd">served on the root of the Web site.</span>
+
+<span class="sd">This is the main UI entry point.</span>
+
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">cherrypy</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span> <span class="nn">genshi.template.loader</span> <span class="kn">import</span> <span class="n">TemplateLoader</span>
+<span class="kn">from</span> <span class="nn">tvb.config</span> <span class="kn">import</span> <span class="n">CONNECTIVITY_CLASS</span><span class="p">,</span> <span class="n">CONNECTIVITY_MODULE</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span> <span class="k">as</span> <span class="n">cfg</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.settings_service</span> <span class="kn">import</span> <span class="n">SettingsService</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.user_service</span> <span class="kn">import</span> <span class="n">UserService</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.flow_service</span> <span class="kn">import</span> <span class="n">FlowService</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.structure</span> <span class="kn">import</span> <span class="n">WebStructure</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+
+<span class="c">#These are global constants, used for session attributes and template variables.</span>
+<span class="c">#Message, Current Project and User values are stored in session, because they </span>
+<span class="c"># need to be translated between multiple pages.</span>
+<span class="c">#The rest of the values are stored in the template dictionary.</span>
+<span class="n">TYPE_ERROR</span> <span class="o">=</span> <span class="s">&quot;ERROR&quot;</span>
+<span class="n">TYPE_WARNING</span> <span class="o">=</span> <span class="s">&quot;WARNING&quot;</span>
+<span class="n">TYPE_INFO</span> <span class="o">=</span> <span class="s">&quot;INFO&quot;</span>
+
+<span class="n">KEY_CURRENT_VERSION</span> <span class="o">=</span> <span class="s">&quot;currentVersion&quot;</span>
+<span class="n">KEY_SESSION</span> <span class="o">=</span> <span class="s">&quot;session&quot;</span>
+<span class="n">KEY_SESSION_TREE</span> <span class="o">=</span> <span class="s">&quot;treeSessionKey&quot;</span>
+<span class="n">KEY_USER</span> <span class="o">=</span> <span class="s">&quot;user&quot;</span>
+<span class="n">KEY_SHOW_ONLINE_HELP</span> <span class="o">=</span> <span class="s">&quot;showOnlineHelp&quot;</span>
+<span class="n">KEY_MESSAGE</span> <span class="o">=</span> <span class="s">&quot;message&quot;</span>
+<span class="n">KEY_MESSAGE_TYPE</span> <span class="o">=</span> <span class="s">&quot;messageType&quot;</span>
+<span class="n">KEY_PROJECT</span> <span class="o">=</span> <span class="s">&quot;selectedProject&quot;</span>
+<span class="n">KEY_ERRORS</span> <span class="o">=</span> <span class="s">&quot;errors&quot;</span>
+<span class="n">KEY_FORM_DATA</span> <span class="o">=</span> <span class="s">&quot;data&quot;</span>
+<span class="n">KEY_PARAMETERS_CONFIG</span> <span class="o">=</span> <span class="s">&quot;param_checkbox_config&quot;</span>
+<span class="n">KEY_FIRST_RUN</span> <span class="o">=</span> <span class="s">&quot;first_run&quot;</span>
+<span class="n">KEY_LINK_ANALYZE</span> <span class="o">=</span> <span class="s">&quot;analyzeCategoryLink&quot;</span>
+<span class="n">KEY_LINK_CONNECTIVITY_TAB</span> <span class="o">=</span> <span class="s">&quot;connectivityTabLink&quot;</span>
+<span class="n">KEY_TITLE</span> <span class="o">=</span> <span class="s">&quot;title&quot;</span>
+<span class="n">KEY_ADAPTER</span> <span class="o">=</span> <span class="s">&quot;currentAlgoId&quot;</span>
+<span class="n">KEY_OPERATION_ID</span> <span class="o">=</span> <span class="s">&quot;currentOperationId&quot;</span>
+<span class="n">KEY_SECTION</span> <span class="o">=</span> <span class="s">&quot;section_name&quot;</span>
+<span class="n">KEY_SUB_SECTION</span> <span class="o">=</span> <span class="s">&#39;subsection_name&#39;</span>
+<span class="n">KEY_INCLUDE_RESOURCES</span> <span class="o">=</span> <span class="s">&#39;includedResources&#39;</span>
+<span class="n">KEY_SUBMENU_LIST</span> <span class="o">=</span> <span class="s">&#39;submenu_list&#39;</span>
+<span class="n">KEY_SUBMIT_LINK</span> <span class="o">=</span> <span class="s">&#39;submitLink&#39;</span>
+<span class="n">KEY_DISPLAY_MENU</span> <span class="o">=</span> <span class="s">&quot;displayControl&quot;</span>
+<span class="n">KEY_PARENT_DIV</span> <span class="o">=</span> <span class="s">&quot;parent_div&quot;</span>
+<span class="c">#User section and settings section specific</span>
+<span class="n">KEY_IS_RESTART</span> <span class="o">=</span> <span class="s">&quot;tvbRestarted&quot;</span>
+<span class="n">KEY_INCLUDE_TOOLTIP</span> <span class="o">=</span> <span class="s">&quot;includeTooltip&quot;</span>
+<span class="n">KEY_WRAP_CONTENT_IN_MAIN_DIV</span> <span class="o">=</span> <span class="s">&quot;wrapContentInMainDiv&quot;</span>
+<span class="n">KEY_CURRENT_TAB</span> <span class="o">=</span> <span class="s">&quot;currentTab&quot;</span>
+
+<span class="n">KEY_BURST_CONFIG</span> <span class="o">=</span> <span class="s">&#39;burst_configuration&#39;</span>
+<span class="n">KEY_CACHED_SIMULATOR_TREE</span> <span class="o">=</span> <span class="s">&#39;simulator_input_tree&#39;</span>
+<span class="n">KEY_BACK_PAGE</span> <span class="o">=</span> <span class="s">&quot;back_page_link&quot;</span>
+<span class="n">KEY_SECTION_TITLES</span> <span class="o">=</span> <span class="s">&quot;section_titles&quot;</span>
+<span class="n">KEY_SUBSECTION_TITLES</span> <span class="o">=</span> <span class="s">&quot;sub_section_titles&quot;</span>
+
+<span class="c"># Overlay specific keys</span>
+<span class="n">KEY_OVERLAY_TITLE</span> <span class="o">=</span> <span class="s">&quot;overlay_title&quot;</span>
+<span class="n">KEY_OVERLAY_DESCRIPTION</span> <span class="o">=</span> <span class="s">&quot;overlay_description&quot;</span>
+<span class="n">KEY_OVERLAY_CLASS</span> <span class="o">=</span> <span class="s">&quot;overlay_class&quot;</span>
+<span class="n">KEY_OVERLAY_CONTENT_TEMPLATE</span> <span class="o">=</span> <span class="s">&quot;overlay_content_template&quot;</span>
+<span class="n">KEY_OVERLAY_TABS</span> <span class="o">=</span> <span class="s">&quot;overlay_tabs&quot;</span>
+<span class="n">KEY_OVERLAY_INDEXES</span> <span class="o">=</span> <span class="s">&quot;overlay_indexes&quot;</span>
+<span class="n">KEY_OVERLAY_PAGINATION</span> <span class="o">=</span> <span class="s">&quot;show_overlay_pagination&quot;</span>
+<span class="n">KEY_OVERLAY_PREVIOUS</span> <span class="o">=</span> <span class="s">&quot;action_overlay_previous&quot;</span>
+<span class="n">KEY_OVERLAY_NEXT</span> <span class="o">=</span> <span class="s">&quot;action_overlay_next&quot;</span>
+
+
+
+<div class="viewcode-block" id="settings"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.settings">[docs]</a><span class="k">def</span> <span class="nf">settings</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Annotation to check if a the settings file exists before allowing access</span>
+<span class="sd">    to some parts of TVB.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">dec</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Annotation wrapping web public function&quot;&quot;&quot;</span>
+
+
+        <span class="k">def</span> <span class="nf">deco</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">b</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot; Decorator for public method&quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">SettingsService</span><span class="o">.</span><span class="n">is_first_run</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">b</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">HTTPRedirect</span><span class="p">(</span><span class="s">&#39;/settings/settings&#39;</span><span class="p">)</span>
+
+
+        <span class="k">return</span> <span class="n">deco</span>
+
+
+    <span class="k">return</span> <span class="n">dec</span>
+
+
+</div>
+<div class="viewcode-block" id="profile"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.profile">[docs]</a><span class="k">def</span> <span class="nf">profile</span><span class="p">(</span><span class="n">template_path</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wrapping function, used when profiling.</span>
+<span class="sd">    We duplicate the code here, in a separate function, to help profiling,</span>
+<span class="sd">    but for the runtime process we do not want a separate call, to increase time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">template_dict</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">b</span><span class="p">)</span>
+    <span class="c">### Generate HTML given the path to the template and the data dictionary.</span>
+    <span class="n">loader</span> <span class="o">=</span> <span class="n">TemplateLoader</span><span class="p">()</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">template_path</span><span class="p">)</span>
+    <span class="n">stream</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="o">**</span><span class="n">template_dict</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">stream</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s">&#39;xhtml&#39;</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="using_template"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.using_template">[docs]</a><span class="k">def</span> <span class="nf">using_template</span><span class="p">(</span><span class="n">template_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Annotation to check if a user is logged before accessing a controller method.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">template_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">TEMPLATE_ROOT</span><span class="p">,</span> <span class="n">template_name</span> <span class="o">+</span> <span class="s">&#39;.html&#39;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">dec</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>       
+
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">deco</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">b</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c">## Un-comment bellow for profiling each request:</span>
+                <span class="c">#import cherrypy.lib.profiler as profiler</span>
+                <span class="c">#p = profiler.Profiler(&quot;/Users/lia.domide/TVB/profiler/&quot;)</span>
+                <span class="c">#return p.run(profile, template_path, func, *a, **b)</span>
+
+                <span class="n">template_dict</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">b</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">RENDER_HTML</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">template_dict</span>
+                    <span class="c">### Generate HTML given the path to the template and the data dictionary.</span>
+                <span class="n">loader</span> <span class="o">=</span> <span class="n">TemplateLoader</span><span class="p">()</span>
+                <span class="n">template</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">template_path</span><span class="p">)</span>
+                <span class="n">stream</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="o">**</span><span class="n">template_dict</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">stream</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s">&#39;xhtml&#39;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">excep</span><span class="p">,</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">HTTPRedirect</span><span class="p">):</span>
+                    <span class="k">raise</span>
+                <span class="n">get_logger</span><span class="p">(</span><span class="s">&quot;tvb.interface.web.controllers.base_controller&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+                <span class="n">set_error_message</span><span class="p">(</span><span class="s">&quot;An unexpected exception appeared. Please contact your system administrator.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">HTTPRedirect</span><span class="p">(</span><span class="s">&quot;/tvb?error=True&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">deco</span>
+    <span class="k">return</span> <span class="n">dec</span>
+
+
+</div>
+<div class="viewcode-block" id="ajax_call"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.ajax_call">[docs]</a><span class="k">def</span> <span class="nf">ajax_call</span><span class="p">(</span><span class="n">json_form</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Annotation to wrap all JSON calls, and log on server in case of an exception.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">dec</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">deco</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">b</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">b</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">json_form</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">result</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">excep</span><span class="p">,</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">HTTPRedirect</span><span class="p">):</span>
+                    <span class="k">raise</span>
+                <span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="s">&quot;tvb.interface.web.controllers.base_controller&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Encountered exception when calling asynchronously :&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">func</span><span class="p">))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+                <span class="k">raise</span>
+
+        <span class="k">return</span> <span class="n">deco</span>
+    <span class="k">return</span> <span class="n">dec</span>
+
+
+</div>
+<div class="viewcode-block" id="set_message"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.set_message">[docs]</a><span class="k">def</span> <span class="nf">set_message</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">m_type</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Set in session a message of a given type&quot;&quot;&quot;</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">acquire_lock</span><span class="p">()</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="n">KEY_MESSAGE</span><span class="p">]</span> <span class="o">=</span> <span class="n">msg</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="n">KEY_MESSAGE_TYPE</span><span class="p">]</span> <span class="o">=</span> <span class="n">m_type</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">release_lock</span><span class="p">()</span>
+
+
+</div>
+<div class="viewcode-block" id="set_error_message"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.set_error_message">[docs]</a><span class="k">def</span> <span class="nf">set_error_message</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Set error message in session&quot;&quot;&quot;</span>
+    <span class="n">set_message</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">TYPE_ERROR</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="set_warning_message"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.set_warning_message">[docs]</a><span class="k">def</span> <span class="nf">set_warning_message</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Set warning message in session&quot;&quot;&quot;</span>
+    <span class="n">set_message</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">TYPE_WARNING</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="set_info_message"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.set_info_message">[docs]</a><span class="k">def</span> <span class="nf">set_info_message</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Set info message in session&quot;&quot;&quot;</span>
+    <span class="n">set_message</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">TYPE_INFO</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="get_from_session"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.get_from_session">[docs]</a><span class="k">def</span> <span class="nf">get_from_session</span><span class="p">(</span><span class="n">attribute</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; check if something exists in session and return&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attribute</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="get_current_project"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.get_current_project">[docs]</a><span class="k">def</span> <span class="nf">get_current_project</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Get current Project from session&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_PROJECT</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="get_logged_user"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.get_logged_user">[docs]</a><span class="k">def</span> <span class="nf">get_logged_user</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Get current logged User from session&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_USER</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="add2session"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.add2session">[docs]</a><span class="k">def</span> <span class="nf">add2session</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Set in session, at a key, a value&quot;&quot;&quot;</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">acquire_lock</span><span class="p">()</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">release_lock</span><span class="p">()</span>
+
+
+</div>
+<div class="viewcode-block" id="remove_from_session"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.remove_from_session">[docs]</a><span class="k">def</span> <span class="nf">remove_from_session</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Remove from session an attributes if exists.&quot;&quot;&quot;</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">acquire_lock</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">cherrypy</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="k">del</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="n">cherrypy</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">release_lock</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">release_lock</span><span class="p">()</span>
+    <span class="k">return</span> <span class="bp">None</span>
+
+
+<span class="c"># Constants used be the mechanism that deletes files on disk</span></div>
+<span class="n">FILES_TO_DELETE_ATTR</span> <span class="o">=</span> <span class="s">&quot;files_to_delete&quot;</span>
+
+
+
+<div class="viewcode-block" id="BaseController"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.BaseController">[docs]</a><span class="k">class</span> <span class="nc">BaseController</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class contains the methods served at the root of the Web site.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version_info</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span> <span class="o">=</span> <span class="n">UserService</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flow_service</span> <span class="o">=</span> <span class="n">FlowService</span><span class="p">()</span>
+
+        <span class="n">analyze_category</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_service</span><span class="o">.</span><span class="n">get_launchable_non_viewers</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analyze_category_link</span> <span class="o">=</span> <span class="s">&#39;/flow/step/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">analyze_category</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analyze_adapters</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">connectivity_tab_link</span> <span class="o">=</span> <span class="s">&#39;/flow/step_connectivity&#39;</span>
+        <span class="n">view_category</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_service</span><span class="o">.</span><span class="n">get_visualisers_category</span><span class="p">()</span>
+        <span class="n">conn_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_service</span><span class="o">.</span><span class="n">get_algorithm_by_module_and_class</span><span class="p">(</span><span class="n">CONNECTIVITY_MODULE</span><span class="p">,</span> <span class="n">CONNECTIVITY_CLASS</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">connectivity_link</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_url_adapter</span><span class="p">(</span><span class="n">view_category</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">conn_id</span><span class="p">)</span>
+
+        <span class="n">local_connectivity_link</span> <span class="o">=</span> <span class="s">&#39;/spatial/localconnectivity/step_1/1&#39;</span>
+
+        <span class="n">connectivity_submenu</span> <span class="o">=</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&quot;Large Scale Connectivity&quot;</span><span class="p">,</span> <span class="n">subsection</span><span class="o">=</span><span class="s">&quot;connectivity&quot;</span><span class="p">,</span>
+                                     <span class="n">description</span><span class="o">=</span><span class="s">&quot;View Connectivity Regions. Perform Connectivity lesions&quot;</span><span class="p">,</span>
+                                     <span class="n">link</span><span class="o">=</span><span class="n">connectivity_link</span><span class="p">),</span>
+                                <span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&quot;Local Connectivity&quot;</span><span class="p">,</span> <span class="n">subsection</span><span class="o">=</span><span class="s">&quot;local&quot;</span><span class="p">,</span> <span class="n">link</span><span class="o">=</span><span class="n">local_connectivity_link</span><span class="p">,</span>
+                                     <span class="n">description</span><span class="o">=</span><span class="s">&quot;Create or view existent Local Connectivity entities.&quot;</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connectivity_submenu</span> <span class="o">=</span> <span class="n">connectivity_submenu</span>
+
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BaseController.mark_file_for_delete"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.BaseController.mark_file_for_delete">[docs]</a>    <span class="k">def</span> <span class="nf">mark_file_for_delete</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">delete_parent_folder</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method stores provided file name in session, </span>
+<span class="sd">        and later on when request is done, all these files/folders</span>
+<span class="sd">        are deleted</span>
+<span class="sd">        </span>
+<span class="sd">        :param file_name: name of the file or folder to be deleted</span>
+<span class="sd">        :param delete_parent_folder: specify if the parent folder of the file should be removed too.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># No processing if no file specified</span>
+        <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">files_list</span> <span class="o">=</span> <span class="n">get_from_session</span><span class="p">(</span><span class="n">FILES_TO_DELETE_ATTR</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">files_list</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">files_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">add2session</span><span class="p">(</span><span class="n">FILES_TO_DELETE_ATTR</span><span class="p">,</span> <span class="n">files_list</span><span class="p">)</span>
+
+        <span class="c"># Now add file/folder to list</span>
+        <span class="k">if</span> <span class="n">delete_parent_folder</span><span class="p">:</span>
+            <span class="n">folder_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">file_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">files_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">folder_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">files_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">_mark_selected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the project passed as parameter as the selected project.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">previous_project</span> <span class="o">=</span> <span class="n">get_current_project</span><span class="p">()</span>
+        <span class="c">### Update project stored in selection, with latest Project entity from DB.</span>
+        <span class="n">members</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_users_for_project</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">project</span><span class="o">.</span><span class="n">members</span> <span class="o">=</span> <span class="n">members</span>
+        <span class="n">remove_from_session</span><span class="p">(</span><span class="n">KEY_CACHED_SIMULATOR_TREE</span><span class="p">)</span>
+        <span class="n">add2session</span><span class="p">(</span><span class="n">KEY_PROJECT</span><span class="p">,</span> <span class="n">project</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">previous_project</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">previous_project</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="c">### Clean Burst selection from session in case of a different project.</span>
+            <span class="n">remove_from_session</span><span class="p">(</span><span class="n">KEY_BURST_CONFIG</span><span class="p">)</span>
+            <span class="c">### Store in DB new project selection</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_USER</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">save_project_to_user</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="c">### Display info message about project change</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Selected project is now &quot;</span> <span class="o">+</span> <span class="n">project</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">set_info_message</span><span class="p">(</span><span class="s">&quot;Your current working project is: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BaseController.get_url_adapter"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.BaseController.get_url_adapter">[docs]</a>    <span class="k">def</span> <span class="nf">get_url_adapter</span><span class="p">(</span><span class="n">step_key</span><span class="p">,</span> <span class="n">adapter_id</span><span class="p">,</span> <span class="n">back_page</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the URLs for a given adapter. </span>
+<span class="sd">        Same URL is used both for GET and POST.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result_url</span> <span class="o">=</span> <span class="s">&#39;/flow/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">step_key</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">adapter_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">back_page</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">result_url</span> <span class="o">=</span> <span class="n">result_url</span> <span class="o">+</span> <span class="s">&quot;?back_page=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">back_page</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result_url</span>
+
+</div>
+    <span class="nd">@cherrypy.expose</span>
+<div class="viewcode-block" id="BaseController.index"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.BaseController.index">[docs]</a>    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        / Path response</span>
+<span class="sd">        Redirects to /tvb</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">HTTPRedirect</span><span class="p">(</span><span class="s">&#39;/user&#39;</span><span class="p">)</span>
+
+</div>
+    <span class="nd">@cherrypy.expose</span><span class="p">()</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;user/base_user&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="BaseController.tvb"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.BaseController.tvb">[docs]</a>    <span class="k">def</span> <span class="nf">tvb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        /tvb URL</span>
+<span class="sd">        Returns the home page with the messages stored in the user&#39;s session.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Unused submit attributes:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+        <span class="n">template_dictionary</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">mainContent</span><span class="o">=</span><span class="s">&quot;../index&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;The Virtual Brain Project&quot;</span><span class="p">)</span>
+        <span class="n">template_dictionary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_user_specific_attributes</span><span class="p">(</span><span class="n">template_dictionary</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_IS_RESTART</span><span class="p">):</span>
+            <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_IS_RESTART</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">remove_from_session</span><span class="p">(</span><span class="n">KEY_IS_RESTART</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_default_attributes</span><span class="p">(</span><span class="n">template_dictionary</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
+
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;user/base_user&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="BaseController.error"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.BaseController.error">[docs]</a>    <span class="k">def</span> <span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Error page to redirect when something extremely bad happened&quot;&quot;&quot;</span>
+        <span class="n">template_specification</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">mainContent</span><span class="o">=</span><span class="s">&quot;../error&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;Error page&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">template_specification</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_user_specific_attributes</span><span class="p">(</span><span class="n">template_specification</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_default_attributes</span><span class="p">(</span><span class="n">template_specification</span><span class="p">)</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">_populate_user_and_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_dictionary</span><span class="p">,</span> <span class="n">escape_db_operations</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">         Populate the template dictionary with current logged user (from session).</span>
+<span class="sd">         &quot;&quot;&quot;</span>
+        <span class="n">logged_user</span> <span class="o">=</span> <span class="n">get_logged_user</span><span class="p">()</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_USER</span><span class="p">]</span> <span class="o">=</span> <span class="n">logged_user</span>
+        <span class="n">show_help</span> <span class="o">=</span> <span class="n">logged_user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">logged_user</span><span class="o">.</span><span class="n">is_online_help_active</span><span class="p">()</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_SHOW_ONLINE_HELP</span><span class="p">]</span> <span class="o">=</span> <span class="n">show_help</span>
+
+        <span class="n">project</span> <span class="o">=</span> <span class="n">get_current_project</span><span class="p">()</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_PROJECT</span><span class="p">]</span> <span class="o">=</span> <span class="n">project</span>
+        <span class="k">if</span> <span class="n">project</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">escape_db_operations</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_operations_count</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">template_dictionary</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_populate_message</span><span class="p">(</span><span class="n">template_dictionary</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">         Populate the template dictionary with current message stored in session. </span>
+<span class="sd">         Also specify the message type (default INFO).</span>
+<span class="sd">         Clear from session current message (to avoid displaying it twice).</span>
+<span class="sd">         &quot;&quot;&quot;</span>
+        <span class="n">message_type</span> <span class="o">=</span> <span class="n">remove_from_session</span><span class="p">(</span><span class="n">KEY_MESSAGE_TYPE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">message_type</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">message_type</span> <span class="o">=</span> <span class="n">TYPE_INFO</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_MESSAGE_TYPE</span><span class="p">]</span> <span class="o">=</span> <span class="n">message_type</span>
+
+        <span class="n">message</span> <span class="o">=</span> <span class="n">remove_from_session</span><span class="p">(</span><span class="n">KEY_MESSAGE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">message</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_MESSAGE</span><span class="p">]</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="k">return</span> <span class="n">template_dictionary</span>
+
+
+    <span class="k">def</span> <span class="nf">_populate_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_dictionary</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Populate current template with information for the Left Menu.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">KEY_FIRST_RUN</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">template_dictionary</span><span class="p">:</span>
+            <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_FIRST_RUN</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_LINK_ANALYZE</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analyze_category_link</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_LINK_CONNECTIVITY_TAB</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connectivity_tab_link</span>
+        <span class="k">if</span> <span class="n">KEY_BACK_PAGE</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">template_dictionary</span><span class="p">:</span>
+            <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_BACK_PAGE</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_SECTION_TITLES</span><span class="p">]</span> <span class="o">=</span> <span class="n">WebStructure</span><span class="o">.</span><span class="n">WEB_SECTION_TITLES</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_SUBSECTION_TITLES</span><span class="p">]</span> <span class="o">=</span> <span class="n">WebStructure</span><span class="o">.</span><span class="n">WEB_SUBSECTION_TITLES</span>
+        <span class="k">return</span> <span class="n">template_dictionary</span>
+
+
+    <span class="k">def</span> <span class="nf">_populate_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">algo_group</span><span class="p">,</span> <span class="n">result_template</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Populate Section and Sub-Section fields from current Algorithm-Group.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">algo_group</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="n">CONNECTIVITY_MODULE</span><span class="p">:</span>
+            <span class="n">result_template</span><span class="p">[</span><span class="n">KEY_SECTION</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;connectivity&#39;</span>
+            <span class="n">result_template</span><span class="p">[</span><span class="n">KEY_SUB_SECTION</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;connectivity&#39;</span>
+            <span class="n">result_template</span><span class="p">[</span><span class="n">KEY_SUBMENU_LIST</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connectivity_submenu</span>
+        <span class="k">elif</span> <span class="n">algo_group</span><span class="o">.</span><span class="n">group_category</span><span class="o">.</span><span class="n">display</span><span class="p">:</span>
+            <span class="c">### Visualizers on the Burst Page</span>
+            <span class="n">result_template</span><span class="p">[</span><span class="n">KEY_SECTION</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;burst&#39;</span>
+            <span class="n">result_template</span><span class="p">[</span><span class="n">KEY_SUB_SECTION</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;view_&#39;</span> <span class="o">+</span> <span class="n">algo_group</span><span class="o">.</span><span class="n">subsection_name</span>
+
+        <span class="k">elif</span> <span class="n">algo_group</span><span class="o">.</span><span class="n">group_category</span><span class="o">.</span><span class="n">rawinput</span><span class="p">:</span>
+            <span class="c">### Upload algorithms</span>
+            <span class="n">result_template</span><span class="p">[</span><span class="n">KEY_SECTION</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;project&#39;</span>
+            <span class="n">result_template</span><span class="p">[</span><span class="n">KEY_SUB_SECTION</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;data&#39;</span>
+        <span class="k">elif</span> <span class="s">&#39;RAW_DATA&#39;</span> <span class="ow">in</span> <span class="n">algo_group</span><span class="o">.</span><span class="n">group_category</span><span class="o">.</span><span class="n">defaultdatastate</span><span class="p">:</span>
+            <span class="c">### Creators</span>
+            <span class="n">result_template</span><span class="p">[</span><span class="n">KEY_SECTION</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;stimulus&#39;</span>
+            <span class="n">result_template</span><span class="p">[</span><span class="n">KEY_SUB_SECTION</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;stimulus&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c">### Analyzers</span>
+            <span class="n">result_template</span><span class="p">[</span><span class="n">KEY_SECTION</span><span class="p">]</span> <span class="o">=</span> <span class="n">algo_group</span><span class="o">.</span><span class="n">group_category</span><span class="o">.</span><span class="n">displayname</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">result_template</span><span class="p">[</span><span class="n">KEY_SUB_SECTION</span><span class="p">]</span> <span class="o">=</span> <span class="n">algo_group</span><span class="o">.</span><span class="n">subsection_name</span>
+            <span class="n">result_template</span><span class="p">[</span><span class="n">KEY_SUBMENU_LIST</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analyze_adapters</span>
+
+
+    <span class="k">def</span> <span class="nf">_fill_user_specific_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_dictionary</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Attributes needed for base_user template.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_INCLUDE_TOOLTIP</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_WRAP_CONTENT_IN_MAIN_DIV</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_CURRENT_TAB</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;none&#39;</span>
+
+        <span class="k">return</span> <span class="n">template_dictionary</span>
+
+
+<div class="viewcode-block" id="BaseController.fill_default_attributes"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.BaseController.fill_default_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">fill_default_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_dictionary</span><span class="p">,</span> <span class="n">escape_db_operations</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fill into &#39;template_dictionary&#39; data that we want to have ready in UI.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">template_dictionary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_populate_user_and_project</span><span class="p">(</span><span class="n">template_dictionary</span><span class="p">,</span> <span class="n">escape_db_operations</span><span class="p">)</span>
+        <span class="n">template_dictionary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_populate_message</span><span class="p">(</span><span class="n">template_dictionary</span><span class="p">)</span>
+        <span class="n">template_dictionary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_populate_menu</span><span class="p">(</span><span class="n">template_dictionary</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">KEY_ERRORS</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">template_dictionary</span><span class="p">:</span>
+            <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_ERRORS</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">KEY_FORM_DATA</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">template_dictionary</span><span class="p">:</span>
+            <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_FORM_DATA</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">KEY_SUB_SECTION</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">template_dictionary</span> <span class="ow">and</span> <span class="n">KEY_SECTION</span> <span class="ow">in</span> <span class="n">template_dictionary</span><span class="p">:</span>
+            <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_SUB_SECTION</span><span class="p">]</span> <span class="o">=</span> <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_SECTION</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">KEY_SUBMENU_LIST</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">template_dictionary</span><span class="p">:</span>
+            <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_SUBMENU_LIST</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_CURRENT_VERSION</span><span class="p">]</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">BASE_VERSION</span>
+        <span class="k">return</span> <span class="n">template_dictionary</span>
+
+</div>
+<div class="viewcode-block" id="BaseController.fill_overlay_attributes"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.BaseController.fill_overlay_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">fill_overlay_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_dictionary</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">content_template</span><span class="p">,</span>
+                                <span class="n">css_class</span><span class="p">,</span> <span class="n">tabs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">overlay_indexes</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method prepares parameters for rendering overlay (overlay.html)</span>
+<span class="sd">        </span>
+<span class="sd">        :param title: overlay title</span>
+<span class="sd">        :param description: overlay description</span>
+<span class="sd">        :param content_template: path&amp;name of the template file which will fill overlay content (without .html)</span>
+<span class="sd">        :param css_class: CSS class to be applied on overlay </span>
+<span class="sd">        :param tabs: list of strings containing names of the tabs </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">template_dictionary</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">template_dictionary</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_OVERLAY_TITLE</span><span class="p">]</span> <span class="o">=</span> <span class="n">title</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_OVERLAY_DESCRIPTION</span><span class="p">]</span> <span class="o">=</span> <span class="n">description</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_OVERLAY_CONTENT_TEMPLATE</span><span class="p">]</span> <span class="o">=</span> <span class="n">content_template</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_OVERLAY_CLASS</span><span class="p">]</span> <span class="o">=</span> <span class="n">css_class</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_OVERLAY_TABS</span><span class="p">]</span> <span class="o">=</span> <span class="n">tabs</span> <span class="k">if</span> <span class="n">tabs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">tabs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">overlay_indexes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_OVERLAY_INDEXES</span><span class="p">]</span> <span class="o">=</span> <span class="n">overlay_indexes</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_OVERLAY_INDEXES</span><span class="p">]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tabs</span><span class="p">))</span> <span class="k">if</span> <span class="n">tabs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">KEY_OVERLAY_PAGINATION</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">return</span> <span class="n">template_dictionary</span>
+
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;overlay_blocker&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="BaseController.showBlockerOverlay"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.BaseController.showBlockerOverlay">[docs]</a>    <span class="k">def</span> <span class="nf">showBlockerOverlay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the content of the blocking overlay (covers entire page and do not allow any action)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_default_attributes</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+    
+    </div>
+<div class="viewcode-block" id="BaseController.update_operations_count"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.controllers.html#tvb.interfaces.web.controllers.base_controller.BaseController.update_operations_count">[docs]</a>    <span class="k">def</span> <span class="nf">update_operations_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If a project is selected, update Operation Numbers in call-out.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">project</span> <span class="o">=</span> <span class="n">get_current_project</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">project</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">fns</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">canceled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_service</span><span class="o">.</span><span class="n">get_operation_numbers</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">project</span><span class="o">.</span><span class="n">operations_finished</span> <span class="o">=</span> <span class="n">fns</span>
+            <span class="n">project</span><span class="o">.</span><span class="n">operations_started</span> <span class="o">=</span> <span class="n">sta</span>
+            <span class="n">project</span><span class="o">.</span><span class="n">operations_error</span> <span class="o">=</span> <span class="n">err</span>
+            <span class="n">project</span><span class="o">.</span><span class="n">operations_canceled</span> <span class="o">=</span> <span class="n">canceled</span>
+            <span class="n">add2session</span><span class="p">(</span><span class="n">KEY_PROJECT</span><span class="p">,</span> <span class="n">project</span><span class="p">)</span>
+            
+                    
+            
+            
+            </div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

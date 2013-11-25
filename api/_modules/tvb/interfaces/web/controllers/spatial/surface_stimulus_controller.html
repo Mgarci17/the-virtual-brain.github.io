@@ -1,0 +1,553 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.interfaces.web.controllers.spatial.surface_stimulus_controller &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.interfaces.web.controllers.spatial.surface_stimulus_controller</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Ionel Ortelecan &lt;ionel.ortelecan@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">cherrypy</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="kn">import</span> <span class="nn">tvb.interfaces.web.controllers.base_controller</span> <span class="kn">as</span> <span class="nn">base</span>
+<span class="kn">from</span> <span class="nn">tvb.datatypes.patterns</span> <span class="kn">import</span> <span class="n">StimuliSurface</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.abcadapter</span> <span class="kn">import</span> <span class="n">ABCAdapter</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.transient.context_stimulus</span> <span class="kn">import</span> <span class="n">SurfaceStimulusContext</span><span class="p">,</span> <span class="n">SURFACE_PARAMETER</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.transient.structure_entities</span> <span class="kn">import</span> <span class="n">DataTypeMetaData</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.base_controller</span> <span class="kn">import</span> <span class="n">using_template</span><span class="p">,</span> <span class="n">ajax_call</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.users_controller</span> <span class="kn">import</span> <span class="n">logged</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.spatial.base_spatio_temporal_controller</span> <span class="kn">import</span> <span class="n">SpatioTemporalController</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.spatial.base_spatio_temporal_controller</span> <span class="kn">import</span> <span class="n">PARAM_SURFACE</span>
+
+
+<span class="n">SURFACE_STIMULUS_CREATOR_MODULE</span> <span class="o">=</span> <span class="s">&quot;tvb.adapters.creators.stimulus_creator&quot;</span>
+<span class="n">SURFACE_STIMULUS_CREATOR_CLASS</span> <span class="o">=</span> <span class="s">&quot;SurfaceStimulusCreator&quot;</span>
+<span class="n">KEY_STIMULUS</span> <span class="o">=</span> <span class="s">&quot;session_stimulus&quot;</span>
+<span class="n">LOAD_EXISTING_URL</span> <span class="o">=</span> <span class="s">&#39;/spatial/stimulus/surface/load_surface_stimulus&#39;</span>
+<span class="n">RELOAD_DEFAULT_PAGE_URL</span> <span class="o">=</span> <span class="s">&#39;/spatial/stimulus/surface/reload_default&#39;</span>
+<span class="n">CHUNK_SIZE</span> <span class="o">=</span> <span class="mi">20</span>
+
+<span class="n">KEY_SURFACE_CONTEXT</span> <span class="o">=</span> <span class="s">&quot;stim-surface-ctx&quot;</span>
+
+
+<div class="viewcode-block" id="SurfaceStimulusController"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_stimulus_controller.SurfaceStimulusController">[docs]</a><span class="k">class</span> <span class="nc">SurfaceStimulusController</span><span class="p">(</span><span class="n">SpatioTemporalController</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Control layer for defining Stimulus entities on a cortical surface.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">SpatioTemporalController</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c">#if any field that starts with one of the following prefixes is changed</span>
+        <span class="c"># than the temporal equation chart will be redrawn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temporal_fields_prefixes</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;temporal&#39;</span><span class="p">,</span> <span class="s">&#39;min_tmp_x&#39;</span><span class="p">,</span> <span class="s">&#39;max_tmp_x&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spatial_fields_prefixes</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;spatial&#39;</span><span class="p">,</span> <span class="s">&#39;min_space_x&#39;</span><span class="p">,</span> <span class="s">&#39;max_space_x&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="SurfaceStimulusController.step_1"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_stimulus_controller.SurfaceStimulusController.step_1">[docs]</a>    <span class="k">def</span> <span class="nf">step_1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Used for generating the interface which allows the user to define a stimulus.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_SURFACE_CONTEXT</span><span class="p">)</span>
+        <span class="n">right_side_interface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_stimulus_interface</span><span class="p">()</span>
+        <span class="n">selected_stimulus_gid</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get_selected_stimulus</span><span class="p">()</span>
+        <span class="n">left_side_interface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_select_existent_entities</span><span class="p">(</span><span class="s">&#39;Load Surface Stimulus:&#39;</span><span class="p">,</span> <span class="n">StimuliSurface</span><span class="p">,</span>
+                                                                <span class="n">selected_stimulus_gid</span><span class="p">)</span>
+        <span class="c">#add interface to session, needed for filters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_interface_to_session</span><span class="p">(</span><span class="n">left_side_interface</span><span class="p">,</span> <span class="n">right_side_interface</span><span class="p">[</span><span class="s">&#39;inputList&#39;</span><span class="p">])</span>
+        <span class="n">template_specification</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&quot;Spatio temporal - Surface stimulus&quot;</span><span class="p">)</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;existentEntitiesInputList&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">left_side_interface</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;mainContent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;spatial/stimulus_surface_step1_main&#39;</span>
+        <span class="n">template_specification</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">right_side_interface</span><span class="p">)</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;temporalEquationViewerUrl&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;/spatial/stimulus/surface/get_temporal_equation_chart&#39;</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;temporalFieldsPrefixes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temporal_fields_prefixes</span><span class="p">)</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;spatialEquationViewerUrl&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;/spatial/stimulus/surface/get_spatial_equation_chart&#39;</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;spatialFieldsPrefixes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_fields_prefixes</span><span class="p">)</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;next_step_url&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;/spatial/stimulus/surface/step_1_submit&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_default_attributes</span><span class="p">(</span><span class="n">template_specification</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="SurfaceStimulusController.step_2"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_stimulus_controller.SurfaceStimulusController.step_2">[docs]</a>    <span class="k">def</span> <span class="nf">step_2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Used for generating the interface which allows the user to define a stimulus.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_SURFACE_CONTEXT</span><span class="p">)</span>
+        <span class="n">selected_stimulus_gid</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get_selected_stimulus</span><span class="p">()</span>
+        <span class="n">left_side_interface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_select_existent_entities</span><span class="p">(</span><span class="s">&#39;Load Surface Stimulus:&#39;</span><span class="p">,</span> <span class="n">StimuliSurface</span><span class="p">,</span>
+                                                                <span class="n">selected_stimulus_gid</span><span class="p">)</span>
+        <span class="n">template_specification</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&quot;Spatio temporal - Surface stimulus&quot;</span><span class="p">)</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;existentEntitiesInputList&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">left_side_interface</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;mainContent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;spatial/stimulus_surface_step2_main&#39;</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;next_step_url&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;/spatial/stimulus/surface/step_2_submit&#39;</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;loadExistentEntityUrl&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">LOAD_EXISTING_URL</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;resetToDefaultUrl&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">RELOAD_DEFAULT_PAGE_URL</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;surfaceGID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get_session_surface</span><span class="p">()</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="n">base</span><span class="o">.</span><span class="n">KEY_PARAMETERS_CONFIG</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;definedFocalPoints&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">focal_points_list</span><span class="p">)</span>
+        <span class="n">template_specification</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">display_surface</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">get_session_surface</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_default_attributes</span><span class="p">(</span><span class="n">template_specification</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="SurfaceStimulusController.do_step"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_stimulus_controller.SurfaceStimulusController.do_step">[docs]</a>    <span class="k">def</span> <span class="nf">do_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step_idx</span><span class="p">,</span> <span class="n">from_step</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Go to the step given by :param step_idx. In case the next step is the</span>
+<span class="sd">        create one (3), we want to remain on the same step as before so that is</span>
+<span class="sd">        handled differently depending on the :param from_step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">step_idx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_1</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">step_idx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_2</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">step_idx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_stimulus</span><span class="p">():</span>
+                <span class="n">base</span><span class="o">.</span><span class="n">set_info_message</span><span class="p">(</span><span class="s">&quot;Successfully created a new stimulus.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">from_step</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_2</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_1</span><span class="p">()</span>
+
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;base_template&#39;</span><span class="p">)</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="SurfaceStimulusController.step_1_submit"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_stimulus_controller.SurfaceStimulusController.step_1_submit">[docs]</a>    <span class="k">def</span> <span class="nf">step_1_submit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_step</span><span class="p">,</span> <span class="n">do_reset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Any submit from the first step should be handled here. Update the context then</span>
+<span class="sd">        go to the next step as required. In case a reset is needed create a clear context.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">do_reset</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">new_context</span> <span class="o">=</span> <span class="n">SurfaceStimulusContext</span><span class="p">()</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">add2session</span><span class="p">(</span><span class="n">KEY_SURFACE_CONTEXT</span><span class="p">,</span> <span class="n">new_context</span><span class="p">)</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_SURFACE_CONTEXT</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SURFACE_PARAMETER</span><span class="p">)</span> <span class="o">!=</span> <span class="n">context</span><span class="o">.</span><span class="n">get_session_surface</span><span class="p">():</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">set_focal_points</span><span class="p">(</span><span class="s">&#39;[]&#39;</span><span class="p">)</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">update_eq_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_step</span><span class="p">(</span><span class="n">next_step</span><span class="p">)</span>
+
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;base_template&#39;</span><span class="p">)</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="SurfaceStimulusController.step_2_submit"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_stimulus_controller.SurfaceStimulusController.step_2_submit">[docs]</a>    <span class="k">def</span> <span class="nf">step_2_submit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_step</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Any submit from the second step should be handled here. Update the context and then do </span>
+<span class="sd">        the next step as required.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_SURFACE_CONTEXT</span><span class="p">)</span>
+        <span class="n">submited_focal_points</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;defined_focal_points&#39;</span><span class="p">]</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">set_focal_points</span><span class="p">(</span><span class="n">submited_focal_points</span><span class="p">)</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">equation_kwargs</span><span class="p">[</span><span class="n">DataTypeMetaData</span><span class="o">.</span><span class="n">KEY_TAG_1</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">DataTypeMetaData</span><span class="o">.</span><span class="n">KEY_TAG_1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_step</span><span class="p">(</span><span class="n">next_step</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="SurfaceStimulusController.create_stimulus"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_stimulus_controller.SurfaceStimulusController.create_stimulus">[docs]</a>    <span class="k">def</span> <span class="nf">create_stimulus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a stimulus from the given data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">context</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_SURFACE_CONTEXT</span><span class="p">)</span>
+            <span class="n">surface_stimulus_creator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_creator_and_interface</span><span class="p">(</span><span class="n">SURFACE_STIMULUS_CREATOR_MODULE</span><span class="p">,</span>
+                                                                      <span class="n">SURFACE_STIMULUS_CREATOR_CLASS</span><span class="p">,</span>
+                                                                      <span class="n">StimuliSurface</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">flow_service</span><span class="o">.</span><span class="n">fire_operation</span><span class="p">(</span><span class="n">surface_stimulus_creator</span><span class="p">,</span> <span class="n">base</span><span class="o">.</span><span class="n">get_logged_user</span><span class="p">(),</span>
+                                             <span class="n">base</span><span class="o">.</span><span class="n">get_current_project</span><span class="p">()</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="o">**</span><span class="n">context</span><span class="o">.</span><span class="n">equation_kwargs</span><span class="p">)</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">set_info_message</span><span class="p">(</span><span class="s">&quot;The operation for creating the stimulus was successfully launched.&quot;</span><span class="p">)</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">selected_stimulus</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">except</span> <span class="p">(</span><span class="ne">NameError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="ne">SyntaxError</span><span class="p">),</span> <span class="n">_</span><span class="p">:</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">set_error_message</span><span class="p">(</span><span class="s">&quot;The operation failed due to invalid parameter input.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">set_error_message</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;base_template&#39;</span><span class="p">)</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="SurfaceStimulusController.load_surface_stimulus"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_stimulus_controller.SurfaceStimulusController.load_surface_stimulus">[docs]</a>    <span class="k">def</span> <span class="nf">load_surface_stimulus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface_stimulus_gid</span><span class="p">,</span> <span class="n">from_step</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads the interface for the selected surface stimulus.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_SURFACE_CONTEXT</span><span class="p">)</span>
+        <span class="n">selected_surface_stimulus</span> <span class="o">=</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">load_entity_by_gid</span><span class="p">(</span><span class="n">surface_stimulus_gid</span><span class="p">)</span>
+        <span class="n">temporal_eq</span> <span class="o">=</span> <span class="n">selected_surface_stimulus</span><span class="o">.</span><span class="n">temporal</span>
+        <span class="n">spatial_eq</span> <span class="o">=</span> <span class="n">selected_surface_stimulus</span><span class="o">.</span><span class="n">spatial</span>
+        <span class="n">surface</span> <span class="o">=</span> <span class="n">selected_surface_stimulus</span><span class="o">.</span><span class="n">surface</span>
+        <span class="n">focal_points_surface</span> <span class="o">=</span> <span class="n">selected_surface_stimulus</span><span class="o">.</span><span class="n">focal_points_surface</span>
+        <span class="n">focal_points_triangles</span> <span class="o">=</span> <span class="n">selected_surface_stimulus</span><span class="o">.</span><span class="n">focal_points_triangles</span>
+
+        <span class="n">temporal_eq_type</span> <span class="o">=</span> <span class="n">temporal_eq</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="n">spatial_eq_type</span> <span class="o">=</span> <span class="n">spatial_eq</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="n">default_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;temporal&#39;</span><span class="p">:</span> <span class="n">temporal_eq_type</span><span class="p">,</span> <span class="s">&#39;spatial&#39;</span><span class="p">:</span> <span class="n">spatial_eq_type</span><span class="p">,</span>
+                        <span class="s">&#39;surface&#39;</span><span class="p">:</span> <span class="n">surface</span><span class="o">.</span><span class="n">gid</span><span class="p">,</span> <span class="s">&#39;focal_points_surface&#39;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">focal_points_surface</span><span class="p">),</span>
+                        <span class="s">&#39;focal_points_triangles&#39;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">focal_points_triangles</span><span class="p">)}</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">temporal_eq</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
+            <span class="n">prepared_name</span> <span class="o">=</span> <span class="s">&#39;temporal_parameters_option_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">temporal_eq_type</span><span class="p">)</span>
+            <span class="n">prepared_name</span> <span class="o">=</span> <span class="n">prepared_name</span> <span class="o">+</span> <span class="s">&#39;_parameters_parameters_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+            <span class="n">default_dict</span><span class="p">[</span><span class="n">prepared_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">temporal_eq</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">param</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">spatial_eq</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
+            <span class="n">prepared_name</span> <span class="o">=</span> <span class="s">&#39;spatial_parameters_option_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">spatial_eq_type</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;_parameters_parameters_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+            <span class="n">default_dict</span><span class="p">[</span><span class="n">prepared_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">spatial_eq</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">param</span><span class="p">])</span>
+
+        <span class="n">default_dict</span><span class="p">[</span><span class="n">DataTypeMetaData</span><span class="o">.</span><span class="n">KEY_TAG_1</span><span class="p">]</span> <span class="o">=</span> <span class="n">selected_surface_stimulus</span><span class="o">.</span><span class="n">user_tag_1</span>
+
+        <span class="n">input_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_creator_and_interface</span><span class="p">(</span><span class="n">SURFACE_STIMULUS_CREATOR_MODULE</span><span class="p">,</span>
+                                                    <span class="n">SURFACE_STIMULUS_CREATOR_CLASS</span><span class="p">,</span> <span class="n">StimuliSurface</span><span class="p">(),</span>
+                                                    <span class="n">lock_midpoint_for_eq</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">input_list</span> <span class="o">=</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">fill_defaults</span><span class="p">(</span><span class="n">input_list</span><span class="p">,</span> <span class="n">default_dict</span><span class="p">)</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">update_from_interface</span><span class="p">(</span><span class="n">input_list</span><span class="p">)</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">equation_kwargs</span><span class="p">[</span><span class="n">DataTypeMetaData</span><span class="o">.</span><span class="n">KEY_TAG_1</span><span class="p">]</span> <span class="o">=</span> <span class="n">selected_surface_stimulus</span><span class="o">.</span><span class="n">user_tag_1</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">set_active_stimulus</span><span class="p">(</span><span class="n">surface_stimulus_gid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_step</span><span class="p">(</span><span class="n">from_step</span><span class="p">)</span>
+
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;base_template&#39;</span><span class="p">)</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="SurfaceStimulusController.reload_default"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_stimulus_controller.SurfaceStimulusController.reload_default">[docs]</a>    <span class="k">def</span> <span class="nf">reload_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_step</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Just reload default data as if stimulus is None. </span>
+<span class="sd">        </span>
+<span class="sd">        from_step:</span>
+<span class="sd">            not actually used here since when the user selects None</span>
+<span class="sd">            from the stimulus entities select we want to take him back to step 1</span>
+<span class="sd">            always. Kept just for compatibility with the normal load entity of a </span>
+<span class="sd">            stimulus where we want to stay in the same page.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_SURFACE_CONTEXT</span><span class="p">)</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_step</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@ajax_call</span><span class="p">()</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="SurfaceStimulusController.view_stimulus"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_stimulus_controller.SurfaceStimulusController.view_stimulus">[docs]</a>    <span class="k">def</span> <span class="nf">view_stimulus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">focal_points</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Just create the stimulus to view the actual data, don&#39;t store to db.</span>
+<span class="sd">        Hold the entity in session without the surface, so the next time you need</span>
+<span class="sd">        data just get from that one.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">context</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_SURFACE_CONTEXT</span><span class="p">)</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">set_focal_points</span><span class="p">(</span><span class="n">focal_points</span><span class="p">)</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">equation_kwargs</span><span class="p">)</span>
+            <span class="n">surface_stimulus_creator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_creator_and_interface</span><span class="p">(</span><span class="n">SURFACE_STIMULUS_CREATOR_MODULE</span><span class="p">,</span>
+                                                                      <span class="n">SURFACE_STIMULUS_CREATOR_CLASS</span><span class="p">,</span>
+                                                                      <span class="n">StimuliSurface</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">min_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;min_tmp_x&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="n">max_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;max_tmp_x&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="n">surface_stimulus_creator</span><span class="o">.</span><span class="n">prepare_ui_inputs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">stimulus</span> <span class="o">=</span> <span class="n">surface_stimulus_creator</span><span class="o">.</span><span class="n">launch</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">surface_gid</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">PARAM_SURFACE</span><span class="p">)</span>
+            <span class="n">surface</span> <span class="o">=</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">load_entity_by_gid</span><span class="p">(</span><span class="n">surface_gid</span><span class="p">)</span>
+            <span class="n">stimulus</span><span class="o">.</span><span class="n">surface</span> <span class="o">=</span> <span class="n">surface</span>
+            <span class="n">stimulus</span><span class="o">.</span><span class="n">configure_space</span><span class="p">()</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">min_time</span><span class="p">,</span> <span class="n">max_time</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">time</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">stimulus</span><span class="o">.</span><span class="n">configure_time</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">max_value</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">stimulus</span><span class="p">())</span>
+            <span class="n">min_value</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">stimulus</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">CHUNK_SIZE</span><span class="p">,</span> <span class="n">stimulus</span><span class="o">.</span><span class="n">temporal_pattern</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])):</span>
+                <span class="n">step_data</span> <span class="o">=</span> <span class="n">stimulus</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step_data</span><span class="p">)</span>
+            <span class="n">stimulus</span><span class="o">.</span><span class="n">surface</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">gid</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">add2session</span><span class="p">(</span><span class="n">KEY_STIMULUS</span><span class="p">,</span> <span class="n">stimulus</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;status&#39;</span><span class="p">:</span> <span class="s">&#39;ok&#39;</span><span class="p">,</span> <span class="s">&#39;max&#39;</span><span class="p">:</span> <span class="n">max_value</span><span class="p">,</span> <span class="s">&#39;min&#39;</span><span class="p">:</span> <span class="n">min_value</span><span class="p">,</span>
+                      <span class="s">&#39;data&#39;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span> <span class="s">&quot;time_min&quot;</span><span class="p">:</span> <span class="n">min_time</span><span class="p">,</span> <span class="s">&quot;time_max&quot;</span><span class="p">:</span> <span class="n">max_time</span><span class="p">,</span> <span class="s">&quot;chunk_size&quot;</span><span class="p">:</span> <span class="n">CHUNK_SIZE</span><span class="p">}</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">NameError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="ne">SyntaxError</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;status&#39;</span><span class="p">:</span> <span class="s">&#39;error&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;errorMsg&#39;</span><span class="p">:</span> <span class="s">&quot;Could not generate stimulus data. Some of the parameters hold invalid characters.&quot;</span><span class="p">}</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;allSeries&#39;</span><span class="p">:</span> <span class="s">&#39;error&#39;</span><span class="p">,</span> <span class="s">&#39;errorMsg&#39;</span><span class="p">:</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">}</span>
+
+</div>
+<div class="viewcode-block" id="SurfaceStimulusController.fill_default_attributes"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_stimulus_controller.SurfaceStimulusController.fill_default_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">fill_default_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_specification</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add some entries that are used in both steps then fill the default required attributes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_SURFACE_CONTEXT</span><span class="p">)</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&quot;entitiySavedName&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="n">DataTypeMetaData</span><span class="o">.</span><span class="n">KEY_TAG_1</span><span class="p">,</span> <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Display name&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;str&#39;</span><span class="p">,</span>
+             <span class="s">&quot;disabled&quot;</span><span class="p">:</span> <span class="s">&quot;False&quot;</span><span class="p">,</span> <span class="s">&quot;default&quot;</span><span class="p">:</span> <span class="n">context</span><span class="o">.</span><span class="n">equation_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">DataTypeMetaData</span><span class="o">.</span><span class="n">KEY_TAG_1</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)}]</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;loadExistentEntityUrl&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">LOAD_EXISTING_URL</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;resetToDefaultUrl&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">RELOAD_DEFAULT_PAGE_URL</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;displayedMessage&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">KEY_MESSAGE</span><span class="p">)</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;messageType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">KEY_MESSAGE_TYPE</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">SurfaceStimulusController</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">fill_default_attributes</span><span class="p">(</span><span class="n">template_specification</span><span class="p">,</span>
+                                                                              <span class="n">subsection</span><span class="o">=</span><span class="s">&#39;surfacestim&#39;</span><span class="p">)</span>
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@ajax_call</span><span class="p">()</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="SurfaceStimulusController.get_stimulus_chunk"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_stimulus_controller.SurfaceStimulusController.get_stimulus_chunk">[docs]</a>    <span class="k">def</span> <span class="nf">get_stimulus_chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunk_idx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the next chunk of the stimulus data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stimulus</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_STIMULUS</span><span class="p">)</span>
+        <span class="n">surface_gid</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">PARAM_SURFACE</span><span class="p">)</span>
+        <span class="n">chunk_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">chunk_idx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">stimulus</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">gid</span> <span class="o">!=</span> <span class="n">surface_gid</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;TODO: Surface changed while visualizing stimulus. See how to handle this.&quot;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chunk_idx</span> <span class="o">*</span> <span class="n">CHUNK_SIZE</span><span class="p">,</span>
+                         <span class="nb">min</span><span class="p">((</span><span class="n">chunk_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">CHUNK_SIZE</span><span class="p">,</span> <span class="n">stimulus</span><span class="o">.</span><span class="n">temporal_pattern</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stimulus</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;spatial/equation_displayer&#39;</span><span class="p">)</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="SurfaceStimulusController.get_temporal_equation_chart"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_stimulus_controller.SurfaceStimulusController.get_temporal_equation_chart">[docs]</a>    <span class="k">def</span> <span class="nf">get_temporal_equation_chart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">form_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the html which contains the chart in which</span>
+<span class="sd">        is plotted the temporal equation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">min_x</span><span class="p">,</span> <span class="n">max_x</span><span class="p">,</span> <span class="n">ui_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_x_axis_range</span><span class="p">(</span><span class="n">form_data</span><span class="p">[</span><span class="s">&#39;min_tmp_x&#39;</span><span class="p">],</span> <span class="n">form_data</span><span class="p">[</span><span class="s">&#39;max_tmp_x&#39;</span><span class="p">])</span>
+            <span class="n">surface_stimulus_creator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_creator_and_interface</span><span class="p">(</span><span class="n">SURFACE_STIMULUS_CREATOR_MODULE</span><span class="p">,</span>
+                                                                      <span class="n">SURFACE_STIMULUS_CREATOR_CLASS</span><span class="p">,</span>
+                                                                      <span class="n">StimuliSurface</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">form_data</span> <span class="o">=</span> <span class="n">surface_stimulus_creator</span><span class="o">.</span><span class="n">prepare_ui_inputs</span><span class="p">(</span><span class="n">form_data</span><span class="p">,</span> <span class="n">validation_required</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+            <span class="n">equation</span> <span class="o">=</span> <span class="n">surface_stimulus_creator</span><span class="o">.</span><span class="n">get_temporal_equation</span><span class="p">(</span><span class="n">form_data</span><span class="p">)</span>
+            <span class="n">series_data</span><span class="p">,</span> <span class="n">display_ui_message</span> <span class="o">=</span> <span class="n">equation</span><span class="o">.</span><span class="n">get_series_data</span><span class="p">(</span><span class="n">min_range</span><span class="o">=</span><span class="n">min_x</span><span class="p">,</span> <span class="n">max_range</span><span class="o">=</span><span class="n">max_x</span><span class="p">)</span>
+            <span class="n">json_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_series_json</span><span class="p">(</span><span class="n">series_data</span><span class="p">,</span> <span class="s">&quot;Temporal&quot;</span><span class="p">)</span>
+            <span class="n">all_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_final_json</span><span class="p">([</span><span class="n">json_data</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">display_ui_message</span><span class="p">:</span>
+                <span class="n">ui_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ui_message</span><span class="p">([</span><span class="s">&quot;temporal&quot;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;allSeries&#39;</span><span class="p">:</span> <span class="n">all_series</span><span class="p">,</span> <span class="s">&#39;prefix&#39;</span><span class="p">:</span> <span class="s">&#39;temporal&#39;</span><span class="p">,</span> <span class="s">&#39;message&#39;</span><span class="p">:</span> <span class="n">ui_message</span><span class="p">}</span>
+        <span class="k">except</span> <span class="ne">NameError</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;allSeries&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span> <span class="s">&#39;errorMsg&#39;</span><span class="p">:</span> <span class="s">&quot;Incorrect parameters for equation passed.&quot;</span><span class="p">}</span>
+        <span class="k">except</span> <span class="ne">SyntaxError</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;allSeries&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span> <span class="s">&#39;errorMsg&#39;</span><span class="p">:</span> <span class="s">&quot;Some of the parameters hold invalid characters.&quot;</span><span class="p">}</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;allSeries&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span> <span class="s">&#39;errorMsg&#39;</span><span class="p">:</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">}</span>
+
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;spatial/equation_displayer&#39;</span><span class="p">)</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="SurfaceStimulusController.get_spatial_equation_chart"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_stimulus_controller.SurfaceStimulusController.get_spatial_equation_chart">[docs]</a>    <span class="k">def</span> <span class="nf">get_spatial_equation_chart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">form_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the HTML which contains the chart in which</span>
+<span class="sd">        is plotted the temporal equation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">min_x</span><span class="p">,</span> <span class="n">max_x</span><span class="p">,</span> <span class="n">ui_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_x_axis_range</span><span class="p">(</span><span class="n">form_data</span><span class="p">[</span><span class="s">&#39;min_space_x&#39;</span><span class="p">],</span> <span class="n">form_data</span><span class="p">[</span><span class="s">&#39;max_space_x&#39;</span><span class="p">])</span>
+            <span class="n">surface_stimulus_creator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_creator_and_interface</span><span class="p">(</span><span class="n">SURFACE_STIMULUS_CREATOR_MODULE</span><span class="p">,</span>
+                                                                      <span class="n">SURFACE_STIMULUS_CREATOR_CLASS</span><span class="p">,</span>
+                                                                      <span class="n">StimuliSurface</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">form_data</span> <span class="o">=</span> <span class="n">surface_stimulus_creator</span><span class="o">.</span><span class="n">prepare_ui_inputs</span><span class="p">(</span><span class="n">form_data</span><span class="p">,</span> <span class="n">validation_required</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+            <span class="n">equation</span> <span class="o">=</span> <span class="n">surface_stimulus_creator</span><span class="o">.</span><span class="n">get_spatial_equation</span><span class="p">(</span><span class="n">form_data</span><span class="p">)</span>
+            <span class="n">series_data</span><span class="p">,</span> <span class="n">display_ui_message</span> <span class="o">=</span> <span class="n">equation</span><span class="o">.</span><span class="n">get_series_data</span><span class="p">(</span><span class="n">min_range</span><span class="o">=</span><span class="n">min_x</span><span class="p">,</span> <span class="n">max_range</span><span class="o">=</span><span class="n">max_x</span><span class="p">)</span>
+            <span class="n">json_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_series_json</span><span class="p">(</span><span class="n">series_data</span><span class="p">,</span> <span class="s">&quot;Spatial&quot;</span><span class="p">)</span>
+            <span class="n">all_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_final_json</span><span class="p">([</span><span class="n">json_data</span><span class="p">])</span>
+            <span class="n">ui_message</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+            <span class="k">if</span> <span class="n">display_ui_message</span><span class="p">:</span>
+                <span class="n">ui_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ui_message</span><span class="p">([</span><span class="s">&quot;spatial&quot;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;allSeries&#39;</span><span class="p">:</span> <span class="n">all_series</span><span class="p">,</span> <span class="s">&#39;prefix&#39;</span><span class="p">:</span> <span class="s">&#39;spatial&#39;</span><span class="p">,</span> <span class="s">&#39;message&#39;</span><span class="p">:</span> <span class="n">ui_message</span><span class="p">}</span>
+        <span class="k">except</span> <span class="ne">NameError</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;allSeries&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span> <span class="s">&#39;errorMsg&#39;</span><span class="p">:</span> <span class="s">&quot;Incorrect parameters for equation passed.&quot;</span><span class="p">}</span>
+        <span class="k">except</span> <span class="ne">SyntaxError</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;allSeries&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span> <span class="s">&#39;errorMsg&#39;</span><span class="p">:</span> <span class="s">&quot;Some of the parameters hold invalid characters.&quot;</span><span class="p">}</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;allSeries&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span> <span class="s">&#39;errorMsg&#39;</span><span class="p">:</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">}</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">_get_stimulus_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dictionary which contains the interface for a surface stimulus.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_SURFACE_CONTEXT</span><span class="p">)</span>
+        <span class="n">input_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_creator_and_interface</span><span class="p">(</span><span class="n">SURFACE_STIMULUS_CREATOR_MODULE</span><span class="p">,</span>
+                                                    <span class="n">SURFACE_STIMULUS_CREATOR_CLASS</span><span class="p">,</span> <span class="n">StimuliSurface</span><span class="p">(),</span>
+                                                    <span class="n">lock_midpoint_for_eq</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">input_list</span> <span class="o">=</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">fill_defaults</span><span class="p">(</span><span class="n">input_list</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">equation_kwargs</span><span class="p">)</span>
+        <span class="n">input_list</span><span class="p">,</span> <span class="n">focal_points_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_focal_points</span><span class="p">(</span><span class="n">input_list</span><span class="p">)</span>
+        <span class="n">input_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_entity_interface</span><span class="p">(</span><span class="n">input_list</span><span class="p">)</span>
+        <span class="n">input_list</span><span class="p">[</span><span class="s">&#39;selectedFocalPoints&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">focal_points_list</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_extra_fields_to_interface</span><span class="p">(</span><span class="n">input_list</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_remove_focal_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove the focal points entries from the UI since we no longer use them in the first step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">focal_points_triangles</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">input_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_NAME</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;focal_points_triangles&#39;</span><span class="p">,</span> <span class="s">&#39;focal_points_surface&#39;</span><span class="p">):</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_NAME</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;focal_points_triangles&#39;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span><span class="p">]):</span>
+                <span class="n">focal_points_triangles</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_DEFAULT</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">focal_points_triangles</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_add_extra_fields_to_interface</span><span class="p">(</span><span class="n">input_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The fields that have to be added to the existent</span>
+<span class="sd">        adapter interface should be added in this method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_SURFACE_CONTEXT</span><span class="p">)</span>
+
+        <span class="n">temporal_iface</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">min_tmp_x</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;min_tmp_x&#39;</span><span class="p">,</span> <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Temporal Start Time(ms)&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;str&#39;</span><span class="p">,</span> <span class="s">&quot;disabled&quot;</span><span class="p">:</span> <span class="s">&quot;False&quot;</span><span class="p">,</span>
+                     <span class="s">&quot;default&quot;</span><span class="p">:</span> <span class="n">context</span><span class="o">.</span><span class="n">equation_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;min_tmp_x&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                     <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;The minimum value of the x-axis for temporal equation plot.&quot;</span><span class="p">}</span>
+        <span class="n">max_tmp_x</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;max_tmp_x&#39;</span><span class="p">,</span> <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Temporal End Time(ms)&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;str&#39;</span><span class="p">,</span> <span class="s">&quot;disabled&quot;</span><span class="p">:</span> <span class="s">&quot;False&quot;</span><span class="p">,</span>
+                     <span class="s">&quot;default&quot;</span><span class="p">:</span> <span class="n">context</span><span class="o">.</span><span class="n">equation_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;max_tmp_x&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+                     <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;The maximum value of the x-axis for temporal equation plot.&quot;</span><span class="p">}</span>
+        <span class="n">temporal_iface</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">min_tmp_x</span><span class="p">)</span>
+        <span class="n">temporal_iface</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">max_tmp_x</span><span class="p">)</span>
+
+        <span class="n">spatial_iface</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">min_space_x</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;min_space_x&#39;</span><span class="p">,</span> <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Spatial Start Distance(mm)&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;str&#39;</span><span class="p">,</span> <span class="s">&quot;disabled&quot;</span><span class="p">:</span> <span class="s">&quot;False&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;default&quot;</span><span class="p">:</span> <span class="n">context</span><span class="o">.</span><span class="n">equation_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;min_space_x&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                       <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;The minimum value of the x-axis for spatial equation plot.&quot;</span><span class="p">}</span>
+        <span class="n">max_space_x</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;max_space_x&#39;</span><span class="p">,</span> <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Spatial End Distance(mm)&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;str&#39;</span><span class="p">,</span> <span class="s">&quot;disabled&quot;</span><span class="p">:</span> <span class="s">&quot;False&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;default&quot;</span><span class="p">:</span> <span class="n">context</span><span class="o">.</span><span class="n">equation_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;max_space_x&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+                       <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;The maximum value of the x-axis for spatial equation plot.&quot;</span><span class="p">}</span>
+        <span class="n">spatial_iface</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">min_space_x</span><span class="p">)</span>
+        <span class="n">spatial_iface</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">max_space_x</span><span class="p">)</span>
+
+        <span class="n">input_list</span><span class="p">[</span><span class="s">&#39;spatialPlotInputList&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spatial_iface</span>
+        <span class="n">input_list</span><span class="p">[</span><span class="s">&#39;temporalPlotInputList&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">temporal_iface</span>
+        <span class="k">return</span> <span class="n">input_list</span>
+    
+    </div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../../index.html">
+              <img class="logo" src="../../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

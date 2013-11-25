@@ -1,0 +1,869 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>file Package &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="index.html" />
+    <link rel="up" title="entities Package" href="tvb.core.entities.html" />
+    <link rel="next" title="file_update_scripts Package" href="tvb.core.entities.file.file_update_scripts.html" />
+    <link rel="prev" title="entities Package" href="tvb.core.entities.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.core.entities.file.file_update_scripts.html" title="file_update_scripts Package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tvb.core.entities.html" title="entities Package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">tvb</span></tt> Package</a> &raquo;</li>
+          <li><a href="tvb.core.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">core</span></tt> Package</a> &raquo;</li>
+          <li><a href="tvb.core.entities.html" accesskey="U"><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">entities</span></tt> Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="file-package">
+<h1><tt class="xref py py-mod docutils literal"><span class="pre">file</span></tt> Package<a class="headerlink" href="#file-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-tvb.core.entities.file.exceptions">
+<span id="exceptions-module"></span><h2><a class="reference external" href="http://docs.python.org/library/exceptions.html#exceptions" title="(in Python v2.7)"><tt class="xref py py-mod docutils literal"><span class="pre">exceptions</span></tt></a> Module<a class="headerlink" href="#module-tvb.core.entities.file.exceptions" title="Permalink to this headline">¶</a></h2>
+<p>Exceptions for File Storage layer.</p>
+<dl class="exception">
+<dt id="tvb.core.entities.file.exceptions.FileStorageException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.entities.file.exceptions.</tt><tt class="descname">FileStorageException</tt><big>(</big><em>message</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/exceptions.html#FileStorageException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.exceptions.FileStorageException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="tvb.basic.traits.html#tvb.basic.traits.exceptions.TVBException" title="tvb.basic.traits.exceptions.TVBException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.basic.traits.exceptions.TVBException</span></tt></a></p>
+<p>Generic exception when storing in data in files.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.entities.file.exceptions.FileStructureException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.entities.file.exceptions.</tt><tt class="descname">FileStructureException</tt><big>(</big><em>message</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/exceptions.html#FileStructureException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.exceptions.FileStructureException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="tvb.basic.traits.html#tvb.basic.traits.exceptions.TVBException" title="tvb.basic.traits.exceptions.TVBException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.basic.traits.exceptions.TVBException</span></tt></a></p>
+<p>Exception to be thrown in case of a problem 
+related to File Structure Storage.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.entities.file.exceptions.FileVersioningException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.entities.file.exceptions.</tt><tt class="descname">FileVersioningException</tt><big>(</big><em>message</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/exceptions.html#FileVersioningException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.exceptions.FileVersioningException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="tvb.basic.traits.html#tvb.basic.traits.exceptions.TVBException" title="tvb.basic.traits.exceptions.TVBException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.basic.traits.exceptions.TVBException</span></tt></a></p>
+<p>A base exception class for all TVB file storage version conversion custom exceptions.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.entities.file.exceptions.IncompatibleFileManagerException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.entities.file.exceptions.</tt><tt class="descname">IncompatibleFileManagerException</tt><big>(</big><em>message</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/exceptions.html#IncompatibleFileManagerException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.exceptions.IncompatibleFileManagerException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.entities.file.exceptions.FileVersioningException" title="tvb.core.entities.file.exceptions.FileVersioningException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.entities.file.exceptions.FileVersioningException</span></tt></a></p>
+<p>Exception that should be raised in case a file is handled by some filemanager which
+is incompatible with that version of TVB file storage.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.entities.file.exceptions.MissingDataFileException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.entities.file.exceptions.</tt><tt class="descname">MissingDataFileException</tt><big>(</big><em>message</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/exceptions.html#MissingDataFileException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.exceptions.MissingDataFileException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.entities.file.exceptions.FileStorageException" title="tvb.core.entities.file.exceptions.FileStorageException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.entities.file.exceptions.FileStorageException</span></tt></a></p>
+<p>Exception when the file associated to some manager does not exist on disk for some reason.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.entities.file.exceptions.MissingDataSetException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.entities.file.exceptions.</tt><tt class="descname">MissingDataSetException</tt><big>(</big><em>message</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/exceptions.html#MissingDataSetException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.exceptions.MissingDataSetException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.entities.file.exceptions.FileStorageException" title="tvb.core.entities.file.exceptions.FileStorageException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.entities.file.exceptions.FileStorageException</span></tt></a></p>
+<p>Exception when a dataset is accessed, but no written entry exists in HDF5 file for it.
+we will consider the attribute None.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.core.entities.file.files_helper">
+<span id="files-helper-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">files_helper</span></tt> Module<a class="headerlink" href="#module-tvb.core.entities.file.files_helper" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper">
+<em class="property">class </em><tt class="descclassname">tvb.core.entities.file.files_helper.</tt><tt class="descname">FilesHelper</tt><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class manages all Structure related operations, using File storage.
+It will handle creating meaning-full entities and retrieving existent ones.</p>
+<dl class="attribute">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.IMAGES_FOLDER">
+<tt class="descname">IMAGES_FOLDER</tt><em class="property"> = 'IMAGES'</em><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.IMAGES_FOLDER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.PROJECTS_FOLDER">
+<tt class="descname">PROJECTS_FOLDER</tt><em class="property"> = 'PROJECTS'</em><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.PROJECTS_FOLDER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.TEMP_FOLDER">
+<tt class="descname">TEMP_FOLDER</tt><em class="property"> = 'TEMP'</em><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.TEMP_FOLDER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.TVB_FILE_EXTENSION">
+<tt class="descname">TVB_FILE_EXTENSION</tt><em class="property"> = '.xml'</em><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.TVB_FILE_EXTENSION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.TVB_OPERARATION_FILE">
+<tt class="descname">TVB_OPERARATION_FILE</tt><em class="property"> = 'Operation.xml'</em><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.TVB_OPERARATION_FILE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.TVB_PROJECT_FILE">
+<tt class="descname">TVB_PROJECT_FILE</tt><em class="property"> = 'Project.xml'</em><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.TVB_PROJECT_FILE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.TVB_STORAGE_FILE_EXTENSION">
+<tt class="descname">TVB_STORAGE_FILE_EXTENSION</tt><em class="property"> = '.h5'</em><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.TVB_STORAGE_FILE_EXTENSION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.check_created">
+<tt class="descname">check_created</tt><big>(</big><em>*args</em>, <em>**kw</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.check_created"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.check_created" title="Permalink to this definition">¶</a></dt>
+<dd><p>New function will actually write the Lock.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.compute_size_on_disk">
+<em class="property">static </em><tt class="descname">compute_size_on_disk</tt><big>(</big><em>file_path</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.compute_size_on_disk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.compute_size_on_disk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a file&#8217;s path, return size occupied on disk by that file.
+Size should be a number, representing size in KB.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.copy_file">
+<em class="property">static </em><tt class="descname">copy_file</tt><big>(</big><em>source</em>, <em>dest</em>, <em>dest_postfix=None</em>, <em>buffer_size=1048576</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.copy_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.copy_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy a file from source to dest. source and dest can either be strings or 
+any object with a read or write method, like StringIO for example.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.find_relative_path">
+<em class="property">static </em><tt class="descname">find_relative_path</tt><big>(</big><em>full_path</em>, <em>root_path='/root/TVB/'</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.find_relative_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.find_relative_path" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>full_path</strong> &#8211; Absolute full path</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Root_path :</th><td class="field-body">find relative path from param full_path to this root.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.get_images_folder">
+<tt class="descname">get_images_folder</tt><big>(</big><em>project_name</em>, <em>operation_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.get_images_folder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.get_images_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the name/path of the folder where to store images.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.get_operation_folder">
+<tt class="descname">get_operation_folder</tt><big>(</big><em>project_name</em>, <em>operation_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.get_operation_folder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.get_operation_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the folder where operation details are stored</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.get_operation_meta_file_path">
+<tt class="descname">get_operation_meta_file_path</tt><big>(</big><em>project_name</em>, <em>operation_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.get_operation_meta_file_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.get_operation_meta_file_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the path to operation meta file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>project_name</strong> &#8211; name of the current project.</li>
+<li><strong>operation_id</strong> &#8211; Identifier of Operation in given project</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">File path for storing Operation meta-data. File might not be yet created,
+but parent folder exists after this method.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.get_project_folder">
+<tt class="descname">get_project_folder</tt><big>(</big><em>project</em>, <em>*sub_folders</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.get_project_folder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.get_project_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the root path for the given project. 
+If root folder is not created yet, will create it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.get_project_meta_file_path">
+<tt class="descname">get_project_meta_file_path</tt><big>(</big><em>project_name</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.get_project_meta_file_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.get_project_meta_file_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve project meta info file path.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">File path for storing Project meta-data
+File might not exist yet, but parent folder is created after this method call.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.move_datatype">
+<tt class="descname">move_datatype</tt><big>(</big><em>datatype</em>, <em>new_project_name</em>, <em>new_op_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.move_datatype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.move_datatype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move H5 storage into a new location</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.parse_xml_content">
+<em class="property">static </em><tt class="descname">parse_xml_content</tt><big>(</big><em>xml_content</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.parse_xml_content"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.parse_xml_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delegate reading of some XML content.
+Will parse the XMl and return a dictionary of elements with max 2 levels.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.remove_datatype">
+<tt class="descname">remove_datatype</tt><big>(</big><em>datatype</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.remove_datatype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.remove_datatype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove H5 storage fully.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.remove_files">
+<em class="property">static </em><tt class="descname">remove_files</tt><big>(</big><em>file_list</em>, <em>ignore_exception=False</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.remove_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.remove_files" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>file_list</strong> &#8211; list of file paths to be removed.</li>
+<li><strong>ignore_exception</strong> &#8211; When True and one of the specified files could not be removed, an exception is raised.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.remove_folder">
+<em class="property">static </em><tt class="descname">remove_folder</tt><big>(</big><em>folder_path</em>, <em>ignore_errors=False</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.remove_folder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.remove_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a folder path, try to remove that folder from disk.
+:param ignore_errors: When False throw FileStructureException if folder_path is invalid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.remove_image_metadata">
+<tt class="descname">remove_image_metadata</tt><big>(</big><em>figure</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.remove_image_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.remove_image_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the file storing image meta data</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.remove_operation_data">
+<tt class="descname">remove_operation_data</tt><big>(</big><em>project_name</em>, <em>operation_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.remove_operation_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.remove_operation_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove H5 storage fully.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.remove_project_structure">
+<tt class="descname">remove_project_structure</tt><big>(</big><em>project_name</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.remove_project_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.remove_project_structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all folders for project or THROW FileStructureException.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.rename_project_structure">
+<tt class="descname">rename_project_structure</tt><big>(</big><em>project_name</em>, <em>new_name</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.rename_project_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.rename_project_structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rename Project folder or THROW FileStructureException.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.unpack_zip">
+<tt class="descname">unpack_zip</tt><big>(</big><em>uploaded_zip</em>, <em>folder_path</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.unpack_zip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.unpack_zip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple method to unpack ZIP archive in a given folder.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.update_operation_metadata">
+<tt class="descname">update_operation_metadata</tt><big>(</big><em>project_name</em>, <em>new_group_name</em>, <em>operation_id</em>, <em>is_group=False</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.update_operation_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.update_operation_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update operation meta data.
+:param is_group: when FALSE, use parameter &#8216;new_group_name&#8217; for direct assignment on operation.user_group
+when TRUE, update  operation.operation_group.name = parameter &#8216;new_group_name&#8217;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.write_image_metadata">
+<tt class="descname">write_image_metadata</tt><big>(</big><em>figure</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.write_image_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.write_image_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes figure meta-data into XML file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.write_operation_metadata">
+<tt class="descname">write_operation_metadata</tt><big>(</big><em>operation</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.write_operation_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.write_operation_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>operation</strong> &#8211; DB stored operation instance.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.write_project_metadata">
+<tt class="descname">write_project_metadata</tt><big>(</big><em>project</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.write_project_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.write_project_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>project</strong> &#8211; Project instance, to get metadata from it.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.zip_files">
+<em class="property">static </em><tt class="descname">zip_files</tt><big>(</big><em>zip_full_path</em>, <em>files</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.zip_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.zip_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates a ZIP file with all files provided as parameters
+:param zip_full_path: full path and name of the result ZIP file
+:param files: array with the FULL names/path of the files to add into ZIP</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.zip_folder">
+<em class="property">static </em><tt class="descname">zip_folder</tt><big>(</big><em>result_name</em>, <em>folder_root</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.zip_folder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.zip_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a folder and a ZIP result name, create the corresponding archive.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.entities.file.files_helper.FilesHelper.zip_folders">
+<em class="property">static </em><tt class="descname">zip_folders</tt><big>(</big><em>zip_full_path</em>, <em>folders</em>, <em>folder_prefix=None</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_helper.html#FilesHelper.zip_folders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_helper.FilesHelper.zip_folders" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates a ZIP file with all folders provided as parameters
+:param zip_full_path: full path and name of the result ZIP file
+:param folders: array with the FULL names/path of the folders to add into ZIP</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.core.entities.file.files_update_manager">
+<span id="files-update-manager-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">files_update_manager</span></tt> Module<a class="headerlink" href="#module-tvb.core.entities.file.files_update_manager" title="Permalink to this headline">¶</a></h2>
+<p>Manager for the file storage versioning updates.</p>
+<dl class="class">
+<dt id="tvb.core.entities.file.files_update_manager.FilesUpdateManager">
+<em class="property">class </em><tt class="descclassname">tvb.core.entities.file.files_update_manager.</tt><tt class="descname">FilesUpdateManager</tt><a class="reference internal" href="_modules/tvb/core/entities/file/files_update_manager.html#FilesUpdateManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_update_manager.FilesUpdateManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="tvb.core.code_versions.html#tvb.core.code_versions.base_classes.UpdateManager" title="tvb.core.code_versions.base_classes.UpdateManager"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.code_versions.base_classes.UpdateManager</span></tt></a></p>
+<p>Manager for updating H5 files version, when code gets changed.</p>
+<dl class="attribute">
+<dt id="tvb.core.entities.file.files_update_manager.FilesUpdateManager.DATA_TYPES_PAGE_SIZE">
+<tt class="descname">DATA_TYPES_PAGE_SIZE</tt><em class="property"> = 20</em><a class="headerlink" href="#tvb.core.entities.file.files_update_manager.FilesUpdateManager.DATA_TYPES_PAGE_SIZE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.entities.file.files_update_manager.FilesUpdateManager.PROJECTS_PAGE_SIZE">
+<tt class="descname">PROJECTS_PAGE_SIZE</tt><em class="property"> = 20</em><a class="headerlink" href="#tvb.core.entities.file.files_update_manager.FilesUpdateManager.PROJECTS_PAGE_SIZE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.entities.file.files_update_manager.FilesUpdateManager.UPDATE_SCRIPTS_SUFFIX">
+<tt class="descname">UPDATE_SCRIPTS_SUFFIX</tt><em class="property"> = '_update_files'</em><a class="headerlink" href="#tvb.core.entities.file.files_update_manager.FilesUpdateManager.UPDATE_SCRIPTS_SUFFIX" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.files_update_manager.FilesUpdateManager.get_file_data_version">
+<tt class="descname">get_file_data_version</tt><big>(</big><em>file_path</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_update_manager.html#FilesUpdateManager.get_file_data_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_update_manager.FilesUpdateManager.get_file_data_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the data version for the given file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> &#8211; the path on disk to the file for which you need the TVB data version</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a number representing the data version for which the input file was written</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.files_update_manager.FilesUpdateManager.is_file_up_to_date">
+<tt class="descname">is_file_up_to_date</tt><big>(</big><em>file_path</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_update_manager.html#FilesUpdateManager.is_file_up_to_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_update_manager.FilesUpdateManager.is_file_up_to_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True only if the data version of the file is equal with the
+data version specified into the TVB configuration file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.files_update_manager.FilesUpdateManager.upgrade_all_files_from_storage">
+<tt class="descname">upgrade_all_files_from_storage</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_update_manager.html#FilesUpdateManager.upgrade_all_files_from_storage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_update_manager.FilesUpdateManager.upgrade_all_files_from_storage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upgrades all the data types from TVB storage to the latest data version.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a two entry tuple (status, message) where status is a boolean that is True in case
+the upgrade was successfully for all DataTypes and False otherwise, and message is a status
+update message.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.files_update_manager.FilesUpdateManager.upgrade_file">
+<tt class="descname">upgrade_file</tt><big>(</big><em>input_file_name</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/files_update_manager.html#FilesUpdateManager.upgrade_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.files_update_manager.FilesUpdateManager.upgrade_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upgrades the given file to the latest data version. The file will be upgraded
+sequencially up until the current version from tvb.basic.config.settings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input_file_name</strong> &#8211; the path to the file which needs to be upgraded</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.core.entities.file.hdf5_storage_manager">
+<span id="hdf5-storage-manager-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">hdf5_storage_manager</span></tt> Module<a class="headerlink" href="#module-tvb.core.entities.file.hdf5_storage_manager" title="Permalink to this headline">¶</a></h2>
+<p>Persistence of data in HDF5 format.</p>
+<dl class="class">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager">
+<em class="property">class </em><tt class="descclassname">tvb.core.entities.file.hdf5_storage_manager.</tt><tt class="descname">HDF5StorageManager</tt><big>(</big><em>storage_folder</em>, <em>file_name</em>, <em>buffer_size=600000</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/hdf5_storage_manager.html#HDF5StorageManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>This class is responsible for saving / loading data in HDF5 file / format.</p>
+<dl class="attribute">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.BOOL_VALUE_PREFIX">
+<tt class="descname">BOOL_VALUE_PREFIX</tt><em class="property"> = 'bool:'</em><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.BOOL_VALUE_PREFIX" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.DATETIME_VALUE_PREFIX">
+<tt class="descname">DATETIME_VALUE_PREFIX</tt><em class="property"> = 'datetime:'</em><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.DATETIME_VALUE_PREFIX" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.DATE_TIME_FORMAT">
+<tt class="descname">DATE_TIME_FORMAT</tt><em class="property"> = '%Y-%m-%d %H:%M:%S.%f'</em><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.DATE_TIME_FORMAT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.H5pyStorageBuffer">
+<em class="property">class </em><tt class="descname">H5pyStorageBuffer</tt><big>(</big><em>h5py_dataset</em>, <em>buffer_size=300</em>, <em>buffered_data=None</em>, <em>grow_dimension=-1</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/hdf5_storage_manager.html#HDF5StorageManager.H5pyStorageBuffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.H5pyStorageBuffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper class in order to buffer data for append operations, to limit the number of actual
+HDD I/O operations.</p>
+<dl class="method">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.H5pyStorageBuffer.buffer_data">
+<tt class="descname">buffer_data</tt><big>(</big><em>data_list</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/hdf5_storage_manager.html#HDF5StorageManager.H5pyStorageBuffer.buffer_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.H5pyStorageBuffer.buffer_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add data_list to an internal buffer in order to improve performance for append_data type of operations.
+:returns: True if buffer is still fine,                       False if a flush is necessary since the buffer is full</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.H5pyStorageBuffer.flush_buffered_data">
+<tt class="descname">flush_buffered_data</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/hdf5_storage_manager.html#HDF5StorageManager.H5pyStorageBuffer.flush_buffered_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.H5pyStorageBuffer.flush_buffered_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append the data buffered so far to the input dataset using :param grow_dimension: as the dimension that
+will be expanded.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.LOCKS">
+<tt class="descclassname">HDF5StorageManager.</tt><tt class="descname">LOCKS</tt><em class="property"> = {}</em><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.LOCKS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.ROOT_NODE_PATH">
+<tt class="descclassname">HDF5StorageManager.</tt><tt class="descname">ROOT_NODE_PATH</tt><em class="property"> = '/'</em><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.ROOT_NODE_PATH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.TVB_ATTRIBUTE_PREFIX">
+<tt class="descclassname">HDF5StorageManager.</tt><tt class="descname">TVB_ATTRIBUTE_PREFIX</tt><em class="property"> = 'TVB_'</em><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.TVB_ATTRIBUTE_PREFIX" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.append_data">
+<tt class="descclassname">HDF5StorageManager.</tt><tt class="descname">append_data</tt><big>(</big><em>dataset_name</em>, <em>data_list</em>, <em>grow_dimension=-1</em>, <em>close_file=True</em>, <em>where='/'</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/hdf5_storage_manager.html#HDF5StorageManager.append_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.append_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method appends data to an existing data set. If the data set does not exists, create it first.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dataset_name</strong> &#8211; Name of the data set where to store data</li>
+<li><strong>data_list</strong> &#8211; Data to be stored / appended</li>
+<li><strong>grow_dimension</strong> &#8211; The dimension to be used to grow stored array. By default will grow on the LAST dimension</li>
+<li><strong>close_file</strong> &#8211; Specify if the file should be closed automatically after write operation. If not, 
+you have to close file by calling method close_file()</li>
+<li><strong>where</strong> &#8211; represents the path where to store our dataset (e.g. /data/info)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.close_file">
+<tt class="descclassname">HDF5StorageManager.</tt><tt class="descname">close_file</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/hdf5_storage_manager.html#HDF5StorageManager.close_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.close_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>The synchronization of open/close doesn&#8217;t seem to be needed anymore for h5py in
+contrast to PyTables for concurrent reads. However since it shouldn&#8217;t add that
+much overhead in most situation we&#8217;ll leave it like this for now since in case
+of concurrent writes(metadata) this provides extra safety.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.get_data">
+<tt class="descclassname">HDF5StorageManager.</tt><tt class="descname">get_data</tt><big>(</big><em>dataset_name</em>, <em>data_slice=None</em>, <em>where='/'</em>, <em>ignore_errors=False</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/hdf5_storage_manager.html#HDF5StorageManager.get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method reads data from the given data set based on the slice specification</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dataset_name</strong> &#8211; Name of the data set from where to read data</li>
+<li><strong>data_slice</strong> &#8211; Specify how to retrieve data from array {e.g (slice(1,10,1),slice(1,6,2)) }</li>
+<li><strong>where</strong> &#8211; represents the path where dataset is stored (e.g. /data/info)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a numpy.ndarray containing filtered data</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.get_data_shape">
+<tt class="descclassname">HDF5StorageManager.</tt><tt class="descname">get_data_shape</tt><big>(</big><em>dataset_name</em>, <em>where='/'</em>, <em>ignore_errors=False</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/hdf5_storage_manager.html#HDF5StorageManager.get_data_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.get_data_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method reads data-size from the given data set</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dataset_name</strong> &#8211; Name of the data set from where to read data</li>
+<li><strong>where</strong> &#8211; represents the path where dataset is stored (e.g. /data/info)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a tuple containing data size</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.get_file_data_version">
+<tt class="descclassname">HDF5StorageManager.</tt><tt class="descname">get_file_data_version</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/hdf5_storage_manager.html#HDF5StorageManager.get_file_data_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.get_file_data_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks the data version for the current file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.get_gid_attribute">
+<tt class="descclassname">HDF5StorageManager.</tt><tt class="descname">get_gid_attribute</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/hdf5_storage_manager.html#HDF5StorageManager.get_gid_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.get_gid_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used for obtaining the gid of the DataType of
+which data are stored in the current file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.get_metadata">
+<tt class="descclassname">HDF5StorageManager.</tt><tt class="descname">get_metadata</tt><big>(</big><em>dataset_name=''</em>, <em>where='/'</em>, <em>ignore_errors=False</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/hdf5_storage_manager.html#HDF5StorageManager.get_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.get_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve ALL meta-data information for root node or for a given data set.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dataset_name</strong> &#8211; name of the dataset for which to read metadata. If None, read metadata from ROOT node.</li>
+<li><strong>where</strong> &#8211; represents the path where dataset is stored (e.g. /data/info)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a dictionary containing all metadata associated with the node</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.is_valid_hdf5_file">
+<tt class="descclassname">HDF5StorageManager.</tt><tt class="descname">is_valid_hdf5_file</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/hdf5_storage_manager.html#HDF5StorageManager.is_valid_hdf5_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.is_valid_hdf5_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method checks if specified file exists and if it has correct HDF5 format
+:returns: True is file exists and has HDF5 format. False otherwise.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.remove_data">
+<tt class="descclassname">HDF5StorageManager.</tt><tt class="descname">remove_data</tt><big>(</big><em>dataset_name</em>, <em>where='/'</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/hdf5_storage_manager.html#HDF5StorageManager.remove_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.remove_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deleting a data set from H5 file.</p>
+<p>:param dataset_name:name of the data set to be deleted
+:param where: represents the path where dataset is stored (e.g. /data/info)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.remove_metadata">
+<tt class="descclassname">HDF5StorageManager.</tt><tt class="descname">remove_metadata</tt><big>(</big><em>meta_key</em>, <em>dataset_name=''</em>, <em>tvb_specific_metadata=True</em>, <em>where='/'</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/hdf5_storage_manager.html#HDF5StorageManager.remove_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.remove_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove meta-data information for root node or for a given data set.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>meta_key</strong> &#8211; name of the metadata attribute to be removed</li>
+<li><strong>dataset_name</strong> &#8211; name of the dataset from where to delete metadata. 
+If None, metadata will be removed from ROOT node.</li>
+<li><strong>tvb_specific_metadata</strong> &#8211; specify if the provided metadata is specific to TVB (keys will have a TVB prefix).</li>
+<li><strong>where</strong> &#8211; represents the path where dataset is stored (e.g. /data/info)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.set_metadata">
+<tt class="descclassname">HDF5StorageManager.</tt><tt class="descname">set_metadata</tt><big>(</big><em>meta_dictionary</em>, <em>dataset_name=''</em>, <em>tvb_specific_metadata=True</em>, <em>where='/'</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/hdf5_storage_manager.html#HDF5StorageManager.set_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.set_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set meta-data information for root node or for a given data set.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>meta_dictionary</strong> &#8211; dictionary containing meta info to be stored on node</li>
+<li><strong>dataset_name</strong> &#8211; name of the dataset where to assign metadata. If None, metadata is assigned to ROOT node.</li>
+<li><strong>tvb_specific_metadata</strong> &#8211; specify if the provided metadata is TVB specific (All keys will have a TVB prefix)</li>
+<li><strong>where</strong> &#8211; represents the path where dataset is stored (e.g. /data/info)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.store_data">
+<tt class="descclassname">HDF5StorageManager.</tt><tt class="descname">store_data</tt><big>(</big><em>dataset_name</em>, <em>data_list</em>, <em>where='/'</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/hdf5_storage_manager.html#HDF5StorageManager.store_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.hdf5_storage_manager.HDF5StorageManager.store_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method stores provided data list into a data set in the H5 file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dataset_name</strong> &#8211; Name of the data set where to store data</li>
+<li><strong>data_list</strong> &#8211; Data to be stored</li>
+<li><strong>where</strong> &#8211; represents the path where to store our dataset (e.g. /data/info)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.core.entities.file.xml_metadata_handlers">
+<span id="xml-metadata-handlers-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">xml_metadata_handlers</span></tt> Module<a class="headerlink" href="#module-tvb.core.entities.file.xml_metadata_handlers" title="Permalink to this headline">¶</a></h2>
+<p>This module contains logic for meta-data handling.</p>
+<p>It handles read/write operations in XML files for retrieving/storing meta-data.
+More specific: it contains XML Reader/Writer Utility, for GenericMetaData.</p>
+<dl class="class">
+<dt id="tvb.core.entities.file.xml_metadata_handlers.XMLReader">
+<em class="property">class </em><tt class="descclassname">tvb.core.entities.file.xml_metadata_handlers.</tt><tt class="descname">XMLReader</tt><big>(</big><em>xml_path</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/xml_metadata_handlers.html#XMLReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.xml_metadata_handlers.XMLReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Reader for XML with meta-data on generic entities (e.g. Project, Operation).</p>
+<dl class="staticmethod">
+<dt id="tvb.core.entities.file.xml_metadata_handlers.XMLReader.get_node_text">
+<em class="property">static </em><tt class="descname">get_node_text</tt><big>(</big><em>node</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/xml_metadata_handlers.html#XMLReader.get_node_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.xml_metadata_handlers.XMLReader.get_node_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>From XMl node, read string content.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.xml_metadata_handlers.XMLReader.parse_xml_content_to_dict">
+<tt class="descname">parse_xml_content_to_dict</tt><big>(</big><em>xml_data</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/xml_metadata_handlers.html#XMLReader.parse_xml_content_to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.xml_metadata_handlers.XMLReader.parse_xml_content_to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>xml_data</strong> &#8211; String representing an XML root.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Dictionary with text-content read from the given XML.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.xml_metadata_handlers.XMLReader.read_metadata">
+<tt class="descname">read_metadata</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/xml_metadata_handlers.html#XMLReader.read_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.xml_metadata_handlers.XMLReader.read_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return one instance of GenericMetaData, filled with data read from XML file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.xml_metadata_handlers.XMLReader.read_only_element">
+<tt class="descname">read_only_element</tt><big>(</big><em>tag_name</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/xml_metadata_handlers.html#XMLReader.read_only_element"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.xml_metadata_handlers.XMLReader.read_only_element" title="Permalink to this definition">¶</a></dt>
+<dd><p>From XML file, read only an element specified by tag-name.
+:returns: Textual value of the XML node, or None</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.core.entities.file.xml_metadata_handlers.XMLWriter">
+<em class="property">class </em><tt class="descclassname">tvb.core.entities.file.xml_metadata_handlers.</tt><tt class="descname">XMLWriter</tt><big>(</big><em>entity</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/xml_metadata_handlers.html#XMLWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.xml_metadata_handlers.XMLWriter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Writer for XML with meta-data on generic entities (e.g. Project, Operation).</p>
+<dl class="attribute">
+<dt id="tvb.core.entities.file.xml_metadata_handlers.XMLWriter.ELEM_ROOT">
+<tt class="descname">ELEM_ROOT</tt><em class="property"> = 'tvb_data'</em><a class="headerlink" href="#tvb.core.entities.file.xml_metadata_handlers.XMLWriter.ELEM_ROOT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.entities.file.xml_metadata_handlers.XMLWriter.FILE_EXTENSION">
+<tt class="descname">FILE_EXTENSION</tt><em class="property"> = '.xml'</em><a class="headerlink" href="#tvb.core.entities.file.xml_metadata_handlers.XMLWriter.FILE_EXTENSION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.entities.file.xml_metadata_handlers.XMLWriter.write">
+<tt class="descname">write</tt><big>(</big><em>final_path</em><big>)</big><a class="reference internal" href="_modules/tvb/core/entities/file/xml_metadata_handlers.html#XMLWriter.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.entities.file.xml_metadata_handlers.XMLWriter.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>From a meta-data dictionary for an entity, create the XML file.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tvb.core.entities.file.file_update_scripts.html"><tt class="docutils literal"><span class="pre">file_update_scripts</span></tt> Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tvb.core.entities.file.file_update_scripts.html#module-tvb.core.entities.file.file_update_scripts.002_update_files"><tt class="docutils literal"><span class="pre">002_update_files</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">file</span></tt> Package</a><ul>
+<li><a class="reference internal" href="#module-tvb.core.entities.file.exceptions"><tt class="docutils literal"><span class="pre">exceptions</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.core.entities.file.files_helper"><tt class="docutils literal"><span class="pre">files_helper</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.core.entities.file.files_update_manager"><tt class="docutils literal"><span class="pre">files_update_manager</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.core.entities.file.hdf5_storage_manager"><tt class="docutils literal"><span class="pre">hdf5_storage_manager</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.core.entities.file.xml_metadata_handlers"><tt class="docutils literal"><span class="pre">xml_metadata_handlers</span></tt> Module</a></li>
+<li><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tvb.core.entities.html"
+                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">entities</span></tt> Package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tvb.core.entities.file.file_update_scripts.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">file_update_scripts</span></tt> Package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tvb.core.entities.file.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.core.entities.file.file_update_scripts.html" title="file_update_scripts Package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tvb.core.entities.html" title="entities Package"
+             >previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">tvb</span></tt> Package</a> &raquo;</li>
+          <li><a href="tvb.core.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">core</span></tt> Package</a> &raquo;</li>
+          <li><a href="tvb.core.entities.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">entities</span></tt> Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

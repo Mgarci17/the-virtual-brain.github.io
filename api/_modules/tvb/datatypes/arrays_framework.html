@@ -1,0 +1,381 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.datatypes.arrays_framework &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.datatypes.arrays_framework</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">Framework methods for the Array datatypes.</span>
+
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.traits.types_mapped</span> <span class="kn">import</span> <span class="n">Array</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.arrays_data</span> <span class="kn">as</span> <span class="nn">arrays_data</span>
+
+
+<div class="viewcode-block" id="BaseArrayFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_framework.BaseArrayFramework">[docs]</a><span class="k">class</span> <span class="nc">BaseArrayFramework</span><span class="p">(</span><span class="n">Array</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Basic class for non-mapped arrays.&quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+</div>
+<div class="viewcode-block" id="FloatArrayFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_framework.FloatArrayFramework">[docs]</a><span class="k">class</span> <span class="nc">FloatArrayFramework</span><span class="p">(</span><span class="n">arrays_data</span><span class="o">.</span><span class="n">FloatArrayData</span><span class="p">,</span> <span class="n">BaseArrayFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to FloatArrayData &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+</div>
+<div class="viewcode-block" id="IntegerArrayFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_framework.IntegerArrayFramework">[docs]</a><span class="k">class</span> <span class="nc">IntegerArrayFramework</span><span class="p">(</span><span class="n">arrays_data</span><span class="o">.</span><span class="n">IntegerArrayData</span><span class="p">,</span> <span class="n">BaseArrayFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to IntegerArrayData &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+</div>
+<div class="viewcode-block" id="ComplexArrayFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_framework.ComplexArrayFramework">[docs]</a><span class="k">class</span> <span class="nc">ComplexArrayFramework</span><span class="p">(</span><span class="n">arrays_data</span><span class="o">.</span><span class="n">ComplexArrayData</span><span class="p">,</span> <span class="n">BaseArrayFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to ComplexArrayData &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+</div>
+<div class="viewcode-block" id="BoolArrayFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_framework.BoolArrayFramework">[docs]</a><span class="k">class</span> <span class="nc">BoolArrayFramework</span><span class="p">(</span><span class="n">arrays_data</span><span class="o">.</span><span class="n">BoolArrayData</span><span class="p">,</span> <span class="n">BaseArrayFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to BoolArrayData &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+</div>
+<div class="viewcode-block" id="StringArrayFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_framework.StringArrayFramework">[docs]</a><span class="k">class</span> <span class="nc">StringArrayFramework</span><span class="p">(</span><span class="n">arrays_data</span><span class="o">.</span><span class="n">StringArrayData</span><span class="p">,</span> <span class="n">BaseArrayFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to StringArrayData &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+</div>
+<div class="viewcode-block" id="PositionArrayFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_framework.PositionArrayFramework">[docs]</a><span class="k">class</span> <span class="nc">PositionArrayFramework</span><span class="p">(</span><span class="n">arrays_data</span><span class="o">.</span><span class="n">PositionArrayData</span><span class="p">,</span>
+                             <span class="n">FloatArrayFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to PositionArrayData &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+</div>
+<div class="viewcode-block" id="OrientationArrayFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_framework.OrientationArrayFramework">[docs]</a><span class="k">class</span> <span class="nc">OrientationArrayFramework</span><span class="p">(</span><span class="n">arrays_data</span><span class="o">.</span><span class="n">OrientationArrayData</span><span class="p">,</span>
+                                <span class="n">FloatArrayFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to OrientationArrayData &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+</div>
+<div class="viewcode-block" id="IndexArrayFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_framework.IndexArrayFramework">[docs]</a><span class="k">class</span> <span class="nc">IndexArrayFramework</span><span class="p">(</span><span class="n">arrays_data</span><span class="o">.</span><span class="n">IndexArrayData</span><span class="p">,</span> <span class="n">IntegerArrayFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class exists to add framework methods to IndexArrayData &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+</div>
+<div class="viewcode-block" id="MappedArrayFramework"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.arrays_framework.MappedArrayFramework">[docs]</a><span class="k">class</span> <span class="nc">MappedArrayFramework</span><span class="p">(</span><span class="n">arrays_data</span><span class="o">.</span><span class="n">MappedArrayData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This class will hold methods that should be available to all </span>
+<span class="sd">    array types&quot;&quot;&quot;</span>
+
+    <span class="n">KEY_SIZE</span> <span class="o">=</span> <span class="s">&quot;size&quot;</span>
+    <span class="n">KEY_OPERATION</span> <span class="o">=</span> <span class="s">&quot;operation&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
+    
+    
+    <span class="k">def</span> <span class="nf">configure_chunk_safe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Configure part which is chunk safe&quot;&quot;&quot;</span>
+        <span class="n">data_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_shape</span><span class="p">(</span><span class="s">&#39;array_data&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nr_dimensions</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_shape</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nr_dimensions</span><span class="p">,</span> <span class="mi">4</span><span class="p">)):</span> 
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;length_</span><span class="si">%d</span><span class="s">d&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">data_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+    
+    
+    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;After populating few fields, compute the rest of the fields&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MappedArrayFramework</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array_data</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nr_dimensions</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array_data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nr_dimensions</span><span class="p">,</span> <span class="mi">4</span><span class="p">)):</span> 
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;length_</span><span class="si">%d</span><span class="s">d&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">accepted_filters</span><span class="p">():</span>
+        <span class="n">filters</span> <span class="o">=</span> <span class="n">arrays_data</span><span class="o">.</span><span class="n">MappedArrayData</span><span class="o">.</span><span class="n">accepted_filters</span><span class="p">()</span>
+        <span class="n">filters</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;datatype_class._nr_dimensions&#39;</span><span class="p">:</span>
+                            <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;int&#39;</span><span class="p">,</span> <span class="s">&#39;display&#39;</span><span class="p">:</span> <span class="s">&#39;Dimensionality&#39;</span><span class="p">,</span> <span class="s">&#39;operations&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;==&#39;</span><span class="p">,</span> <span class="s">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&#39;</span><span class="p">]},</span>
+                        <span class="s">&#39;datatype_class._length_1d&#39;</span><span class="p">:</span>
+                            <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;int&#39;</span><span class="p">,</span> <span class="s">&#39;display&#39;</span><span class="p">:</span> <span class="s">&#39;Shape 1&#39;</span><span class="p">,</span> <span class="s">&#39;operations&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;==&#39;</span><span class="p">,</span> <span class="s">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&#39;</span><span class="p">]},</span>
+                        <span class="s">&#39;datatype_class._length_2d&#39;</span><span class="p">:</span>
+                            <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;int&#39;</span><span class="p">,</span> <span class="s">&#39;display&#39;</span><span class="p">:</span> <span class="s">&#39;Shape 2&#39;</span><span class="p">,</span> <span class="s">&#39;operations&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;==&#39;</span><span class="p">,</span> <span class="s">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&#39;</span><span class="p">]}})</span>
+        <span class="k">return</span> <span class="n">filters</span>
+    
+    
+    <span class="k">def</span> <span class="nf">reduce_dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ui_selected_items</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ui_selected_items is a dictionary which contains items of form:</span>
+<span class="sd">        &#39;$name_$D : [$gid_$D_$I,..., func_$FUNC]&#39; where &#39;$D - int dimension&#39;, &#39;$gid - a data type gid&#39;,</span>
+<span class="sd">        &#39;$I - index in that dimension&#39; and &#39;$FUNC - an aggregation function&#39;.</span>
+
+<span class="sd">        If the user didn&#39;t select anything from a certain dimension then it means that the entire</span>
+<span class="sd">        dimension is selected</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c">#The fields &#39;aggregation_functions&#39; and &#39;dimensions&#39; will be of form:</span>
+        <span class="c">#- aggregation_functions = {dimension: agg_func, ...} e.g.: {0: sum, 1: average, 2: none, ...}</span>
+        <span class="c">#- dimensions = {dimension: [list_of_indexes], ...} e.g.: {0: [0,1], 1: [5,500],...}</span>
+        <span class="n">dimensions</span><span class="p">,</span> <span class="n">aggregation_functions</span><span class="p">,</span> <span class="n">required_dimension</span><span class="p">,</span> <span class="n">shape_restrictions</span> <span class="o">=</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">parse_selected_items</span><span class="p">(</span><span class="n">ui_selected_items</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">required_dimension</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c">#find the dimension of the resulted array</span>
+            <span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">aggregation_functions</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">aggregation_functions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&quot;none&quot;</span><span class="p">:</span>
+                    <span class="n">dim</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dimensions</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dimensions</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> 
+                    <span class="p">(</span><span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">aggregation_functions</span> 
+                     <span class="ow">or</span> <span class="n">aggregation_functions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;none&quot;</span><span class="p">)):</span>
+                    <span class="n">dim</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">dim</span> <span class="o">!=</span> <span class="n">required_dimension</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Dimension for selected array is incorrect&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Dimension for selected array is incorrect!&quot;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_data</span>
+        <span class="n">full</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="n">cut_dimensions</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">dimensions</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">my_slice</span> <span class="o">=</span> <span class="p">[</span><span class="n">full</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="n">cut_dimensions</span><span class="p">)]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">my_slice</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="n">cut_dimensions</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">my_slice</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">my_slice</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">aggregation_functions</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">aggregation_functions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&quot;none&quot;</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s">&quot;numpy.&quot;</span> <span class="o">+</span> <span class="n">aggregation_functions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="s">&quot;(result,axis=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="n">cut_dimensions</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span><span class="p">)</span>
+                    <span class="n">cut_dimensions</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c">#check that the shape for the resulted array respects given conditions</span>
+        <span class="n">result_shape</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result_shape</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">shape_restrictions</span><span class="p">:</span>
+                <span class="n">flag</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">result_shape</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="n">shape_restrictions</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_OPERATION</span><span class="p">]</span> <span class="o">+</span>
+                            <span class="nb">str</span><span class="p">(</span><span class="n">shape_restrictions</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_SIZE</span><span class="p">]))</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">flag</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;The condition is not fulfilled: dimension &quot;</span> 
+                           <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; &quot;</span> 
+                           <span class="o">+</span> <span class="n">shape_restrictions</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_OPERATION</span><span class="p">]</span> <span class="o">+</span> <span class="s">&quot; &quot;</span>
+                           <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">shape_restrictions</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_SIZE</span><span class="p">])</span> <span class="o">+</span> 
+                           <span class="s">&quot;. The actual size of dimension &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> 
+                           <span class="o">+</span> <span class="s">&quot; is &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">result_shape</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="s">&quot;.&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">required_dimension</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">required_dimension</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Dimensions of the selected array are incorrect&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Dimensions of the selected array are incorrect!&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+
+    <span class="k">def</span> <span class="nf">parse_selected_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ui_selected_items</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Used for parsing the user selected items.</span>
+
+<span class="sd">        ui_selected_items is a dictionary which contains items of form:</span>
+<span class="sd">        &#39;name_D : [gid_D_I,..., func_FUNC]&#39; where &#39;D - dimension&#39;, &#39;gid - a data type gid&#39;,</span>
+<span class="sd">        &#39;I - index in that dimension&#39; and &#39;FUNC - an aggregation function&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expected_shape_str</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="n">operations_str</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="n">dimensions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">aggregation_functions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">required_dimension</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">ui_selected_items</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">split_array</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;_&quot;</span><span class="p">)</span>
+            <span class="n">current_dim</span> <span class="o">=</span> <span class="n">split_array</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">split_array</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">list_values</span> <span class="o">=</span> <span class="n">ui_selected_items</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">list_values</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">list_values</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">list_values</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">list_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">list_values</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">list_values</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;expected_shape_&quot;</span><span class="p">):</span>
+                    <span class="n">expected_shape_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;expected_shape_&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;operations_&quot;</span><span class="p">):</span>
+                    <span class="n">operations_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;operations_&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;requiredDim_&quot;</span><span class="p">):</span>
+                    <span class="n">required_dimension</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;requiredDim_&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;func_&quot;</span><span class="p">):</span>
+                    <span class="n">agg_func</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;func_&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">aggregation_functions</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">current_dim</span><span class="p">)]</span> <span class="o">=</span> <span class="n">agg_func</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">str_array</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;_&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">str_array</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">in</span> <span class="n">dimensions</span><span class="p">:</span>
+                        <span class="n">dimensions</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">str_array</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">str_array</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">dimensions</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">str_array</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">str_array</span><span class="p">[</span><span class="mi">2</span><span class="p">])]</span>
+        <span class="k">return</span> <span class="n">dimensions</span><span class="p">,</span> <span class="n">aggregation_functions</span><span class="p">,</span> <span class="n">required_dimension</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_expected_shape</span><span class="p">(</span><span class="n">expected_shape_str</span><span class="p">,</span>
+                                                                                                 <span class="n">operations_str</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_parse_expected_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_shape_str</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">operations_str</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If we have the inputs of form: expected_shape=&#39;x,512,x&#39; and operations=&#39;x,&amp;lt;,x&#39;.</span>
+<span class="sd">        The result will be: {1: {&#39;size&#39;:512, &#39;operation&#39;:&#39;&lt;&#39;}}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">expected_shape_str</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> \
+           <span class="nb">len</span><span class="p">(</span><span class="n">operations_str</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">shape_array</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">expected_shape_str</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">)</span>
+        <span class="n">op_array</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">operations_str</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">)</span>
+
+        <span class="n">operations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_operations</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">shape_array</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">shape_array</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">op_array</span><span class="p">)</span> <span class="ow">and</span> <span class="n">op_array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">in</span> <span class="n">operations</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_SIZE</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">shape_array</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">KEY_OPERATION</span><span class="p">:</span> <span class="n">operations</span><span class="p">[</span><span class="n">op_array</span><span class="p">[</span><span class="n">i</span><span class="p">]]}</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+
+    <span class="k">def</span> <span class="nf">read_data_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Expose shape read on field &#39;array_data&#39; &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_shape</span><span class="p">(</span><span class="s">&#39;array_data&#39;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">read_data_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_slice</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Expose chunked-data access. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s">&#39;array_data&#39;</span><span class="p">,</span> <span class="n">data_slice</span><span class="p">)</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_operations</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Return accepted operations&quot;&quot;&quot;</span>
+        <span class="n">operations</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;&amp;lt;&#39;</span><span class="p">:</span> <span class="s">&#39;&lt;&#39;</span><span class="p">,</span>
+                      <span class="s">&#39;&amp;gt;&#39;</span><span class="p">:</span> <span class="s">&#39;&gt;&#39;</span><span class="p">,</span>
+                      <span class="s">&#39;&amp;ge;&#39;</span><span class="p">:</span> <span class="s">&#39;&gt;=&#39;</span><span class="p">,</span>
+                      <span class="s">&#39;&amp;le;&#39;</span><span class="p">:</span> <span class="s">&#39;&lt;=&#39;</span><span class="p">,</span>
+                      <span class="s">&#39;==&#39;</span><span class="p">:</span> <span class="s">&#39;==&#39;</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">operations</span>
+
+
+    </div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

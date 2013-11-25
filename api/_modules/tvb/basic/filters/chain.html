@@ -1,0 +1,465 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.basic.filters.chain &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.basic.filters.chain</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+
+<span class="sd">The following are the categories that will be available for filters in the UI. </span>
+<span class="sd">In case of adding a new category, the first input &#39;model.DataType.subject&#39; is </span>
+<span class="sd">the field from the model that will be used , display represents the</span>
+<span class="sd">way this field will be visible in the UI to the user, operations mark all the </span>
+<span class="sd">possible operations that can be done on that field </span>
+<span class="sd">(so far supported are: &quot;==&quot;, &quot;!=&quot;, &quot;&lt;&quot;, &quot;&gt;&quot;, &quot;in&quot;, &quot;not in&quot;). </span>
+<span class="sd">Type represents the type of input that is expected. So far string, date and </span>
+<span class="sd">list are supported.</span>
+
+<span class="sd">In order to define a default filter, from the adapter interface add::</span>
+
+<span class="sd">    &#39;conditions&#39;: FilterChain(fields= [FilterChain.datatype + &quot;.subject&quot;, FilterChain.datatype + &quot;.some_attribute&quot;,</span>
+<span class="sd">                              values= [[&quot;John Doe&quot;, &quot;JohnDoe1&quot;], &quot;Some Attr Value&quot;], operations= [&quot;in&quot;, &quot;==&quot;])</span>
+
+<span class="sd">If you want to add a filter to a XML interface::</span>
+
+<span class="sd">    &lt;input required=&quot;True&quot;&gt;</span>
+<span class="sd">        &lt;name value=&quot;data1&quot;/&gt;</span>
+<span class="sd">        &lt;label value=&quot;First dataset:&quot;/&gt;</span>
+<span class="sd">        &lt;description value=&quot;First set of signals&quot;/&gt;</span>
+<span class="sd">        &lt;type value=&quot;tvb.datatypes.arrays.MappedArray&quot; field=&quot;data&quot; default=&quot;default_data&quot;&gt;</span>
+<span class="sd">            &lt;conditions&gt;</span>
+<span class="sd">                &lt;cond_fields value_list=&quot;[&#39;datatype_class._nr_dimensions&#39;]&quot;/&gt;</span>
+<span class="sd">                &lt;cond_operations value_list=&quot;[&#39;==&#39;]&quot;/&gt;</span>
+<span class="sd">                &lt;cond_values value_list=&quot;[&#39;2&#39;]&quot;/&gt;</span>
+<span class="sd">            &lt;/conditions&gt;</span>
+<span class="sd">        &lt;/type&gt;</span>
+<span class="sd">    &lt;/input&gt;</span>
+<span class="sd">    </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.filters.exceptions</span> <span class="kn">import</span> <span class="n">InvalidFilterChainInput</span><span class="p">,</span> <span class="n">InvalidFilterEntity</span>
+
+<span class="n">KEY_DISPLAY</span> <span class="o">=</span> <span class="s">&#39;display_name&#39;</span>
+<span class="n">KEY_FIELDS</span> <span class="o">=</span> <span class="s">&#39;fields&#39;</span>
+<span class="n">KEY_VALUES</span> <span class="o">=</span> <span class="s">&#39;values&#39;</span>
+<span class="n">KEY_OPERATIONS</span> <span class="o">=</span> <span class="s">&#39;operations&#39;</span>
+<span class="n">KEY_OPERATOR</span> <span class="o">=</span> <span class="s">&#39;operator&#39;</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+
+<div class="viewcode-block" id="FilterChain"><a class="viewcode-back" href="../../../../tvb.basic.filters.html#tvb.basic.filters.chain.FilterChain">[docs]</a><span class="k">class</span> <span class="nc">FilterChain</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class used to filter tables displayed in UI, based on few criteria.</span>
+<span class="sd">    Initialize filter with a list of fields, and corresponding values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">datatype</span> <span class="o">=</span> <span class="s">&#39;$$DATATYPE_INPUT$$&#39;</span>
+    <span class="n">algorithm_group</span> <span class="o">=</span> <span class="s">&#39;$$ALGORITHM_GROUP_INPUT$$&#39;</span>
+    <span class="n">algorithm_category</span> <span class="o">=</span> <span class="s">&#39;$$ALGORITHM_CATEGORY_INPUT$$&#39;</span>
+    <span class="n">operation</span> <span class="o">=</span> <span class="s">&#39;$$OPERATION_INPUT$$&#39;</span>
+
+    <span class="n">datatype_replacement</span> <span class="o">=</span> <span class="s">&quot;model.DataType&quot;</span>
+    <span class="n">algorithm_group_replacement</span> <span class="o">=</span> <span class="s">&quot;model.AlgorithmGroup&quot;</span>
+    <span class="n">algorithm_category_replacement</span> <span class="o">=</span> <span class="s">&quot;model.AlgorithmCategory&quot;</span>
+    <span class="n">operation_replacement</span> <span class="o">=</span> <span class="s">&quot;model.Operation&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">display_name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">operations</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">operator_between_fields</span><span class="o">=</span><span class="s">&#39;and&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize filter attributes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_name</span> <span class="o">=</span> <span class="n">display_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span> <span class="o">=</span> <span class="n">fields</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">values</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operations</span> <span class="o">=</span> <span class="n">operations</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operator_between_fields</span> <span class="o">=</span> <span class="n">operator_between_fields</span>
+
+        <span class="c"># Is this filter selected or not in the UI</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="c"># How many entries will still remain if we apply this filter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">passes_count</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+
+    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overwrite so that the custom keys cannot be overwritten.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;datatype&#39;</span><span class="p">,</span> <span class="s">&#39;algorithm_group&#39;</span><span class="p">,</span> <span class="s">&#39;algorithm_category&#39;</span><span class="p">,</span> <span class="s">&#39;operation&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s">&quot;FilterChain &#39;</span><span class="si">%s</span><span class="s">&#39; attribute is used internally and can only be read, not set.&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">object</span><span class="o">.</span><span class="n">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Define an addition operation on filters so one can easily do filter1 + filter2</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">FilterChain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">display_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+                               <span class="bp">self</span><span class="o">.</span><span class="n">operations</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator_between_fields</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">FilterChain</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;unsupported operand type(s) for +: &#39;FilterChain&#39; and &#39;</span><span class="si">%s</span><span class="s">&#39;&quot;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+
+        <span class="n">new_display_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_name</span> <span class="o">+</span> <span class="s">&quot;__&quot;</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">display_name</span>
+        <span class="n">new_fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[:]</span>
+        <span class="n">new_fields</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span>
+        <span class="n">new_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[:]</span>
+        <span class="n">new_values</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">operations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">operations</span><span class="p">[:]</span>
+        <span class="n">operations</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">operations</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">FilterChain</span><span class="p">(</span><span class="n">new_display_name</span><span class="p">,</span> <span class="n">new_fields</span><span class="p">,</span> <span class="n">new_values</span><span class="p">,</span> <span class="n">operations</span><span class="p">,</span> <span class="s">&#39;and&#39;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">+</span> <span class="s">&quot;(fields=</span><span class="si">%s</span><span class="s">, operations=</span><span class="si">%s</span><span class="s">, values=</span><span class="si">%s</span><span class="s">, operator_between_fields=</span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">operations</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator_between_fields</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="FilterChain.to_json"><a class="viewcode-back" href="../../../../tvb.basic.filters.html#tvb.basic.filters.chain.FilterChain.to_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a dictionary representation of the filter, to be used when needed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dict_equivalent</span> <span class="o">=</span> <span class="p">{</span><span class="n">KEY_DISPLAY</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_name</span><span class="p">,</span>
+                           <span class="n">KEY_FIELDS</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span>
+                           <span class="n">KEY_VALUES</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+                           <span class="n">KEY_OPERATIONS</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">operations</span><span class="p">,</span>
+                           <span class="n">KEY_OPERATOR</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator_between_fields</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">dict_equivalent</span><span class="p">)</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">__prepare_filter_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_string</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Do all replacements of place-holders with evaluable strings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">filter_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype_replacement</span>
+                                     <span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm_group</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm_group_replacement</span>
+                                     <span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm_category</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm_category_replacement</span>
+                                     <span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">operation</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">operation_replacement</span><span class="p">)</span>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="FilterChain.get_filters_for_type"><a class="viewcode-back" href="../../../../tvb.basic.filters.html#tvb.basic.filters.chain.FilterChain.get_filters_for_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_filters_for_type</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">data_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the list of filters to appear in UI.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data_class</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">_get_class_instance</span><span class="p">(</span><span class="n">data_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data_class</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data_class</span><span class="p">,</span> <span class="s">&#39;accepted_filters&#39;</span><span class="p">):</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Invalid Class specification:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">data_name</span><span class="p">))</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data_class</span><span class="o">.</span><span class="n">accepted_filters</span><span class="p">())</span>
+
+</div>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_get_class_instance</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">data_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal method, to build a DataType class instance, from possible class string-name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data_class</span> <span class="o">=</span> <span class="n">data_name</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_name</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">)):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">class_</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">data_name</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">module_</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">data_name</span><span class="p">)[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">class_</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+                <span class="n">data_class</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">module_</span><span class="p">,</span> <span class="nb">globals</span><span class="p">(),</span> <span class="nb">locals</span><span class="p">(),</span> <span class="p">[</span><span class="n">class_</span><span class="p">])</span>
+                <span class="n">data_class</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s">&quot;data_class.&quot;</span> <span class="o">+</span> <span class="n">class_</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Expected DataType full class quantifier! Got:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">data_name</span><span class="p">))</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+                <span class="n">data_class</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">data_class</span>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="FilterChain.from_json"><a class="viewcode-back" href="../../../../tvb.basic.filters.html#tvb.basic.filters.chain.FilterChain.from_json">[docs]</a>    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">input_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        From a JSON dictionary create a filter instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">input_dict</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">input_dict</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;None&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="n">filter_dictionary</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">input_dict</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">FilterChain</span><span class="p">(</span><span class="n">display_name</span><span class="o">=</span><span class="n">filter_dictionary</span><span class="p">[</span><span class="n">KEY_DISPLAY</span><span class="p">],</span> <span class="n">fields</span><span class="o">=</span><span class="n">filter_dictionary</span><span class="p">[</span><span class="n">KEY_FIELDS</span><span class="p">],</span>
+                           <span class="n">values</span><span class="o">=</span><span class="n">filter_dictionary</span><span class="p">[</span><span class="n">KEY_VALUES</span><span class="p">],</span> <span class="n">operations</span><span class="o">=</span><span class="n">filter_dictionary</span><span class="p">[</span><span class="n">KEY_OPERATIONS</span><span class="p">],</span>
+                           <span class="n">operator_between_fields</span><span class="o">=</span><span class="n">filter_dictionary</span><span class="p">[</span><span class="n">KEY_OPERATOR</span><span class="p">])</span>
+
+</div>
+<div class="viewcode-block" id="FilterChain.get_python_filter_equivalent"><a class="viewcode-back" href="../../../../tvb.basic.filters.html#tvb.basic.filters.chain.FilterChain.get_python_filter_equivalent">[docs]</a>    <span class="k">def</span> <span class="nf">get_python_filter_equivalent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datatype_to_check</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">algogroup_to_check</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                                     <span class="n">algocategory_to_check</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">operation_to_check</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Python evaluate of the filter against a current given DataType</span>
+<span class="sd">        Check a filter instance next to a given input.</span>
+<span class="sd">        </span>
+<span class="sd">        :param datatype_to_check: the dataType to be checked against this filter instance</span>
+<span class="sd">        </span>
+<span class="sd">        :return: true if input passed</span>
+<span class="sd">                 false if input failed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">passed_test</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="c">## set to current method input parameters, as these strings will be use in eval</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datatype_replacement</span> <span class="o">=</span> <span class="s">&#39;datatype_to_check&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm_group_replacement</span> <span class="o">=</span> <span class="s">&#39;algogroup_to_check&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm_category_replacement</span> <span class="o">=</span> <span class="s">&#39;algocategory_to_check&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operation_replacement</span> <span class="o">=</span> <span class="s">&#39;operation_to_check&#39;</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">)):</span>
+            <span class="c">#### Any filter validations checks start here #####</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">operations</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;in&#39;</span><span class="p">,</span> <span class="s">&#39;not in&#39;</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">InvalidFilterEntity</span><span class="p">(</span><span class="s">&quot;Invalid filter! </span><span class="si">%s</span><span class="s">. not applicable for value </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">operations</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                                                                                   <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+            <span class="c">#### Any filter validations checks end here #####</span>
+            <span class="n">my_filter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__prepare_filter_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">operations</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="s">&quot; &quot;</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">):</span>
+                <span class="n">prepared_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__prepare_filter_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">prepared_value</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="c">## It&#39;s not just some string, but a FilterChain expression.</span>
+                    <span class="n">my_filter</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c">## It&#39;s just a string, need to add quotes so eval won&#39;t search for a variable with that name.</span>
+                    <span class="n">my_filter</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="s">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c">## Try to replace here as well since we might have a list of place-holders.</span>
+                <span class="n">prepared_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__prepare_filter_string</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                <span class="n">my_filter</span> <span class="o">=</span> <span class="n">my_filter</span> <span class="o">+</span> <span class="n">prepared_value</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">my_filter</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">my_filter</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidFilterChainInput</span><span class="p">(</span><span class="s">&quot;On </span><span class="si">%s</span><span class="s"> filtered attribute </span><span class="si">%s</span><span class="s"> is missing.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">datatype_to_check</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;input_to_check.&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)))</span>
+            <span class="n">passed_test</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s">&#39;passed_test &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator_between_fields</span> <span class="o">+</span> <span class="s">&#39; my_filter&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">passed_test</span>
+
+</div>
+<div class="viewcode-block" id="FilterChain.get_sql_filter_equivalent"><a class="viewcode-back" href="../../../../tvb.basic.filters.html#tvb.basic.filters.chain.FilterChain.get_sql_filter_equivalent">[docs]</a>    <span class="k">def</span> <span class="nf">get_sql_filter_equivalent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datatype_to_check</span><span class="o">=</span><span class="s">&quot;model.DataType&quot;</span><span class="p">,</span> <span class="n">operation_to_check</span><span class="o">=</span><span class="s">&quot;model.Operation&quot;</span><span class="p">,</span>
+                                  <span class="n">algogroup_to_check</span><span class="o">=</span><span class="s">&quot;model.AlgorithmGroup&quot;</span><span class="p">,</span>
+                                  <span class="n">algocategory_to_check</span><span class="o">=</span><span class="s">&quot;model.AlgorithmCategory&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the computed SQL string from the given filter.</span>
+<span class="sd">        The method may return None if the filter is None or the</span>
+<span class="sd">        fields of the filter are not set.</span>
+<span class="sd">        </span>
+<span class="sd">        The input to this method should be a string representing the name under which </span>
+<span class="sd">        the variable you want to be filtered was binded in the callers namespace.</span>
+<span class="sd">        e.g.  </span>
+
+<span class="sd">        def foo(var_to_filter, filter_entity):</span>
+<span class="sd">            filter_entity.get_sql_filter_equivalent(&#39;var_to_filter&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">datatype_replacement</span> <span class="o">=</span> <span class="n">datatype_to_check</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm_group_replacement</span> <span class="o">=</span> <span class="n">algogroup_to_check</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm_category_replacement</span> <span class="o">=</span> <span class="n">algocategory_to_check</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operation_replacement</span> <span class="o">=</span> <span class="n">operation_to_check</span>
+
+        <span class="n">filter_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator_between_fields</span> <span class="o">+</span> <span class="s">&quot;_(&quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">filter_str</span> <span class="o">+=</span> <span class="s">&quot;,&quot;</span>
+            <span class="n">field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__prepare_filter_string</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+            <span class="n">filter_str</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_sql_filter_equivalent</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">operations</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">filter_str</span> <span class="o">+=</span> <span class="s">&quot;)&quot;</span>
+        <span class="k">return</span> <span class="n">filter_str</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">__get_sql_filter_equivalent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For a field, value and operation get the sql-alchemy specific syntax.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">operation</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&quot;not in&quot;</span><span class="p">,</span> <span class="s">&quot;in&quot;</span><span class="p">):</span>
+            <span class="n">prepared_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__prepare_filter_string</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">prepared_value</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="c">## It was just a regular string, need to add quotes so it&#39;s not evaluated to a variable</span>
+                    <span class="n">prepared_value</span> <span class="o">=</span> <span class="s">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="n">prepared_value</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span>
+                <span class="n">prepared_value</span> <span class="o">=</span> <span class="s">&#39;[&#39;</span> <span class="o">+</span> <span class="n">prepared_value</span> <span class="o">+</span> <span class="s">&#39;]&#39;</span>
+            <span class="k">if</span> <span class="n">operation</span> <span class="o">==</span> <span class="s">&quot;not in&quot;</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s">&quot;not_(&quot;</span> <span class="o">+</span> <span class="n">field</span> <span class="o">+</span> <span class="s">&quot;.in_(&quot;</span> <span class="o">+</span> <span class="n">prepared_value</span> <span class="o">+</span> <span class="s">&quot;))&quot;</span>
+            <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="s">&quot;in&quot;</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="n">field</span> <span class="o">+</span> <span class="s">&quot;.in_(&quot;</span> <span class="o">+</span> <span class="n">prepared_value</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span>
+        <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="s">&quot;like&quot;</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="n">field</span> <span class="o">+</span> <span class="s">&quot;.ilike(&#39;&quot;</span>
+            <span class="n">filter_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__prepare_filter_string</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
+            <span class="k">if</span> <span class="s">&#39;%&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filter_value</span><span class="p">:</span>
+                <span class="n">filter_value</span> <span class="o">=</span> <span class="s">&#39;%&#39;</span> <span class="o">+</span> <span class="n">filter_value</span> <span class="o">+</span> <span class="s">&#39;%&#39;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="n">filter_value</span> <span class="o">+</span> <span class="s">&quot;&#39;)&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="n">field</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="n">operation</span>
+            <span class="n">prepared_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__prepare_filter_string</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">prepared_value</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                    <span class="c">## It was just a regular string, need to add quotes so it&#39;s not evaluated to a variable</span>
+                    <span class="n">prepared_value</span> <span class="o">=</span> <span class="s">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="n">prepared_value</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="n">prepared_value</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+
+<div class="viewcode-block" id="FilterChain.add_condition"><a class="viewcode-back" href="../../../../tvb.basic.filters.html#tvb.basic.filters.chain.FilterChain.add_condition">[docs]</a>    <span class="k">def</span> <span class="nf">add_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">operation_string</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Append to the list of conditions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">operation_string</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+
+</div></div>
+<div class="viewcode-block" id="UIFilter"><a class="viewcode-back" href="../../../../tvb.basic.filters.html#tvb.basic.filters.chain.UIFilter">[docs]</a><span class="k">class</span> <span class="nc">UIFilter</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper class for the UI filters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">linked_elem_name</span><span class="p">,</span> <span class="n">linked_elem_field</span><span class="p">,</span> <span class="n">linked_elem_parent_name</span><span class="p">,</span> <span class="n">linked_elem_parent_option</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linked_elem_name</span> <span class="o">=</span> <span class="n">linked_elem_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linked_elem_field</span> <span class="o">=</span> <span class="n">linked_elem_field</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linked_elem_parent_name</span> <span class="o">=</span> <span class="n">linked_elem_parent_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linked_elem_parent_option</span> <span class="o">=</span> <span class="n">linked_elem_parent_option</span>
+
+
+<div class="viewcode-block" id="UIFilter.to_dict"><a class="viewcode-back" href="../../../../tvb.basic.filters.html#tvb.basic.filters.chain.UIFilter.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare for passing in UI</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;linked_elem_name&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">linked_elem_name</span><span class="p">,</span>
+                <span class="s">&#39;linked_elem_field&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">linked_elem_field</span><span class="p">,</span>
+                <span class="s">&#39;linked_elem_parent_name&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">linked_elem_parent_name</span><span class="p">,</span>
+                <span class="s">&#39;linked_elem_parent_option&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">linked_elem_parent_option</span><span class="p">}</span>
+    
+    </div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

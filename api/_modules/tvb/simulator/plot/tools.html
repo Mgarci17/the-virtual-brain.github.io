@@ -1,0 +1,692 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.simulator.plot.tools &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.simulator.plot.tools</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A collection of plotting functions used by simulator/demos</span>
+
+<span class="sd">import an usage for MAYAVI based plots should look like::</span>
+<span class="sd">    </span>
+<span class="sd">    from tvb.simulator.plot.tools import *</span>
+<span class="sd">    </span>
+<span class="sd">    if IMPORTED_MAYAVI:</span>
+<span class="sd">        plt = plot_function(...)</span>
+
+<span class="sd">.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+<span class="c">##----------------------------------------------------------------------------##</span>
+<span class="c">##-                  matplotlib based plotting functions                     -##</span>
+<span class="c">##---------------------------------------------------------------------------cd-##</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">pyplot</span>
+<span class="kn">import</span> <span class="nn">matplotlib.colors</span>
+
+
+
+<span class="k">def</span> <span class="nf">_blob</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span> <span class="n">colour</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Draws a square-shaped blob with the given area (&lt; 1) at</span>
+<span class="sd">    the given coordinates.</span>
+<span class="sd">    From : http://www.scipy.org/Cookbook/Matplotlib/HintonDiagrams</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hs</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">area</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">xcorners</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span> <span class="o">-</span> <span class="n">hs</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">hs</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">hs</span><span class="p">,</span> <span class="n">x</span> <span class="o">-</span> <span class="n">hs</span><span class="p">])</span>
+    <span class="n">ycorners</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">y</span> <span class="o">-</span> <span class="n">hs</span><span class="p">,</span> <span class="n">y</span> <span class="o">-</span> <span class="n">hs</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="n">hs</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="n">hs</span><span class="p">])</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">xcorners</span><span class="p">,</span> <span class="n">ycorners</span><span class="p">,</span> <span class="n">colour</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="n">colour</span><span class="p">)</span>
+
+
+
+<div class="viewcode-block" id="hinton_diagram"><a class="viewcode-back" href="../../../../tvb.simulator.plot.html#tvb.simulator.plot.tools.hinton_diagram">[docs]</a><span class="k">def</span> <span class="nf">hinton_diagram</span><span class="p">(</span><span class="n">connectivity_weights</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">maxWeight</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Draws a Hinton diagram. This function temporarily disables matplotlib</span>
+<span class="sd">    interactive mode if it is on, otherwise this takes forever.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">weights_figure</span> <span class="o">=</span> <span class="n">pyplot</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="n">num</span><span class="p">)</span>
+    <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">connectivity_weights</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">maxWeight</span><span class="p">:</span>
+        <span class="n">maxWeight</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">connectivity_weights</span><span class="p">)))</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="c">#pyplot.fill(numpy.array([0,width,width,0]),numpy.array([0,0,height+0.5,height+0.5]),&#39;gray&#39;)</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s">&#39;equal&#39;</span><span class="p">)</span>
+    <span class="n">weights_axes</span> <span class="o">=</span> <span class="n">weights_figure</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">width</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">height</span><span class="p">):</span>
+            <span class="n">_x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">_y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">connectivity_weights</span><span class="p">[</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">w</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">_blob</span><span class="p">(</span><span class="n">_x</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">,</span> <span class="n">height</span> <span class="o">-</span> <span class="n">_y</span> <span class="o">+</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">w</span> <span class="o">/</span> <span class="n">maxWeight</span><span class="p">),</span> <span class="s">&#39;red&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">w</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">_blob</span><span class="p">(</span><span class="n">_x</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">,</span> <span class="n">height</span> <span class="o">-</span> <span class="n">_y</span> <span class="o">+</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="n">w</span> <span class="o">/</span> <span class="n">maxWeight</span><span class="p">),</span> <span class="s">&#39;black&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">weights_axes</span>
+
+
+</div>
+<div class="viewcode-block" id="plot_connectivity"><a class="viewcode-back" href="../../../../tvb.simulator.plot.html#tvb.simulator.plot.tools.plot_connectivity">[docs]</a><span class="k">def</span> <span class="nf">plot_connectivity</span><span class="p">(</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="s">&quot;weights&quot;</span><span class="p">,</span> <span class="n">order_by</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">plot_hinton</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">plot_tracts</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A 2D plot for visualizing the Connectivity.weights matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">region_labels</span>
+    <span class="n">plot_title</span> <span class="o">=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+
+    <span class="k">if</span> <span class="n">order_by</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">connectivity</span><span class="o">.</span><span class="n">number_of_regions</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">order_by</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">order</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">number_of_regions</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Ordering vector doesn&#39;t have length number_of_regions&quot;</span><span class="p">)</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Check ordering length and that connectivity is configured&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+    <span class="c"># Assumes order is shape (number_of_regions, )</span>
+    <span class="n">order_rows</span> <span class="o">=</span> <span class="n">order</span><span class="p">[:,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+    <span class="n">order_columns</span> <span class="o">=</span> <span class="n">order_rows</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="k">if</span> <span class="n">plot_hinton</span><span class="p">:</span>
+        <span class="n">weights_axes</span> <span class="o">=</span> <span class="n">hinton_diagram</span><span class="p">(</span><span class="n">connectivity</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">order_rows</span><span class="p">,</span> <span class="n">order_columns</span><span class="p">],</span> <span class="n">num</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># weights matrix</span>
+        <span class="n">weights_figure</span> <span class="o">=</span> <span class="n">pyplot</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">weights_axes</span> <span class="o">=</span> <span class="n">weights_figure</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+        <span class="n">wimg</span> <span class="o">=</span> <span class="n">weights_axes</span><span class="o">.</span><span class="n">matshow</span><span class="p">(</span><span class="n">connectivity</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">order_rows</span><span class="p">,</span> <span class="n">order_columns</span><span class="p">])</span>
+        <span class="n">weights_figure</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">wimg</span><span class="p">)</span>
+
+    <span class="n">weights_axes</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">plot_title</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">plot_tracts</span><span class="p">:</span>
+        <span class="c"># tract lengths matrix</span>
+        <span class="n">tracts_figure</span> <span class="o">=</span> <span class="n">pyplot</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="s">&quot;tract-lengths&quot;</span><span class="p">)</span>
+        <span class="n">tracts_axes</span> <span class="o">=</span> <span class="n">tracts_figure</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+        <span class="n">timg</span> <span class="o">=</span> <span class="n">tracts_axes</span><span class="o">.</span><span class="n">matshow</span><span class="p">(</span><span class="n">connectivity</span><span class="o">.</span><span class="n">tract_lengths</span><span class="p">[</span><span class="n">order_rows</span><span class="p">,</span> <span class="n">order_columns</span><span class="p">])</span>
+        <span class="n">tracts_axes</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">plot_title</span><span class="p">)</span>
+        <span class="n">tracts_figure</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">timg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">weights_axes</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">connectivity</span><span class="o">.</span><span class="n">number_of_regions</span><span class="p">))</span>
+    <span class="n">weights_axes</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">order</span><span class="p">]),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+    <span class="n">weights_axes</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">connectivity</span><span class="o">.</span><span class="n">number_of_regions</span><span class="p">))</span>
+    <span class="n">weights_axes</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">order</span><span class="p">]),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">plot_tracts</span><span class="p">:</span>
+        <span class="n">tracts_axes</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">connectivity</span><span class="o">.</span><span class="n">number_of_regions</span><span class="p">))</span>
+        <span class="n">tracts_axes</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">order</span><span class="p">]),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+        <span class="n">tracts_axes</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">connectivity</span><span class="o">.</span><span class="n">number_of_regions</span><span class="p">))</span>
+        <span class="n">tracts_axes</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">order</span><span class="p">]),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="plot_local_connectivity"><a class="viewcode-back" href="../../../../tvb.simulator.plot.html#tvb.simulator.plot.tools.plot_local_connectivity">[docs]</a><span class="k">def</span> <span class="nf">plot_local_connectivity</span><span class="p">(</span><span class="n">cortex</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Display the local connectivity function as a line plot. Four lines are</span>
+<span class="sd">    plotted of the equations defining the LocalConnectivity:</span>
+<span class="sd">        </span>
+<span class="sd">        1) black, a &#39;high&#39; resolution version evaluated out to a &#39;sufficiently</span>
+<span class="sd">        large distance&#39;, ie, this is what you ideally want to represent;</span>
+<span class="sd">        </span>
+<span class="sd">        2) green, best case &#39;reality&#39;, based on shortest edge and cutoff </span>
+<span class="sd">        distance;</span>
+<span class="sd">        </span>
+<span class="sd">        3) red, worst case &#39;reality&#39;, based on longest edge and cutoff distance;</span>
+<span class="sd">        </span>
+<span class="sd">        4) blue, typical case &#39;reality&#39;, based on average edge length and cutoff</span>
+<span class="sd">        distance.</span>
+<span class="sd">    </span>
+<span class="sd">    Usage, from demos directory, with tvb in your path ::</span>
+<span class="sd">        </span>
+<span class="sd">        import tvb.datatypes.surfaces as surfaces</span>
+<span class="sd">        import plotting_tools</span>
+<span class="sd">        cortex = surfaces.Cortex()</span>
+<span class="sd">        plotting_tools.plot_local_connectivity(cortex, cutoff=60.)</span>
+<span class="sd">        plotting_tools.pyplot.show()</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dashes</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;--&#39;</span><span class="p">,</span>  <span class="c"># : dashed line   -- blue</span>
+              <span class="s">&#39;-.&#39;</span><span class="p">,</span>  <span class="c"># : dash-dot line -- red</span>
+              <span class="s">&#39;:&#39;</span><span class="p">,</span>   <span class="c"># : dotted line   -- green</span>
+              <span class="s">&#39;-&#39;</span><span class="p">]</span>   <span class="c"># : solid line    -- black</span>
+
+
+    <span class="c">#If necessary, add a default LocalConnectivity to ``local_connectivity``.</span>
+    <span class="k">if</span> <span class="n">cortex</span><span class="o">.</span><span class="n">local_connectivity</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;local_connectivity is None, adding default LocalConnectivity&quot;</span><span class="p">)</span>
+        <span class="n">cortex</span><span class="o">.</span><span class="n">local_connectivity</span> <span class="o">=</span> <span class="n">cortex</span><span class="o">.</span><span class="n">trait</span><span class="p">[</span><span class="s">&quot;local_connectivity&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">cutoff</span><span class="p">:</span>
+        <span class="n">cortex</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">cutoff</span> <span class="o">=</span> <span class="n">cutoff</span>
+
+    <span class="c">#We need a cutoff distance to work from...</span>
+    <span class="k">if</span> <span class="n">cortex</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">cutoff</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;You need to provide a cutoff...&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">cutoff</span> <span class="o">=</span> <span class="n">cortex</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">cutoff</span>
+    <span class="n">cutoff_2</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">cortex</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">cutoff</span>
+
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="s">&quot;Local Connectivity Cases&quot;</span><span class="p">)</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Local Connectivity Cases&quot;</span><span class="p">)</span>
+
+    <span class="c"># ideally all these lines should overlap</span>
+
+    <span class="c">#What we want</span>
+    <span class="n">hi_res</span> <span class="o">=</span> <span class="mi">1024</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">cutoff_2</span> <span class="o">/</span> <span class="p">(</span><span class="n">hi_res</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">hi_x</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">cutoff_2</span><span class="p">,</span> <span class="n">cutoff_2</span> <span class="o">+</span> <span class="n">step</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+    <span class="n">cortex</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">hi_x</span><span class="p">)</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">hi_x</span><span class="p">,</span> <span class="n">cortex</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="s">&#39;k&#39;</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="n">dashes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="c">#What we&#39;ll mostly get</span>
+    <span class="n">avg_res</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">cutoff</span> <span class="o">/</span> <span class="n">cortex</span><span class="o">.</span><span class="n">edge_length_mean</span><span class="p">)</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="n">cutoff_2</span> <span class="o">/</span> <span class="p">(</span><span class="n">avg_res</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">avg_x</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">cutoff</span><span class="p">,</span> <span class="n">cutoff</span> <span class="o">+</span> <span class="n">step</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+    <span class="n">cortex</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">avg_x</span><span class="p">)</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">avg_x</span><span class="p">,</span> <span class="n">cortex</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="n">dashes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="c">#It can be this bad</span>
+    <span class="n">worst_res</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">cutoff</span> <span class="o">/</span> <span class="n">cortex</span><span class="o">.</span><span class="n">edge_length_max</span><span class="p">)</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="n">cutoff_2</span> <span class="o">/</span> <span class="p">(</span><span class="n">worst_res</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">worst_x</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">cutoff</span><span class="p">,</span> <span class="n">cutoff</span> <span class="o">+</span> <span class="n">step</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+    <span class="n">cortex</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">worst_x</span><span class="p">)</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">worst_x</span><span class="p">,</span> <span class="n">cortex</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="n">dashes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="c">#This is as good as it gets...</span>
+    <span class="n">best_res</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">cutoff</span> <span class="o">/</span> <span class="n">cortex</span><span class="o">.</span><span class="n">edge_length_min</span><span class="p">)</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="n">cutoff_2</span> <span class="o">/</span> <span class="p">(</span><span class="n">best_res</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">best_x</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">cutoff</span><span class="p">,</span> <span class="n">cutoff</span> <span class="o">+</span> <span class="n">step</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+    <span class="n">cortex</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">best_x</span><span class="p">)</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">best_x</span><span class="p">,</span> <span class="n">cortex</span><span class="o">.</span><span class="n">local_connectivity</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="s">&#39;g&#39;</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="n">dashes</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="c">#Plot the cutoff</span>
+    <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="n">pyplot</span><span class="o">.</span><span class="n">ylim</span><span class="p">()</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="o">-</span><span class="n">cutoff</span><span class="p">,</span> <span class="o">-</span><span class="n">cutoff</span><span class="p">],</span> <span class="p">[</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">],</span> <span class="s">&quot;k--&quot;</span><span class="p">)</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">cutoff</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">],</span> <span class="p">[</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">],</span> <span class="s">&quot;k--&quot;</span><span class="p">)</span>
+
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="n">cutoff_2</span><span class="p">,</span> <span class="n">cutoff_2</span><span class="p">])</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Distance from focal point&quot;</span><span class="p">)</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Strength&quot;</span><span class="p">)</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">legend</span><span class="p">((</span><span class="s">&quot;Theoretical&quot;</span><span class="p">,</span> <span class="s">&quot;Typical&quot;</span><span class="p">,</span> <span class="s">&quot;Worst&quot;</span><span class="p">,</span> <span class="s">&quot;Best&quot;</span><span class="p">,</span> <span class="s">&quot;Cutoff&quot;</span><span class="p">))</span>
+
+    <span class="c"># set the linewidth of the first legend object</span>
+    <span class="c">#leg.legendHandles[0].set_linewidth(6.0)</span>
+    <span class="c">#leg.legendHandles[1].set_linewidth(6.0)</span>
+    <span class="c">#leg.legendHandles[2].set_linewidth(6.0)</span>
+    <span class="c">#leg.legendHandles[3].set_linewidth(6.0)</span>
+
+
+</div>
+<div class="viewcode-block" id="plot_pattern"><a class="viewcode-back" href="../../../../tvb.simulator.plot.html#tvb.simulator.plot.tools.plot_pattern">[docs]</a><span class="k">def</span> <span class="nf">plot_pattern</span><span class="p">(</span><span class="n">pattern_object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    pyplot in 2D the given X, over T.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">221</span><span class="p">)</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pattern_object</span><span class="o">.</span><span class="n">spatial_pattern</span><span class="p">,</span> <span class="s">&quot;k*&quot;</span><span class="p">)</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Space&quot;</span><span class="p">)</span>
+    <span class="c">#pyplot.plot(pattern_object.space, pattern_object.spatial_pattern, &quot;k*&quot;)</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">223</span><span class="p">)</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pattern_object</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">pattern_object</span><span class="o">.</span><span class="n">temporal_pattern</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Time&quot;</span><span class="p">)</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">)</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">pattern_object</span><span class="p">(),</span> <span class="n">aspect</span><span class="o">=</span><span class="s">&quot;auto&quot;</span><span class="p">)</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Stimulus&quot;</span><span class="p">)</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Time&quot;</span><span class="p">)</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Space&quot;</span><span class="p">)</span>
+    <span class="c">#pyplot.show()</span>
+
+
+</div>
+<div class="viewcode-block" id="show_me_the_colours"><a class="viewcode-back" href="../../../../tvb.simulator.plot.html#tvb.simulator.plot.tools.show_me_the_colours">[docs]</a><span class="k">def</span> <span class="nf">show_me_the_colours</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a plot of matplotlibs built-in &quot;named&quot; colours...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">colours</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">cnames</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="n">number_of_colors</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">colours</span><span class="p">)</span>
+    <span class="n">colours_fig</span> <span class="o">=</span> <span class="n">pyplot</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="s">&quot;Built-in colours&quot;</span><span class="p">)</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">number_of_colors</span><span class="p">)))</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">number_of_colors</span><span class="p">)))</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_colors</span><span class="p">):</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">colours_fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_axis_bgcolor</span><span class="p">(</span><span class="n">colours</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">colours</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+
+
+<span class="c">#import pdb; pdb.set_trace()</span>
+<span class="c">##----------------------------------------------------------------------------##</span>
+<span class="c">##-                   mayavi based plotting functions                        -##</span>
+<span class="c">##----------------------------------------------------------------------------##</span></div>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">mayavi</span> <span class="kn">import</span> <span class="n">mlab</span>
+
+    <span class="n">IMPORTED_MAYAVI</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Mayavi is needed for this demo but due to sizing and packaging constraints we are not distributing it. &quot;</span>
+              <span class="s">&quot;If you want to see the actual plot you should use the github version and install all the required &quot;</span>
+              <span class="s">&quot;dependencies as described here: (advanced users only)&quot;</span>
+              <span class="s">&quot;https://github.com/the-virtual-brain/docs/blob/trunk/InstallationManual/InstallationManual.rst&quot;</span><span class="p">)</span>
+    <span class="n">IMPORTED_MAYAVI</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="c">#raise</span>
+
+<span class="k">if</span> <span class="n">IMPORTED_MAYAVI</span><span class="p">:</span>
+    <span class="nd">@mlab.animate</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="mi">41</span><span class="p">,</span> <span class="n">ui</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">surface_timeseries</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="s">&quot;surface_timeseries&quot;</span><span class="p">,</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+        <span class="c">#Plot an initial surface and colourbar #TODO: Change to use plot_surface function, see below.</span>
+        <span class="n">surf_mesh</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span><span class="n">surface</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+                                         <span class="n">surface</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                                         <span class="n">surface</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span>
+                                         <span class="n">surface</span><span class="o">.</span><span class="n">triangles</span><span class="p">,</span>
+                                         <span class="n">scalars</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span>
+                                         <span class="n">vmin</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">vmax</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
+                                         <span class="n">figure</span><span class="o">=</span><span class="n">fig</span><span class="p">)</span>
+        <span class="n">mlab</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="nb">object</span><span class="o">=</span><span class="n">surf_mesh</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s">&quot;vertical&quot;</span><span class="p">)</span>
+
+        <span class="c">#Handle for the surface object and figure</span>
+        <span class="n">surf</span> <span class="o">=</span> <span class="n">surf_mesh</span><span class="o">.</span><span class="n">mlab_source</span>
+
+        <span class="c">#Time #TODO: Make actual time rather than points, where/if possible.</span>
+        <span class="n">tpts</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">time_step</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.125</span><span class="p">,</span> <span class="p">(</span><span class="s">&quot;0 of </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">tpts</span><span class="p">)),</span>
+                              <span class="n">width</span><span class="o">=</span><span class="mf">0.0625</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">figure</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span>
+                              <span class="n">name</span><span class="o">=</span><span class="s">&quot;counter&quot;</span><span class="p">)</span>
+
+        <span class="c">#Movie</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">tpts</span><span class="p">:</span>
+                <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">surf</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">scalars</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="p">:])</span>
+            <span class="n">time_step</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> of </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">tpts</span><span class="p">))))</span>
+            <span class="n">k</span> <span class="o">+=</span> <span class="n">step</span>
+            <span class="k">yield</span>
+        <span class="n">mlab</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">stop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="c">#--------------------------------------------------------------------------#</span>
+
+
+    <span class="c">#TODO: Make, posssibly with a wrapper function, to work directly with </span>
+    <span class="c">#      SurfacePattern object... Inner function name plot_surface</span>
+
+    <span class="k">def</span> <span class="nf">plot_surface</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">rep</span><span class="o">=</span><span class="s">&#39;surface&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">fig</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">fig</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+
+        <span class="n">surf_mesh</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span><span class="n">surface</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+                                         <span class="n">surface</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                                         <span class="n">surface</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span>
+                                         <span class="n">surface</span><span class="o">.</span><span class="n">triangles</span><span class="p">,</span>
+                                         <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.67</span><span class="p">,</span> <span class="mf">0.67</span><span class="p">),</span>
+                                         <span class="n">opacity</span><span class="o">=</span><span class="n">op</span><span class="p">,</span>
+                                         <span class="n">representation</span><span class="o">=</span><span class="n">rep</span><span class="p">,</span>
+                                         <span class="n">figure</span><span class="o">=</span><span class="n">fig</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">surf_mesh</span>
+
+
+    <span class="k">def</span> <span class="nf">surface_orientation</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">normals</span><span class="o">=</span><span class="s">&quot;triangles&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+        <span class="n">surf_mesh</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span><span class="n">surface</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+                                         <span class="n">surface</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                                         <span class="n">surface</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span>
+                                         <span class="n">surface</span><span class="o">.</span><span class="n">triangles</span><span class="p">,</span>
+                                         <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.67</span><span class="p">,</span> <span class="mf">0.67</span><span class="p">),</span>
+                                         <span class="n">figure</span><span class="o">=</span><span class="n">fig</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">normals</span> <span class="o">==</span> <span class="s">&quot;triangles&quot;</span><span class="p">:</span>
+            <span class="n">surf_orient</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="n">surface</span><span class="o">.</span><span class="n">triangle_centres</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+                                        <span class="n">surface</span><span class="o">.</span><span class="n">triangle_centres</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                                        <span class="n">surface</span><span class="o">.</span><span class="n">triangle_centres</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span>
+                                        <span class="n">surface</span><span class="o">.</span><span class="n">triangle_normals</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+                                        <span class="n">surface</span><span class="o">.</span><span class="n">triangle_normals</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                                        <span class="n">surface</span><span class="o">.</span><span class="n">triangle_normals</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">normals</span> <span class="o">==</span> <span class="s">&quot;vertices&quot;</span><span class="p">:</span>
+            <span class="n">surf_orient</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="n">surface</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+                                        <span class="n">surface</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                                        <span class="n">surface</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span>
+                                        <span class="n">surface</span><span class="o">.</span><span class="n">vertex_normals</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+                                        <span class="n">surface</span><span class="o">.</span><span class="n">vertex_normals</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                                        <span class="n">surface</span><span class="o">.</span><span class="n">vertex_normals</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;normals must be either &#39;triangles&#39; or &#39;vertices&#39;&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">surf_mesh</span><span class="p">,</span> <span class="n">surf_orient</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">surface_parcellation</span><span class="p">(</span><span class="n">cortex_boundaries</span><span class="p">,</span> <span class="n">colouring</span><span class="p">,</span> <span class="n">mapping_colours</span><span class="p">,</span> <span class="n">colour_rgb</span><span class="p">,</span> <span class="n">interaction</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">number_of_regions</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cortex_boundaries</span><span class="o">.</span><span class="n">region_neighbours</span><span class="p">)</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="mi">255</span>
+        <span class="n">lut</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">number_of_regions</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_regions</span><span class="p">):</span>
+            <span class="n">lut</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">colour_rgb</span><span class="p">[</span><span class="n">mapping_colours</span><span class="p">[</span><span class="n">colouring</span><span class="p">[</span><span class="n">k</span><span class="p">]]],</span> <span class="n">alpha</span><span class="p">))</span>
+
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="s">&quot;surface parcellation&quot;</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+        <span class="n">surf_mesh</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span><span class="n">cortex_boundaries</span><span class="o">.</span><span class="n">cortex</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+                                         <span class="n">cortex_boundaries</span><span class="o">.</span><span class="n">cortex</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                                         <span class="n">cortex_boundaries</span><span class="o">.</span><span class="n">cortex</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span>
+                                         <span class="n">cortex_boundaries</span><span class="o">.</span><span class="n">cortex</span><span class="o">.</span><span class="n">triangles</span><span class="p">,</span>
+                                         <span class="n">scalars</span><span class="o">=</span><span class="n">cortex_boundaries</span><span class="o">.</span><span class="n">cortex</span><span class="o">.</span><span class="n">region_mapping</span><span class="p">,</span>
+                                         <span class="n">figure</span><span class="o">=</span><span class="n">fig</span><span class="p">)</span>
+        <span class="n">surf_mesh</span><span class="o">.</span><span class="n">module_manager</span><span class="o">.</span><span class="n">scalar_lut_manager</span><span class="o">.</span><span class="n">lut</span><span class="o">.</span><span class="n">number_of_colors</span> <span class="o">=</span> <span class="n">number_of_regions</span>
+        <span class="n">surf_mesh</span><span class="o">.</span><span class="n">module_manager</span><span class="o">.</span><span class="n">scalar_lut_manager</span><span class="o">.</span><span class="n">lut</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="n">lut</span>
+
+        <span class="c">#TODO: can&#39;t get region labels to associate with colorbar...</span>
+        <span class="c">#mlab.colorbar(object=surf_mesh, orientation=&quot;vertical&quot;)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">cortex_boundaries</span><span class="o">.</span><span class="n">boundary</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">cortex_boundaries</span><span class="o">.</span><span class="n">boundary</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">cortex_boundaries</span><span class="o">.</span><span class="n">boundary</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="n">bpts</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">points3d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">),</span> <span class="n">scale_factor</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">mlab</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">stop</span><span class="o">=</span><span class="n">interaction</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">surf_mesh</span><span class="p">,</span> <span class="n">bpts</span>
+
+
+    <span class="k">def</span> <span class="nf">surface_pattern</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">vertex_colours</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot a surface and colour it based on a vector of length number of </span>
+<span class="sd">        vertices (vertex_colours).</span>
+
+<span class="sd">        * How to obtain a pretty picture (from Mayavi&#39;s gui): </span>
+<span class="sd">        </span>
+<span class="sd">          - set surf_mesh color to rgb(237, 217, 221)</span>
+<span class="sd">          - add a surface module derived from surf_mesh; set &#39;Actor&#39; </span>
+<span class="sd">            representation to wireframe; colour &#39;gray&#39;.</span>
+<span class="sd">          - enable contours of scalar_surf  </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#surf_mesh = plot_surface(surface, name=&quot;surface pattern&quot;)</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="s">&quot;surface pattern&quot;</span><span class="p">,</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+        <span class="n">surf_mesh</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span><span class="n">surface</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+                                         <span class="n">surface</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                                         <span class="n">surface</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span>
+                                         <span class="n">surface</span><span class="o">.</span><span class="n">triangles</span><span class="p">,</span>
+                                         <span class="n">figure</span><span class="o">=</span><span class="n">fig</span><span class="p">)</span>
+        <span class="n">sm_obj</span> <span class="o">=</span> <span class="n">surf_mesh</span><span class="o">.</span><span class="n">mlab_source</span>
+        <span class="n">scalar_data</span> <span class="o">=</span> <span class="n">surf_mesh</span><span class="o">.</span><span class="n">mlab_source</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">point_data</span>
+        <span class="n">scalar_data</span><span class="o">.</span><span class="n">scalars</span> <span class="o">=</span> <span class="n">vertex_colours</span>
+        <span class="n">scalar_data</span><span class="o">.</span><span class="n">scalars</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#39;Scalar data&#39;</span>
+        <span class="n">scalar_data</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="n">scalar_mesh</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">set_active_attribute</span><span class="p">(</span><span class="n">surf_mesh</span><span class="p">,</span> <span class="n">point_scalars</span><span class="o">=</span><span class="s">&#39;Scalar data&#39;</span><span class="p">)</span>
+        <span class="n">scalar_surf</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">surface</span><span class="p">(</span><span class="n">scalar_mesh</span><span class="p">)</span>
+        <span class="n">mlab</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">stop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sm_obj</span>
+
+
+    <span class="k">def</span> <span class="nf">xmas_balls</span><span class="p">(</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">node_data</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">edge_data</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plots coloured balls at the region centres of connectivity, colour and</span>
+<span class="sd">        size is determined by a vector of length number of regions (node_data).</span>
+<span class="sd">        </span>
+<span class="sd">        Optional: adds the connections between pair of nodes.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">centres</span> <span class="o">=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">centres</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">connectivity</span><span class="o">.</span><span class="n">weights</span><span class="p">))</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span> <span class="ow">in</span> <span class="n">edges</span><span class="o">.</span><span class="n">T</span> <span class="k">if</span> <span class="n">start</span> <span class="o">!=</span> <span class="n">stop</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">node_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">data_scale</span> <span class="o">=</span> <span class="mf">13.0</span> <span class="o">/</span> <span class="n">node_data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+            <span class="n">pts</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">points3d</span><span class="p">(</span><span class="n">centres</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">centres</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">centres</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span>
+                                <span class="n">node_data</span><span class="p">,</span> <span class="n">transparent</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                <span class="n">scale_factor</span><span class="o">=</span><span class="n">data_scale</span><span class="p">,</span>
+                                <span class="n">colormap</span><span class="o">=</span><span class="s">&#39;Blues&#39;</span><span class="p">)</span>
+
+            <span class="n">mlab</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">orientation</span><span class="o">=</span><span class="s">&quot;vertical&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c">#NOTE: the magic numbers are used to align region centers and surface representation. </span>
+            <span class="c">#Do not ask ... </span>
+            <span class="n">pts</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">points3d</span><span class="p">(</span><span class="n">centres</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.13</span><span class="p">,</span> <span class="n">centres</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.13</span> <span class="o">+</span> <span class="mi">15</span><span class="p">,</span> <span class="n">centres</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">25</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">edge_data</span><span class="p">:</span>
+            <span class="n">pts</span><span class="o">.</span><span class="n">mlab_source</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="n">edges</span>
+            <span class="n">tube</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">tube</span><span class="p">(</span><span class="n">pts</span><span class="p">,</span> <span class="n">tube_radius</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+            <span class="n">mlab</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">surface</span><span class="p">(</span><span class="n">tube</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="s">&#39;binary&#39;</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="mf">0.142</span><span class="p">)</span>
+
+            <span class="c"># stop the scene</span>
+            <span class="c">#mlab.show(stop=True)</span>
+
+
+    <span class="k">def</span> <span class="nf">connectivity_3d</span><span class="p">(</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">edge_cutoff</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plots a 3D representation of the delayed-connectivity structure.</span>
+<span class="sd">        See Fig. 3 in (Knock et al 2009)</span>
+
+<span class="sd">        [Nodes x Nodes x Delays]</span>
+<span class="sd">        </span>
+<span class="sd">        Original script can be found at: </span>
+<span class="sd">        BrainNetworkModels_3.1/PlottingTools/PlotConnectivity3D.m</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="s">&quot;Connectivity 3D&quot;</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
+
+        <span class="n">N</span> <span class="o">=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">number_of_regions</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">minW</span> <span class="o">=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">maxW</span> <span class="o">=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">delays</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">connectivity</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+
+        <span class="n">minD</span> <span class="o">=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">delays</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">maxD</span> <span class="o">=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">delays</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">stepD</span> <span class="o">=</span> <span class="p">(</span><span class="n">maxD</span> <span class="o">-</span> <span class="n">minD</span><span class="p">)</span> <span class="o">/</span> <span class="mf">10.</span>
+
+        <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">edge_cutoff</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">edge_cutoff</span> <span class="o">=</span> <span class="n">minW</span>
+
+        <span class="c"># colourmap to emphasise large numbers</span>
+        <span class="c">#MAP = numpy.loadtxt(&#39;../plot/colourmaps/BlackToBlue&#39;)</span>
+        <span class="c">#mapstep = 1. / MAP.shape[0]</span>
+
+
+        <span class="c"># Loop over connectivity matrix, colouring and one cube per matrix element</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="n">m</span><span class="p">:</span>
+                        <span class="c">#not self connection (diagonal)</span>
+                        <span class="k">if</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">edge_cutoff</span><span class="p">:</span>
+                            <span class="n">K</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mf">2.</span><span class="p">)</span>
+                            <span class="n">D</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">connectivity</span><span class="o">.</span><span class="n">delays</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span> <span class="o">+</span> <span class="n">stepD</span><span class="p">)</span>
+                            <span class="n">M</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="mf">2.0</span><span class="p">)</span>
+                            <span class="n">S</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">connectivity</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">m</span><span class="p">])</span>
+        <span class="n">mlab</span><span class="o">.</span><span class="n">points3d</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;cube&#39;</span><span class="p">)</span>
+        <span class="n">mlab</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">stop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+
+        <span class="c">#--------------------------------------------------------------------------#</span>
+
+
+    <span class="c">##----------------------------------------------------------------------------##</span>
+    <span class="c">##-                    plotting functions for analysis output                -##</span>
+    <span class="c">##----------------------------------------------------------------------------##</span>
+
+    <span class="k">def</span> <span class="nf">plot_matrix</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">fig_name</span><span class="o">=</span><span class="s">&#39;plot_this_matrix&#39;</span><span class="p">,</span> <span class="n">connectivity</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An embellished matshow display</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#NOTE: I could add more stuff in plot_connectivity, but I rather have</span>
+        <span class="c"># a dummy function for displaying a pretty matrix with the </span>
+        <span class="c"># value of each element.</span>
+
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">pyplot</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="n">fig_name</span><span class="p">)</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">pyplot</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;nearest&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">connectivity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">connectivity</span><span class="o">.</span><span class="n">number_of_regions</span><span class="p">)</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">region_labels</span>
+            <span class="n">pyplot</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">connectivity</span><span class="o">.</span><span class="n">number_of_regions</span><span class="p">),</span> <span class="nb">list</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">order</span><span class="p">]),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+            <span class="n">pyplot</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">connectivity</span><span class="o">.</span><span class="n">number_of_regions</span><span class="p">),</span> <span class="nb">list</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">order</span><span class="p">]),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+
+        <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="n">mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">width</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">height</span><span class="p">):</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">mat</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">])),</span>
+                            <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span>
+                            <span class="n">horizontalalignment</span><span class="o">=</span><span class="s">&#39;center&#39;</span><span class="p">,</span>
+                            <span class="n">verticalalignment</span><span class="o">=</span><span class="s">&#39;center&#39;</span><span class="p">,</span>
+                            <span class="n">fontsize</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c"># Do some stuff that tests or makes use of this module... </span>
+    <span class="k">pass</span>
+
+
+<span class="c">##- EoF -##</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

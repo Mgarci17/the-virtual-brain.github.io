@@ -1,0 +1,370 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.entities.model.model_datatype &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.entities.model.model_datatype</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Entities for Generic DataTypes, Links and Groups of DataTypes are defined here.</span>
+
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Yann Gordon &lt;yann@tvb.invalid&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">relationship</span><span class="p">,</span> <span class="n">backref</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Boolean</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">Column</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">DateTime</span>
+
+<span class="kn">from</span> <span class="nn">tvb.core.utils</span> <span class="kn">import</span> <span class="n">generate_guid</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.model.model_base</span> <span class="kn">import</span> <span class="n">Base</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.model.model_project</span> <span class="kn">import</span> <span class="n">Project</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.model.model_operation</span> <span class="kn">import</span> <span class="n">Operation</span><span class="p">,</span> <span class="n">OperationGroup</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.model.model_burst</span> <span class="kn">import</span> <span class="n">BurstConfiguration</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+<span class="n">FILTER_CATEGORIES</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;model.DataType.subject&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;display&#39;</span><span class="p">:</span> <span class="s">&#39;Subject&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;string&#39;</span><span class="p">,</span>
+                                                <span class="s">&#39;operations&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;!=&#39;</span><span class="p">,</span> <span class="s">&#39;==&#39;</span><span class="p">,</span> <span class="s">&#39;like&#39;</span><span class="p">,</span> <span class="s">&#39;in&#39;</span><span class="p">,</span> <span class="s">&#39;not in&#39;</span><span class="p">]},</span>
+                     <span class="s">&#39;model.DataType.state&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;display&#39;</span><span class="p">:</span> <span class="s">&#39;State&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;string&#39;</span><span class="p">,</span>
+                                              <span class="s">&#39;operations&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;!=&#39;</span><span class="p">,</span> <span class="s">&#39;==&#39;</span><span class="p">,</span> <span class="s">&#39;in&#39;</span><span class="p">,</span> <span class="s">&#39;not in&#39;</span><span class="p">]},</span>
+                     <span class="s">&#39;model.DataType.disk_size&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;display&#39;</span><span class="p">:</span> <span class="s">&#39;Disk Size (KB)&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;int&#39;</span><span class="p">,</span>
+                                                  <span class="s">&#39;operations&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s">&#39;==&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&#39;</span><span class="p">]},</span>
+                     <span class="s">&#39;model.DataType.user_tag_1&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;display&#39;</span><span class="p">:</span> <span class="s">&#39;Tag 1&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;string&#39;</span><span class="p">,</span>
+                                                   <span class="s">&#39;operations&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;!=&#39;</span><span class="p">,</span> <span class="s">&#39;==&#39;</span><span class="p">,</span> <span class="s">&#39;like&#39;</span><span class="p">]},</span>
+                     <span class="s">&#39;model.DataType.user_tag_2&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;display&#39;</span><span class="p">:</span> <span class="s">&#39;Tag 2&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;string&#39;</span><span class="p">,</span>
+                                                   <span class="s">&#39;operations&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;!=&#39;</span><span class="p">,</span> <span class="s">&#39;==&#39;</span><span class="p">,</span> <span class="s">&#39;like&#39;</span><span class="p">]},</span>
+                     <span class="s">&#39;model.DataType.user_tag_3&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;display&#39;</span><span class="p">:</span> <span class="s">&#39;Tag 3&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;string&#39;</span><span class="p">,</span>
+                                                   <span class="s">&#39;operations&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;!=&#39;</span><span class="p">,</span> <span class="s">&#39;==&#39;</span><span class="p">,</span> <span class="s">&#39;like&#39;</span><span class="p">]},</span>
+                     <span class="s">&#39;model.DataType.user_tag_4&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;display&#39;</span><span class="p">:</span> <span class="s">&#39;Tag 4&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;string&#39;</span><span class="p">,</span>
+                                                   <span class="s">&#39;operations&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;!=&#39;</span><span class="p">,</span> <span class="s">&#39;==&#39;</span><span class="p">,</span> <span class="s">&#39;like&#39;</span><span class="p">]},</span>
+                     <span class="s">&#39;model.DataType.user_tag_5&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;display&#39;</span><span class="p">:</span> <span class="s">&#39;Tag 5&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;string&#39;</span><span class="p">,</span>
+                                                   <span class="s">&#39;operations&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;!=&#39;</span><span class="p">,</span> <span class="s">&#39;==&#39;</span><span class="p">,</span> <span class="s">&#39;like&#39;</span><span class="p">]},</span>
+                     <span class="s">&#39;model.Operation.start_date&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;display&#39;</span><span class="p">:</span> <span class="s">&#39;Start date&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;date&#39;</span><span class="p">,</span>
+                                                    <span class="s">&#39;operations&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;==&#39;</span><span class="p">,</span> <span class="s">&#39;!=&#39;</span><span class="p">,</span> <span class="s">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&#39;</span><span class="p">]},</span>
+                     <span class="s">&#39;model.BurstConfiguration.name&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;display&#39;</span><span class="p">:</span> <span class="s">&#39;Burst Name&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;string&#39;</span><span class="p">,</span>
+                                                       <span class="s">&#39;operations&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;==&#39;</span><span class="p">,</span> <span class="s">&#39;!=&#39;</span><span class="p">,</span> <span class="s">&#39;like&#39;</span><span class="p">]},</span>
+                     <span class="s">&#39;model.Operation.completion_date&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;display&#39;</span><span class="p">:</span> <span class="s">&#39;Completion date&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;date&#39;</span><span class="p">,</span>
+                                                         <span class="s">&#39;operations&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;==&#39;</span><span class="p">,</span> <span class="s">&#39;!=&#39;</span><span class="p">,</span> <span class="s">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&#39;</span><span class="p">]}}</span>
+
+
+
+<div class="viewcode-block" id="DataType"><a class="viewcode-back" href="../../../../../tvb.core.entities.model.html#tvb.core.entities.model.model_datatype.DataType">[docs]</a><span class="k">class</span> <span class="nc">DataType</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    Base class for DB storage of Types.</span>
+<span class="sd">    DataTypes, are the common language between Visualizers, </span>
+<span class="sd">    Simulator and Analyzers.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s">&#39;DATA_TYPES&#39;</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">gid</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="nb">type</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>    <span class="c"># Name of class inheriting from current type</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">subject</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>   <span class="c"># RAW, INTERMEDIATE, FINAL</span>
+    <span class="n">visible</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Boolean</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">invalid</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Boolean</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">is_nan</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Boolean</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">create_date</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">DateTime</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+    <span class="n">disk_size</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">)</span>
+    <span class="n">user_tag_1</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>     <span class="c"># Name used by framework and perpetuated from a DataType to derived entities.</span>
+    <span class="n">user_tag_2</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">user_tag_3</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">user_tag_4</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">user_tag_5</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+
+    <span class="c"># ID of a burst in which current dataType was generated</span>
+    <span class="c"># Native burst-results are referenced from a workflowSet as well</span>
+    <span class="c"># But we also have results generated afterwards from TreeBurst tab.</span>
+    <span class="n">fk_parent_burst</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;BURST_CONFIGURATIONS.id&#39;</span><span class="p">))</span>
+    <span class="n">_parent_burst</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">BurstConfiguration</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="n">backref</span><span class="p">(</span><span class="s">&quot;DATA_TYPES&quot;</span><span class="p">,</span> <span class="n">order_by</span><span class="o">=</span><span class="nb">id</span><span class="p">))</span>
+
+    <span class="c">#it should be a reference to a DataTypeGroup, but we can not create that FK</span>
+    <span class="c">#because this two tables (DATA_TYPES, DATA_TYPES_GROUPS) will reference each</span>
+    <span class="c">#other mutually and SQL-Alchemy complains about that.</span>
+    <span class="n">fk_datatype_group</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;DATA_TYPES.id&#39;</span><span class="p">))</span>
+
+    <span class="n">fk_from_operation</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;OPERATIONS.id&#39;</span><span class="p">,</span> <span class="n">ondelete</span><span class="o">=</span><span class="s">&quot;CASCADE&quot;</span><span class="p">))</span>
+    <span class="n">parent_operation</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">Operation</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="n">backref</span><span class="p">(</span><span class="s">&quot;DATA_TYPES&quot;</span><span class="p">,</span> <span class="n">order_by</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="s">&quot;all,delete&quot;</span><span class="p">))</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gid</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">gid</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gid</span> <span class="o">=</span> <span class="n">generate_guid</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gid</span> <span class="o">=</span> <span class="n">gid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__initdb__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;Could not perform __initdb__: </span><span class="si">%r</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DataType</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">__initdb__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">operation_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fk_parent_burst</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">disk_size</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                   <span class="n">user_tag_1</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">user_tag_2</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">user_tag_3</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">user_tag_4</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">user_tag_5</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set attributes&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="o">=</span> <span class="n">subject</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_from_operation</span> <span class="o">=</span> <span class="n">operation_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_tag_1</span> <span class="o">=</span> <span class="n">user_tag_1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_tag_2</span> <span class="o">=</span> <span class="n">user_tag_2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_tag_3</span> <span class="o">=</span> <span class="n">user_tag_3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_tag_4</span> <span class="o">=</span> <span class="n">user_tag_4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_tag_5</span> <span class="o">=</span> <span class="n">user_tag_5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disk_size</span> <span class="o">=</span> <span class="n">disk_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_parent_burst</span> <span class="o">=</span> <span class="n">fk_parent_burst</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        To be implemented in each sub-class which is about to be displayed in UI, </span>
+<span class="sd">        and return the text to appear.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span>
+        <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_tag_1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_tag_2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_tag_3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_tag_4</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_tag_5</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">tag</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s">&quot; - &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">name</span>
+
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;&lt;DataType(</span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">)&gt;&quot;</span>
+        <span class="k">return</span> <span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">gid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">,</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fk_parent_burst</span><span class="p">),</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">user_tag_1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_tag_2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_tag_3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_tag_4</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_tag_5</span><span class="p">)</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">accepted_filters</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return accepted UI filters for current DataType.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="p">(</span><span class="n">FILTER_CATEGORIES</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">persist_full_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Do nothing here. We will implement this only in MappedType.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="DataTypeGroup"><a class="viewcode-back" href="../../../../../tvb.core.entities.model.html#tvb.core.entities.model.model_datatype.DataTypeGroup">[docs]</a><span class="k">class</span> <span class="nc">DataTypeGroup</span><span class="p">(</span><span class="n">DataType</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    All the DataTypes resulted from an operation group will be part from a DataType group.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s">&#39;DATA_TYPES_GROUPS&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s">&#39;id&#39;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;DATA_TYPES.id&#39;</span><span class="p">,</span> <span class="n">ondelete</span><span class="o">=</span><span class="s">&quot;CASCADE&quot;</span><span class="p">),</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">count_results</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">)</span>
+    <span class="n">no_of_ranges</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>               <span class="c"># Number of ranged parameters</span>
+    <span class="n">only_numeric_ranges</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Boolean</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>    <span class="c"># True when no DataType was ranged</span>
+    <span class="n">fk_operation_group</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;OPERATION_GROUPS.id&#39;</span><span class="p">,</span> <span class="n">ondelete</span><span class="o">=</span><span class="s">&quot;CASCADE&quot;</span><span class="p">))</span>
+
+    <span class="n">parent_operation_group</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">OperationGroup</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="n">backref</span><span class="p">(</span><span class="s">&quot;DATA_TYPES_GROUPS&quot;</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="s">&quot;delete&quot;</span><span class="p">))</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation_group</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">DataTypeGroup</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_operation_group</span> <span class="o">=</span> <span class="n">operation_group</span><span class="o">.</span><span class="n">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">only_numeric_ranges</span> <span class="o">=</span> <span class="n">operation_group</span><span class="o">.</span><span class="n">has_only_numeric_ranges</span>
+
+        <span class="k">if</span> <span class="n">operation_group</span><span class="o">.</span><span class="n">range3</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">no_of_ranges</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="k">elif</span> <span class="n">operation_group</span><span class="o">.</span><span class="n">range2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">no_of_ranges</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="k">elif</span> <span class="n">operation_group</span><span class="o">.</span><span class="n">range1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">no_of_ranges</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">no_of_ranges</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+</div>
+<div class="viewcode-block" id="Links"><a class="viewcode-back" href="../../../../../tvb.core.entities.model.html#tvb.core.entities.model.model_datatype.Links">[docs]</a><span class="k">class</span> <span class="nc">Links</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class used to handle shortcuts from one DataType to another project.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s">&#39;LINKS&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">fk_to_project</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;PROJECTS.id&#39;</span><span class="p">,</span> <span class="n">ondelete</span><span class="o">=</span><span class="s">&quot;CASCADE&quot;</span><span class="p">))</span>
+    <span class="n">fk_from_datatype</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;DATA_TYPES.id&#39;</span><span class="p">,</span> <span class="n">ondelete</span><span class="o">=</span><span class="s">&quot;CASCADE&quot;</span><span class="p">))</span>
+
+    <span class="n">referenced_project</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">Project</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="n">backref</span><span class="p">(</span><span class="s">&#39;LINKS&#39;</span><span class="p">,</span> <span class="n">order_by</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="s">&quot;delete, all&quot;</span><span class="p">))</span>
+    <span class="n">referenced_datatype</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">DataType</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="n">backref</span><span class="p">(</span><span class="s">&#39;LINKS&#39;</span><span class="p">,</span> <span class="n">order_by</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="s">&quot;delete, all&quot;</span><span class="p">))</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_datatype</span><span class="p">,</span> <span class="n">to_project</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_from_datatype</span> <span class="o">=</span> <span class="n">from_datatype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_to_project</span> <span class="o">=</span> <span class="n">to_project</span>
+
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;&lt;Link(</span><span class="si">%d</span><span class="s">, </span><span class="si">%d</span><span class="s">)&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fk_from_datatype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fk_to_project</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="ConnectivitySelection"><a class="viewcode-back" href="../../../../../tvb.core.entities.model.html#tvb.core.entities.model.model_datatype.ConnectivitySelection">[docs]</a><span class="k">class</span> <span class="nc">ConnectivitySelection</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interest area.</span>
+<span class="sd">    A subset of nodes from a Connectivity.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s">&quot;CONNECTIVITY_SELECTIONS&quot;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">gid</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">ui_name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">selected_nodes</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+    <span class="n">fk_in_project</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;PROJECTS.id&#39;</span><span class="p">,</span> <span class="n">ondelete</span><span class="o">=</span><span class="s">&quot;CASCADE&quot;</span><span class="p">))</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selected_nodes</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">ui_name</span><span class="o">=</span><span class="s">&#39;Default&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui_name</span> <span class="o">=</span> <span class="n">ui_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected_nodes</span> <span class="o">=</span> <span class="n">selected_nodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk_in_project</span> <span class="o">=</span> <span class="n">project_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gid</span> <span class="o">=</span> <span class="n">generate_guid</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;&lt;Selection(</span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">)&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_nodes</span><span class="p">)</span>
+    
+    
+    
+    
+    </div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

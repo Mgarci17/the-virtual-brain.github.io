@@ -1,0 +1,246 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>simulator Package &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="index.html" />
+    <link rel="up" title="adapters Package" href="tvb.adapters.html" />
+    <link rel="next" title="uploaders Package" href="tvb.adapters.uploaders.html" />
+    <link rel="prev" title="exporters Package" href="tvb.adapters.exporters.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.adapters.uploaders.html" title="uploaders Package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tvb.adapters.exporters.html" title="exporters Package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">tvb</span></tt> Package</a> &raquo;</li>
+          <li><a href="tvb.adapters.html" accesskey="U"><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">adapters</span></tt> Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-tvb.adapters.simulator">
+<span id="simulator-package"></span><h1><tt class="xref py py-mod docutils literal"><span class="pre">simulator</span></tt> Package<a class="headerlink" href="#module-tvb.adapters.simulator" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-tvb.adapters.simulator.simulator_adapter">
+<span id="simulator-adapter-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">simulator_adapter</span></tt> Module<a class="headerlink" href="#module-tvb.adapters.simulator.simulator_adapter" title="Permalink to this headline">¶</a></h2>
+<p>Adapter that uses the traits module to generate interfaces to the Simulator.
+Few supplementary steps are done here:</p>
+<blockquote>
+<div><ul class="simple">
+<li>from submitted Monitor/Model... names, build transient entities</li>
+<li>after UI parameters submit, compose transient Cortex entity to be passed to the Simulator.</li>
+</ul>
+</div></blockquote>
+<dl class="class">
+<dt id="tvb.adapters.simulator.simulator_adapter.SimulatorAdapter">
+<em class="property">class </em><tt class="descclassname">tvb.adapters.simulator.simulator_adapter.</tt><tt class="descname">SimulatorAdapter</tt><a class="reference internal" href="_modules/tvb/adapters/simulator/simulator_adapter.html#SimulatorAdapter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="tvb.core.adapters.html#tvb.core.adapters.abcadapter.ABCAsynchronous" title="tvb.core.adapters.abcadapter.ABCAsynchronous"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.adapters.abcadapter.ABCAsynchronous</span></tt></a></p>
+<p>Interface between the Simulator and the Framework.</p>
+<dl class="attribute">
+<dt id="tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.HAVE_STATE_VARIABLES">
+<tt class="descname">HAVE_STATE_VARIABLES</tt><em class="property"> = ['GlobalAverage', 'SpatialAverage', 'Raw', 'SubSample', 'TemporalAverage']</em><a class="headerlink" href="#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.HAVE_STATE_VARIABLES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.RESULTS_MAP">
+<tt class="descname">RESULTS_MAP</tt><em class="property"> = {&lt;class 'tvb.datatypes.time_series.TimeSeriesMEG'&gt;: ['SphericalMEG'], &lt;class 'tvb.datatypes.time_series.TimeSeriesSEEG'&gt;: ['SEEG'], &lt;class 'tvb.datatypes.time_series.TimeSeriesEEG'&gt;: ['SphericalEEG', 'EEG'], &lt;class 'tvb.datatypes.time_series.TimeSeries'&gt;: ['GlobalAverage', 'SpatialAverage']}</em><a class="headerlink" href="#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.RESULTS_MAP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.algorithm">
+<tt class="descname">algorithm</tt><em class="property"> = None</em><a class="headerlink" href="#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.algorithm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.available_couplings">
+<tt class="descname">available_couplings</tt><em class="property"> = {'Linear': &lt;class 'tvb.simulator.coupling.Linear'&gt;, 'Sigmoidal': &lt;class 'tvb.simulator.coupling.Sigmoidal'&gt;, 'Scaling': &lt;class 'tvb.simulator.coupling.Scaling'&gt;, 'Kuramoto': &lt;class 'tvb.simulator.coupling.Kuramoto'&gt;, 'Difference': &lt;class 'tvb.simulator.coupling.Difference'&gt;, 'HyperbolicTangent': &lt;class 'tvb.simulator.coupling.HyperbolicTangent'&gt;}</em><a class="headerlink" href="#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.available_couplings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.available_integrators">
+<tt class="descname">available_integrators</tt><em class="property"> = {'EulerDeterministic': &lt;class 'tvb.simulator.integrators.EulerDeterministic'&gt;, 'EulerStochastic': &lt;class 'tvb.simulator.integrators.EulerStochastic'&gt;, 'HeunStochastic': &lt;class 'tvb.simulator.integrators.HeunStochastic'&gt;, 'HeunDeterministic': &lt;class 'tvb.simulator.integrators.HeunDeterministic'&gt;}</em><a class="headerlink" href="#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.available_integrators" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.available_models">
+<tt class="descname">available_models</tt><em class="property"> = {'ReducedWongWang': &lt;class 'tvb.simulator.models.ReducedWongWang'&gt;, 'ReducedSetHindmarshRose': &lt;class 'tvb.simulator.models.ReducedSetHindmarshRose'&gt;, 'ReducedSetFitzHughNagumo': &lt;class 'tvb.simulator.models.ReducedSetFitzHughNagumo'&gt;, 'Generic2dOscillator': &lt;class 'tvb.simulator.models.Generic2dOscillator'&gt;, 'JansenRit': &lt;class 'tvb.simulator.models.JansenRit'&gt;, 'WilsonCowan': &lt;class 'tvb.simulator.models.WilsonCowan'&gt;, 'LarterBreakspear': &lt;class 'tvb.simulator.models.LarterBreakspear'&gt;, 'Kuramoto': &lt;class 'tvb.simulator.models.Kuramoto'&gt;}</em><a class="headerlink" href="#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.available_models" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.available_monitors">
+<tt class="descname">available_monitors</tt><em class="property"> = {'TemporalAverage': &lt;class 'tvb.simulator.monitors.TemporalAverage'&gt;, 'Bold': &lt;class 'tvb.simulator.monitors.Bold'&gt;, 'SubSample': &lt;class 'tvb.simulator.monitors.SubSample'&gt;, 'BoldRegionROI': &lt;class 'tvb.simulator.monitors.BoldRegionROI'&gt;, 'GlobalAverage': &lt;class 'tvb.simulator.monitors.GlobalAverage'&gt;, 'SEEG': &lt;class 'tvb.simulator.monitors.SEEG'&gt;, 'Raw': &lt;class 'tvb.simulator.monitors.Raw'&gt;, 'SpatialAverage': &lt;class 'tvb.simulator.monitors.SpatialAverage'&gt;, 'SphericalEEG': &lt;class 'tvb.simulator.monitors.SphericalEEG'&gt;, 'EEG': &lt;class 'tvb.simulator.monitors.EEG'&gt;, 'SphericalMEG': &lt;class 'tvb.simulator.monitors.SphericalMEG'&gt;}</em><a class="headerlink" href="#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.available_monitors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.configure">
+<tt class="descname">configure</tt><big>(</big><em>model</em>, <em>model_parameters</em>, <em>integrator</em>, <em>integrator_parameters</em>, <em>connectivity</em>, <em>monitors</em>, <em>monitors_parameters=None</em>, <em>surface=None</em>, <em>surface_parameters=None</em>, <em>stimulus=None</em>, <em>coupling=None</em>, <em>coupling_parameters=None</em>, <em>initial_conditions=None</em>, <em>conduction_speed=None</em>, <em>simulation_length=0</em>, <em>simulation_state=None</em><big>)</big><a class="reference internal" href="_modules/tvb/adapters/simulator/simulator_adapter.html#SimulatorAdapter.configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.configure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make preparations for the adapter launch.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.get_execution_time_approximation">
+<tt class="descname">get_execution_time_approximation</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/adapters/simulator/simulator_adapter.html#SimulatorAdapter.get_execution_time_approximation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.get_execution_time_approximation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method should approximate based on input arguments, the time it will take for the operation 
+to finish (in seconds).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.get_input_tree">
+<tt class="descname">get_input_tree</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/adapters/simulator/simulator_adapter.html#SimulatorAdapter.get_input_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.get_input_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of lists describing the interface to the simulator. This
+is used by the GUI to generate the menus and fields necessary for
+defining a simulation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.get_output">
+<tt class="descname">get_output</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/adapters/simulator/simulator_adapter.html#SimulatorAdapter.get_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.get_output" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of classes for possible results of the Simulator.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.get_required_disk_size">
+<tt class="descname">get_required_disk_size</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/adapters/simulator/simulator_adapter.html#SimulatorAdapter.get_required_disk_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.get_required_disk_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the required disk size this algorithm estimates it will take. (in kB)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.get_required_memory_size">
+<tt class="descname">get_required_memory_size</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/adapters/simulator/simulator_adapter.html#SimulatorAdapter.get_required_memory_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.get_required_memory_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the required memory to run this algorithm.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.launch">
+<tt class="descname">launch</tt><big>(</big><em>model</em>, <em>model_parameters</em>, <em>integrator</em>, <em>integrator_parameters</em>, <em>connectivity</em>, <em>monitors</em>, <em>monitors_parameters=None</em>, <em>surface=None</em>, <em>surface_parameters=None</em>, <em>stimulus=None</em>, <em>coupling=None</em>, <em>coupling_parameters=None</em>, <em>initial_conditions=None</em>, <em>conduction_speed=None</em>, <em>simulation_length=0</em>, <em>simulation_state=None</em><big>)</big><a class="reference internal" href="_modules/tvb/adapters/simulator/simulator_adapter.html#SimulatorAdapter.launch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.adapters.simulator.simulator_adapter.SimulatorAdapter.launch" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Called from the GUI to launch a simulation.</dt>
+<dd><em>: string class name of chosen model, etc...
+*_parameters: dictionary of parameters for chosen model, etc...
+connectivity: tvb.datatypes.connectivity.Connectivity object.
+surface: tvb.datatypes.surfaces.CorticalSurface: or None.
+stimulus: tvb.datatypes.patters.</em> object</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">simulator</span></tt> Package</a><ul>
+<li><a class="reference internal" href="#module-tvb.adapters.simulator.simulator_adapter"><tt class="docutils literal"><span class="pre">simulator_adapter</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tvb.adapters.exporters.html"
+                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">exporters</span></tt> Package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tvb.adapters.uploaders.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">uploaders</span></tt> Package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tvb.adapters.simulator.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.adapters.uploaders.html" title="uploaders Package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tvb.adapters.exporters.html" title="exporters Package"
+             >previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">tvb</span></tt> Package</a> &raquo;</li>
+          <li><a href="tvb.adapters.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">adapters</span></tt> Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

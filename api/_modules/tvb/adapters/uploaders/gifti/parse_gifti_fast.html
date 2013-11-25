@@ -1,0 +1,406 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.adapters.uploaders.gifti.parse_gifti_fast &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.adapters.uploaders.gifti.parse_gifti_fast</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">xml.parsers.expat</span> <span class="kn">import</span> <span class="n">ParserCreate</span><span class="p">,</span> <span class="n">ExpatError</span>
+<span class="kn">from</span> <span class="nn">gifti</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">util</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">loadtxt</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">img</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">out</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="read_data_block"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.parse_gifti_fast.read_data_block">[docs]</a><span class="k">def</span> <span class="nf">read_data_block</span><span class="p">(</span><span class="n">encoding</span><span class="p">,</span> <span class="n">endian</span><span class="p">,</span> <span class="n">ordering</span><span class="p">,</span> <span class="n">datatype</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Tries to unzip, decode, parse the funny string data &quot;&quot;&quot;</span>
+
+    <span class="c"># XXX: how to incorporate endianness?</span>
+
+    <span class="kn">import</span> <span class="nn">base64</span>
+    <span class="kn">import</span> <span class="nn">zlib</span>
+    <span class="kn">from</span> <span class="nn">StringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
+    
+    <span class="k">if</span> <span class="n">ordering</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="nb">ord</span> <span class="o">=</span> <span class="s">&#39;C&#39;</span>
+    <span class="k">elif</span> <span class="n">ordering</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="nb">ord</span> <span class="o">=</span> <span class="s">&#39;F&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">ord</span> <span class="o">=</span> <span class="s">&#39;C&#39;</span>
+    
+    <span class="k">if</span> <span class="n">encoding</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c"># GIFTI_ENCODING_ASCII</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">da</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">da</span>
+        
+    <span class="k">elif</span> <span class="n">encoding</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="c"># GIFTI_ENCODING_B64BIN</span>
+        <span class="k">print</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">dec</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">decodestring</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">GiftiType2npyType</span><span class="p">[</span><span class="n">datatype</span><span class="p">]</span>
+        <span class="n">sh</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">zdec</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">dt</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">sh</span><span class="p">,</span> <span class="n">order</span> <span class="o">=</span> <span class="nb">ord</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">encoding</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="c"># GIFTI_ENCODING_B64GZ</span>
+        <span class="n">dec</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">decodestring</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">zdec</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">GiftiType2npyType</span><span class="p">[</span><span class="n">datatype</span><span class="p">]</span>
+        <span class="n">sh</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">zdec</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">dt</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">sh</span><span class="p">,</span> <span class="n">order</span> <span class="o">=</span> <span class="nb">ord</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">encoding</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="c"># GIFTI_ENCODING_EXTBIN</span>
+        <span class="c"># XXX: to be implemented. In what format are the external files?</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+</div>
+<div class="viewcode-block" id="Outputter"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.parse_gifti_fast.Outputter">[docs]</a><span class="k">class</span> <span class="nc">Outputter</span><span class="p">:</span>
+    
+    <span class="c"># finite state machine stack</span>
+    <span class="n">fsm_state</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="c"># temporary constructs</span>
+    <span class="n">nvpair</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">da</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">coordsys</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">lata</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="bp">None</span>
+    
+    <span class="c"># where to write CDATA:</span>
+    <span class="n">write_to</span> <span class="o">=</span> <span class="bp">None</span>
+    
+
+<div class="viewcode-block" id="Outputter.StartElementHandler"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.parse_gifti_fast.Outputter.StartElementHandler">[docs]</a>    <span class="k">def</span> <span class="nf">StartElementHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span>
+        <span class="c">#print &#39;Start element:\n\t&#39;, repr(name), attrs</span>
+        <span class="k">global</span> <span class="n">img</span>
+        
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;GIFTI&#39;</span><span class="p">:</span>
+            <span class="c"># create gifti image</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="n">GiftiImage</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">attrs</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s">&#39;Version&#39;</span><span class="p">):</span>
+                <span class="n">img</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">attrs</span><span class="p">[</span><span class="s">&#39;Version&#39;</span><span class="p">]</span>
+                
+            <span class="k">if</span> <span class="n">attrs</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s">&#39;NumberOfDataArrays&#39;</span><span class="p">):</span>
+                <span class="n">img</span><span class="o">.</span><span class="n">numDA</span> <span class="o">=</span> <span class="n">attrs</span><span class="p">[</span><span class="s">&#39;NumberOfDataArrays&#39;</span><span class="p">]</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">fsm_state</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;GIFTI&#39;</span><span class="p">)</span>
+            
+            
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;MetaData&#39;</span><span class="p">:</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">fsm_state</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;MetaData&#39;</span><span class="p">)</span>
+            
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;MD&#39;</span><span class="p">:</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">nvpair</span> <span class="o">=</span> <span class="n">GiftiNVPairs</span><span class="p">()</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">fsm_state</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;MD&#39;</span><span class="p">)</span>
+            
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;Name&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nvpair</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ExpatError</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">write_to</span> <span class="o">=</span> <span class="s">&#39;Name&#39;</span>
+                
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;Value&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nvpair</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ExpatError</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">write_to</span> <span class="o">=</span> <span class="s">&#39;Value&#39;</span>
+        
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;LabelTable&#39;</span><span class="p">:</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">lata</span> <span class="o">=</span> <span class="n">GiftiLabelTable</span><span class="p">()</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">fsm_state</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;LabelTable&#39;</span><span class="p">)</span>
+            
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;Label&#39;</span><span class="p">:</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">GiftiLabel</span><span class="p">()</span>
+            
+            <span class="k">if</span> <span class="n">attrs</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s">&quot;Index&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">attrs</span><span class="p">[</span><span class="s">&quot;Index&quot;</span><span class="p">])</span>
+                
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_to</span> <span class="o">=</span> <span class="s">&#39;Label&#39;</span>
+            
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;DataArray&#39;</span><span class="p">:</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">da</span> <span class="o">=</span> <span class="n">GiftiDataArray</span><span class="p">()</span>
+            
+            <span class="k">if</span> <span class="n">attrs</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s">&quot;Intent&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">da</span><span class="o">.</span><span class="n">intent</span> <span class="o">=</span> <span class="n">GiftiIntentCode</span><span class="o">.</span><span class="n">intents</span><span class="p">[</span><span class="n">attrs</span><span class="p">[</span><span class="s">&quot;Intent&quot;</span><span class="p">]]</span>
+        
+            <span class="k">if</span> <span class="n">attrs</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s">&quot;DataType&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">da</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">GiftiDataType</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="n">attrs</span><span class="p">[</span><span class="s">&quot;DataType&quot;</span><span class="p">]]</span>
+                
+            <span class="k">if</span> <span class="n">attrs</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s">&quot;ArrayIndexingOrder&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">da</span><span class="o">.</span><span class="n">ind_ord</span> <span class="o">=</span> <span class="n">GiftiArrayIndexOrder</span><span class="o">.</span><span class="n">ordering</span><span class="p">[</span><span class="n">attrs</span><span class="p">[</span><span class="s">&quot;ArrayIndexingOrder&quot;</span><span class="p">]]</span>
+        
+            <span class="k">if</span> <span class="n">attrs</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s">&quot;Dimensionality&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">da</span><span class="o">.</span><span class="n">num_dim</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">attrs</span><span class="p">[</span><span class="s">&quot;Dimensionality&quot;</span><span class="p">])</span>
+        
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">da</span><span class="o">.</span><span class="n">num_dim</span><span class="p">):</span>
+                <span class="n">di</span> <span class="o">=</span> <span class="s">&quot;Dim</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">attrs</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="n">di</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">da</span><span class="o">.</span><span class="n">dims</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">attrs</span><span class="p">[</span><span class="n">di</span><span class="p">]))</span>
+        
+            <span class="c"># dimensionality has to correspond to the number of DimX given</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">da</span><span class="o">.</span><span class="n">dims</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">da</span><span class="o">.</span><span class="n">num_dim</span>
+        
+            <span class="k">if</span> <span class="n">attrs</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s">&quot;Encoding&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">da</span><span class="o">.</span><span class="n">encoding</span> <span class="o">=</span> <span class="n">GiftiEncoding</span><span class="o">.</span><span class="n">encodings</span><span class="p">[</span><span class="n">attrs</span><span class="p">[</span><span class="s">&quot;Encoding&quot;</span><span class="p">]]</span>
+        
+            <span class="k">if</span> <span class="n">attrs</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s">&quot;Endian&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">da</span><span class="o">.</span><span class="n">endian</span> <span class="o">=</span> <span class="n">GiftiEndian</span><span class="o">.</span><span class="n">endian</span><span class="p">[</span><span class="n">attrs</span><span class="p">[</span><span class="s">&quot;Endian&quot;</span><span class="p">]]</span>
+            
+            <span class="k">if</span> <span class="n">attrs</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s">&quot;ExternalFileName&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">da</span><span class="o">.</span><span class="n">ext_fname</span> <span class="o">=</span> <span class="n">attrs</span><span class="p">[</span><span class="s">&quot;ExternalFileName&quot;</span><span class="p">]</span>
+                
+            <span class="k">if</span> <span class="n">attrs</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s">&quot;ExternalFileOffset&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">da</span><span class="o">.</span><span class="n">ext_offset</span> <span class="o">=</span> <span class="n">attrs</span><span class="p">[</span><span class="s">&quot;ExternalFileOffset&quot;</span><span class="p">]</span>
+        
+            <span class="n">img</span><span class="o">.</span><span class="n">darrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">da</span><span class="p">)</span>
+        
+            <span class="bp">self</span><span class="o">.</span><span class="n">fsm_state</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;DataArray&#39;</span><span class="p">)</span>
+            
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;CoordinateSystemTransformMatrix&#39;</span><span class="p">:</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">coordsys</span> <span class="o">=</span> <span class="n">GiftiCoordSystem</span><span class="p">()</span>
+            
+            <span class="n">img</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">coordsys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordsys</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">fsm_state</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;CoordinateSystemTransformMatrix&#39;</span><span class="p">)</span>
+        
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;DataSpace&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordsys</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ExpatError</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">write_to</span> <span class="o">=</span> <span class="s">&#39;DataSpace&#39;</span>
+                
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;TransformedSpace&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordsys</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ExpatError</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">write_to</span> <span class="o">=</span> <span class="s">&#39;TransformedSpace&#39;</span>
+
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;MatrixData&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordsys</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ExpatError</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">write_to</span> <span class="o">=</span> <span class="s">&#39;MatrixData&#39;</span>
+
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;Data&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_to</span> <span class="o">=</span> <span class="s">&#39;Data&#39;</span>
+
+        </div>
+<div class="viewcode-block" id="Outputter.EndElementHandler"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.parse_gifti_fast.Outputter.EndElementHandler">[docs]</a>    <span class="k">def</span> <span class="nf">EndElementHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="c">#print &#39;End element:\n\t&#39;, repr(name)</span>
+        
+        <span class="k">global</span> <span class="n">img</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;GIFTI&#39;</span><span class="p">:</span>
+            <span class="c"># remove last element of the list</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fsm_state</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fsm_state</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;MetaData&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fsm_state</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;MD&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fsm_state</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            
+            <span class="c"># add nvpair to correct metadata</span>
+
+            <span class="c"># case for either Gifti MetaData or DataArray Metadata</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fsm_state</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;MetaData&#39;</span><span class="p">:</span>
+                <span class="c"># Gifti MetaData</span>
+                <span class="n">img</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nvpair</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">fsm_state</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;DataArray&#39;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">fsm_state</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;MetaData&#39;</span><span class="p">:</span>
+                <span class="c"># append to last DataArray</span>
+                <span class="n">img</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nvpair</span><span class="p">)</span>
+                
+            <span class="c"># remove reference</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nvpair</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;LabelTable&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fsm_state</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            
+            <span class="c"># add labeltable</span>
+            <span class="n">img</span><span class="o">.</span><span class="n">labeltable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lata</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lata</span> <span class="o">=</span> <span class="bp">None</span>
+            
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;DataArray&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fsm_state</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;CoordinateSystemTransformMatrix&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fsm_state</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coordsys</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;DataSpace&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_to</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;TransformedSpace&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_to</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;MatrixData&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_to</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;Name&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_to</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;Value&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_to</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;Data&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_to</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;Label&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lata</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_to</span> <span class="o">=</span> <span class="bp">None</span>
+            
+
+</div>
+<div class="viewcode-block" id="Outputter.CharacterDataHandler"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.parse_gifti_fast.Outputter.CharacterDataHandler">[docs]</a>    <span class="k">def</span> <span class="nf">CharacterDataHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_to</span> <span class="o">==</span> <span class="s">&#39;Name&#39;</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nvpair</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_to</span> <span class="o">==</span> <span class="s">&#39;Value&#39;</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nvpair</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_to</span> <span class="o">==</span> <span class="s">&#39;DataSpace&#39;</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coordsys</span><span class="o">.</span><span class="n">dataspace</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_to</span> <span class="o">==</span> <span class="s">&#39;TransformedSpace&#39;</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coordsys</span><span class="o">.</span><span class="n">xformspace</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_to</span> <span class="o">==</span> <span class="s">&#39;MatrixData&#39;</span><span class="p">:</span>
+            <span class="c"># conversion to numpy array</span>
+            <span class="kn">from</span> <span class="nn">StringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coordsys</span><span class="o">.</span><span class="n">xform</span> <span class="o">=</span> <span class="n">loadtxt</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_to</span> <span class="o">==</span> <span class="s">&#39;Data&#39;</span><span class="p">:</span>
+            <span class="n">da_tmp</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">da_tmp</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">read_data_block</span><span class="p">(</span><span class="n">da_tmp</span><span class="o">.</span><span class="n">encoding</span><span class="p">,</span> <span class="n">da_tmp</span><span class="o">.</span><span class="n">endian</span><span class="p">,</span> \
+                                          <span class="n">da_tmp</span><span class="o">.</span><span class="n">ind_ord</span><span class="p">,</span> <span class="n">da_tmp</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> \
+                                          <span class="n">da_tmp</span><span class="o">.</span><span class="n">dims</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_to</span> <span class="o">==</span> <span class="s">&#39;Label&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">data</span>
+            
+   </div></div>
+<div class="viewcode-block" id="parse_gifti_file"><a class="viewcode-back" href="../../../../../tvb.adapters.uploaders.gifti.html#tvb.adapters.uploaders.gifti.parse_gifti_fast.parse_gifti_file">[docs]</a><span class="k">def</span> <span class="nf">parse_gifti_file</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+
+    <span class="n">datasource</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span><span class="s">&#39;r&#39;</span><span class="p">)</span>
+    <span class="k">global</span> <span class="n">img</span>
+    <span class="k">global</span> <span class="n">parser</span>
+    <span class="k">global</span> <span class="n">out</span>
+    
+    <span class="n">img</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">ParserCreate</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">buffer_text</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">buffer_size</span> <span class="o">=</span> <span class="mi">1000000</span>
+    <span class="n">HANDLER_NAMES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">&#39;StartElementHandler&#39;</span><span class="p">,</span> <span class="s">&#39;EndElementHandler&#39;</span><span class="p">,</span>
+    <span class="s">&#39;CharacterDataHandler&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">Outputter</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">HANDLER_NAMES</span><span class="p">:</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">ParseFile</span><span class="p">(</span><span class="n">datasource</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">ExpatError</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;An error occured while parsing Gifti file.&#39;</span>
+    
+    <span class="c"># update filename</span>
+    <span class="n">img</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">fname</span>
+    
+    <span class="k">return</span> <span class="n">img</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

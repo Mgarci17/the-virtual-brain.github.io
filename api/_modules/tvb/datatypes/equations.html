@@ -1,0 +1,505 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.datatypes.equations &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.datatypes.equations</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">The Equation datatypes. This brings together the scientific and framework </span>
+<span class="sd">methods that are associated with the Equation datatypes.</span>
+
+<span class="sd">.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">tvb.datatypes.equations_scientific</span> <span class="kn">as</span> <span class="nn">equations_scientific</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.equations_framework</span> <span class="kn">as</span> <span class="nn">equations_framework</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+
+<div class="viewcode-block" id="Equation"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.Equation">[docs]</a><span class="k">class</span> <span class="nc">Equation</span><span class="p">(</span><span class="n">equations_scientific</span><span class="o">.</span><span class="n">EquationScientific</span><span class="p">,</span> <span class="n">equations_framework</span><span class="o">.</span><span class="n">EquationFramework</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the Equation dataTypes.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                           EquationData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">               EquationFramework   EquationScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                              Equation</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="TemporalApplicableEquation"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.TemporalApplicableEquation">[docs]</a><span class="k">class</span> <span class="nc">TemporalApplicableEquation</span><span class="p">(</span><span class="n">Equation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract class introduced just for filtering what equations to be displayed in UI,</span>
+<span class="sd">    for setting the temporal component in Stimulus on region and surface.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="FiniteSupportEquation"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.FiniteSupportEquation">[docs]</a><span class="k">class</span> <span class="nc">FiniteSupportEquation</span><span class="p">(</span><span class="n">TemporalApplicableEquation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Equations that decay to zero as the variable moves away from zero. It is</span>
+<span class="sd">    necessary to restrict spatial equation evaluated on a surface to this</span>
+<span class="sd">    class, are . The main purpose of this class is to facilitate filtering in the UI,</span>
+<span class="sd">    for patters on surface (stimuli surface and localConnectivity).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="SpatialApplicableEquation"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.SpatialApplicableEquation">[docs]</a><span class="k">class</span> <span class="nc">SpatialApplicableEquation</span><span class="p">(</span><span class="n">Equation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract class introduced just for filtering what equations to be displayed in UI,</span>
+<span class="sd">    for setting model parameters on the Surface level.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="DiscreteEquation"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.DiscreteEquation">[docs]</a><span class="k">class</span> <span class="nc">DiscreteEquation</span><span class="p">(</span><span class="n">equations_scientific</span><span class="o">.</span><span class="n">DiscreteEquationScientific</span><span class="p">,</span>
+                       <span class="n">equations_framework</span><span class="o">.</span><span class="n">DiscreteEquationFramework</span><span class="p">,</span> <span class="n">FiniteSupportEquation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the Discrete datatypes.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                           DiscreteData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">               DiscreteFramework   DiscreteScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                              Discrete</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="Linear"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.Linear">[docs]</a><span class="k">class</span> <span class="nc">Linear</span><span class="p">(</span><span class="n">equations_scientific</span><span class="o">.</span><span class="n">LinearScientific</span><span class="p">,</span> <span class="n">equations_framework</span><span class="o">.</span><span class="n">LinearFramework</span><span class="p">,</span> <span class="n">TemporalApplicableEquation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the Linear datatypes.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                             LinearData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">                 LinearFramework   LinearScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                               Linear</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="Gaussian"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.Gaussian">[docs]</a><span class="k">class</span> <span class="nc">Gaussian</span><span class="p">(</span><span class="n">equations_scientific</span><span class="o">.</span><span class="n">GaussianScientific</span><span class="p">,</span>
+               <span class="n">equations_framework</span><span class="o">.</span><span class="n">GaussianFramework</span><span class="p">,</span> <span class="n">SpatialApplicableEquation</span><span class="p">,</span> <span class="n">FiniteSupportEquation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the Gaussian datatypes.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                           GaussianData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">               GaussianFramework   GaussianScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                              Gaussian</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="DoubleGaussian"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.DoubleGaussian">[docs]</a><span class="k">class</span> <span class="nc">DoubleGaussian</span><span class="p">(</span><span class="n">equations_scientific</span><span class="o">.</span><span class="n">DoubleGaussianScientific</span><span class="p">,</span>
+                     <span class="n">equations_framework</span><span class="o">.</span><span class="n">DoubleGaussianFramework</span><span class="p">,</span> <span class="n">FiniteSupportEquation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the DoubleGaussian datatypes.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                         DoubleGaussianData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">         DoubleGaussianFramework   DoubleGaussianScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                            DoubleGaussian</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="Sigmoid"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.Sigmoid">[docs]</a><span class="k">class</span> <span class="nc">Sigmoid</span><span class="p">(</span><span class="n">equations_scientific</span><span class="o">.</span><span class="n">SigmoidScientific</span><span class="p">,</span>
+              <span class="n">equations_framework</span><span class="o">.</span><span class="n">SigmoidFramework</span><span class="p">,</span> <span class="n">SpatialApplicableEquation</span><span class="p">,</span> <span class="n">FiniteSupportEquation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the Sigmoid datatypes.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                            SigmoidData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">                SigmoidFramework   SigmoidScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                              Sigmoid</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="GeneralizedSigmoid"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.GeneralizedSigmoid">[docs]</a><span class="k">class</span> <span class="nc">GeneralizedSigmoid</span><span class="p">(</span><span class="n">equations_scientific</span><span class="o">.</span><span class="n">GeneralizedSigmoidScientific</span><span class="p">,</span>
+                         <span class="n">equations_framework</span><span class="o">.</span><span class="n">GeneralizedSigmoidFramework</span><span class="p">,</span> <span class="n">TemporalApplicableEquation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the Generalized Sigmoid datatypes.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                            GeneralizedSigmoidData</span>
+<span class="sd">                                     |</span>
+<span class="sd">                                    / \\</span>
+<span class="sd">         GeneralizedSigmoidFramework   GeneralizedSigmoidScientific</span>
+<span class="sd">                                    \ /</span>
+<span class="sd">                                     |</span>
+<span class="sd">                            GeneralizedSigmoid</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="Sinusoid"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.Sinusoid">[docs]</a><span class="k">class</span> <span class="nc">Sinusoid</span><span class="p">(</span><span class="n">equations_scientific</span><span class="o">.</span><span class="n">SinusoidScientific</span><span class="p">,</span>
+               <span class="n">equations_framework</span><span class="o">.</span><span class="n">SinusoidFramework</span><span class="p">,</span> <span class="n">TemporalApplicableEquation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the Sinusoid datatypes.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                           SinusoidData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">               SinusoidFramework   SinusoidScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                              Sinusoid</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="Cosine"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.Cosine">[docs]</a><span class="k">class</span> <span class="nc">Cosine</span><span class="p">(</span><span class="n">equations_scientific</span><span class="o">.</span><span class="n">CosineScientific</span><span class="p">,</span>
+             <span class="n">equations_framework</span><span class="o">.</span><span class="n">CosineFramework</span><span class="p">,</span> <span class="n">TemporalApplicableEquation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the Sinusoid datatypes.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                           CosineData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">                 CosineFramework   CosineScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                              Cosine</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="Alpha"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.Alpha">[docs]</a><span class="k">class</span> <span class="nc">Alpha</span><span class="p">(</span><span class="n">equations_scientific</span><span class="o">.</span><span class="n">AlphaScientific</span><span class="p">,</span>
+            <span class="n">equations_framework</span><span class="o">.</span><span class="n">AlphaFramework</span><span class="p">,</span> <span class="n">TemporalApplicableEquation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the Alpha datatypes.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                             AlphaData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">                  AlphaFramework   AlphaScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                               Alpha</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="PulseTrain"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.PulseTrain">[docs]</a><span class="k">class</span> <span class="nc">PulseTrain</span><span class="p">(</span><span class="n">equations_scientific</span><span class="o">.</span><span class="n">PulseTrainScientific</span><span class="p">,</span>
+                 <span class="n">equations_framework</span><span class="o">.</span><span class="n">PulseTrainFramework</span><span class="p">,</span> <span class="n">TemporalApplicableEquation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the PulseTrain datatypes.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                            PulseTrainData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">            PulseTrainFramework    PulseScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                               Pulsetrain</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+
+</div>
+<div class="viewcode-block" id="HRFKernelEquation"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.HRFKernelEquation">[docs]</a><span class="k">class</span> <span class="nc">HRFKernelEquation</span><span class="p">(</span><span class="n">Equation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract class introduced just for filtering what equations to be displayed in UI, for BOLD Monitor.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="Gamma"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.Gamma">[docs]</a><span class="k">class</span> <span class="nc">Gamma</span><span class="p">(</span><span class="n">equations_scientific</span><span class="o">.</span><span class="n">GammaScientific</span><span class="p">,</span> <span class="n">equations_framework</span><span class="o">.</span><span class="n">GammaFramework</span><span class="p">,</span> <span class="n">HRFKernelEquation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the Gamma datatypes.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                             GammaData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">                  GammaFramework   GammaScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                               Gamma</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="DoubleExponential"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.DoubleExponential">[docs]</a><span class="k">class</span> <span class="nc">DoubleExponential</span><span class="p">(</span><span class="n">equations_scientific</span><span class="o">.</span><span class="n">DoubleExponentialScientific</span><span class="p">,</span>
+                        <span class="n">equations_framework</span><span class="o">.</span><span class="n">DoubleExponentialFramework</span><span class="p">,</span> <span class="n">HRFKernelEquation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the DoubleExponential datatypes.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                             DoubleExponentialData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">      DoubleExponentialFramework   DoubleExponentialScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                             DoubleExponential</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="FirstOrderVolterra"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.FirstOrderVolterra">[docs]</a><span class="k">class</span> <span class="nc">FirstOrderVolterra</span><span class="p">(</span><span class="n">equations_scientific</span><span class="o">.</span><span class="n">FirstOrderVolterraScientific</span><span class="p">,</span>
+                         <span class="n">equations_framework</span><span class="o">.</span><span class="n">FirstOrderVolterraFramework</span><span class="p">,</span> <span class="n">HRFKernelEquation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the DoubleExponential datatypes.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                             FirstOrderVolterraData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">      FirstOrderVolterraFramework   FirstOrderVolterraScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                             FirstOrderVolterra</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+</div>
+<div class="viewcode-block" id="MixtureOfGammas"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.equations.MixtureOfGammas">[docs]</a><span class="k">class</span> <span class="nc">MixtureOfGammas</span><span class="p">(</span><span class="n">equations_scientific</span><span class="o">.</span><span class="n">MixtureOfGammasScientific</span><span class="p">,</span> <span class="n">equations_framework</span><span class="o">.</span><span class="n">MixtureOfGammasFramework</span><span class="p">,</span> <span class="n">HRFKernelEquation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class brings together the scientific and framework methods that are</span>
+<span class="sd">    associated with the Gamma datatypes.</span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">        </span>
+<span class="sd">                        MixtureOfGammasData</span>
+<span class="sd">                                 |</span>
+<span class="sd">                                / \\</span>
+<span class="sd">        MixtureOfGammasFramework   MixtureOfGammasScientific</span>
+<span class="sd">                                \ /</span>
+<span class="sd">                                 |</span>
+<span class="sd">                          MixtureOfGammas</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Suggested Coding Conventions. &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="index.html" />
+    <link rel="up" title="Welcome to tvb.simulator’s documentation!" href="tvb.simulator.html" />
+    <link rel="next" title="adapters Package" href="tvb.adapters.html" />
+    <link rel="prev" title="Timeseries Interactive" href="tvb.simulator.timeseries_interactive.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.adapters.html" title="adapters Package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tvb.simulator.timeseries_interactive.html" title="Timeseries Interactive"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">tvb</span></tt> Package</a> &raquo;</li>
+          <li><a href="tvb.simulator.html" accesskey="U">Welcome to tvb.simulator&#8217;s documentation!</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="suggested-coding-conventions">
+<h1>Suggested Coding Conventions.<a class="headerlink" href="#suggested-coding-conventions" title="Permalink to this headline">¶</a></h1>
+<p>What follow are some suggestions for the coding conventions we should adopt
+within the Python code of &#8220;The Virtual Brain&#8221;, hereafter TVB.</p>
+<p>When in doubt implementing algorithms from the literature, please follow
+guidelines described at:
+<a class="reference external" href="http://codecapsule.com/2012/01/18/how-to-implement-a-paper/">http://codecapsule.com/2012/01/18/how-to-implement-a-paper/</a></p>
+<div class="section" id="coding-style">
+<h2>Coding Style<a class="headerlink" href="#coding-style" title="Permalink to this headline">¶</a></h2>
+<p>The standard reference for Python coding style is the BDFL&#8217;s PEP 8:</p>
+<blockquote>
+<div><a class="reference external" href="http://www.python.org/dev/peps/pep-0008/">http://www.python.org/dev/peps/pep-0008/</a></div></blockquote>
+<p>To ease and simplify the process of attaining a consistent style across the
+code-base I would suggest we agree upon an automated code checker such as
+PyLint:</p>
+<blockquote>
+<div><a class="reference external" href="http://pypi.python.org/pypi/pylint/">http://pypi.python.org/pypi/pylint/</a></div></blockquote>
+<p>and require as a bare minimum an evaluation of &gt; 7/10. By default, PyLint
+essentially checks for consistency in line with the PEP 8 specification.
+However, if there are strong objections to any of the requirements enforced by
+PyLint, we can always adapt the configuration file to more adequately reflect
+TVB requirements.</p>
+<p>Floating point numbers should always have at least one number before and
+after the dot. Regexp please ?</p>
+</div>
+<div class="section" id="docstring-style">
+<h2>DocString Style<a class="headerlink" href="#docstring-style" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>The equivalent of PEP 8 for DocStrings is PEP 257:</dt>
+<dd><a class="reference external" href="http://www.python.org/dev/peps/pep-0257/">http://www.python.org/dev/peps/pep-0257/</a></dd>
+</dl>
+</div>
+<div class="section" id="additional-conventions">
+<h2>Additional Conventions<a class="headerlink" href="#additional-conventions" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>Zen:</dt>
+<dd><a class="reference external" href="http://www.python.org/dev/peps/pep-0020/">http://www.python.org/dev/peps/pep-0020/</a></dd>
+<dt>Classes self description:</dt>
+<dd>All classes should have appropriately defined __repr__ and __str__ methods.</dd>
+<dt>Module specific markup:</dt>
+<dd><a class="reference external" href="http://docs.python.org/documenting/markup.html">http://docs.python.org/documenting/markup.html</a>
+particularly <tt class="docutils literal"><span class="pre">..moduleauthor:</span></tt>, perhaps in the module itself rather than
+the associated .rst file in docs, to identify those to be held responsible.</dd>
+<dt>Logging!:</dt>
+<dd><p class="first">We use module level logging, based on the logging mechanism from gemenos,
+with a fallback to direct use of the python logging package. This means all
+modules have</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">tvb.simulator.common</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span>
+</pre></div>
+</div>
+<p>then you can call <tt class="docutils literal"><span class="pre">LOG.error(msg)</span></tt>, <tt class="docutils literal"><span class="pre">LOG.warn(msg)</span></tt>, <tt class="docutils literal"><span class="pre">LOG.info(msg)</span></tt>,
+etc. as is appropriate. The principle benefit over other ways of keeping
+track of things (printf debugging,  the warning module) is flexibility.
+Then to distinguish between classes within modules use messages of the form</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">:a useful message a=</span><span class="si">%s</span><span class="s">&quot;</span><span class="o">%</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">an_attribute</span><span class="p">))</span>
+</pre></div>
+</div>
+<p class="last">which makes use of the &#8220;Classes self description&#8221;, mentioned above.</p>
+</dd>
+<dt>First three lines of module files:</dt>
+<dd><div class="first highlight-python"><pre># -*- coding: utf-8 -*-
+
+"""</pre>
+</div>
+<p class="last">as the construct <tt class="docutils literal"><span class="pre">#!usr/bin/env</span> <span class="pre">python</span></tt> is not cross platform.</p>
+</dd>
+<dt>Never import *:</dt>
+<dd>That is don&#8217;t use <tt class="docutils literal"><span class="pre">from</span> <span class="pre">module</span> <span class="pre">import</span> <span class="pre">*</span></tt>, as this adds needless
+difficulty to tracing the source of functions, methods, etc.</dd>
+<dt>Avoid <tt class="docutils literal"><span class="pre">from</span> <span class="pre">module</span> <span class="pre">import</span> <span class="pre">Class,</span> <span class="pre">Function,</span> <span class="pre">Etc</span></tt> where possible:</dt>
+<dd><dl class="first docutils">
+<dt>Only really an issue when circular import of modules occurs. See,</dt>
+<dd><a class="reference external" href="http://docs.python.org/faq/programming.html#what-are-the-best-practices-for-using-import-in-a-module">http://docs.python.org/faq/programming.html#what-are-the-best-practices-for-using-import-in-a-module</a></dd>
+</dl>
+<p class="last">for more details.</p>
+</dd>
+<dt>Always use NumPy:</dt>
+<dd>We assume for the moment that most datatypes are NumPy arrays unless
+is necessary to have a class, list, tuple etc.</dd>
+<dt>Line continuation:</dt>
+<dd>Where necessary add parentheses to enable implicit line continuation rather
+than explicit  continuation using \, as the latter form opens the
+possibility for subtle bugs to be introduced.</dd>
+</dl>
+</div>
+<div class="section" id="some-terminoloy">
+<h2>Some terminoloy<a class="headerlink" href="#some-terminoloy" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>Some useful python terminoloy can be found here:</dt>
+<dd><a class="reference external" href="http://wiki.python.org/moin/Distutils/Terminology">http://wiki.python.org/moin/Distutils/Terminology</a></dd>
+</dl>
+</div>
+<div class="section" id="use-a-file-module-template">
+<h2>Use a file/module template<a class="headerlink" href="#use-a-file-module-template" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>As a means of facilitating convergence on these conventions a template python
+file should be created for TVB project and be used as a starting point for any
+TVB Python modules.</p>
+<p>As a rough first example see, template_tvb.py</p>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Suggested Coding Conventions.</a><ul>
+<li><a class="reference internal" href="#coding-style">Coding Style</a></li>
+<li><a class="reference internal" href="#docstring-style">DocString Style</a></li>
+<li><a class="reference internal" href="#additional-conventions">Additional Conventions</a></li>
+<li><a class="reference internal" href="#some-terminoloy">Some terminoloy</a></li>
+<li><a class="reference internal" href="#use-a-file-module-template">Use a file/module template</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tvb.simulator.timeseries_interactive.html"
+                        title="previous chapter"><tt class="docutils literal"><span class="pre">Timeseries</span> <span class="pre">Interactive</span></tt></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tvb.adapters.html"
+                        title="next chapter"><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">adapters</span></tt> Package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tvb.simulator.devguide.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.adapters.html" title="adapters Package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tvb.simulator.timeseries_interactive.html" title="Timeseries Interactive"
+             >previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">tvb</span></tt> Package</a> &raquo;</li>
+          <li><a href="tvb.simulator.html" >Welcome to tvb.simulator&#8217;s documentation!</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

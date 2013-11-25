@@ -1,0 +1,255 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.basic.profile &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.basic.profile</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">ENUM used for choosing current TVB Profile.</span>
+
+<span class="sd">Contains functionality which allows a user to set a certain profile for TVB.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+
+<div class="viewcode-block" id="LibraryModulesFinder"><a class="viewcode-back" href="../../../tvb.basic.html#tvb.basic.profile.LibraryModulesFinder">[docs]</a><span class="k">class</span> <span class="nc">LibraryModulesFinder</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    In case users run TVB in &#39;library&#39; profile access should be restricted</span>
+<span class="sd">    to some parts of tvb.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">restricted_modules</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;tvb.interfaces&#39;</span><span class="p">,</span>
+                          <span class="s">&#39;tvb.datatype_removers&#39;</span><span class="p">,</span>
+                          <span class="s">&#39;tvb.core&#39;</span><span class="p">,</span>
+                          <span class="s">&#39;tvb.config&#39;</span><span class="p">,</span>
+                          <span class="s">&#39;tvb.adapters&#39;</span><span class="p">]</span>
+    
+    
+<div class="viewcode-block" id="LibraryModulesFinder.find_module"><a class="viewcode-back" href="../../../tvb.basic.html#tvb.basic.profile.LibraryModulesFinder.find_module">[docs]</a>    <span class="k">def</span> <span class="nf">find_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fullname</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">fullname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">restricted_modules</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        
+        </div>
+<div class="viewcode-block" id="LibraryModulesFinder.load_module"><a class="viewcode-back" href="../../../tvb.basic.html#tvb.basic.profile.LibraryModulesFinder.load_module">[docs]</a>    <span class="k">def</span> <span class="nf">load_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_name</span><span class="p">):</span>
+        <span class="n">info_message</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s">&quot;You are trying to import the module `</span><span class="si">%s</span><span class="s">` in library mode.&quot;</span>
+                           <span class="s">&quot;The library profile is a lightweight version of TVB and you &quot;</span>
+                           <span class="s">&quot;only have access to the simulator, analyzers and datatypes packages.&quot;</span>
+                           <span class="s">&quot;If you want to use the entire TVB Framework start it either in command &quot;</span>
+                           <span class="s">&quot;or web interface profile.&quot;</span> <span class="o">%</span> <span class="n">module_name</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="n">info_message</span><span class="p">)</span>
+    
+</div></div>
+<div class="viewcode-block" id="TvbProfile"><a class="viewcode-back" href="../../../tvb.basic.html#tvb.basic.profile.TvbProfile">[docs]</a><span class="k">class</span> <span class="nc">TvbProfile</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ENUM-like class with current TVB profile values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">SUBPARAM_PROFILE</span> <span class="o">=</span> <span class="s">&quot;-profile&quot;</span>
+
+    <span class="c"># Existing profiles:</span>
+    <span class="n">LIBRARY_PROFILE</span> <span class="o">=</span> <span class="s">&quot;LIBRARY_PROFILE&quot;</span>
+    <span class="n">DEVELOPMENT_PROFILE</span> <span class="o">=</span> <span class="s">&quot;DEVELOPMENT_PROFILE&quot;</span>
+    <span class="n">TEST_POSTGRES_PROFILE</span> <span class="o">=</span> <span class="s">&quot;TEST_POSTGRES_PROFILE&quot;</span>
+    <span class="n">TEST_SQLITE_PROFILE</span> <span class="o">=</span> <span class="s">&quot;TEST_SQLITE_PROFILE&quot;</span>
+    <span class="n">DEPLOYMENT_PROFILE</span> <span class="o">=</span> <span class="s">&quot;DEPLOYMENT_PROFILE&quot;</span>
+    <span class="n">CONSOLE_PROFILE</span> <span class="o">=</span> <span class="s">&quot;CONSOLE_PROFILE&quot;</span>
+
+    <span class="c"># Used for setting the current TVB profile</span>
+    <span class="n">CURRENT_SELECTED_PROFILE</span> <span class="o">=</span> <span class="bp">None</span>
+
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="TvbProfile.get_profile"><a class="viewcode-back" href="../../../tvb.basic.html#tvb.basic.profile.TvbProfile.get_profile">[docs]</a>    <span class="k">def</span> <span class="nf">get_profile</span><span class="p">(</span><span class="n">script_argv</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the user given profile or None if the user didn&#39;t specify a profile.</span>
+
+<span class="sd">        :param script_argv: represents a list of string arguments.</span>
+<span class="sd">                If the script_argv contains the string &#39;-profile&#39;,</span>
+<span class="sd">                than TVB profile will be set to the next element.</span>
+
+<span class="sd">        E.g.: if script_argv=[&#39;$param1&#39;, ..., &#39;-profile&#39;, &#39;TEST_SQLITE_PROFILE&#39;, ...] </span>
+<span class="sd">               than TVB profile will be set to &#39;TEST_SQLITE_PROFILE&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">TvbProfile</span><span class="o">.</span><span class="n">SUBPARAM_PROFILE</span> <span class="ow">in</span> <span class="n">script_argv</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">script_argv</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">TvbProfile</span><span class="o">.</span><span class="n">SUBPARAM_PROFILE</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">script_argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">script_argv</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">None</span>
+
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="TvbProfile.set_profile"><a class="viewcode-back" href="../../../tvb.basic.html#tvb.basic.profile.TvbProfile.set_profile">[docs]</a>    <span class="k">def</span> <span class="nf">set_profile</span><span class="p">(</span><span class="n">script_argv</span><span class="p">,</span> <span class="n">remove_from_args</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">try_reload</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets TVB profile from script_argv.</span>
+
+<span class="sd">        :param script_argv: represents a list of string arguments.</span>
+<span class="sd">                      If the script_argv contains the string &#39;-profile&#39; </span>
+<span class="sd">                      than the TVB profile will be set to the next element.</span>
+<span class="sd">        :param remove_from_args: when True, script_argv will get stripped of profile strings.</span>
+<span class="sd">        </span>
+<span class="sd">        E.g.: if script_argv = [&#39;$param1&#39;, ..., &#39;-profile&#39;, &#39;TEST_SQLITE_PROFILE&#39;, ...] </span>
+<span class="sd">              than the  profile will be set to &#39;TEST_SQLITE_PROFILE&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">selected_profile</span> <span class="o">=</span> <span class="n">TvbProfile</span><span class="o">.</span><span class="n">get_profile</span><span class="p">(</span><span class="n">script_argv</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">try_reload</span><span class="p">:</span>
+            <span class="c"># To make sure in case of contributor setup the external TVB is the one</span>
+            <span class="c"># we get, we need to reload all tvb related modules, since any call done</span>
+            <span class="c"># python -m will always consider the current folder as the first to search in.</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;PYTHONPATH&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">pathsep</span><span class="p">)</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;tvb&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+                    <span class="nb">reload</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">selected_profile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">TvbProfile</span><span class="o">.</span><span class="n">CURRENT_SELECTED_PROFILE</span> <span class="o">=</span> <span class="n">selected_profile</span>
+
+            <span class="k">if</span> <span class="n">remove_from_args</span><span class="p">:</span>
+                <span class="n">script_argv</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">selected_profile</span><span class="p">)</span>
+                <span class="n">script_argv</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">TvbProfile</span><span class="o">.</span><span class="n">SUBPARAM_PROFILE</span><span class="p">)</span>
+                
+            <span class="k">if</span> <span class="n">selected_profile</span> <span class="o">==</span> <span class="n">TvbProfile</span><span class="o">.</span><span class="n">LIBRARY_PROFILE</span><span class="p">:</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">meta_path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">LibraryModulesFinder</span><span class="p">())</span>
+        
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="TvbProfile.is_library_mode"><a class="viewcode-back" href="../../../tvb.basic.html#tvb.basic.profile.TvbProfile.is_library_mode">[docs]</a>    <span class="k">def</span> <span class="nf">is_library_mode</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fall-back to LibraryProfile either if this was the profile passed as argument or if TVB Framework is not found.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: True when currently selected profile is LibraryProfile, </span>
+<span class="sd">                 or when the framework classes are not present, and we should enforce the library profile.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">framework_present</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">tvb.config.settings</span> <span class="kn">import</span> <span class="n">FrameworkSettings</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="n">framework_present</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">return</span> <span class="n">TvbProfile</span><span class="o">.</span><span class="n">CURRENT_SELECTED_PROFILE</span> <span class="o">==</span> <span class="n">TvbProfile</span><span class="o">.</span><span class="n">LIBRARY_PROFILE</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">framework_present</span>     
+            
+            
+            </div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

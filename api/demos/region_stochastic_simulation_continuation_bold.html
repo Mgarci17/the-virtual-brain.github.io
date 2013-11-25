@@ -1,0 +1,323 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Demo region_stochastic_simulation_continuation_bold.py &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../index.html" />
+    <link rel="up" title="demos" href="../demos.html" />
+    <link rel="next" title="Demo pca_analyse_view_surface.py" href="pca_analyse_view_surface.html" />
+    <link rel="prev" title="Demo debug_device.py" href="debug_device.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pca_analyse_view_surface.html" title="Demo pca_analyse_view_surface.py"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="debug_device.html" title="Demo debug_device.py"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../demos.html" accesskey="U">demos</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="demo-region-stochastic-simulation-continuation-bold-py">
+<h1>Demo region_stochastic_simulation_continuation_bold.py<a class="headerlink" href="#demo-region-stochastic-simulation-continuation-bold-py" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;  </span>
+<span class="sd">Demonstrate using the simulator at the region level, stochastic</span>
+<span class="sd">integration and the BOLD monitor:   </span>
+
+<span class="sd">- how to perform a simulation continuation, that is, to use data from one</span>
+<span class="sd">simulation as initial conditions for a second simulation (ie, simulation</span>
+<span class="sd">continuation) in order to avoid the temporal transient due to imperfect</span>
+<span class="sd">initial conditions.</span>
+
+<span class="sd">- how to save the random number generator state. </span>
+
+<span class="sd">.. moduleauthor:: Marmaduke Woodman &lt;mw@eml.cc&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">tvb.simulator.lab</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c">######## build &amp; run the initial simulation, if cryo file doesn&#39;t exist</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="s">&#39;sim_cryo.npz&#39;</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;old simulation found! moving along...&#39;</span>
+
+<span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span> <span class="c"># os.stat will give OSError if it doesn&#39;t find the file</span>
+    
+    <span class="k">print</span> <span class="s">&#39;old simulation not found, performing initial&#39;</span>
+
+    <span class="n">oscilator</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Generic2dOscillator</span><span class="p">()</span>
+    <span class="n">white_matter</span> <span class="o">=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">Connectivity</span><span class="p">()</span>
+    <span class="n">white_matter</span><span class="o">.</span><span class="n">speed</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">4.0</span><span class="p">])</span>
+    <span class="n">white_matter_coupling</span> <span class="o">=</span> <span class="n">coupling</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mf">0.0126</span><span class="p">)</span>
+
+    <span class="n">heunint</span> <span class="o">=</span> <span class="n">integrators</span><span class="o">.</span><span class="n">HeunStochastic</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="mi">2</span><span class="o">**-</span><span class="mi">4</span><span class="p">,</span> 
+            <span class="n">noise</span><span class="o">=</span><span class="n">noise</span><span class="o">.</span><span class="n">Additive</span><span class="p">(</span><span class="n">nsig</span><span class="o">=</span><span class="n">array</span><span class="p">([</span><span class="mf">0.001</span><span class="p">])))</span>
+
+    <span class="c">#Initialise some Monitors with period in physical time</span>
+    <span class="n">tavg</span> <span class="o">=</span> <span class="n">monitors</span><span class="o">.</span><span class="n">TemporalAverage</span><span class="p">(</span><span class="n">period</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span> <span class="c">#1000Hz</span>
+    <span class="n">bold</span> <span class="o">=</span> <span class="n">monitors</span><span class="o">.</span><span class="n">Bold</span><span class="p">(</span><span class="n">period</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span> <span class="c">#defaults to one data point every 2s</span>
+
+    <span class="c">#Bundle them</span>
+    <span class="n">what_to_watch</span> <span class="o">=</span> <span class="p">(</span><span class="n">tavg</span><span class="p">,</span> <span class="n">bold</span><span class="p">)</span>
+
+    <span class="c">#Define the stimulus</span>
+    <span class="c">#Specify a weighting for regions to receive stimuli... </span>
+    <span class="n">white_matter</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span> <span class="c"># Because we want access to number_of_regions</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">42</span><span class="p">]</span>
+    <span class="n">weighting</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">white_matter</span><span class="o">.</span><span class="n">number_of_regions</span><span class="p">,</span> <span class="p">))</span> <span class="c">#1</span>
+    <span class="n">weighting</span><span class="p">[</span><span class="n">nodes</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2.0</span><span class="o">**-</span><span class="mi">2</span><span class="p">,</span> <span class="mf">2.0</span><span class="o">**-</span><span class="mi">3</span><span class="p">,</span> <span class="mf">2.0</span><span class="o">**-</span><span class="mi">4</span><span class="p">,</span> <span class="mf">2.0</span><span class="o">**-</span><span class="mi">5</span><span class="p">,</span> <span class="mf">2.0</span><span class="o">**-</span><span class="mi">6</span><span class="p">])</span> <span class="c"># [:, numpy.newaxis]</span>
+
+    <span class="c">#Initialise Simulator -- Model, Connectivity, Integrator, Monitors, and stimulus.</span>
+    <span class="n">sim</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">Simulator</span><span class="p">(</span><span class="n">model</span> <span class="o">=</span> <span class="n">oscilator</span><span class="p">,</span> <span class="n">connectivity</span> <span class="o">=</span> <span class="n">white_matter</span><span class="p">,</span> 
+                              <span class="n">coupling</span> <span class="o">=</span> <span class="n">white_matter_coupling</span><span class="p">,</span> 
+                              <span class="n">integrator</span> <span class="o">=</span> <span class="n">heunint</span><span class="p">,</span> <span class="n">monitors</span> <span class="o">=</span> <span class="n">what_to_watch</span><span class="p">)</span>
+    <span class="n">sim</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+
+    <span class="c">#Perform the simulation</span>
+    <span class="n">tavg_time</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">tavg_data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">bold_time</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">bold_data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">tavg_out</span><span class="p">,</span> <span class="n">bold_out</span> <span class="ow">in</span> <span class="n">sim</span><span class="p">(</span><span class="mi">10000</span><span class="p">):</span> <span class="c"># 10 s simulation</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">tavg_out</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+           <span class="n">tavg_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tavg_out</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+           <span class="n">tavg_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tavg_out</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">bold_out</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">bold_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bold_out</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">bold_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bold_out</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+
+    <span class="c"># plot data to show the transient</span>
+    <span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">plot</span><span class="p">(</span><span class="n">array</span><span class="p">(</span><span class="n">bold_time</span><span class="p">)</span><span class="o">/</span><span class="mf">1000.0</span><span class="p">,</span> <span class="n">array</span><span class="p">(</span><span class="n">bold_data</span><span class="p">)[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">title</span><span class="p">(</span><span class="s">&#39;initial simulation&#39;</span><span class="p">)</span>
+    <span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;time (s)&#39;</span><span class="p">)</span>
+
+    <span class="c"># now, save the state: sim history, bold stock &amp; noise generator state</span>
+    <span class="n">history</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">bold1</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">_interim_stock</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">bold2</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">_stock</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">integrator</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">random_stream</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
+
+    <span class="c"># save to file (sorry this is cryptic for the moment)</span>
+    <span class="n">savez</span><span class="p">(</span><span class="s">&#39;sim_cryo.npz&#39;</span><span class="p">,</span> <span class="n">history</span><span class="o">=</span><span class="n">history</span><span class="p">,</span> <span class="n">bold1</span><span class="o">=</span><span class="n">bold1</span><span class="p">,</span> <span class="n">bold2</span><span class="o">=</span><span class="n">bold2</span><span class="p">)</span>
+    <span class="n">save</span><span class="p">(</span><span class="s">&#39;rng_</span><span class="si">%s</span><span class="s">_</span><span class="si">%d</span><span class="s">_</span><span class="si">%d</span><span class="s">_</span><span class="si">%.30g</span><span class="s">.npy&#39;</span> <span class="o">%</span> <span class="p">((</span><span class="n">rng</span><span class="p">[</span><span class="mi">0</span><span class="p">],)</span> <span class="o">+</span> <span class="n">rng</span><span class="p">[</span><span class="mi">2</span><span class="p">:]),</span> <span class="n">rng</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+
+<span class="c">############################### </span>
+<span class="c">############################### </span>
+<span class="c">############################### </span>
+
+
+<span class="c"># build new simulator, possibly in a different script</span>
+
+<span class="n">oscilator</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Generic2dOscillator</span><span class="p">()</span>
+<span class="n">white_matter</span> <span class="o">=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">Connectivity</span><span class="p">()</span>
+<span class="n">white_matter</span><span class="o">.</span><span class="n">speed</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">4.0</span><span class="p">])</span>
+<span class="n">white_matter_coupling</span> <span class="o">=</span> <span class="n">coupling</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mf">0.0126</span><span class="p">)</span>
+
+<span class="n">heunint</span> <span class="o">=</span> <span class="n">integrators</span><span class="o">.</span><span class="n">HeunStochastic</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="mi">2</span><span class="o">**-</span><span class="mi">4</span><span class="p">,</span> 
+        <span class="n">noise</span><span class="o">=</span><span class="n">noise</span><span class="o">.</span><span class="n">Additive</span><span class="p">(</span><span class="n">nsig</span><span class="o">=</span><span class="n">array</span><span class="p">([</span><span class="mf">0.001</span><span class="p">])))</span>
+
+<span class="c">#Initialise some Monitors with period in physical time</span>
+<span class="n">tavg</span> <span class="o">=</span> <span class="n">monitors</span><span class="o">.</span><span class="n">TemporalAverage</span><span class="p">(</span><span class="n">period</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span> <span class="c">#1000Hz</span>
+<span class="n">bold</span> <span class="o">=</span> <span class="n">monitors</span><span class="o">.</span><span class="n">Bold</span><span class="p">(</span><span class="n">period</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span> <span class="c">#defaults to one data point every 2s</span>
+
+<span class="c">#Bundle them</span>
+<span class="n">what_to_watch</span> <span class="o">=</span> <span class="p">(</span><span class="n">tavg</span><span class="p">,</span> <span class="n">bold</span><span class="p">)</span>
+
+<span class="c">#Define the stimulus</span>
+<span class="c">#Specify a weighting for regions to receive stimuli... </span>
+<span class="n">white_matter</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span> <span class="c"># Because we want access to number_of_regions</span>
+<span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">42</span><span class="p">]</span>
+<span class="n">weighting</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">white_matter</span><span class="o">.</span><span class="n">number_of_regions</span><span class="p">,</span> <span class="p">))</span> <span class="c">#1</span>
+<span class="n">weighting</span><span class="p">[</span><span class="n">nodes</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2.0</span><span class="o">**-</span><span class="mi">2</span><span class="p">,</span> <span class="mf">2.0</span><span class="o">**-</span><span class="mi">3</span><span class="p">,</span> <span class="mf">2.0</span><span class="o">**-</span><span class="mi">4</span><span class="p">,</span> <span class="mf">2.0</span><span class="o">**-</span><span class="mi">5</span><span class="p">,</span> <span class="mf">2.0</span><span class="o">**-</span><span class="mi">6</span><span class="p">])</span> <span class="c"># [:, numpy.newaxis]</span>
+
+<span class="c">#Initialise Simulator -- Model, Connectivity, Integrator, Monitors, and stimulus.</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">Simulator</span><span class="p">(</span><span class="n">model</span> <span class="o">=</span> <span class="n">oscilator</span><span class="p">,</span> <span class="n">connectivity</span> <span class="o">=</span> <span class="n">white_matter</span><span class="p">,</span> 
+                          <span class="n">coupling</span> <span class="o">=</span> <span class="n">white_matter_coupling</span><span class="p">,</span> 
+                          <span class="n">integrator</span> <span class="o">=</span> <span class="n">heunint</span><span class="p">,</span> <span class="n">monitors</span> <span class="o">=</span> <span class="n">what_to_watch</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+
+
+<span class="c">### NOW, we load from files the brain state</span>
+<span class="n">cryo</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="s">&#39;sim_cryo.npz&#39;</span><span class="p">)</span>
+
+<span class="c"># find the first rng file (i.e. delete the old ones!), and rebuild random state</span>
+<span class="n">rng_name</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s">&quot;rng_*.npy&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">rng_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:],</span> <span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">])]</span>
+<span class="n">rng_state</span> <span class="o">=</span> <span class="p">[</span><span class="n">rng</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">load</span><span class="p">(</span><span class="n">rng_name</span><span class="p">)]</span> <span class="o">+</span> <span class="n">rng</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+<span class="c"># set the new simulator with the old brain state</span>
+
+<span class="n">sim</span><span class="o">.</span><span class="n">history</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">cryo</span><span class="p">[</span><span class="s">&#39;history&#39;</span><span class="p">]</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">_stock</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">cryo</span><span class="p">[</span><span class="s">&#39;bold2&#39;</span><span class="p">]</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">_interim_stock</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">cryo</span><span class="p">[</span><span class="s">&#39;bold1&#39;</span><span class="p">]</span>
+
+<span class="n">sim</span><span class="o">.</span><span class="n">integrator</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">random_stream</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">rng_state</span><span class="p">)</span>
+
+<span class="c"># now we can &quot;continue&quot; the new simulation</span>
+<span class="n">tavg_time</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">tavg_data</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">bold_time</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">bold_data</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">tavg_out</span><span class="p">,</span> <span class="n">bold_out</span> <span class="ow">in</span> <span class="n">sim</span><span class="p">(</span><span class="mi">30000</span><span class="p">,</span> <span class="n">rng_state</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">tavg_out</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+       <span class="n">tavg_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tavg_out</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+       <span class="n">tavg_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tavg_out</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">bold_out</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">bold_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bold_out</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">bold_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bold_out</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+
+<span class="c"># then, plot to see if there is transient or not</span>
+<span class="n">figure</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">array</span><span class="p">(</span><span class="n">bold_time</span><span class="p">)</span><span class="o">/</span><span class="mf">1000.0</span><span class="p">,</span> <span class="n">array</span><span class="p">(</span><span class="n">bold_data</span><span class="p">)[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">title</span><span class="p">(</span><span class="s">&#39;continued simulation&#39;</span><span class="p">)</span>
+<span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;time (s)&#39;</span><span class="p">)</span>
+<span class="c">###EoF###</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="debug_device.html"
+                        title="previous chapter">Demo debug_device.py</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pca_analyse_view_surface.html"
+                        title="next chapter">Demo pca_analyse_view_surface.py</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/demos/region_stochastic_simulation_continuation_bold.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pca_analyse_view_surface.html" title="Demo pca_analyse_view_surface.py"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="debug_device.html" title="Demo debug_device.py"
+             >previous</a> |</li>
+        <li><a href="../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../demos.html" >demos</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

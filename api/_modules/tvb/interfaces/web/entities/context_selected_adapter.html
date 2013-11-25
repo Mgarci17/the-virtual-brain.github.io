@@ -1,0 +1,249 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.interfaces.web.entities.context_selected_adapter &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.interfaces.web.entities.context_selected_adapter</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Used by FlowController.</span>
+<span class="sd">It will store in current user&#39;s session information about </span>
+
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">tvb.interfaces.web.controllers.base_controller</span> <span class="kn">as</span> <span class="nn">base</span>
+
+
+<div class="viewcode-block" id="SelectedAdapterContext"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.entities.html#tvb.interfaces.web.entities.context_selected_adapter.SelectedAdapterContext">[docs]</a><span class="k">class</span> <span class="nc">SelectedAdapterContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Responsible for storing/retrieving/removing from session info about currently selected algorithm.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">KEY_CURRENT_ADAPTER_INFO</span> <span class="o">=</span> <span class="s">&quot;currentAdapterInfo&quot;</span>
+    <span class="n">_KEY_INPUT_TREE</span> <span class="o">=</span> <span class="s">&quot;inputList&quot;</span>
+    <span class="n">_KEY_CURRENT_STEP</span> <span class="o">=</span> <span class="s">&quot;currentStepCategoryId&quot;</span>
+    <span class="n">_KEY_CURRENT_SUBSTEP</span> <span class="o">=</span> <span class="s">&quot;currentAlgoGroupId&quot;</span>
+    <span class="n">_KEY_SELECTED_DATA</span> <span class="o">=</span> <span class="s">&#39;defaultData&#39;</span>
+    <span class="n">KEY_PORTLET_CONFIGURATION</span> <span class="o">=</span> <span class="s">&#39;portletConfig&#39;</span>
+    <span class="n">KEY_TREE_DEFAULT</span> <span class="o">=</span> <span class="s">&quot;defaultTree&quot;</span>
+
+<div class="viewcode-block" id="SelectedAdapterContext.add_adapter_to_session"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.entities.html#tvb.interfaces.web.entities.context_selected_adapter.SelectedAdapterContext.add_adapter_to_session">[docs]</a>    <span class="k">def</span> <span class="nf">add_adapter_to_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">algo_group</span><span class="p">,</span> <span class="n">input_tree</span><span class="p">,</span> <span class="n">default_data</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Put in session information about currently selected adapter.</span>
+<span class="sd">        Will be used by filters and efficiency load.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">previous_algo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_substep</span><span class="p">()</span>  
+        <span class="n">current_algo</span> <span class="o">=</span> <span class="n">algo_group</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">algo_group</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="p">(</span><span class="n">default_data</span><span class="p">[</span><span class="n">base</span><span class="o">.</span><span class="n">KEY_ADAPTER</span><span class="p">]</span> 
+                                                                     <span class="k">if</span> <span class="n">default_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">current_algo</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">current_algo</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">(</span><span class="n">previous_algo</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clean_from_session</span><span class="p">()</span>
+            <span class="n">adapter_info</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">adapter_info</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_CURRENT_ADAPTER_INFO</span><span class="p">)</span>
+            
+        <span class="k">if</span> <span class="n">default_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span> 
+            <span class="n">adapter_info</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_KEY_SELECTED_DATA</span><span class="p">]</span> <span class="o">=</span> <span class="n">default_data</span>
+        <span class="k">if</span> <span class="n">input_tree</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">adapter_info</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_KEY_INPUT_TREE</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_tree</span>
+        <span class="k">if</span> <span class="n">algo_group</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">adapter_info</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_KEY_CURRENT_STEP</span><span class="p">]</span> <span class="o">=</span> <span class="n">algo_group</span><span class="o">.</span><span class="n">fk_category</span> 
+            <span class="n">adapter_info</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_KEY_CURRENT_SUBSTEP</span><span class="p">]</span> <span class="o">=</span> <span class="n">algo_group</span><span class="o">.</span><span class="n">id</span> 
+                
+        <span class="n">base</span><span class="o">.</span><span class="n">add2session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_CURRENT_ADAPTER_INFO</span><span class="p">,</span> <span class="n">adapter_info</span><span class="p">)</span>
+     
+     </div>
+<div class="viewcode-block" id="SelectedAdapterContext.add_portlet_to_session"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.entities.html#tvb.interfaces.web.entities.context_selected_adapter.SelectedAdapterContext.add_portlet_to_session">[docs]</a>    <span class="k">def</span> <span class="nf">add_portlet_to_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">portlet_interface</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a portlet configuration to the session. Used for applying filters on</span>
+<span class="sd">        portlet configurations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">full_description</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_CURRENT_ADAPTER_INFO</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">full_description</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">full_description</span> <span class="ow">is</span> <span class="p">{}:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Should not add portlet interface to session&quot;</span><span class="p">)</span>
+        <span class="n">full_description</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_PORTLET_CONFIGURATION</span><span class="p">]</span> <span class="o">=</span> <span class="n">portlet_interface</span>
+    
+    </div>
+<div class="viewcode-block" id="SelectedAdapterContext.get_current_input_tree"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.entities.html#tvb.interfaces.web.entities.context_selected_adapter.SelectedAdapterContext.get_current_input_tree">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_input_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get from session previously selected InputTree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">full_description</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_CURRENT_ADAPTER_INFO</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">full_description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_KEY_INPUT_TREE</span> <span class="ow">in</span> <span class="n">full_description</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">full_description</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_KEY_INPUT_TREE</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    </div>
+<div class="viewcode-block" id="SelectedAdapterContext.get_session_tree_for_key"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.entities.html#tvb.interfaces.web.entities.context_selected_adapter.SelectedAdapterContext.get_session_tree_for_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_session_tree_for_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree_session_key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get from session previously selected InputTree stored under the :param tree_session_key.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">tree_session_key</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">KEY_TREE_DEFAULT</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_input_tree</span><span class="p">()</span>
+        <span class="n">full_description</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_CURRENT_ADAPTER_INFO</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">full_description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">tree_session_key</span> <span class="ow">in</span> <span class="n">full_description</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">full_description</span><span class="p">[</span><span class="n">tree_session_key</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    
+    </div>
+<div class="viewcode-block" id="SelectedAdapterContext.get_current_step"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.entities.html#tvb.interfaces.web.entities.context_selected_adapter.SelectedAdapterContext.get_current_step">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get from session previously selected step (category ID).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">full_description</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_CURRENT_ADAPTER_INFO</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">full_description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_KEY_CURRENT_STEP</span> <span class="ow">in</span> <span class="n">full_description</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">full_description</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_KEY_CURRENT_STEP</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    </div>
+<div class="viewcode-block" id="SelectedAdapterContext.get_current_substep"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.entities.html#tvb.interfaces.web.entities.context_selected_adapter.SelectedAdapterContext.get_current_substep">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_substep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get from session previously selected step (algo-group ID).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">full_description</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_CURRENT_ADAPTER_INFO</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">full_description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_KEY_CURRENT_SUBSTEP</span> <span class="ow">in</span> <span class="n">full_description</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">full_description</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_KEY_CURRENT_SUBSTEP</span><span class="p">]</span>
+        <span class="n">selected_data_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_default</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">KEY_ADAPTER</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">full_description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">selected_data_step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">selected_data_step</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    </div>
+<div class="viewcode-block" id="SelectedAdapterContext.get_current_default"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.entities.html#tvb.interfaces.web.entities.context_selected_adapter.SelectedAdapterContext.get_current_default">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read from session previously stored default data.</span>
+<span class="sd">        :param param_name: When None, return full dictionary with defaults.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">full_description</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_CURRENT_ADAPTER_INFO</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">full_description</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_KEY_SELECTED_DATA</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">full_description</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="n">full_default</span> <span class="o">=</span> <span class="n">full_description</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_KEY_SELECTED_DATA</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">param_name</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">full_default</span>
+        <span class="k">if</span> <span class="n">full_default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="n">full_default</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">full_default</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    </div>
+<div class="viewcode-block" id="SelectedAdapterContext.clean_from_session"><a class="viewcode-back" href="../../../../../tvb.interfaces.web.entities.html#tvb.interfaces.web.entities.context_selected_adapter.SelectedAdapterContext.clean_from_session">[docs]</a>    <span class="k">def</span> <span class="nf">clean_from_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove info about selected algo from session</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">base</span><span class="o">.</span><span class="n">remove_from_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KEY_CURRENT_ADAPTER_INFO</span><span class="p">)</span>
+        
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

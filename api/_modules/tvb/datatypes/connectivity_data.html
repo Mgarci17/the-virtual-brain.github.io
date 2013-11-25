@@ -1,0 +1,240 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.datatypes.connectivity_data &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.datatypes.connectivity_data</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The Data component of Connectivity datatype.</span>
+
+<span class="sd">.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;</span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.types_basic</span> <span class="kn">as</span> <span class="nn">basic</span>
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.core</span> <span class="kn">as</span> <span class="nn">core</span>
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.data_readers</span> <span class="kn">as</span> <span class="nn">readers</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.volumes</span> <span class="kn">as</span> <span class="nn">volumes</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.arrays</span> <span class="kn">as</span> <span class="nn">arrays</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.traits.types_mapped</span> <span class="kn">import</span> <span class="n">MappedType</span>
+
+
+
+<div class="viewcode-block" id="ConnectivityData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.connectivity_data.ConnectivityData">[docs]</a><span class="k">class</span> <span class="nc">ConnectivityData</span><span class="p">(</span><span class="n">MappedType</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class primarily exists to bundle the long range structural connectivity</span>
+<span class="sd">    data into a single object. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">default</span> <span class="o">=</span> <span class="n">readers</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">folder_path</span><span class="o">=</span><span class="s">&quot;connectivity/o52r00_irp2008&quot;</span><span class="p">)</span>
+
+    <span class="n">parcellation_mask</span> <span class="o">=</span> <span class="n">volumes</span><span class="o">.</span><span class="n">ParcellationMask</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Parcellation mask (volume)&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;A 3D volume mask defining the parcellation of the brain into distinct regions.&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">region_labels</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">StringArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Region labels&quot;</span><span class="p">,</span>
+        <span class="n">console_default</span><span class="o">=</span><span class="n">default</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s">&quot;centres.txt.bz2&quot;</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,),</span>
+                                          <span class="n">dtype</span><span class="o">=</span><span class="s">&quot;string&quot;</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s">&quot;region_labels&quot;</span><span class="p">),</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;Short strings, &#39;labels&#39;, for the regions represented by the connectivity matrix.&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Connection strengths&quot;</span><span class="p">,</span>
+        <span class="n">console_default</span><span class="o">=</span><span class="n">default</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s">&quot;weights.txt.bz2&quot;</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s">&quot;weights&quot;</span><span class="p">),</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;Matrix of values representing the strength of connections between regions, arbitrary units.&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">unidirectional</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Integer</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;1, when the weights matrix is square and symmetric over the main diagonal, 0 when bi-directional matrix.&quot;</span><span class="p">)</span>
+
+    <span class="n">tract_lengths</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Tract lengths&quot;</span><span class="p">,</span>
+        <span class="n">console_default</span><span class="o">=</span><span class="n">default</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s">&quot;tract_lengths.txt.bz2&quot;</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s">&quot;tract_lengths&quot;</span><span class="p">),</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;The length of myelinated fibre tracts between regions.</span>
+<span class="s">        If not provided Euclidean distance between region centres is used.&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">speed</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Conduction speed&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">3.0</span><span class="p">]),</span> <span class="n">file_storage</span><span class="o">=</span><span class="n">core</span><span class="o">.</span><span class="n">FILE_STORAGE_NONE</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;A single number or matrix of conduction speeds for the myelinated fibre tracts between regions.&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">centres</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">PositionArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Region centres&quot;</span><span class="p">,</span>
+        <span class="n">console_default</span><span class="o">=</span><span class="n">default</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s">&quot;centres.txt.bz2&quot;</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">field</span><span class="o">=</span><span class="s">&quot;centres&quot;</span><span class="p">),</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;An array specifying the location of the centre of each region.&quot;</span><span class="p">)</span>
+
+    <span class="n">cortical</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">BoolArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Cortical&quot;</span><span class="p">,</span>
+        <span class="n">console_default</span><span class="o">=</span><span class="n">default</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s">&quot;cortical.txt.bz2&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s">&quot;cortical&quot;</span><span class="p">),</span>
+        <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;A boolean vector specifying whether or not a region is part of the cortex.&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">hemispheres</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">BoolArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Hemispheres (True for Right and False for Left Hemisphere&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;A boolean vector specifying whether or not a region is part of the right hemisphere&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">orientations</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">OrientationArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Average region orientation&quot;</span><span class="p">,</span>
+        <span class="n">console_default</span><span class="o">=</span><span class="n">default</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s">&quot;average_orientations.txt.bz2&quot;</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s">&quot;orientations&quot;</span><span class="p">),</span>
+        <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;Unit vectors of the average orientation of the regions represented in the connectivity matrix.</span>
+<span class="s">        NOTE: Unknown data should be zeros.&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">areas</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Area of regions&quot;</span><span class="p">,</span>
+        <span class="n">console_default</span><span class="o">=</span><span class="n">default</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s">&quot;areas.txt.bz2&quot;</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s">&quot;areas&quot;</span><span class="p">),</span>
+        <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;Estimated area represented by the regions in the connectivity matrix.</span>
+<span class="s">        NOTE: Unknown data should be zeros.&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">idelays</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">IndexArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Conduction delay indices&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">file_storage</span><span class="o">=</span><span class="n">core</span><span class="o">.</span><span class="n">FILE_STORAGE_NONE</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;An array of time delays between regions in integration steps.&quot;</span><span class="p">)</span>
+
+    <span class="n">delays</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Conduction delay&quot;</span><span class="p">,</span>
+        <span class="n">file_storage</span><span class="o">=</span><span class="n">core</span><span class="o">.</span><span class="n">FILE_STORAGE_NONE</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;Matrix of time delays between regions in physical units, setting conduction speed automatically</span>
+<span class="s">        combines with tract lengths to update this matrix, i.e. don&#39;t try and change it manually.&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">number_of_regions</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Integer</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Number of regions&quot;</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;The number of regions represented in this Connectivity &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="c"># ------------- FRAMEWORK ATTRIBUTES -----------------------------</span>
+
+    <span class="c"># Rotation if positions are not normalized.</span>
+    <span class="n">nose_correction</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">JSONType</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="c"># Original Connectivity, from which current connectivity was edited.</span>
+    <span class="n">parent_connectivity</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="c"># In case of edited Connectivity, this are the nodes left in interest area,</span>
+    <span class="c"># the rest were part of a lesion, so they were removed.</span>
+    <span class="n">saved_selection</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">JSONType</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

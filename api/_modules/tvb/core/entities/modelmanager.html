@@ -1,0 +1,204 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.entities.modelmanager &mdash; The Virtual Brain 1.0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="The Virtual Brain 1.0.4 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.entities.modelmanager</h1><pre>
+# -*- coding: utf-8 -*-
+#
+#
+# TheVirtualBrain-Framework Package. This package holds all Data Management, and 
+# Web-UI helpful to run brain-simulations. To use it, you also need do download
+# TheVirtualBrain-Scientific Package (for simulators). See content of the
+# documentation-folder for more details. See also http://www.thevirtualbrain.org
+#
+# (c) 2012-2013, Baycrest Centre for Geriatric Care ("Baycrest")
+#
+# This program is free software; you can redistribute it and/or modify it under 
+# the terms of the GNU General Public License version 2 as published by the Free
+# Software Foundation. This program is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+# License for more details. You should have received a copy of the GNU General 
+# Public License along with this program; if not, you can download it here
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0
+#
+#
+
+"""
+.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;
+.. moduleauthor:: Yann Gordon &lt;yann@invalid.tvb&gt;
+"""
+import os
+import shutil
+import migrate.versioning.api as migratesqlapi
+from sqlalchemy.sql import text
+from sqlalchemy.engine import reflection
+from tvb.basic.config.settings import TVBSettings as cfg
+from tvb.core.entities import model
+from tvb.core.entities.storage import SA_SESSIONMAKER
+from tvb.basic.logger.builder import get_logger
+import tvb.core.entities.model.db_update_scripts as scripts
+
+
+LOGGER = get_logger(__name__)
+
+
+<div class="viewcode-block" id="initialize_startup"><a class="viewcode-back" href="../../../../tvb.core.entities.html#tvb.core.entities.modelmanager.initialize_startup">[docs]</a>def initialize_startup():
+    """ Force DB tables create, in case no data is already found."""
+    is_db_empty = False
+    session = SA_SESSIONMAKER()
+    inspector = reflection.Inspector.from_engine(session.connection())
+    if len(inspector.get_table_names()) &lt; 1:
+        LOGGER.debug("Database access exception, maybe DB is empty")
+        is_db_empty = True
+    session.close()
+        
+    if is_db_empty:
+        LOGGER.info("Initializing Database")
+        if os.path.exists(cfg.DB_VERSIONING_REPO):
+            shutil.rmtree(cfg.DB_VERSIONING_REPO)
+        migratesqlapi.create(cfg.DB_VERSIONING_REPO, os.path.split(cfg.DB_VERSIONING_REPO)[1])
+        _update_sql_scripts()
+        migratesqlapi.version_control(cfg.DB_URL, cfg.DB_VERSIONING_REPO, version=cfg.DB_CURRENT_VERSION)
+        session = SA_SESSIONMAKER()
+        model.Base.metadata.create_all(bind=session.connection())
+        session.commit()
+        session.close()
+        LOGGER.info("Database Default Tables created successfully!")    
+    else:
+        _update_sql_scripts()
+        migratesqlapi.upgrade(cfg.DB_URL, cfg.DB_VERSIONING_REPO, 
+                              version=cfg.DB_CURRENT_VERSION)
+        LOGGER.info("Database already has some data, will not be re-created!")
+    return is_db_empty
+
+</div>
+<div class="viewcode-block" id="reset_database"><a class="viewcode-back" href="../../../../tvb.core.entities.html#tvb.core.entities.modelmanager.reset_database">[docs]</a>def reset_database():
+    """
+    Remove all tables in DB.
+    """
+    LOGGER.warning("Your Database tables will be deleted.")
+    try:
+        session = SA_SESSIONMAKER()
+        LOGGER.debug("Delete connection initiated.")
+        inspector = reflection.Inspector.from_engine(session.connection())
+        for table in inspector.get_table_names():
+            try:
+                LOGGER.debug("Removing:"+ table)
+                session.execute(text("DROP TABLE \"%s\" CASCADE" % table))
+            except Exception, _:
+                try:
+                    session.execute(text("DROP TABLE %s" % table))
+                except Exception, excep1:    
+                    LOGGER.error("Could no drop table %s", table)
+                    LOGGER.exception(excep1)
+        session.commit()
+        LOGGER.info("Database was cleanup!")
+    except Exception, excep:
+        LOGGER.warning(excep)
+    finally:
+        session.close()
+        
+        
+ </div>
+def _update_sql_scripts():
+    """
+    When a new release is done, make sure old DB scripts are updated.
+    """
+    scripts_folder = os.path.dirname(scripts.__file__)
+    versions_folder = os.path.join(cfg.DB_VERSIONING_REPO, 'versions')
+    if os.path.exists(versions_folder):
+        shutil.rmtree(versions_folder)
+    ignore_patters = shutil.ignore_patterns('.svn')
+    shutil.copytree(scripts_folder, versions_folder, ignore=ignore_patters)
+
+</pre>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

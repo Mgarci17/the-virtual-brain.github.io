@@ -1,0 +1,347 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.analyzers.wavelet &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.analyzers.wavelet</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Calculate a wavelet transform on a TimeSeries datatype and return a</span>
+<span class="sd">WaveletSpectrum datatype.</span>
+
+<span class="sd">.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;</span>
+<span class="sd">.. moduleauthor:: Andreas Spiegler &lt;anspiegler@googlemail.com&gt;</span>
+<span class="sd">.. moduleauthor:: Marmaduke Woodman &lt;mw@eml.cc&gt;</span>
+<span class="sd">.. moduleauthor:: Paula Sanz Leon &lt;Paula@tvb.invalid&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">scipy.signal</span> <span class="kn">as</span> <span class="nn">signal</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.time_series</span> <span class="kn">as</span> <span class="nn">time_series</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.spectral</span> <span class="kn">as</span> <span class="nn">spectral</span>
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.core</span> <span class="kn">as</span> <span class="nn">core</span>
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.types_basic</span> <span class="kn">as</span> <span class="nn">basic</span>
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.util</span> <span class="kn">as</span> <span class="nn">util</span>
+<span class="kn">from</span> <span class="nn">tvb.simulator.common</span> <span class="kn">import</span> <span class="n">iround</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">SUPPORTED_WAVELET_FUNCTIONS</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;morlet&quot;</span><span class="p">,)</span>
+
+
+
+<div class="viewcode-block" id="ContinuousWaveletTransform"><a class="viewcode-back" href="../../../tvb.analyzers.html#tvb.analyzers.wavelet.ContinuousWaveletTransform">[docs]</a><span class="k">class</span> <span class="nc">ContinuousWaveletTransform</span><span class="p">(</span><span class="n">core</span><span class="o">.</span><span class="n">Type</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class for calculating the wavelet transform of a TimeSeries object of TVB</span>
+<span class="sd">    and returning a WaveletSpectrum object. The sampling period and frequency</span>
+<span class="sd">    range of the result can be specified. The mother wavelet can also be </span>
+<span class="sd">    specified... (So far, only Morlet.)</span>
+<span class="sd">    </span>
+<span class="sd">    References:</span>
+<span class="sd">        .. [TBetal_1996] C. Tallon-Baudry et al, *Stimulus Specificity of </span>
+<span class="sd">            Phase-Locked and Non-Phase-Locked 40 Hz Visual Responses in Human.*,</span>
+<span class="sd">            J Neurosci 16(13):4240-4249, 1996. </span>
+<span class="sd">        </span>
+<span class="sd">        .. [Mallat_1999] S. Mallat, *A wavelet tour of signal processing.*,</span>
+<span class="sd">            book, Academic Press, 1999.</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">time_series</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Time Series&quot;</span><span class="p">,</span>
+        <span class="n">required</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;The timeseries to which the wavelet is to be applied.&quot;&quot;&quot;</span><span class="p">)</span>
+    
+    <span class="n">mother</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">String</span><span class="p">(</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Wavelet function&quot;</span><span class="p">,</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="s">&quot;morlet&quot;</span><span class="p">,</span>
+        <span class="n">required</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;The mother wavelet function used in the transform. Default is</span>
+<span class="s">            &#39;morlet&#39;, possibilities are: &#39;morlet&#39;...&quot;&quot;&quot;</span><span class="p">)</span>
+    
+    <span class="n">sample_period</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Float</span><span class="p">(</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Sample period of result (ms)&quot;</span><span class="p">,</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="mf">7.8125</span><span class="p">,</span> <span class="c">#7.8125 =&gt; 128 Hz</span>
+        <span class="n">required</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;The sampling period of the computed wavelet spectrum. NOTE:</span>
+<span class="s">            This should be an integral multiple of the of the sampling period </span>
+<span class="s">            of the source time series, otherwise the actual resulting sample</span>
+<span class="s">            period will be the first correct value below that requested.&quot;&quot;&quot;</span><span class="p">)</span>
+    
+    <span class="n">frequencies</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Range</span><span class="p">(</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Frequency range of result (kHz).&quot;</span><span class="p">,</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Range</span><span class="p">(</span><span class="n">lo</span> <span class="o">=</span> <span class="mf">0.008</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="mf">0.060</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="mf">0.002</span><span class="p">),</span>
+        <span class="n">required</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;The frequency resolution and range returned. Requested</span>
+<span class="s">            frequencies are converted internally into appropriate scales.&quot;&quot;&quot;</span><span class="p">)</span>
+    
+    <span class="n">normalisation</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">String</span><span class="p">(</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Normalisation&quot;</span><span class="p">,</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="s">&quot;energy&quot;</span><span class="p">,</span>
+        <span class="n">required</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;The type of normalisation for the resulting wavet spectrum.</span>
+<span class="s">            Default is &#39;energy&#39;, options are: &#39;energy&#39;; &#39;gabor&#39;.&quot;&quot;&quot;</span><span class="p">)</span>
+    
+    <span class="n">q_ratio</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Float</span><span class="p">(</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Q-ratio&quot;</span><span class="p">,</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span>
+        <span class="n">required</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;NFC. Must be greater than 5.&quot;&quot;&quot;</span><span class="p">)</span>
+    
+    
+    
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the continuous wavelet transform of time_series.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cls_attr_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="o">+</span><span class="s">&quot;.time_series&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">trait</span><span class="p">[</span><span class="s">&quot;data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">log_debug</span><span class="p">(</span><span class="n">owner</span> <span class="o">=</span> <span class="n">cls_attr_name</span><span class="p">)</span>
+        
+        <span class="n">ts_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">step</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Frequency step can&#39;t be 0! Trying default step, 2e-3.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="mf">0.002</span>
+        
+        <span class="n">freqs</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">lo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">hi</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="p">(</span><span class="n">freqs</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">freqs</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">):</span> <span class="c">#TODO: Maybe should limit number of freqs... ~100 is probably a reasonable upper bound.</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Invalid frequency range! Falling back to default.&quot;</span><span class="p">)</span>
+            <span class="n">util</span><span class="o">.</span><span class="n">log_debug_array</span><span class="p">(</span><span class="n">LOG</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="s">&quot;freqs&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Range</span><span class="p">(</span><span class="n">lo</span> <span class="o">=</span> <span class="mf">0.008</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="mf">0.060</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="mf">0.002</span><span class="p">)</span>
+            <span class="n">freqs</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">lo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">hi</span><span class="p">,</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
+        
+        <span class="n">util</span><span class="o">.</span><span class="n">log_debug_array</span><span class="p">(</span><span class="n">LOG</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="s">&quot;freqs&quot;</span><span class="p">)</span>
+        
+        <span class="n">sample_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">sample_rate</span>
+        
+        <span class="c"># Duke: code below is as given by Andreas Spiegler, I&#39;ve just wrapped </span>
+        <span class="c"># some of the original argument names</span>
+        <span class="n">nf</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span>
+        <span class="n">temporal_step</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">iround</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_period</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">sample_period</span><span class="p">)))</span>
+        <span class="n">nt</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">ts_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span>  <span class="n">temporal_step</span><span class="p">))</span>
+        
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q_ratio</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">Q_ratio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_ratio</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">nf</span><span class="p">))</span>
+        
+        <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">Q_ratio</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Q_ratio must be not lower than 5 !&quot;</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">msg</span>
+        
+        <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">sample_rate</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Sampling rate is too low for the requested frequency range !&quot;</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">msg</span>
+        
+        <span class="c">#TODO: This isn&#39;t used, but min frequency seems like it should be important... Check with A.S. </span>
+        <span class="c">#  fmin = 3.0 * numpy.nanmin(Q_ratio) * sample_rate / numpy.pi / nt</span>
+        <span class="n">sigma_f</span> <span class="o">=</span> <span class="n">freqs</span> <span class="o">/</span> <span class="n">Q_ratio</span>
+        <span class="n">sigma_t</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">sigma_f</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalisation</span> <span class="o">==</span> <span class="s">&#39;energy&#39;</span><span class="p">:</span>
+            <span class="n">Amp</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sample_rate</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigma_t</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalisation</span> <span class="o">==</span> <span class="s">&#39;gabor&#39;</span><span class="p">:</span> 
+            <span class="n">Amp</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">/</span> <span class="n">sample_rate</span> <span class="o">/</span> <span class="n">sigma_t</span>
+        
+        <span class="n">coef_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">nf</span><span class="p">,</span> <span class="n">nt</span><span class="p">,</span> <span class="n">ts_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ts_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">ts_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        
+        <span class="n">coef</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">coef_shape</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="n">util</span><span class="o">.</span><span class="n">log_debug_array</span><span class="p">(</span><span class="n">LOG</span><span class="p">,</span> <span class="n">coef</span><span class="p">,</span> <span class="s">&quot;coef&quot;</span><span class="p">)</span>
+        <span class="n">scales</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nf</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">scales</span><span class="p">:</span>
+            <span class="n">f0</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">SDt</span> <span class="o">=</span> <span class="n">sigma_t</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">)]</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">Amp</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">)]</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">SDt</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">sample_rate</span>
+            <span class="n">wvlt</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">SDt</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="p">)</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">2j</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">f0</span> <span class="o">*</span> <span class="n">x</span> <span class="p">)</span>
+            <span class="n">wvlt</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">numpy</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(</span><span class="n">wvlt</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">wvlt</span><span class="p">))</span>
+            <span class="c">#util.log_debug_array(LOG, wvlt, &quot;wvlt&quot;)</span>
+            
+            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ts_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ts_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
+                    <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ts_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]):</span>
+                        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="n">var</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">mode</span><span class="p">]</span>
+                        <span class="n">wt</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">wvlt</span><span class="p">,</span> <span class="s">&#39;same&#39;</span><span class="p">)</span>
+                        <span class="c">#util.log_debug_array(LOG, wt, &quot;wt&quot;)</span>
+                        <span class="n">res</span> <span class="o">=</span> <span class="n">wt</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="n">temporal_step</span><span class="p">]</span>
+                        <span class="c">#NOTE: this is a horrible horrible quick hack (alas, a solution) to avoid broadcasting errors</span>
+                        <span class="c"># when using dt and sample periods which are not powers of 2.</span>
+                        <span class="n">coef</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="n">var</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">mode</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">==</span> <span class="n">nt</span> <span class="k">else</span> <span class="n">res</span><span class="p">[:</span><span class="n">coef</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> 
+                        
+        
+        <span class="n">util</span><span class="o">.</span><span class="n">log_debug_array</span><span class="p">(</span><span class="n">LOG</span><span class="p">,</span> <span class="n">coef</span><span class="p">,</span> <span class="s">&quot;coef&quot;</span><span class="p">)</span>
+        
+        <span class="n">spectra</span> <span class="o">=</span> <span class="n">spectral</span><span class="o">.</span><span class="n">WaveletCoefficients</span><span class="p">(</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series</span><span class="p">,</span>
+            <span class="n">mother</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mother</span><span class="p">,</span>
+            <span class="n">sample_period</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_period</span><span class="p">,</span>
+            <span class="n">frequencies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="p">,</span>
+            <span class="n">normalisation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalisation</span><span class="p">,</span>
+            <span class="n">q_ratio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_ratio</span><span class="p">,</span>
+            <span class="n">array_data</span> <span class="o">=</span> <span class="n">coef</span><span class="p">,</span>
+            <span class="n">use_storage</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">spectra</span>
+    
+    
+    <span class="k">def</span> <span class="nf">result_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the shape of the main result (complex array) of the continuous</span>
+<span class="sd">        wavelet transform.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">freq_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">hi</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">lo</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
+        <span class="n">temporal_step</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_period</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series</span><span class="o">.</span><span class="n">sample_period</span><span class="p">))</span>
+        <span class="n">nt</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span>  <span class="n">temporal_step</span><span class="p">))</span>
+        <span class="n">result_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">freq_len</span><span class="p">,</span> <span class="n">nt</span><span class="p">,</span> <span class="p">)</span> <span class="o">+</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="n">result_shape</span>
+    
+    
+    <span class="k">def</span> <span class="nf">result_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the storage size in Bytes of the main result (complex array) of</span>
+<span class="sd">        the continuous wavelet transform.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result_size</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result_shape</span><span class="p">(</span><span class="n">input_shape</span><span class="p">))</span> <span class="o">*</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="mf">8.0</span> <span class="c">#complex*Bytes</span>
+        <span class="k">return</span> <span class="n">result_size</span>
+    
+    
+    <span class="k">def</span> <span class="nf">extended_result_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the storage size in Bytes of the extended result of the </span>
+<span class="sd">        continuous wavelet transform.  That is, it includes storage of the</span>
+<span class="sd">        evaluated WaveletCoefficients attributes such as power, phase, </span>
+<span class="sd">        amplitude, etc.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_shape</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span>
+        <span class="n">result_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_size</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span>
+        <span class="n">extend_size</span> <span class="o">=</span> <span class="n">result_size</span> <span class="c">#Main array</span>
+        <span class="n">extend_size</span> <span class="o">=</span> <span class="n">extend_size</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">result_size</span> <span class="c">#Amplitude</span>
+        <span class="n">extend_size</span> <span class="o">=</span> <span class="n">extend_size</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">result_size</span> <span class="c">#Phase</span>
+        <span class="n">extend_size</span> <span class="o">=</span> <span class="n">extend_size</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">result_size</span> <span class="c">#Power</span>
+        <span class="n">extend_size</span> <span class="o">=</span> <span class="n">extend_size</span> <span class="o">+</span> <span class="n">result_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">8.0</span> <span class="c">#Frequency</span>
+        <span class="k">return</span> <span class="n">extend_size</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

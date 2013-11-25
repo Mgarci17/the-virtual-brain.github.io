@@ -1,0 +1,662 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.adapters.introspector &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.adapters.introspector</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">tvb.core.removers_factory</span> <span class="kn">as</span> <span class="nn">removers</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">ModuleType</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span> <span class="k">as</span> <span class="n">cfg</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.traits.types_mapped</span> <span class="kn">import</span> <span class="n">MappedType</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities</span> <span class="kn">import</span> <span class="n">model</span>
+<span class="kn">from</span> <span class="nn">tvb.core.entities.storage</span> <span class="kn">import</span> <span class="n">dao</span><span class="p">,</span> <span class="n">SA_SESSIONMAKER</span>
+<span class="kn">from</span> <span class="nn">tvb.core.portlets.xml_reader</span> <span class="kn">import</span> <span class="n">XMLPortletReader</span><span class="p">,</span> <span class="n">ATT_OVERWRITE</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.abcremover</span> <span class="kn">import</span> <span class="n">ABCRemover</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.abcadapter</span> <span class="kn">import</span> <span class="n">ABCAdapter</span><span class="p">,</span> <span class="n">ABCGroupAdapter</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.xml_reader</span> <span class="kn">import</span> <span class="n">ATT_TYPE</span><span class="p">,</span> <span class="n">ATT_NAME</span><span class="p">,</span> <span class="n">INPUTS_KEY</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.xml_reader</span> <span class="kn">import</span> <span class="n">ATT_REQUIRED</span><span class="p">,</span> <span class="n">ELEM_CONDITIONS</span><span class="p">,</span> <span class="n">XMLGroupReader</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.exceptions</span> <span class="kn">import</span> <span class="n">XmlParserException</span>
+<span class="kn">from</span> <span class="nn">tvb.core.portlets.portlet_configurer</span> <span class="kn">import</span> <span class="n">PortletConfigurer</span>
+
+
+<span class="n">ALL_VARIABLE</span> <span class="o">=</span> <span class="s">&quot;__all__&quot;</span>
+<span class="n">XML_FOLDERS_VARIABLE</span> <span class="o">=</span> <span class="s">&quot;__xml_folders__&quot;</span>
+<span class="n">MATLAB_ADAPTER</span> <span class="o">=</span> <span class="s">&quot;MatlabAnalyzer&quot;</span>
+<span class="n">LAUNCHABLE</span> <span class="o">=</span> <span class="s">&#39;launchable&#39;</span>
+<span class="n">DISPLAYER</span> <span class="o">=</span> <span class="s">&#39;display&#39;</span>
+<span class="n">RAWINPUT</span> <span class="o">=</span> <span class="s">&#39;rawinput&#39;</span>
+<span class="n">ORDER</span> <span class="o">=</span> <span class="s">&#39;order_nr&#39;</span>
+<span class="n">STATE</span> <span class="o">=</span> <span class="s">&#39;defaultdatastate&#39;</span>
+
+
+
+<div class="viewcode-block" id="Introspector"><a class="viewcode-back" href="../../../../tvb.core.adapters.html#tvb.core.adapters.introspector.Introspector">[docs]</a><span class="k">class</span> <span class="nc">Introspector</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class will handle any external module introspection.</span>
+<span class="sd">    By introspecting other Python modules, we expect to find dynamic adapters and DataTypes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">introspected_module</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module_name</span> <span class="o">=</span> <span class="n">introspected_module</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matlab_executable</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MATLAB_EXECUTABLE</span>
+
+
+<div class="viewcode-block" id="Introspector.get_events_path"><a class="viewcode-back" href="../../../../tvb.core.adapters.html#tvb.core.adapters.introspector.Introspector.get_events_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_events_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the EVENTS_FOLDER variable for a given module.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">module_name</span><span class="p">,</span> <span class="nb">globals</span><span class="p">(),</span> <span class="nb">locals</span><span class="p">(),</span> <span class="p">[</span><span class="s">&quot;__init__&quot;</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">event_path</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">EVENTS_FOLDER</span><span class="p">,</span> <span class="nb">globals</span><span class="p">(),</span> <span class="nb">locals</span><span class="p">(),</span> <span class="p">[</span><span class="s">&quot;__init__&quot;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">event_path</span><span class="o">.</span><span class="n">__file__</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">exception</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Could not import events folder.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">exception</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+</div>
+<div class="viewcode-block" id="Introspector.get_removers_dict"><a class="viewcode-back" href="../../../../tvb.core.adapters.html#tvb.core.adapters.introspector.Introspector.get_removers_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_removers_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the removers for the datatypes of the current introspected module.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;default&#39;</span><span class="p">:</span> <span class="n">ABCRemover</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">one_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">removers_path</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">one_path</span><span class="p">,</span> <span class="nb">globals</span><span class="p">(),</span> <span class="nb">locals</span><span class="p">(),</span> <span class="p">[</span><span class="s">&quot;__init__&quot;</span><span class="p">])</span>
+                <span class="n">removers_</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">REMOVERS_FACTORY</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">removers_</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+</div>
+<div class="viewcode-block" id="Introspector.introspect"><a class="viewcode-back" href="../../../../tvb.core.adapters.html#tvb.core.adapters.introspector.Introspector.introspect">[docs]</a>    <span class="k">def</span> <span class="nf">introspect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_create</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Introspect a given module to: </span>
+<span class="sd">            - create tables for custom DataType;</span>
+<span class="sd">            - populate adapter algorithms references. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Introspection into module:&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">module_name</span><span class="p">)</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">module_name</span><span class="p">,</span> <span class="nb">globals</span><span class="p">(),</span> <span class="nb">locals</span><span class="p">(),</span> <span class="p">[</span><span class="s">&quot;__init__&quot;</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">path_adapters</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">ADAPTERS</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">path_types</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">DATATYPES_PATH</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">removers_path</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">REMOVERS_PATH</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s">&#39;PORTLETS_PATH&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">path_portlets</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">PORTLETS_PATH</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">path_portlets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Module &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">module_name</span> <span class="o">+</span> <span class="s">&quot; is not fully introspect compatible!&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">excep</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">do_create</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Found Datatypes_Path=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_types</span><span class="p">))</span>
+            <span class="c"># DataTypes only need to be imported for adding to DB tables</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_types</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__get_datatypes</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+            <span class="n">session</span> <span class="o">=</span> <span class="n">SA_SESSIONMAKER</span><span class="p">()</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">connection</span><span class="p">())</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Found Adapters_Dict=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">path_adapters</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">category_name</span> <span class="ow">in</span> <span class="n">path_adapters</span><span class="p">:</span>
+                <span class="n">category_details</span> <span class="o">=</span> <span class="n">path_adapters</span><span class="p">[</span><span class="n">category_name</span><span class="p">]</span>
+                <span class="n">launchable</span> <span class="o">=</span> <span class="p">(</span><span class="n">LAUNCHABLE</span> <span class="ow">in</span> <span class="n">category_details</span> <span class="ow">and</span> <span class="n">category_details</span><span class="p">[</span><span class="n">LAUNCHABLE</span><span class="p">])</span>
+                <span class="n">rawinput</span> <span class="o">=</span> <span class="p">(</span><span class="n">RAWINPUT</span> <span class="ow">in</span> <span class="n">category_details</span> <span class="ow">and</span> <span class="n">category_details</span><span class="p">[</span><span class="n">RAWINPUT</span><span class="p">])</span>
+                <span class="n">display</span> <span class="o">=</span> <span class="p">(</span><span class="n">DISPLAYER</span> <span class="ow">in</span> <span class="n">category_details</span> <span class="ow">and</span> <span class="n">category_details</span><span class="p">[</span><span class="n">DISPLAYER</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">ORDER</span> <span class="ow">in</span> <span class="n">category_details</span><span class="p">:</span>
+                    <span class="n">order_nr</span> <span class="o">=</span> <span class="n">category_details</span><span class="p">[</span><span class="n">ORDER</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">order_nr</span> <span class="o">=</span> <span class="mi">999</span>
+                <span class="n">category_instance</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">filter_category</span><span class="p">(</span><span class="n">category_name</span><span class="p">,</span> <span class="n">rawinput</span><span class="p">,</span> <span class="n">display</span><span class="p">,</span> <span class="n">launchable</span><span class="p">,</span> <span class="n">order_nr</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">category_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">category_instance</span><span class="o">.</span><span class="n">last_introspection_check</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">category_state</span> <span class="o">=</span> <span class="n">category_details</span><span class="p">[</span><span class="n">STATE</span><span class="p">]</span> <span class="k">if</span> <span class="n">STATE</span> <span class="ow">in</span> <span class="n">category_details</span> <span class="k">else</span> <span class="s">&#39;&#39;</span>
+                    <span class="n">category_instance</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">AlgorithmCategory</span><span class="p">(</span><span class="n">category_name</span><span class="p">,</span> <span class="n">launchable</span><span class="p">,</span> <span class="n">rawinput</span><span class="p">,</span> <span class="n">display</span><span class="p">,</span>
+                                                                <span class="n">category_state</span><span class="p">,</span> <span class="n">order_nr</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+                <span class="n">category_instance</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">category_instance</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">actual_module</span> <span class="ow">in</span> <span class="n">path_adapters</span><span class="p">[</span><span class="n">category_name</span><span class="p">][</span><span class="s">&#39;modules&#39;</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__populate_algorithms</span><span class="p">(</span><span class="n">category_instance</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">actual_module</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_portlets</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__get_portlets</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="c">### Register Remover instances for current introspected module</span>
+        <span class="n">removers</span><span class="o">.</span><span class="n">update_dictionary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_removers_dict</span><span class="p">())</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">__get_portlets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_portlets</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a path in the form of a python package e.g.: &quot;tvb.portlets&#39;, import</span>
+<span class="sd">        the package, get it&#39;s folder and look for all the XML files defined </span>
+<span class="sd">        there, then read all the portlets defined there and store them in DB.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">portlet_package</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">path_portlets</span><span class="p">,</span> <span class="nb">locals</span><span class="p">(),</span> <span class="nb">globals</span><span class="p">(),</span> <span class="p">[</span><span class="s">&quot;__init__&quot;</span><span class="p">])</span>
+        <span class="n">portlet_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">portlet_package</span><span class="o">.</span><span class="n">__file__</span><span class="p">)</span>
+        <span class="n">portlets_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">file_n</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">portlet_folder</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">file_n</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.xml&#39;</span><span class="p">):</span>
+                    <span class="n">complete_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">portlet_folder</span><span class="p">,</span> <span class="n">file_n</span><span class="p">)</span>
+                    <span class="n">portlet_reader</span> <span class="o">=</span> <span class="n">XMLPortletReader</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="n">complete_file_path</span><span class="p">)</span>
+                    <span class="n">portlet_list</span> <span class="o">=</span> <span class="n">portlet_reader</span><span class="o">.</span><span class="n">get_algorithms_dictionary</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Starting to verify currently declared portlets in </span><span class="si">%s</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">file_n</span><span class="p">,))</span>
+                    <span class="k">for</span> <span class="n">algo_identifier</span> <span class="ow">in</span> <span class="n">portlet_list</span><span class="p">:</span>
+                        <span class="n">adapters_chain</span> <span class="o">=</span> <span class="n">portlet_reader</span><span class="o">.</span><span class="n">get_adapters_chain</span><span class="p">(</span><span class="n">algo_identifier</span><span class="p">)</span>
+                        <span class="n">is_valid</span> <span class="o">=</span> <span class="bp">True</span>
+                        <span class="k">for</span> <span class="n">adapter</span> <span class="ow">in</span> <span class="n">adapters_chain</span><span class="p">:</span>
+                            <span class="n">class_name</span> <span class="o">=</span> <span class="n">adapter</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_TYPE</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                            <span class="n">module_name</span> <span class="o">=</span> <span class="n">adapter</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_TYPE</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;.&#39;</span> <span class="o">+</span> <span class="n">class_name</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+                            <span class="k">try</span><span class="p">:</span>
+                                <span class="c">#Check that module is properly declared</span>
+                                <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span> <span class="nb">globals</span><span class="p">(),</span> <span class="nb">locals</span><span class="p">())</span>
+                                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">module</span><span class="p">)</span> <span class="o">!=</span> <span class="n">ModuleType</span><span class="p">:</span>
+                                    <span class="n">is_valid</span> <span class="o">=</span> <span class="bp">False</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Wrong module </span><span class="si">%s</span><span class="s"> in portlet </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="n">algo_identifier</span><span class="p">))</span>
+                                    <span class="k">continue</span>
+                                <span class="c">#Check that class is properly declared</span>
+                                <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">):</span>
+                                    <span class="n">is_valid</span> <span class="o">=</span> <span class="bp">False</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Wrong class </span><span class="si">%s</span><span class="s"> in portlet </span><span class="si">%s</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">algo_identifier</span><span class="p">))</span>
+                                    <span class="k">continue</span>
+                                <span class="c">#Check inputs that refers to this adapter</span>
+                                <span class="n">portlet_inputs</span> <span class="o">=</span> <span class="n">portlet_list</span><span class="p">[</span><span class="n">algo_identifier</span><span class="p">][</span><span class="n">INPUTS_KEY</span><span class="p">]</span>
+                                <span class="n">adapter_instance</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">PortletConfigurer</span><span class="o">.</span><span class="n">build_adapter_from_declaration</span><span class="p">(</span><span class="n">adapter</span><span class="p">)</span>
+                                <span class="k">if</span> <span class="n">adapter_instance</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                                    <span class="n">is_valid</span> <span class="o">=</span> <span class="bp">False</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;No group having class=</span><span class="si">%s</span><span class="s"> stored for &quot;</span>
+                                                        <span class="s">&quot;portlet </span><span class="si">%s</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">algo_identifier</span><span class="p">))</span>
+                                    <span class="k">continue</span>
+                                <span class="n">adapter_input_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_NAME</span><span class="p">]</span> <span class="k">for</span> <span class="n">entry</span>
+                                                       <span class="ow">in</span> <span class="n">adapter_instance</span><span class="o">.</span><span class="n">flaten_input_interface</span><span class="p">()]</span>
+                                <span class="k">for</span> <span class="n">input_entry</span> <span class="ow">in</span> <span class="n">portlet_inputs</span><span class="p">:</span>
+                                    <span class="k">if</span> <span class="n">portlet_inputs</span><span class="p">[</span><span class="n">input_entry</span><span class="p">][</span><span class="n">ATT_OVERWRITE</span><span class="p">]</span> <span class="o">==</span> <span class="n">adapter</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_NAME</span><span class="p">]:</span>
+                                        <span class="k">if</span> <span class="n">portlet_inputs</span><span class="p">[</span><span class="n">input_entry</span><span class="p">][</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_NAME</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">adapter_input_names</span><span class="p">:</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Invalid input </span><span class="si">%s</span><span class="s"> for adapter </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                                                <span class="n">portlet_inputs</span><span class="p">[</span><span class="n">input_entry</span><span class="p">][</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_NAME</span><span class="p">],</span> <span class="n">adapter_instance</span><span class="p">))</span>
+                                            <span class="n">is_valid</span> <span class="o">=</span> <span class="bp">False</span>
+                            <span class="k">except</span> <span class="ne">ImportError</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Invalid adapter declaration </span><span class="si">%s</span><span class="s"> in portlet </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                                                  <span class="n">adapter</span><span class="p">[</span><span class="n">ABCAdapter</span><span class="o">.</span><span class="n">KEY_TYPE</span><span class="p">],</span> <span class="n">algo_identifier</span><span class="p">))</span>
+                                <span class="n">is_valid</span> <span class="o">=</span> <span class="bp">False</span>
+                        <span class="k">if</span> <span class="n">is_valid</span><span class="p">:</span>
+                            <span class="n">portlets_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Portlet</span><span class="p">(</span><span class="n">algo_identifier</span><span class="p">,</span> <span class="n">complete_file_path</span><span class="p">,</span>
+                                                               <span class="n">portlet_list</span><span class="p">[</span><span class="n">algo_identifier</span><span class="p">][</span><span class="s">&#39;name&#39;</span><span class="p">]))</span>
+            <span class="k">except</span> <span class="n">XmlParserException</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Invalid Portlet description File &quot;</span> <span class="o">+</span> <span class="n">file_n</span> <span class="o">+</span> <span class="s">&quot; will continue without it!!&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Refreshing portlets from xml declarations.&quot;</span><span class="p">)</span>
+        <span class="n">stored_portlets</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_available_portlets</span><span class="p">()</span>
+        <span class="c">#First update old portlets from DB</span>
+        <span class="k">for</span> <span class="n">stored_portlet</span> <span class="ow">in</span> <span class="n">stored_portlets</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">verified_portlet</span> <span class="ow">in</span> <span class="n">portlets_list</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">stored_portlet</span><span class="o">.</span><span class="n">algorithm_identifier</span> <span class="o">==</span> <span class="n">verified_portlet</span><span class="o">.</span><span class="n">algorithm_identifier</span><span class="p">:</span>
+                    <span class="n">stored_portlet</span><span class="o">.</span><span class="n">xml_path</span> <span class="o">=</span> <span class="n">verified_portlet</span><span class="o">.</span><span class="n">xml_path</span>
+                    <span class="n">stored_portlet</span><span class="o">.</span><span class="n">last_introspection_check</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                    <span class="n">stored_portlet</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">verified_portlet</span><span class="o">.</span><span class="n">name</span>
+                    <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">stored_portlet</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+        <span class="c">#Now add portlets that were not in DB at previous run but are valid now</span>
+        <span class="k">for</span> <span class="n">portlet</span> <span class="ow">in</span> <span class="n">portlets_list</span><span class="p">:</span>
+            <span class="n">db_entity</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_portlet_by_identifier</span><span class="p">(</span><span class="n">portlet</span><span class="o">.</span><span class="n">algorithm_identifier</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">db_entity</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Will now store portlet </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">portlet</span><span class="p">),))</span>
+                <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">portlet</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__get_datatypes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_types</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Imports each DataType to update the DB model, by creating a new table for each DataType.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">my_type</span> <span class="ow">in</span> <span class="n">Introspector</span><span class="o">.</span><span class="n">__get_variable</span><span class="p">(</span><span class="n">path_types</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">module_ref</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">path_types</span><span class="p">,</span> <span class="nb">globals</span><span class="p">(),</span> <span class="nb">locals</span><span class="p">(),</span> <span class="p">[</span><span class="n">my_type</span><span class="p">])</span>
+                <span class="n">module_ref</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s">&quot;module_ref.&quot;</span> <span class="o">+</span> <span class="n">my_type</span><span class="p">)</span>
+                <span class="n">tree</span> <span class="o">=</span> <span class="p">[</span><span class="n">module_ref</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">module_ref</span><span class="p">)</span>
+                          <span class="k">if</span> <span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="n">module_ref</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isabstract</span><span class="p">(</span><span class="n">module_ref</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                             <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">module_ref</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">MappedType</span><span class="p">))]]</span>
+                <span class="k">for</span> <span class="n">class_ref</span> <span class="ow">in</span> <span class="n">tree</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Importing class for DB table to be created: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">class_ref</span><span class="o">.</span><span class="n">__name__</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;Could not import DataType!&#39;</span> <span class="o">+</span> <span class="n">my_type</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;DB Model update finished for &#39;</span> <span class="o">+</span> <span class="n">path_types</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__populate_algorithms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category_key</span><span class="p">,</span> <span class="n">module_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add lines to ALGORITHMS table, </span>
+<span class="sd">        one line for each custom class found extending from ABCAdapter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">adapter_file</span> <span class="ow">in</span> <span class="n">Introspector</span><span class="o">.</span><span class="n">__get_variable</span><span class="p">(</span><span class="n">module_name</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">adapter</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="nb">globals</span><span class="p">(),</span> <span class="nb">locals</span><span class="p">(),</span> <span class="p">[</span><span class="n">adapter_file</span><span class="p">])</span>
+                <span class="n">adapter</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s">&quot;adapter.&quot;</span> <span class="o">+</span> <span class="n">adapter_file</span><span class="p">)</span>
+                <span class="n">tree</span> <span class="o">=</span> <span class="p">[</span><span class="n">adapter</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">adapter</span><span class="p">)</span>
+                           <span class="k">if</span> <span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="n">adapter</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isabstract</span><span class="p">(</span><span class="n">adapter</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                               <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">adapter</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ABCAdapter</span><span class="p">))]]</span>
+                <span class="k">for</span> <span class="n">class_ref</span> <span class="ow">in</span> <span class="n">tree</span><span class="p">:</span>
+                    <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__create_instance</span><span class="p">(</span><span class="n">category_key</span><span class="p">,</span> <span class="n">class_ref</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">group</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                        <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Could not introspect Adapters file:&quot;</span> <span class="o">+</span> <span class="n">adapter_file</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+
+        <span class="n">xml_folders</span> <span class="o">=</span> <span class="n">Introspector</span><span class="o">.</span><span class="n">__get_variable</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="n">XML_FOLDERS_VARIABLE</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="n">xml_folders</span><span class="p">:</span>
+            <span class="n">folder_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">CURRENT_DIR</span><span class="p">,</span> <span class="n">folder</span><span class="p">)</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">folder_path</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">file_</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">file_</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&quot;.xml&quot;</span><span class="p">):</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">reader</span> <span class="o">=</span> <span class="n">XMLGroupReader</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder_path</span><span class="p">,</span> <span class="n">file_</span><span class="p">))</span>
+                        <span class="n">adapter_class</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span>
+                        <span class="n">class_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_class_ref</span><span class="p">(</span><span class="n">adapter_class</span><span class="p">)</span>
+                        <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__create_instance</span><span class="p">(</span><span class="n">category_key</span><span class="p">,</span> <span class="n">class_ref</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">file_</span><span class="p">))</span>
+                        <span class="k">if</span> <span class="n">group</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                            <span class="n">group</span><span class="o">.</span><span class="n">displayname</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">get_ui_name</span><span class="p">()</span>
+                            <span class="n">group</span><span class="o">.</span><span class="n">subsection_name</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">subsection_name</span>
+                            <span class="n">group</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">get_ui_description</span><span class="p">()</span>
+                            <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="n">XmlParserException</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Could not parse XML file: &quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder_path</span><span class="p">,</span> <span class="n">file_</span><span class="p">))</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">excep</span><span class="p">)</span>
+
+        <span class="c"># Set the last_introspection_check flag so they will pass the validation check done after introspection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__update_references_last_check_timestamp</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="n">category_key</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+            <span class="n">group_inst_from_db</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">find_group</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">module</span><span class="p">,</span> <span class="n">group</span><span class="o">.</span><span class="n">classname</span><span class="p">,</span> <span class="n">group</span><span class="o">.</span><span class="n">init_parameter</span><span class="p">)</span>
+            <span class="n">adapter</span> <span class="o">=</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">build_adapter</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+            <span class="n">has_sub_algorithms</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">ui_name</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">displayname</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">adapter</span><span class="p">,</span> <span class="n">ABCGroupAdapter</span><span class="p">):</span>
+                <span class="n">group</span><span class="o">.</span><span class="n">algorithm_param_name</span> <span class="o">=</span> <span class="n">adapter</span><span class="o">.</span><span class="n">get_algorithm_param</span><span class="p">()</span>
+                <span class="n">has_sub_algorithms</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">if</span> <span class="n">group_inst_from_db</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">module</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; will be stored new in DB&quot;</span><span class="p">)</span>
+                <span class="n">group</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">AlgorithmGroup</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">module</span><span class="p">,</span> <span class="n">group</span><span class="o">.</span><span class="n">classname</span><span class="p">,</span> <span class="n">category_key</span><span class="p">,</span>
+                                             <span class="n">group</span><span class="o">.</span><span class="n">algorithm_param_name</span><span class="p">,</span> <span class="n">group</span><span class="o">.</span><span class="n">init_parameter</span><span class="p">,</span>
+                                             <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="n">subsection_name</span><span class="o">=</span><span class="n">group</span><span class="o">.</span><span class="n">subsection_name</span><span class="p">,</span>
+                                             <span class="n">description</span><span class="o">=</span><span class="n">group</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">module</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; will be updated&quot;</span><span class="p">)</span>
+                <span class="n">group</span> <span class="o">=</span> <span class="n">group_inst_from_db</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">adapter</span><span class="p">,</span> <span class="s">&quot;_ui_name&quot;</span><span class="p">):</span>
+                <span class="n">ui_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">adapter</span><span class="p">,</span> <span class="s">&quot;_ui_name&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">ui_name</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">ui_name</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">ui_name</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">classname</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">adapter</span><span class="p">,</span> <span class="s">&quot;_ui_description&quot;</span><span class="p">):</span>
+                <span class="n">group</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">adapter</span><span class="p">,</span> <span class="s">&quot;_ui_description&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">adapter</span><span class="p">,</span> <span class="s">&quot;_ui_subsection&quot;</span><span class="p">):</span>
+                <span class="n">group</span><span class="o">.</span><span class="n">subsection_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">adapter</span><span class="p">,</span> <span class="s">&quot;_ui_subsection&quot;</span><span class="p">)</span>
+            <span class="n">group</span><span class="o">.</span><span class="n">ui_display</span> <span class="o">=</span> <span class="n">adapter</span><span class="o">.</span><span class="n">_ui_display</span>
+            <span class="n">group</span><span class="o">.</span><span class="n">displayname</span> <span class="o">=</span> <span class="n">ui_name</span>
+            <span class="n">group</span><span class="o">.</span><span class="n">last_introspection_check</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="n">group_inst_from_db</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__store_algorithms_for_group</span><span class="p">(</span><span class="n">group_inst_from_db</span><span class="p">,</span> <span class="n">adapter</span><span class="p">,</span> <span class="n">has_sub_algorithms</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__get_class_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">full_class_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given the full name of a class as a string this method</span>
+<span class="sd">        will return a reference to that class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">full_class_name</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="n">full_class_name</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">index</span><span class="p">]</span>
+            <span class="n">class_name</span> <span class="o">=</span> <span class="n">full_class_name</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span>
+            <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+            <span class="n">components</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">components</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                <span class="n">mod</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">comp</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">eval</span><span class="p">(</span><span class="s">&quot;mod.&quot;</span> <span class="o">+</span> <span class="n">class_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;The location of the adapter class is incorrect. It should be placed in a module.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;The location of the adapter class is incorrect. It should be placed in a module.&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__store_algorithms_for_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">adapter</span><span class="p">,</span> <span class="n">has_sub_algorithms</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For the group passed as parameter do the following:</span>
+<span class="sd">        If it has sub-algorithms, get the list of them, add sub-algorithm </span>
+<span class="sd">        references into the DB with all the required fields.</span>
+<span class="sd">        If it is not a GroupAdapter add a single algorithm into the DB with an</span>
+<span class="sd">        empty identifier.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">has_sub_algorithms</span><span class="p">:</span>
+            <span class="n">algos</span> <span class="o">=</span> <span class="n">adapter</span><span class="o">.</span><span class="n">get_algorithms_dictionary</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">algo_ident</span> <span class="ow">in</span> <span class="n">algos</span><span class="p">:</span>
+                <span class="n">in_params</span> <span class="o">=</span> <span class="n">adapter</span><span class="o">.</span><span class="n">get_input_for_algorithm</span><span class="p">(</span><span class="n">algo_ident</span><span class="p">)</span>
+                <span class="n">req_type</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">flt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_required_input</span><span class="p">(</span><span class="n">in_params</span><span class="p">)</span>
+                <span class="n">outputs</span> <span class="o">=</span> <span class="n">adapter</span><span class="o">.</span><span class="n">get_output_for_algorithm</span><span class="p">(</span><span class="n">algo_ident</span><span class="p">)</span>
+                <span class="n">algo_description</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__is_matlab_parent</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getclasstree</span><span class="p">([</span><span class="n">adapter</span><span class="o">.</span><span class="n">__class__</span><span class="p">])):</span>
+                    <span class="n">root_folder</span> <span class="o">=</span> <span class="n">adapter</span><span class="o">.</span><span class="n">get_matlab_file_root</span><span class="p">()</span>
+                    <span class="n">file_name</span> <span class="o">=</span> <span class="n">adapter</span><span class="o">.</span><span class="n">get_matlab_file</span><span class="p">(</span><span class="n">algo_ident</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">file_name</span><span class="p">:</span>
+                        <span class="n">algo_description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_matlab_doc_string</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_folder</span><span class="p">,</span> <span class="n">file_name</span><span class="p">))</span>
+                <span class="n">algorithm</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_algorithm_by_group</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">algo_ident</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">algorithm</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="c">#Create new</span>
+                    <span class="n">algorithm</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">Algorithm</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">algo_ident</span><span class="p">,</span> <span class="n">algos</span><span class="p">[</span><span class="n">algo_ident</span><span class="p">][</span><span class="n">ATT_NAME</span><span class="p">],</span>
+                                                <span class="n">req_type</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">outputs</span><span class="p">),</span> <span class="n">flt</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">algo_description</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c">#Edit previous</span>
+                    <span class="n">algorithm</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">algos</span><span class="p">[</span><span class="n">algo_ident</span><span class="p">][</span><span class="n">ATT_NAME</span><span class="p">]</span>
+                    <span class="n">algorithm</span><span class="o">.</span><span class="n">required_datatype</span> <span class="o">=</span> <span class="n">req_type</span>
+                    <span class="n">algorithm</span><span class="o">.</span><span class="n">parameter_name</span> <span class="o">=</span> <span class="n">param_name</span>
+                    <span class="n">algorithm</span><span class="o">.</span><span class="n">outputlist</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
+                    <span class="n">algorithm</span><span class="o">.</span><span class="n">datatype_filter</span> <span class="o">=</span> <span class="n">flt</span>
+                    <span class="n">algorithm</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">algo_description</span>
+                <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">algorithm</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">input_tree</span> <span class="o">=</span> <span class="n">adapter</span><span class="o">.</span><span class="n">get_input_tree</span><span class="p">()</span>
+            <span class="n">req_type</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">flt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_required_input</span><span class="p">(</span><span class="n">input_tree</span><span class="p">)</span>
+            <span class="n">outputs</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">adapter</span><span class="o">.</span><span class="n">get_output</span><span class="p">())</span>
+            <span class="n">algorithm</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_algorithm_by_group</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">adapter</span><span class="p">,</span> <span class="s">&#39;_ui_name&#39;</span><span class="p">):</span>
+                <span class="n">algo_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">adapter</span><span class="p">,</span> <span class="s">&#39;_ui_name&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">algo_name</span> <span class="o">=</span> <span class="n">adapter</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+            <span class="k">if</span> <span class="n">algorithm</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="c">#Create new</span>
+                <span class="n">algorithm</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">Algorithm</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">algo_name</span><span class="p">,</span> <span class="n">req_type</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">flt</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c">#Edit previous</span>
+                <span class="n">algorithm</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">algo_name</span>
+                <span class="n">algorithm</span><span class="o">.</span><span class="n">required_datatype</span> <span class="o">=</span> <span class="n">req_type</span>
+                <span class="n">algorithm</span><span class="o">.</span><span class="n">parameter_name</span> <span class="o">=</span> <span class="n">param_name</span>
+                <span class="n">algorithm</span><span class="o">.</span><span class="n">outputlist</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
+                <span class="n">algorithm</span><span class="o">.</span><span class="n">datatype_filter</span> <span class="o">=</span> <span class="n">flt</span>
+            <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">algorithm</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__get_required_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_tree</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks in the input interface for required fields of a type</span>
+<span class="sd">        that extends from DataType.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">required_datatypes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">req_param_name</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">req_param_filters</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">all_datatypes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">all_param_name</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">all_param_filters</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">input_field</span> <span class="ow">in</span> <span class="n">input_tree</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ATT_TYPE</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">input_field</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">class_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_classname</span><span class="p">(</span><span class="n">input_field</span><span class="p">[</span><span class="n">ATT_TYPE</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">class_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isabstract</span><span class="p">(</span><span class="n">class_name</span><span class="p">):</span>
+                <span class="n">all_datatypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">class_name</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+                <span class="n">all_param_name</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">input_field</span><span class="p">[</span><span class="n">ATT_NAME</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">ELEM_CONDITIONS</span> <span class="ow">in</span> <span class="n">input_field</span><span class="p">:</span>
+                    <span class="n">j</span> <span class="o">=</span> <span class="n">input_field</span><span class="p">[</span><span class="n">ELEM_CONDITIONS</span><span class="p">]</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+                    <span class="n">all_param_filters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">all_param_filters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;None&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">ATT_REQUIRED</span> <span class="ow">in</span> <span class="n">input_field</span> <span class="ow">and</span> <span class="n">input_field</span><span class="p">[</span><span class="n">ATT_REQUIRED</span><span class="p">]:</span>
+                    <span class="n">required_datatypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">class_name</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+                    <span class="n">req_param_name</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">input_field</span><span class="p">[</span><span class="n">ATT_NAME</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">ELEM_CONDITIONS</span> <span class="ow">in</span> <span class="n">input_field</span><span class="p">:</span>
+                        <span class="n">j</span> <span class="o">=</span> <span class="n">input_field</span><span class="p">[</span><span class="n">ELEM_CONDITIONS</span><span class="p">]</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+                        <span class="n">req_param_filters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">req_param_filters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;None&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">required_datatypes</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_datatypes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">required_datatypes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">required_datatypes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">required_datatypes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">req_param_name</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">req_param_filters</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_datatypes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">all_datatypes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">all_param_name</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">all_param_filters</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+
+
+    <span class="k">def</span> <span class="nf">__get_classname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_to_test</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if param_to_test is either a class or a string that points</span>
+<span class="sd">        to a class. Returns the class or None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="n">param_to_test</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">param_to_test</span>
+        <span class="k">if</span> <span class="n">param_to_test</span> <span class="ow">in</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">STATIC_ACCEPTED_TYPES</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">class_name</span> <span class="o">=</span> <span class="n">param_to_test</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="n">param_to_test</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;.&quot;</span> <span class="o">+</span> <span class="n">class_name</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">reference</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="nb">globals</span><span class="p">(),</span> <span class="nb">locals</span><span class="p">(),</span> <span class="p">[</span><span class="n">class_name</span><span class="p">])</span>
+            <span class="k">return</span> <span class="nb">eval</span><span class="p">(</span><span class="s">&quot;reference.&quot;</span> <span class="o">+</span> <span class="n">class_name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">excep</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Could not import class:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">excep</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__update_references_last_check_timestamp</span><span class="p">(</span><span class="n">current_groups</span><span class="p">,</span> <span class="n">category_key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For all the algorithms found in the db for category given by category_key, update their</span>
+<span class="sd">        &#39;last_introspection_check&#39; timestamp if they are part of current_groups.</span>
+<span class="sd">        </span>
+<span class="sd">        :param current_groups: a list of algorithm groups that recently passed our validations</span>
+<span class="sd">            from the introspection and are still valid</span>
+<span class="sd">        :param category_key: the algorithm group category for which we match the algorithms found</span>
+<span class="sd">            in the db with those we recently validated on introspection</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">db_groups</span> <span class="o">=</span> <span class="n">dao</span><span class="o">.</span><span class="n">get_groups_by_categories</span><span class="p">([</span><span class="n">category_key</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">db_groups</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">curr_group</span> <span class="ow">in</span> <span class="n">current_groups</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">group</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="n">curr_group</span><span class="o">.</span><span class="n">module</span> <span class="ow">and</span> <span class="n">group</span><span class="o">.</span><span class="n">classname</span> <span class="o">==</span> <span class="n">curr_group</span><span class="o">.</span><span class="n">classname</span><span class="p">:</span>
+                    <span class="n">group</span><span class="o">.</span><span class="n">last_introspection_check</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                    <span class="n">dao</span><span class="o">.</span><span class="n">store_entity</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+
+    <span class="k">def</span> <span class="nf">__create_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category_key</span><span class="p">,</span> <span class="n">class_ref</span><span class="p">,</span> <span class="n">init_parameter</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate Class reference.</span>
+<span class="sd">        Return None of Algorithm instance, from class reference.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">matlab_executable</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">AlgorithmGroup</span><span class="p">(</span><span class="n">class_ref</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span> <span class="n">class_ref</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">category_key</span><span class="p">,</span>
+                                        <span class="n">init_parameter</span><span class="o">=</span><span class="n">init_parameter</span><span class="p">,</span> <span class="n">last_introspection_check</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__is_matlab_parent</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getclasstree</span><span class="p">([</span><span class="n">class_ref</span><span class="p">])):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Skip Adapter because MATLAB is not found:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">class_ref</span><span class="p">))</span>
+                <span class="k">return</span> <span class="bp">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">AlgorithmGroup</span><span class="p">(</span><span class="n">class_ref</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span> <span class="n">class_ref</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">category_key</span><span class="p">,</span>
+                                            <span class="n">init_parameter</span><span class="o">=</span><span class="n">init_parameter</span><span class="p">,</span>
+                                            <span class="n">last_introspection_check</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+
+
+    <span class="k">def</span> <span class="nf">__is_matlab_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_in</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Check if current class has MATLAB as parent Class&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="n">search_in</span><span class="p">)</span> <span class="ow">and</span> <span class="n">search_in</span><span class="o">.</span><span class="n">__name__</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">MATLAB_ADAPTER</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">search_in</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">search_in</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__is_matlab_parent</span><span class="p">(</span><span class="n">parent</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+
+<div class="viewcode-block" id="Introspector.extract_matlab_doc_string"><a class="viewcode-back" href="../../../../tvb.core.adapters.html#tvb.core.adapters.introspector.Introspector.extract_matlab_doc_string">[docs]</a>    <span class="k">def</span> <span class="nf">extract_matlab_doc_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_n</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract the first doc entry from a matlab file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">m_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_n</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s">&quot;Description not available.&quot;</span>
+        <span class="n">m_data</span> <span class="o">=</span> <span class="n">m_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        <span class="n">doc_started_flag</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">m_data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;%&#39;</span><span class="p">):</span>
+                <span class="n">doc_started_flag</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">result</span> <span class="o">+=</span> <span class="n">row</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;%&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&lt;br/&gt;&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">+=</span> <span class="s">&quot;&lt;br/&gt;&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">doc_started_flag</span><span class="p">:</span>
+                        <span class="k">break</span>
+        <span class="k">return</span> <span class="nb">unicode</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s">&quot;ignore&quot;</span><span class="p">)</span>
+
+</div>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__get_variable</span><span class="p">(</span><span class="n">module_path</span><span class="p">,</span> <span class="n">variable_name</span><span class="o">=</span><span class="n">ALL_VARIABLE</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve variable with name &#39;variable_name&#39; from the given Python module.</span>
+<span class="sd">        Result will be a list of Strings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">module_path</span><span class="p">,</span> <span class="nb">globals</span><span class="p">(),</span> <span class="nb">locals</span><span class="p">(),</span> <span class="p">[</span><span class="s">&quot;__init__&quot;</span><span class="p">])</span>
+        <span class="n">types_list</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">var_module</span> <span class="ow">in</span> <span class="n">types_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">variable_name</span> <span class="o">==</span> <span class="n">var_module</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">var_module</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+                <span class="k">break</span>
+        <span class="k">return</span> <span class="n">result</span>
+    
+    </div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

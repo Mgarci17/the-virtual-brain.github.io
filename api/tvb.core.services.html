@@ -1,0 +1,1733 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>services Package &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="index.html" />
+    <link rel="up" title="core Package" href="tvb.core.html" />
+    <link rel="next" title="traits Package" href="tvb.core.traits.html" />
+    <link rel="prev" title="portlets Package" href="tvb.core.portlets.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.core.traits.html" title="traits Package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tvb.core.portlets.html" title="portlets Package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">tvb</span></tt> Package</a> &raquo;</li>
+          <li><a href="tvb.core.html" accesskey="U"><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">core</span></tt> Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="services-package">
+<h1><tt class="xref py py-mod docutils literal"><span class="pre">services</span></tt> Package<a class="headerlink" href="#services-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-tvb.core.services.backend_client">
+<span id="backend-client-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">backend_client</span></tt> Module<a class="headerlink" href="#module-tvb.core.services.backend_client" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tvb.core.services.backend_client.ClusterSchedulerClient">
+<em class="property">class </em><tt class="descclassname">tvb.core.services.backend_client.</tt><tt class="descname">ClusterSchedulerClient</tt><a class="reference internal" href="_modules/tvb/core/services/backend_client.html#ClusterSchedulerClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.backend_client.ClusterSchedulerClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Simple class, to mimic the same behavior we are expecting from StandAloneClient, but firing behind
+the cluster job scheduling process..</p>
+<dl class="staticmethod">
+<dt id="tvb.core.services.backend_client.ClusterSchedulerClient.execute">
+<em class="property">static </em><tt class="descname">execute</tt><big>(</big><em>operation_id</em>, <em>user_name_label</em>, <em>adapter_instance</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/backend_client.html#ClusterSchedulerClient.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.backend_client.ClusterSchedulerClient.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the correct system command to submit a job to the cluster.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.backend_client.ClusterSchedulerClient.stop_operation">
+<em class="property">static </em><tt class="descname">stop_operation</tt><big>(</big><em>operation_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/backend_client.html#ClusterSchedulerClient.stop_operation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.backend_client.ClusterSchedulerClient.stop_operation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop a thread for a given operation id</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.core.services.backend_client.OperationExecutor">
+<em class="property">class </em><tt class="descclassname">tvb.core.services.backend_client.</tt><tt class="descname">OperationExecutor</tt><big>(</big><em>op_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/backend_client.html#OperationExecutor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.backend_client.OperationExecutor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://docs.python.org/library/threading.html#threading.Thread" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">threading.Thread</span></tt></a></p>
+<p>Thread in charge for starting an operation, used both on cluster and with stand-alone installations.</p>
+<dl class="method">
+<dt id="tvb.core.services.backend_client.OperationExecutor.run">
+<tt class="descname">run</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/services/backend_client.html#OperationExecutor.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.backend_client.OperationExecutor.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the required data from the operation queue and launch the operation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.backend_client.OperationExecutor.stop">
+<tt class="descname">stop</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/services/backend_client.html#OperationExecutor.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.backend_client.OperationExecutor.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mark current thread for stop</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.backend_client.OperationExecutor.stop_pid">
+<em class="property">static </em><tt class="descname">stop_pid</tt><big>(</big><em>pid</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/backend_client.html#OperationExecutor.stop_pid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.backend_client.OperationExecutor.stop_pid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop a process specified by PID.
+:returns: True when specified Process was stopped in here,                   False in case of exception(e.g. process stopped in advance).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.backend_client.OperationExecutor.stopped">
+<tt class="descname">stopped</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/services/backend_client.html#OperationExecutor.stopped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.backend_client.OperationExecutor.stopped" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if current thread was marked for stop.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.core.services.backend_client.StandAloneClient">
+<em class="property">class </em><tt class="descclassname">tvb.core.services.backend_client.</tt><tt class="descname">StandAloneClient</tt><a class="reference internal" href="_modules/tvb/core/services/backend_client.html#StandAloneClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.backend_client.StandAloneClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Instead of communicating with a back-end cluster, fire locally a new thread.</p>
+<dl class="staticmethod">
+<dt id="tvb.core.services.backend_client.StandAloneClient.execute">
+<em class="property">static </em><tt class="descname">execute</tt><big>(</big><em>operation_id</em>, <em>user_name_label</em>, <em>adapter_instance</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/backend_client.html#StandAloneClient.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.backend_client.StandAloneClient.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start asynchronous operation locally</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.backend_client.StandAloneClient.stop_operation">
+<em class="property">static </em><tt class="descname">stop_operation</tt><big>(</big><em>operation_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/backend_client.html#StandAloneClient.stop_operation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.backend_client.StandAloneClient.stop_operation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop a thread for a given operation id</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.core.services.burst_service">
+<span id="burst-service-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">burst_service</span></tt> Module<a class="headerlink" href="#module-tvb.core.services.burst_service" title="Permalink to this headline">¶</a></h2>
+<p>Created on Apr 27, 2012</p>
+<dl class="class">
+<dt id="tvb.core.services.burst_service.BurstService">
+<em class="property">class </em><tt class="descclassname">tvb.core.services.burst_service.</tt><tt class="descname">BurstService</tt><a class="reference internal" href="_modules/tvb/core/services/burst_service.html#BurstService"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.burst_service.BurstService" title="Permalink to this definition">¶</a></dt>
+<dd><p>Service layer for Burst related entities.</p>
+<dl class="method">
+<dt id="tvb.core.services.burst_service.BurstService.build_portlet_interface">
+<tt class="descname">build_portlet_interface</tt><big>(</big><em>portlet_configuration</em>, <em>project_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/burst_service.html#BurstService.build_portlet_interface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.burst_service.BurstService.build_portlet_interface" title="Permalink to this definition">¶</a></dt>
+<dd><p>From a portlet_id and a project_id, first build the portlet
+entity then get it&#8217;s configurable interface.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>portlet_configuration</strong> &#8211; a portlet configuration entity. It holds at the
+least the portlet_id, and in case any default parameters were saved
+they can be rebuilt from the analyzers // visualizer parameters</li>
+<li><strong>project_id</strong> &#8211; the id of the current project</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">the portlet interface will be of the following form::
+[{&#8216;interface&#8217;: adapter_interface, 
+&#8216;prefix&#8217;: prefix_for_parameter_names, 
+&#8216;subalg&#8217;: {algorithm_field_name: default_algorithm_value},
+&#8216;algo_group&#8217;: algorithm_group,
+&#8216;alg_ui_name&#8217;: displayname},
+......]
+A list of dictionaries for each adapter that makes up the portlet.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.burst_service.BurstService.cancel_or_remove_burst">
+<tt class="descname">cancel_or_remove_burst</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/burst_service.html#BurstService.cancel_or_remove_burst"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.burst_service.BurstService.cancel_or_remove_burst" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorate methods.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.burst_service.BurstService.get_available_bursts">
+<em class="property">static </em><tt class="descname">get_available_bursts</tt><big>(</big><em>project_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/burst_service.html#BurstService.get_available_bursts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.burst_service.BurstService.get_available_bursts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all the burst for the current project.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.burst_service.BurstService.get_available_portlets">
+<em class="property">static </em><tt class="descname">get_available_portlets</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/services/burst_service.html#BurstService.get_available_portlets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.burst_service.BurstService.get_available_portlets" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of all the available portlet entites</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.burst_service.BurstService.get_portlet_by_id">
+<em class="property">static </em><tt class="descname">get_portlet_by_id</tt><big>(</big><em>portlet_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/burst_service.html#BurstService.get_portlet_by_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.burst_service.BurstService.get_portlet_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the portlet entity with the id <a class="reference external" href="mailto:=&#37;&#52;&#48;portlet_id">=<span>&#64;</span>portlet_id</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.burst_service.BurstService.get_portlet_by_identifier">
+<em class="property">static </em><tt class="descname">get_portlet_by_identifier</tt><big>(</big><em>portlet_identifier</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/burst_service.html#BurstService.get_portlet_by_identifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.burst_service.BurstService.get_portlet_by_identifier" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the portlet entity with the algorithm identifier <a class="reference external" href="mailto:=&#37;&#52;&#48;portlet_identifier">=<span>&#64;</span>portlet_identifier</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.burst_service.BurstService.get_portlet_status">
+<em class="property">static </em><tt class="descname">get_portlet_status</tt><big>(</big><em>portlet_cfg</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/burst_service.html#BurstService.get_portlet_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.burst_service.BurstService.get_portlet_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the status of a portlet configuration.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.burst_service.BurstService.launch_burst">
+<tt class="descname">launch_burst</tt><big>(</big><em>burst_configuration</em>, <em>simulator_index</em>, <em>simulator_id</em>, <em>user_id</em>, <em>launch_mode='new'</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/burst_service.html#BurstService.launch_burst"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.burst_service.BurstService.launch_burst" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a burst configuration and all the necessary data do the actual launch.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>burst_configuration</strong> &#8211; BurstConfiguration</li>
+<li><strong>simulator_index</strong> &#8211; the position within the workflows step list that the simulator will take. This is needed
+so that the rest of the portlet workflow steps know what steps do their dynamic parameters come from.</li>
+<li><strong>simulator_id</strong> &#8211; the id of the simulator adapter as stored in the DB. It&#8217;s needed to load the simulator algo
+group and category that are then passed to the launcher&#8217;s prepare_operation method.</li>
+<li><strong>user_id</strong> &#8211; the id of the user that launched this burst</li>
+<li><strong>launch_mode</strong> &#8211; new/branch/continue</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.burst_service.BurstService.launch_visualization">
+<em class="property">static </em><tt class="descname">launch_visualization</tt><big>(</big><em>visualization</em>, <em>frame_width=None</em>, <em>frame_height=None</em>, <em>method_name='launch'</em>, <em>is_preview=True</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/burst_service.html#BurstService.launch_visualization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.burst_service.BurstService.launch_visualization" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>visualization</strong> &#8211; a visualization workflow step</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.burst_service.BurstService.load_burst">
+<tt class="descname">load_burst</tt><big>(</big><em>burst_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/burst_service.html#BurstService.load_burst"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.burst_service.BurstService.load_burst" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>burst_id</strong> &#8211; the id of the burst that should be loaded</td>
+</tr>
+</tbody>
+</table>
+<p>Having this input the method should:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">load the entity from the DB</p>
+</li>
+<li><p class="first">get all the workflow steps for the saved burst id</p>
+</li>
+<li><dl class="first docutils">
+<dt>go trough the visualization workflow steps to create the tab </dt>
+<dd><p class="first last">configuration of the burst using the tab_index and index_in_tab 
+fields saved on each workflow_step</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.burst_service.BurstService.load_tab_configuration">
+<tt class="descname">load_tab_configuration</tt><big>(</big><em>burst_entity</em>, <em>op_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/burst_service.html#BurstService.load_tab_configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.burst_service.BurstService.load_tab_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a burst entity and an operation id, find the workflow to which the op_id
+belongs and the load the burst_entity&#8217;s tab configuration with those workflow steps.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.burst_service.BurstService.new_burst_configuration">
+<em class="property">static </em><tt class="descname">new_burst_configuration</tt><big>(</big><em>project_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/burst_service.html#BurstService.new_burst_configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.burst_service.BurstService.new_burst_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new burst configuration entity with all the default values.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.burst_service.BurstService.new_portlet_configuration">
+<em class="property">static </em><tt class="descname">new_portlet_configuration</tt><big>(</big><em>portlet_id</em>, <em>tab_nr=-1</em>, <em>index_in_tab=-1</em>, <em>portlet_name='Default'</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/burst_service.html#BurstService.new_portlet_configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.burst_service.BurstService.new_portlet_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new portlet configuration entitiy with default parameters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>portlet_id</strong> &#8211; the id of the portlet for which a configuration will
+be stored</li>
+<li><strong>tab_nr</strong> &#8211; the index of the currently selected tab</li>
+<li><strong>index_in_tab</strong> &#8211; the index from the currently selected tab</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.burst_service.BurstService.rename_burst">
+<em class="property">static </em><tt class="descname">rename_burst</tt><big>(</big><em>burst_id</em>, <em>new_name</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/burst_service.html#BurstService.rename_burst"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.burst_service.BurstService.rename_burst" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rename the burst given by burst_id, setting it&#8217;s new name to
+burst_name.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.burst_service.BurstService.select_simulator_inputs">
+<tt class="descname">select_simulator_inputs</tt><big>(</big><em>full_tree</em>, <em>selection_dictionary</em>, <em>prefix=''</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/burst_service.html#BurstService.select_simulator_inputs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.burst_service.BurstService.select_simulator_inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cut Simulator input Tree, to display only user-checked inputs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>full_tree</strong> &#8211; the simulator input tree</li>
+<li><strong>selection_dictionary</strong> &#8211; a dictionary that keeps for each entry a default value and if it is check or not.</li>
+<li><strong>prefix</strong> &#8211; a prefix to be added to the ui_name in case a select with subtrees is not selected</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.burst_service.BurstService.set_default_portlets">
+<em class="property">static </em><tt class="descname">set_default_portlets</tt><big>(</big><em>burst_configuration</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/burst_service.html#BurstService.set_default_portlets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.burst_service.BurstService.set_default_portlets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the default portlets for the specified burst configuration.
+The default portlets are specified in the __init__.py script from tvb root.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.burst_service.BurstService.stop_burst">
+<tt class="descname">stop_burst</tt><big>(</big><em>burst_entity</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/burst_service.html#BurstService.stop_burst"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.burst_service.BurstService.stop_burst" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop all the entities for the current burst and set the burst status to canceled.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.burst_service.BurstService.update_history_status">
+<tt class="descname">update_history_status</tt><big>(</big><em>id_list</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/burst_service.html#BurstService.update_history_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.burst_service.BurstService.update_history_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>For each burst_id received in the id_list read new status from DB and return a list [id, new_status] pair.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.burst_service.BurstService.update_portlet_configuration">
+<em class="property">static </em><tt class="descname">update_portlet_configuration</tt><big>(</big><em>portlet_configuration</em>, <em>submited_parameters</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/burst_service.html#BurstService.update_portlet_configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.burst_service.BurstService.update_portlet_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>portlet_configuration</strong> &#8211; the portlet configuration that needs to be updated</li>
+<li><strong>submited_parameters</strong> &#8211; a list of parameters as submitted from the UI. This 
+is a dictionary in the form : 
+{&#8216;dynamic&#8217; : {name:value pairs}, &#8216;static&#8217; : {name:value pairs}}</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>All names are prefixed with adapter specific generated prefix.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.core.services.dti_pipeline_service">
+<span id="dti-pipeline-service-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">dti_pipeline_service</span></tt> Module<a class="headerlink" href="#module-tvb.core.services.dti_pipeline_service" title="Permalink to this headline">¶</a></h2>
+<p>Commands with remove machine are grouped here.</p>
+<dl class="class">
+<dt id="tvb.core.services.dti_pipeline_service.DTIPipelineService">
+<em class="property">class </em><tt class="descclassname">tvb.core.services.dti_pipeline_service.</tt><tt class="descname">DTIPipelineService</tt><big>(</big><em>remote_machine=None</em>, <em>remote_user=None</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/dti_pipeline_service.html#DTIPipelineService"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.dti_pipeline_service.DTIPipelineService" title="Permalink to this definition">¶</a></dt>
+<dd><p>Service for basic localMachine - remoteMachine communication.
+It requires a remoteIP and remoteUsername.
+!!! The machines need to be setup in a way that SSH and SCP can function without asking for a password!!!</p>
+<dl class="attribute">
+<dt id="tvb.core.services.dti_pipeline_service.DTIPipelineService.CONNECTIVITY_DEFAULT">
+<tt class="descname">CONNECTIVITY_DEFAULT</tt><em class="property"> = 'connectivity_regions_96.zip'</em><a class="headerlink" href="#tvb.core.services.dti_pipeline_service.DTIPipelineService.CONNECTIVITY_DEFAULT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.dti_pipeline_service.DTIPipelineService.CONNECTIVITY_IMPORTER">
+<tt class="descname">CONNECTIVITY_IMPORTER</tt><em class="property"> = ['tvb.adapters.uploaders.zip_connectivity_importer', 'ZIPConnectivityImporter']</em><a class="headerlink" href="#tvb.core.services.dti_pipeline_service.DTIPipelineService.CONNECTIVITY_IMPORTER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.dti_pipeline_service.DTIPipelineService.DTI_PIPELINE_COMMAND">
+<tt class="descname">DTI_PIPELINE_COMMAND</tt><em class="property"> = 'cd /home/erin/processing/; ./pipeline_start --dst %s --seg %s --sid 42 --pevX %s --pevY %s --pevZ %s --img %s --fa %s --md %s --wm 3 --gm 4 --threads %d'</em><a class="headerlink" href="#tvb.core.services.dti_pipeline_service.DTIPipelineService.DTI_PIPELINE_COMMAND" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.dti_pipeline_service.DTIPipelineService.FILE_NODES_ORDER">
+<tt class="descname">FILE_NODES_ORDER</tt><em class="property"> = 'dti_pipeline_regions.txt'</em><a class="headerlink" href="#tvb.core.services.dti_pipeline_service.DTIPipelineService.FILE_NODES_ORDER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.dti_pipeline_service.DTIPipelineService.REMOTE_COMMAND">
+<tt class="descname">REMOTE_COMMAND</tt><em class="property"> = 'ssh %s&#64;%s &quot;%s&quot;'</em><a class="headerlink" href="#tvb.core.services.dti_pipeline_service.DTIPipelineService.REMOTE_COMMAND" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.dti_pipeline_service.DTIPipelineService.REMOTE_COPY">
+<tt class="descname">REMOTE_COPY</tt><em class="property"> = 'scp %s %s&#64;%s:%s'</em><a class="headerlink" href="#tvb.core.services.dti_pipeline_service.DTIPipelineService.REMOTE_COPY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.dti_pipeline_service.DTIPipelineService.REMOTE_COPY_REVERSE">
+<tt class="descname">REMOTE_COPY_REVERSE</tt><em class="property"> = 'scp %s&#64;%s:%s %s'</em><a class="headerlink" href="#tvb.core.services.dti_pipeline_service.DTIPipelineService.REMOTE_COPY_REVERSE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.dti_pipeline_service.DTIPipelineService.REMOTE_TRACT_FILE">
+<tt class="descname">REMOTE_TRACT_FILE</tt><em class="property"> = '_ConnectionDistanceMatrix.csv'</em><a class="headerlink" href="#tvb.core.services.dti_pipeline_service.DTIPipelineService.REMOTE_TRACT_FILE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.dti_pipeline_service.DTIPipelineService.REMOTE_WEIGHTS_FILE">
+<tt class="descname">REMOTE_WEIGHTS_FILE</tt><em class="property"> = '_ConnectionCapacityMatrix.csv'</em><a class="headerlink" href="#tvb.core.services.dti_pipeline_service.DTIPipelineService.REMOTE_WEIGHTS_FILE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.dti_pipeline_service.DTIPipelineService.TRACT_FILE">
+<tt class="descname">TRACT_FILE</tt><em class="property"> = 'tract_lengths.txt'</em><a class="headerlink" href="#tvb.core.services.dti_pipeline_service.DTIPipelineService.TRACT_FILE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.dti_pipeline_service.DTIPipelineService.WEIGHTS_FILE">
+<tt class="descname">WEIGHTS_FILE</tt><em class="property"> = 'weights.txt'</em><a class="headerlink" href="#tvb.core.services.dti_pipeline_service.DTIPipelineService.WEIGHTS_FILE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.dti_pipeline_service.DTIPipelineService.fire_pipeline">
+<tt class="descname">fire_pipeline</tt><big>(</big><em>dti_scans</em>, <em>current_project</em>, <em>current_user</em>, <em>number_of_threads=1</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/dti_pipeline_service.html#DTIPipelineService.fire_pipeline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.dti_pipeline_service.DTIPipelineService.fire_pipeline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fire Pipeline execution as a distinct thread.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.core.services.email_sender">
+<span id="email-sender-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">email_sender</span></tt> Module<a class="headerlink" href="#module-tvb.core.services.email_sender" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tvb.core.services.email_sender.send">
+<tt class="descclassname">tvb.core.services.email_sender.</tt><tt class="descname">send</tt><big>(</big><em>address_from</em>, <em>address_to</em>, <em>email_subject</em>, <em>email_content</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/email_sender.html#send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.email_sender.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends an Email Message</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.core.services.event_handlers">
+<span id="event-handlers-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">event_handlers</span></tt> Module<a class="headerlink" href="#module-tvb.core.services.event_handlers" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tvb.core.services.event_handlers.AdapterEventExecutor">
+<em class="property">class </em><tt class="descclassname">tvb.core.services.event_handlers.</tt><tt class="descname">AdapterEventExecutor</tt><big>(</big><em>events_node</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/event_handlers.html#AdapterEventExecutor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.event_handlers.AdapterEventExecutor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.event_handlers.GenericEventExecutor" title="tvb.core.services.event_handlers.GenericEventExecutor"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.event_handlers.GenericEventExecutor</span></tt></a></p>
+<p>Thread for firing a custom event. 
+The event in this case is a custom method, on an Adapter instance.</p>
+<dl class="method">
+<dt id="tvb.core.services.event_handlers.AdapterEventExecutor.parse_event_node">
+<tt class="descname">parse_event_node</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/services/event_handlers.html#AdapterEventExecutor.parse_event_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.event_handlers.AdapterEventExecutor.parse_event_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the stored event node to get required data and arguments.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.event_handlers.AdapterEventExecutor.run">
+<tt class="descname">run</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/services/event_handlers.html#AdapterEventExecutor.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.event_handlers.AdapterEventExecutor.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fire TVB operation which makes sure the Adapter method is called.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tvb.core.services.event_handlers.GenericEventExecutor">
+<em class="property">class </em><tt class="descclassname">tvb.core.services.event_handlers.</tt><tt class="descname">GenericEventExecutor</tt><big>(</big><em>event_node</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/event_handlers.html#GenericEventExecutor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.event_handlers.GenericEventExecutor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Thread for executing a generic event. 
+The event in this case is any method from any service.</p>
+<dl class="attribute">
+<dt id="tvb.core.services.event_handlers.GenericEventExecutor.delay">
+<tt class="descname">delay</tt><em class="property"> = 0</em><a class="headerlink" href="#tvb.core.services.event_handlers.GenericEventExecutor.delay" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.event_handlers.GenericEventExecutor.parse_event_node">
+<tt class="descname">parse_event_node</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/services/event_handlers.html#GenericEventExecutor.parse_event_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.event_handlers.GenericEventExecutor.parse_event_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the stored event node to get required data and arguments.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.event_handlers.GenericEventExecutor.run">
+<tt class="descname">run</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/services/event_handlers.html#GenericEventExecutor.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.event_handlers.GenericEventExecutor.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will be executed in a different thread.
+Executed on the event mentioned in description.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.event_handlers.GenericEventExecutor.runtime_mapping">
+<tt class="descname">runtime_mapping</tt><em class="property"> = {'$$CURRENT_USER$$': 'self.current_user', '$$CURRENT_PROJECT$$': 'self.current_project'}</em><a class="headerlink" href="#tvb.core.services.event_handlers.GenericEventExecutor.runtime_mapping" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.event_handlers.GenericEventExecutor.set_runtime_parameters">
+<tt class="descname">set_runtime_parameters</tt><big>(</big><em>user=None</em>, <em>project=None</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/event_handlers.html#GenericEventExecutor.set_runtime_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.event_handlers.GenericEventExecutor.set_runtime_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill &#8216;runtime&#8217; variables.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.core.services.event_handlers.handle_event">
+<tt class="descclassname">tvb.core.services.event_handlers.</tt><tt class="descname">handle_event</tt><big>(</big><em>hookpoint</em>, <em>current_user=None</em>, <em>current_project=None</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/event_handlers.html#handle_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.event_handlers.handle_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method looks in the event dictionary for events that
+correspond to the current method_name, then launches those events.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.core.services.event_handlers.read_events">
+<tt class="descclassname">tvb.core.services.event_handlers.</tt><tt class="descname">read_events</tt><big>(</big><em>path</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/event_handlers.html#read_events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.event_handlers.read_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>For a list of file paths read all the events defined in files that 
+end with events.xml</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.core.services.event_handlers.read_from_file">
+<tt class="descclassname">tvb.core.services.event_handlers.</tt><tt class="descname">read_from_file</tt><big>(</big><em>file_name</em>, <em>executor_dict</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/event_handlers.html#read_from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.event_handlers.read_from_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>For an XML file that defines some events, get these events in a dictionary.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.core.services.exceptions">
+<span id="exceptions-module"></span><h2><a class="reference external" href="http://docs.python.org/library/exceptions.html#exceptions" title="(in Python v2.7)"><tt class="xref py py-mod docutils literal"><span class="pre">exceptions</span></tt></a> Module<a class="headerlink" href="#module-tvb.core.services.exceptions" title="Permalink to this headline">¶</a></h2>
+<p>Exceptions for services layer of the application.</p>
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.BurstServiceException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">BurstServiceException</tt><big>(</big><em>message</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/exceptions.html#BurstServiceException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.exceptions.BurstServiceException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown in case of a problem at project import.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.ConnectException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">ConnectException</tt><big>(</big><em>message</em>, <em>parent_exception=None</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/exceptions.html#ConnectException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.exceptions.ConnectException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown when DTI Pipeline error happened.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.InvalidPortletConfiguration">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">InvalidPortletConfiguration</tt><big>(</big><em>message</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/exceptions.html#InvalidPortletConfiguration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.exceptions.InvalidPortletConfiguration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception thrown in cases related to wrong portlet configurations.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.InvalidSettingsException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">InvalidSettingsException</tt><big>(</big><em>message</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/exceptions.html#InvalidSettingsException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.exceptions.InvalidSettingsException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown in case of a problem at project import.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.OperationException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">OperationException</tt><big>(</big><em>message</em>, <em>parent_exception=None</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/exceptions.html#OperationException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.exceptions.OperationException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown in case of a problem related to Launching 
+and Executing TVB specific Operations.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.ProjectImportException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">ProjectImportException</tt><big>(</big><em>message</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/exceptions.html#ProjectImportException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.exceptions.ProjectImportException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown in case of a problem at project import.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.ProjectServiceException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">ProjectServiceException</tt><big>(</big><em>message</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/exceptions.html#ProjectServiceException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.exceptions.ProjectServiceException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown in case of a problem in the projectservice
+module.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.RemoveDataTypeError">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">RemoveDataTypeError</tt><big>(</big><em>message</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/exceptions.html#RemoveDataTypeError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.exceptions.RemoveDataTypeError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown in case some one tries to remove an entity that should
+not be possible to be removed. E.g. If some one tries to remove the array
+wrapper corresponding to a time series (inheritance relationship).</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.RemoveDataTypeException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">RemoveDataTypeException</tt><big>(</big><em>message</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/exceptions.html#RemoveDataTypeException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.exceptions.RemoveDataTypeException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown in case some one tries to remove an
+entity that is used by other entities.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.ServicesBaseException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">ServicesBaseException</tt><big>(</big><em>message</em>, <em>parent_exception=None</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/exceptions.html#ServicesBaseException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.exceptions.ServicesBaseException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="tvb.basic.traits.html#tvb.basic.traits.exceptions.TVBException" title="tvb.basic.traits.exceptions.TVBException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.basic.traits.exceptions.TVBException</span></tt></a></p>
+<p>Base Exception class for Services layer in the application.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.StructureException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">StructureException</tt><big>(</big><em>message</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/exceptions.html#StructureException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.exceptions.StructureException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown in case of a problem related to Structure Storage.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.UsernameException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">UsernameException</tt><big>(</big><em>message</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/exceptions.html#UsernameException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.exceptions.UsernameException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown in case of a problem related to creating
+or managing a user.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.WorkflowException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">WorkflowException</tt><big>(</big><em>message</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/exceptions.html#WorkflowException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.exceptions.WorkflowException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown in case of a problem related to creating
+or managing a workflow.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.WorkflowInterStepsException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">WorkflowInterStepsException</tt><big>(</big><em>message</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/exceptions.html#WorkflowInterStepsException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.exceptions.WorkflowInterStepsException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.WorkflowException" title="tvb.core.services.exceptions.WorkflowException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.WorkflowException</span></tt></a></p>
+<p>Exception to be thrown in case of a problem happened between steps of a workflow.
+Status ERROR needs to be reported at a top level (e.g. Burst) as workflow 
+steps individually can not be made responsible.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.core.services.figure_service">
+<span id="figure-service-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">figure_service</span></tt> Module<a class="headerlink" href="#module-tvb.core.services.figure_service" title="Permalink to this headline">¶</a></h2>
+<p>Service layer, for storing/retrieving Resulting Figures in TVB.</p>
+<dl class="class">
+<dt id="tvb.core.services.figure_service.FigureService">
+<em class="property">class </em><tt class="descclassname">tvb.core.services.figure_service.</tt><tt class="descname">FigureService</tt><a class="reference internal" href="_modules/tvb/core/services/figure_service.html#FigureService"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.figure_service.FigureService" title="Permalink to this definition">¶</a></dt>
+<dd><p>Service layer for Figure entities.</p>
+<dl class="method">
+<dt id="tvb.core.services.figure_service.FigureService.edit_result_figure">
+<tt class="descname">edit_result_figure</tt><big>(</big><em>figure_id</em>, <em>**data</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/figure_service.html#FigureService.edit_result_figure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.figure_service.FigureService.edit_result_figure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve and edit a previously stored figure.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.figure_service.FigureService.load_figure">
+<em class="property">static </em><tt class="descname">load_figure</tt><big>(</big><em>figure_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/figure_service.html#FigureService.load_figure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.figure_service.FigureService.load_figure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a stored figure by its id.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.figure_service.FigureService.remove_result_figure">
+<tt class="descname">remove_result_figure</tt><big>(</big><em>figure_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/figure_service.html#FigureService.remove_result_figure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.figure_service.FigureService.remove_result_figure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove figure from DB and file storage.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.figure_service.FigureService.retrieve_result_figures">
+<tt class="descname">retrieve_result_figures</tt><big>(</big><em>project</em>, <em>user</em>, <em>selected_session_name='all_sessions'</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/figure_service.html#FigureService.retrieve_result_figures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.figure_service.FigureService.retrieve_result_figures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve from DB all the stored Displayer previews that belongs to the specified session. The
+previews are for current user and project; grouped by session.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.figure_service.FigureService.store_result_figure">
+<tt class="descname">store_result_figure</tt><big>(</big><em>project</em>, <em>user</em>, <em>img_type</em>, <em>operation_id</em>, <em>export_data</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/figure_service.html#FigureService.store_result_figure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.figure_service.FigureService.store_result_figure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Store into a file, Result Image and reference in DB.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.core.services.flow_service">
+<span id="flow-service-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">flow_service</span></tt> Module<a class="headerlink" href="#module-tvb.core.services.flow_service" title="Permalink to this headline">¶</a></h2>
+<p>Service layer, for executing computational steps in the application.
+Code related to launching/duplicating operations is placed here.</p>
+<dl class="class">
+<dt id="tvb.core.services.flow_service.FlowService">
+<em class="property">class </em><tt class="descclassname">tvb.core.services.flow_service.</tt><tt class="descname">FlowService</tt><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService" title="Permalink to this definition">¶</a></dt>
+<dd><p>Service Layer for all TVB generic Work-Flow operations.</p>
+<dl class="method">
+<dt id="tvb.core.services.flow_service.FlowService.build_adapter_instance">
+<tt class="descname">build_adapter_instance</tt><big>(</big><em>group</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.build_adapter_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.build_adapter_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Having a module and a class name, create an instance of ABCAdapter.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.flow_service.FlowService.create_link">
+<em class="property">static </em><tt class="descname">create_link</tt><big>(</big><em>data_ids</em>, <em>project_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.create_link"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.create_link" title="Permalink to this definition">¶</a></dt>
+<dd><p>For a list of dataType IDs and a project id create all the required links.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.flow_service.FlowService.fire_operation">
+<tt class="descname">fire_operation</tt><big>(</big><em>adapter_instance</em>, <em>current_user</em>, <em>project_id</em>, <em>method_name='launch'</em>, <em>visible=True</em>, <em>**data</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.fire_operation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.fire_operation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Launch an operation, specified by AdapterInstance, for CurrentUser, 
+Current Project and a given set of UI Input Data.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.flow_service.FlowService.get_algo_group_by_identifier">
+<tt class="descname">get_algo_group_by_identifier</tt><big>(</big><em>ident</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.get_algo_group_by_identifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.get_algo_group_by_identifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve Algorithm Group entity by ID.
+Return None, if ID is not found in DB.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.flow_service.FlowService.get_algorithm_by_identifier">
+<tt class="descname">get_algorithm_by_identifier</tt><big>(</big><em>ident</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.get_algorithm_by_identifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.get_algorithm_by_identifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve Algorithm entity by ID.
+Return None, if ID is not found in DB.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.flow_service.FlowService.get_algorithm_by_module_and_class">
+<em class="property">static </em><tt class="descname">get_algorithm_by_module_and_class</tt><big>(</big><em>module</em>, <em>classname</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.get_algorithm_by_module_and_class"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.get_algorithm_by_module_and_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the db entry from the algorithm table for the given module and 
+class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.flow_service.FlowService.get_available_datatypes">
+<tt class="descname">get_available_datatypes</tt><big>(</big><em>project_id</em>, <em>data_name</em>, <em>filters=None</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.get_available_datatypes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.get_available_datatypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all dataTypes that match a given name and some filters.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.flow_service.FlowService.get_category_by_id">
+<tt class="descname">get_category_by_id</tt><big>(</big><em>identifier</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.get_category_by_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.get_category_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pass to DAO the retrieve of category by ID operation.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.flow_service.FlowService.get_groups_for_categories">
+<em class="property">static </em><tt class="descname">get_groups_for_categories</tt><big>(</big><em>categories</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.get_groups_for_categories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.get_groups_for_categories" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the list of all Adapters names from a  given Category</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.flow_service.FlowService.get_launchable_non_viewers">
+<em class="property">static </em><tt class="descname">get_launchable_non_viewers</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.get_launchable_non_viewers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.get_launchable_non_viewers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve all Algorithm categories, with display capability</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.flow_service.FlowService.get_operation_numbers">
+<em class="property">static </em><tt class="descname">get_operation_numbers</tt><big>(</big><em>proj_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.get_operation_numbers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.get_operation_numbers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Count total number of operations started for current project.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.flow_service.FlowService.get_raw_categories">
+<em class="property">static </em><tt class="descname">get_raw_categories</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.get_raw_categories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.get_raw_categories" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">AlgorithmCategory list of entities that have results in RAW state (Creators/Uploaders)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.flow_service.FlowService.get_selections_for_project">
+<em class="property">static </em><tt class="descname">get_selections_for_project</tt><big>(</big><em>project_id</em>, <em>connectivity_gid</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.get_selections_for_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.get_selections_for_project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieved from DB saved selections for current project. If a certain selection
+doesn&#8217;t have all the labels between the labels of the given connectivity than
+this selection will not be returned.
+:returns: List of ConnectivitySelection entities.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.flow_service.FlowService.get_uploader_categories">
+<em class="property">static </em><tt class="descname">get_uploader_categories</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.get_uploader_categories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.get_uploader_categories" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve all algorithm categories with Upload mechanism</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.flow_service.FlowService.get_visualisers_category">
+<em class="property">static </em><tt class="descname">get_visualisers_category</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.get_visualisers_category"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.get_visualisers_category" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve all Algorithm categories, with display capability</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.flow_service.FlowService.load_operation">
+<em class="property">static </em><tt class="descname">load_operation</tt><big>(</big><em>operation_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.load_operation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.load_operation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve loaded OPeration from DB</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.flow_service.FlowService.parse_version_xml">
+<tt class="descname">parse_version_xml</tt><big>(</big><em>xml_content</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.parse_version_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.parse_version_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse XML content, to retrieve Version number, 
+release date and release notes.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.flow_service.FlowService.populate_values">
+<em class="property">static </em><tt class="descname">populate_values</tt><big>(</big><em>data_list</em>, <em>type_</em>, <em>category_key</em>, <em>complex_dt_attributes=None</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.populate_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.populate_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate meta-data fields for data_list (list of DataTypes).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.flow_service.FlowService.prepare_adapter">
+<tt class="descname">prepare_adapter</tt><big>(</big><em>project_id</em>, <em>algo_group</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.prepare_adapter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.prepare_adapter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Having a given Adapter, specified by Module and ClassName, 
+create a instance of it and return the instance.
+Actually return a Tuple: Adapter Instance, Dictionary for Adapter 
+Interface specification.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.flow_service.FlowService.prepare_parameters">
+<tt class="descname">prepare_parameters</tt><big>(</big><em>attributes_list</em>, <em>project_id</em>, <em>category_key</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.prepare_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.prepare_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Private method, to be called recursively.
+It will receive a list of Attributes, and it will populate &#8216;options&#8217;
+entry with data references from DB.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.flow_service.FlowService.read_algorithm_categories">
+<em class="property">static </em><tt class="descname">read_algorithm_categories</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.read_algorithm_categories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.read_algorithm_categories" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve from DB all categories of adapters that were previously stored
+by introspection into a Python module-given as parameter at startup.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.flow_service.FlowService.remove_link">
+<em class="property">static </em><tt class="descname">remove_link</tt><big>(</big><em>dt_id</em>, <em>project_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.remove_link"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.remove_link" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the link from the datatype given by dt_id to project given by project_id.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.flow_service.FlowService.save_connectivity_selection">
+<em class="property">static </em><tt class="descname">save_connectivity_selection</tt><big>(</big><em>ui_name</em>, <em>project_id</em>, <em>selection</em>, <em>labels</em>, <em>used_names</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/flow_service.html#FlowService.save_connectivity_selection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.flow_service.FlowService.save_connectivity_selection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Store in DB a ConnectivitySelection.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.core.services.import_service">
+<span id="import-service-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">import_service</span></tt> Module<a class="headerlink" href="#module-tvb.core.services.import_service" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tvb.core.services.import_service.ImportService">
+<em class="property">class </em><tt class="descclassname">tvb.core.services.import_service.</tt><tt class="descname">ImportService</tt><a class="reference internal" href="_modules/tvb/core/services/import_service.html#ImportService"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.import_service.ImportService" title="Permalink to this definition">¶</a></dt>
+<dd><p>Service for importing TVB entities into system.
+It supports TVB exported H5 files as input, but it should also handle H5 files 
+generated outside of TVB, as long as they respect the same structure.</p>
+<dl class="method">
+<dt id="tvb.core.services.import_service.ImportService.import_project_operations">
+<tt class="descname">import_project_operations</tt><big>(</big><em>project</em>, <em>import_path</em>, <em>dt_burst_mappings=None</em>, <em>burst_ids_mapping=None</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/import_service.html#ImportService.import_project_operations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.import_service.ImportService.import_project_operations" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method scans provided folder and identify all operations that needs to be imported</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.import_service.ImportService.import_project_structure">
+<tt class="descname">import_project_structure</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/import_service.html#ImportService.import_project_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.import_service.ImportService.import_project_structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorate methods.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.import_service.ImportService.import_workflow_steps">
+<tt class="descname">import_workflow_steps</tt><big>(</big><em>workflow</em>, <em>wf_steps</em>, <em>view_steps</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/import_service.html#ImportService.import_workflow_steps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.import_service.ImportService.import_workflow_steps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import all workflow steps for the given workflow. We create both wf_steps and view_steps
+in the same method, since if a wf_step has to be omited for some reason, we also need to
+omit that view step.
+:param workflow: a model.Workflow entity from which we need to add workflow steps</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>wf_steps</strong> &#8211; a list of WorkflowStepInformation entities, from which we will rebuild 
+the workflow steps</li>
+<li><strong>view_steps</strong> &#8211; a list of WorkflowViewStepInformation entities, from which we will 
+rebuild the workflow view steps</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.import_service.ImportService.import_workflows">
+<tt class="descname">import_workflows</tt><big>(</big><em>project</em>, <em>bursts_dict</em>, <em>burst_ids_mapping</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/import_service.html#ImportService.import_workflows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.import_service.ImportService.import_workflows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import the workflow entities for all bursts imported in the project.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>project</strong> &#8211; the current</li>
+<li><strong>bursts_dict</strong> &#8211; a dictionary that holds all the required information in order to
+import the bursts from the new project</li>
+<li><strong>burst_ids_mapping</strong> &#8211; a dictionary of the form {old_burst_id : new_burst_id} so we
+know what burst to link each workflow to</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.import_service.ImportService.load_datatype_from_file">
+<tt class="descname">load_datatype_from_file</tt><big>(</big><em>storage_folder</em>, <em>file_name</em>, <em>op_id</em>, <em>datatype_group=None</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/import_service.html#ImportService.load_datatype_from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.import_service.ImportService.load_datatype_from_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an instance of datatype from storage / H5 file 
+:returns: datatype</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.import_service.ImportService.store_datatype">
+<tt class="descname">store_datatype</tt><big>(</big><em>datatype</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/import_service.html#ImportService.store_datatype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.import_service.ImportService.store_datatype" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method stores data type into DB</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.core.services.initializer">
+<span id="initializer-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">initializer</span></tt> Module<a class="headerlink" href="#module-tvb.core.services.initializer" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tvb.core.services.initializer.initialize">
+<tt class="descclassname">tvb.core.services.initializer.</tt><tt class="descname">initialize</tt><big>(</big><em>introspected_modules</em>, <em>load_xml_events=True</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/initializer.html#initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.initializer.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize when Application is starting.
+Check for new algorithms or new DataTypes.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.core.services.initializer.reset">
+<tt class="descclassname">tvb.core.services.initializer.</tt><tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/services/initializer.html#reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.initializer.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Service Layer for Database reset.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.core.services.operation_service">
+<span id="operation-service-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">operation_service</span></tt> Module<a class="headerlink" href="#module-tvb.core.services.operation_service" title="Permalink to this headline">¶</a></h2>
+<p>Module in charge with Launching an operation (creating the Operation entity as well, based on gathered parameters).</p>
+<dl class="class">
+<dt id="tvb.core.services.operation_service.OperationService">
+<em class="property">class </em><tt class="descclassname">tvb.core.services.operation_service.</tt><tt class="descname">OperationService</tt><a class="reference internal" href="_modules/tvb/core/services/operation_service.html#OperationService"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.operation_service.OperationService" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class responsible for preparing an operation launch. 
+It will prepare parameters, and decide if the operation is to be executed
+immediately, or to be sent on the cluster.</p>
+<dl class="attribute">
+<dt id="tvb.core.services.operation_service.OperationService.ATT_UID">
+<tt class="descname">ATT_UID</tt><em class="property"> = 'uid'</em><a class="headerlink" href="#tvb.core.services.operation_service.OperationService.ATT_UID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.operation_service.OperationService.get_range_values">
+<tt class="descname">get_range_values</tt><big>(</big><em>kwargs</em>, <em>ranger_name</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/operation_service.html#OperationService.get_range_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.operation_service.OperationService.get_range_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>For the ranger given by ranger_name look in kwargs and return
+the array with all the possible values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.operation_service.OperationService.group_operation_launch">
+<tt class="descname">group_operation_launch</tt><big>(</big><em>user_id</em>, <em>project_id</em>, <em>adapter_id</em>, <em>category_id</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/operation_service.html#OperationService.group_operation_launch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.operation_service.OperationService.group_operation_launch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create and prepare the launch of a group of operations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.operation_service.OperationService.initiate_operation">
+<tt class="descname">initiate_operation</tt><big>(</big><em>current_user</em>, <em>project_id</em>, <em>adapter_instance</em>, <em>temporary_storage</em>, <em>method_name='launch'</em>, <em>visible=True</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/operation_service.html#OperationService.initiate_operation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.operation_service.OperationService.initiate_operation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the parameters of the computation from the previous inputs form,
+and launches a computation (on the cluster or locally).</p>
+<p>Invoke custom method on an Adapter Instance. Make sure when the  
+operation has finished that the correct results are stored into DB.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.operation_service.OperationService.initiate_prelaunch">
+<tt class="descname">initiate_prelaunch</tt><big>(</big><em>operation</em>, <em>adapter_instance</em>, <em>temp_files</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/operation_service.html#OperationService.initiate_prelaunch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.operation_service.OperationService.initiate_prelaunch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Public method.
+This should be the common point in calling an adapter- method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.operation_service.OperationService.launch_operation">
+<tt class="descname">launch_operation</tt><big>(</big><em>operation_id</em>, <em>send_to_cluster=False</em>, <em>adapter_instance=None</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/operation_service.html#OperationService.launch_operation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.operation_service.OperationService.launch_operation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method exposed for Burst-Workflow related calls.
+It is used for cascading operation in the same workflow.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.operation_service.OperationService.prepare_operations">
+<tt class="descname">prepare_operations</tt><big>(</big><em>user_id</em>, <em>project_id</em>, <em>algorithm</em>, <em>category</em>, <em>metadata</em>, <em>method_name='launch'</em>, <em>visible=True</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/operation_service.html#OperationService.prepare_operations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.operation_service.OperationService.prepare_operations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do all the necessary preparations for storing an operation. If it&#8217;s the case of a 
+range of values create an operation group and multiple operations for each possible
+instance from the range.
+:param metadata: Initial MetaData with potential Burst identification inside.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.operation_service.OperationService.prepare_operations_for_workflowsteps">
+<tt class="descname">prepare_operations_for_workflowsteps</tt><big>(</big><em>workflow_step_list</em>, <em>workflows</em>, <em>user_id</em>, <em>burst_id</em>, <em>project_id</em>, <em>group</em>, <em>sim_operations</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/operation_service.html#OperationService.prepare_operations_for_workflowsteps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.operation_service.OperationService.prepare_operations_for_workflowsteps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create and store Operation entities from a list of Workflow Steps.
+Will be generated workflows x workflow_step_list Operations.
+For every step in workflow_step_list one OperationGroup and one DataTypeGroup will be created 
+(in case of PSE).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.operation_service.OperationService.stop_operation">
+<tt class="descname">stop_operation</tt><big>(</big><em>operation_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/operation_service.html#OperationService.stop_operation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.operation_service.OperationService.stop_operation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the operation given by the operation id.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.core.services.project_service">
+<span id="project-service-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">project_service</span></tt> Module<a class="headerlink" href="#module-tvb.core.services.project_service" title="Permalink to this headline">¶</a></h2>
+<p>Service Layer for the Project entity.</p>
+<dl class="class">
+<dt id="tvb.core.services.project_service.ProjectService">
+<em class="property">class </em><tt class="descclassname">tvb.core.services.project_service.</tt><tt class="descname">ProjectService</tt><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService" title="Permalink to this definition">¶</a></dt>
+<dd><p>Services layer for Project entities.</p>
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.count_datatypes_generated_from">
+<em class="property">static </em><tt class="descname">count_datatypes_generated_from</tt><big>(</big><em>datatype_gid</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.count_datatypes_generated_from"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.count_datatypes_generated_from" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list with all the datatypes resulted from operations that had as 
+input the datatype given by &#8216;datatype_gid&#8217;.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.count_filtered_operations">
+<em class="property">static </em><tt class="descname">count_filtered_operations</tt><big>(</big><em>project_id</em>, <em>filters=None</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.count_filtered_operations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.count_filtered_operations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pass to DAO counters for filtered operations</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.project_service.ProjectService.find_project">
+<tt class="descname">find_project</tt><big>(</big><em>project_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.find_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.find_project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simply retrieve Project entity from Database.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.get_all_operations_for_uploaders">
+<em class="property">static </em><tt class="descname">get_all_operations_for_uploaders</tt><big>(</big><em>project_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.get_all_operations_for_uploaders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.get_all_operations_for_uploaders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns all finished upload operations.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.get_datatype_and_datatypegroup_inputs_for_operation">
+<em class="property">static </em><tt class="descname">get_datatype_and_datatypegroup_inputs_for_operation</tt><big>(</big><em>operation_gid</em>, <em>selected_filter</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.get_datatype_and_datatypegroup_inputs_for_operation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.get_datatype_and_datatypegroup_inputs_for_operation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the dataTypes that are used as input parameters for the given operation.
+&#8216;selected_filter&#8217; - is expected to be a visibility filter.</p>
+<p>If any dataType is part of a dataType group then the dataType group will
+be returned instead of that dataType.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.get_datatype_by_id">
+<em class="property">static </em><tt class="descname">get_datatype_by_id</tt><big>(</big><em>datatype_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.get_datatype_by_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.get_datatype_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a DataType DB reference by its id.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.get_datatype_details">
+<em class="property">static </em><tt class="descname">get_datatype_details</tt><big>(</big><em>datatype_gid</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.get_datatype_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.get_datatype_details" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">an array. First entry in array is an instance of DataTypeOverlayDetails            The second one contains all the possible states for the specified dataType.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.get_datatype_in_group">
+<em class="property">static </em><tt class="descname">get_datatype_in_group</tt><big>(</big><em>group</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.get_datatype_in_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.get_datatype_in_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all dataTypes that are the result of the same group of operations.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.get_datatypegroup_by_gid">
+<em class="property">static </em><tt class="descname">get_datatypegroup_by_gid</tt><big>(</big><em>datatypegroup_gid</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.get_datatypegroup_by_gid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.get_datatypegroup_by_gid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the DataTypeGroup with the specified gid.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.get_datatypegroup_by_op_group_id">
+<em class="property">static </em><tt class="descname">get_datatypegroup_by_op_group_id</tt><big>(</big><em>operation_group_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.get_datatypegroup_by_op_group_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.get_datatypegroup_by_op_group_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the DataTypeGroup with the specified id.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.get_datatypes_from_datatype_group">
+<em class="property">static </em><tt class="descname">get_datatypes_from_datatype_group</tt><big>(</big><em>datatype_group_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.get_datatypes_from_datatype_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.get_datatypes_from_datatype_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve all dataType which are part from the given dataType group.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.get_datatypes_inputs_for_operation_group">
+<em class="property">static </em><tt class="descname">get_datatypes_inputs_for_operation_group</tt><big>(</big><em>group_id</em>, <em>selected_filter</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.get_datatypes_inputs_for_operation_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.get_datatypes_inputs_for_operation_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the dataType inputs for an operation group. If more dataTypes
+are part of the same dataType group then only the dataType group will
+be returned instead of them.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.get_filterable_meta">
+<em class="property">static </em><tt class="descname">get_filterable_meta</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.get_filterable_meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.get_filterable_meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains all the attributes by which
+the user can structure the tree of DataTypes</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.get_group_by_op_group_id">
+<em class="property">static </em><tt class="descname">get_group_by_op_group_id</tt><big>(</big><em>opgroup_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.get_group_by_op_group_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.get_group_by_op_group_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the DataTypeGroup with the specified id.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.get_linkable_projects_for_user">
+<em class="property">static </em><tt class="descname">get_linkable_projects_for_user</tt><big>(</big><em>user_id</em>, <em>data_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.get_linkable_projects_for_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.get_linkable_projects_for_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find projects with are visible for current user, and in which current datatype hasn&#8217;t been linked yet.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.project_service.ProjectService.get_operation_details">
+<tt class="descname">get_operation_details</tt><big>(</big><em>operation_gid</em>, <em>is_group</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.get_operation_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.get_operation_details" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">an entity OperationOverlayDetails filled with all information for current operation details.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.get_operation_group_by_gid">
+<em class="property">static </em><tt class="descname">get_operation_group_by_gid</tt><big>(</big><em>operation_group_gid</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.get_operation_group_by_gid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.get_operation_group_by_gid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads OperationGroup from DB</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.get_operation_group_by_id">
+<em class="property">static </em><tt class="descname">get_operation_group_by_id</tt><big>(</big><em>operation_group_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.get_operation_group_by_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.get_operation_group_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads OperationGroup from DB</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.get_operations_for_datatype">
+<em class="property">static </em><tt class="descname">get_operations_for_datatype</tt><big>(</big><em>datatype_gid</em>, <em>visibility_filter</em>, <em>only_in_groups=False</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.get_operations_for_datatype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.get_operations_for_datatype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns all the operations which uses as an input parameter the dataType with the specified GID.</p>
+<p>If only_in_groups is True than this method will return only the operations that are part
+from an operation group, otherwise it will return only the operations that are NOT part of an operation group.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.get_operations_for_datatype_group">
+<em class="property">static </em><tt class="descname">get_operations_for_datatype_group</tt><big>(</big><em>datatype_group_id</em>, <em>visibility_filter</em>, <em>only_in_groups=False</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.get_operations_for_datatype_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.get_operations_for_datatype_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns all the operations which uses as an input parameter a dataType from the given DataTypeGroup.
+visibility_filter - is a filter used for retrieving all the operations or only the relevant ones.</p>
+<p>If only_in_groups is True than this method will return only the operations that are
+part from an operation group, otherwise it will return only the operations that
+are NOT part of an operation group.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.get_operations_in_group">
+<em class="property">static </em><tt class="descname">get_operations_in_group</tt><big>(</big><em>operation_group</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.get_operations_in_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.get_operations_in_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all the operations from an operation group.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.project_service.ProjectService.get_project_structure">
+<tt class="descname">get_project_structure</tt><big>(</big><em>project</em>, <em>visibility_filter</em>, <em>first_level</em>, <em>second_level</em>, <em>filter_value</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.get_project_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.get_project_structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find through introspection the inside structure for a given Project.
+In case of a problem, will return an empty list.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.get_results_for_operation">
+<em class="property">static </em><tt class="descname">get_results_for_operation</tt><big>(</big><em>operation_id</em>, <em>selected_filter=None</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.get_results_for_operation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.get_results_for_operation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the DataTypes entities resulted after the execution of the given operation.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.is_datatype_group">
+<em class="property">static </em><tt class="descname">is_datatype_group</tt><big>(</big><em>datatype_gid</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.is_datatype_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.is_datatype_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to check if the dataType with the specified GID is a DataTypeGroup.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.is_upload_operation">
+<em class="property">static </em><tt class="descname">is_upload_operation</tt><big>(</big><em>operation_gid</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.is_upload_operation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.is_upload_operation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True only if the operation with the given GID is an upload operation.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.load_operation_by_gid">
+<em class="property">static </em><tt class="descname">load_operation_by_gid</tt><big>(</big><em>operation_gid</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.load_operation_by_gid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.load_operation_by_gid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve loaded Operation from DB</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.project_service.ProjectService.remove_datatype">
+<tt class="descname">remove_datatype</tt><big>(</big><em>project_id</em>, <em>datatype_gid</em>, <em>skip_validation=False</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.remove_datatype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.remove_datatype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method used for removing a dataType. If the given dataType is a DatatypeGroup
+or a dataType from a DataTypeGroup than this method will remove the entire group.
+The operation(s) used for creating the dataType(s) will also be removed also.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.project_service.ProjectService.remove_operation">
+<tt class="descname">remove_operation</tt><big>(</big><em>operation_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.remove_operation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.remove_operation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a given operation</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.project_service.ProjectService.remove_project">
+<tt class="descname">remove_project</tt><big>(</big><em>project_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.remove_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.remove_project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove Project from DB and File Storage.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.project_service.ProjectService.retrieve_launchers">
+<tt class="descname">retrieve_launchers</tt><big>(</big><em>dataname</em>, <em>datatype_gid=None</em>, <em>inspect_group=False</em>, <em>exclude_categories=None</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.retrieve_launchers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.retrieve_launchers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns all the available launch-able algorithms from the database.
+Filter the ones accepting as required input a specific DataType.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dataname</strong> &#8211; String or class representing DataType to retrieve filters for it.</li>
+<li><strong>datatype_gid</strong> &#8211; Optional GID, to filter algorithms for this particular entity.</li>
+<li><strong>inspect_group</strong> &#8211; TRUE if we are now in the inspection of sub-entities in a DataTypeGroup</li>
+<li><strong>exclude_categories</strong> &#8211; List of categories to be excluded from the result.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.project_service.ProjectService.retrieve_project_full">
+<tt class="descname">retrieve_project_full</tt><big>(</big><em>project_id</em>, <em>applied_filters=None</em>, <em>current_page=1</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.retrieve_project_full"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.retrieve_project_full" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a Tuple with Project entity and Operations for current Project.
+:param project_id: Current Project Identifier
+:param applied_filters: Filters to apply on Operations
+:param current_page: Number for current page in operations</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.project_service.ProjectService.retrieve_projects_for_user">
+<tt class="descname">retrieve_projects_for_user</tt><big>(</big><em>user_id</em>, <em>current_page=1</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.retrieve_projects_for_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.retrieve_projects_for_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list with all Projects visible for current user.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.set_datatype_visibility">
+<em class="property">static </em><tt class="descname">set_datatype_visibility</tt><big>(</big><em>datatype_gid</em>, <em>is_visible</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.set_datatype_visibility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.set_datatype_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the dataType visibility. If the given dataType is a dataType group or it is part of a
+dataType group than this method will set the visibility for each dataType from this group.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.project_service.ProjectService.set_operation_and_group_visibility">
+<em class="property">static </em><tt class="descname">set_operation_and_group_visibility</tt><big>(</big><em>entity_gid</em>, <em>is_visible</em>, <em>is_operation_group=False</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.set_operation_and_group_visibility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.set_operation_and_group_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the operation visibility.</p>
+<p>If &#8216;is_operation_group&#8217; is True than this method will change the visibility for all
+the operation from the OperationGroup with the GID field equal to &#8216;entity_gid&#8217;.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.project_service.ProjectService.store_project">
+<tt class="descname">store_project</tt><big>(</big><em>current_user</em>, <em>is_create</em>, <em>selected_id</em>, <em>**data</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.store_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.store_project" title="Permalink to this definition">¶</a></dt>
+<dd><p>We want to create/update a project entity.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.project_service.ProjectService.update_metadata">
+<tt class="descname">update_metadata</tt><big>(</big><em>submit_data</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#ProjectService.update_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.ProjectService.update_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update DataType/ DataTypeGroup metadata
+THROW StructureException when input data is invalid.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.core.services.project_service.initialize_storage">
+<tt class="descclassname">tvb.core.services.project_service.</tt><tt class="descname">initialize_storage</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/services/project_service.html#initialize_storage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.project_service.initialize_storage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create Projects storage root folder in case it does not exist.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.core.services.settings_service">
+<span id="settings-service-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">settings_service</span></tt> Module<a class="headerlink" href="#module-tvb.core.services.settings_service" title="Permalink to this headline">¶</a></h2>
+<p>Service layer for saving/editing TVB settings.</p>
+<dl class="class">
+<dt id="tvb.core.services.settings_service.SettingsService">
+<em class="property">class </em><tt class="descclassname">tvb.core.services.settings_service.</tt><tt class="descname">SettingsService</tt><a class="reference internal" href="_modules/tvb/core/services/settings_service.html#SettingsService"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.settings_service.SettingsService" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle all TVB Setting related problems, at the service level.</p>
+<dl class="attribute">
+<dt id="tvb.core.services.settings_service.SettingsService.KEYS_DISPLAY_ORDER">
+<tt class="descname">KEYS_DISPLAY_ORDER</tt><em class="property"> = ['ADMINISTRATOR_NAME', 'ADMINISTRATOR_PASSWORD', 'ADMINISTRATOR_EMAIL', None, 'TVB_STORAGE', 'USR_DISK_SPACE', 'MATLAB_EXECUTABLE', 'SELECTED_DB', 'URL_VALUE', None, 'SERVER_IP', 'WEB_SERVER_PORT', 'MPLH5_SERVER_PORT', None, 'DEPLOY_CLUSTER', 'MAXIMUM_NR_OF_THREADS', 'MAXIMUM_NR_OF_OPS_IN_RANGE', 'MAXIMUM_NR_OF_VERTICES_ON_SURFACE']</em><a class="headerlink" href="#tvb.core.services.settings_service.SettingsService.KEYS_DISPLAY_ORDER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.settings_service.SettingsService.KEY_ADMIN_EMAIL">
+<tt class="descname">KEY_ADMIN_EMAIL</tt><em class="property"> = 'ADMINISTRATOR_EMAIL'</em><a class="headerlink" href="#tvb.core.services.settings_service.SettingsService.KEY_ADMIN_EMAIL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.settings_service.SettingsService.KEY_ADMIN_NAME">
+<tt class="descname">KEY_ADMIN_NAME</tt><em class="property"> = 'ADMINISTRATOR_NAME'</em><a class="headerlink" href="#tvb.core.services.settings_service.SettingsService.KEY_ADMIN_NAME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.settings_service.SettingsService.KEY_ADMIN_PWD">
+<tt class="descname">KEY_ADMIN_PWD</tt><em class="property"> = 'ADMINISTRATOR_PASSWORD'</em><a class="headerlink" href="#tvb.core.services.settings_service.SettingsService.KEY_ADMIN_PWD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.settings_service.SettingsService.KEY_CLUSTER">
+<tt class="descname">KEY_CLUSTER</tt><em class="property"> = 'DEPLOY_CLUSTER'</em><a class="headerlink" href="#tvb.core.services.settings_service.SettingsService.KEY_CLUSTER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.settings_service.SettingsService.KEY_DB_URL">
+<tt class="descname">KEY_DB_URL</tt><em class="property"> = 'URL_VALUE'</em><a class="headerlink" href="#tvb.core.services.settings_service.SettingsService.KEY_DB_URL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.settings_service.SettingsService.KEY_IP">
+<tt class="descname">KEY_IP</tt><em class="property"> = 'SERVER_IP'</em><a class="headerlink" href="#tvb.core.services.settings_service.SettingsService.KEY_IP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.settings_service.SettingsService.KEY_MATLAB_EXECUTABLE">
+<tt class="descname">KEY_MATLAB_EXECUTABLE</tt><em class="property"> = 'MATLAB_EXECUTABLE'</em><a class="headerlink" href="#tvb.core.services.settings_service.SettingsService.KEY_MATLAB_EXECUTABLE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.settings_service.SettingsService.KEY_MAX_DISK_SPACE_USR">
+<tt class="descname">KEY_MAX_DISK_SPACE_USR</tt><em class="property"> = 'USR_DISK_SPACE'</em><a class="headerlink" href="#tvb.core.services.settings_service.SettingsService.KEY_MAX_DISK_SPACE_USR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.settings_service.SettingsService.KEY_MAX_NR_SURFACE_VERTEX">
+<tt class="descname">KEY_MAX_NR_SURFACE_VERTEX</tt><em class="property"> = 'MAXIMUM_NR_OF_VERTICES_ON_SURFACE'</em><a class="headerlink" href="#tvb.core.services.settings_service.SettingsService.KEY_MAX_NR_SURFACE_VERTEX" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.settings_service.SettingsService.KEY_MAX_NR_THREADS">
+<tt class="descname">KEY_MAX_NR_THREADS</tt><em class="property"> = 'MAXIMUM_NR_OF_THREADS'</em><a class="headerlink" href="#tvb.core.services.settings_service.SettingsService.KEY_MAX_NR_THREADS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.settings_service.SettingsService.KEY_MAX_RANGE">
+<tt class="descname">KEY_MAX_RANGE</tt><em class="property"> = 'MAXIMUM_NR_OF_OPS_IN_RANGE'</em><a class="headerlink" href="#tvb.core.services.settings_service.SettingsService.KEY_MAX_RANGE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.settings_service.SettingsService.KEY_PORT">
+<tt class="descname">KEY_PORT</tt><em class="property"> = 'WEB_SERVER_PORT'</em><a class="headerlink" href="#tvb.core.services.settings_service.SettingsService.KEY_PORT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.settings_service.SettingsService.KEY_PORT_MPLH5">
+<tt class="descname">KEY_PORT_MPLH5</tt><em class="property"> = 'MPLH5_SERVER_PORT'</em><a class="headerlink" href="#tvb.core.services.settings_service.SettingsService.KEY_PORT_MPLH5" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.settings_service.SettingsService.KEY_SELECTED_DB">
+<tt class="descname">KEY_SELECTED_DB</tt><em class="property"> = 'SELECTED_DB'</em><a class="headerlink" href="#tvb.core.services.settings_service.SettingsService.KEY_SELECTED_DB" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tvb.core.services.settings_service.SettingsService.KEY_STORAGE">
+<tt class="descname">KEY_STORAGE</tt><em class="property"> = 'TVB_STORAGE'</em><a class="headerlink" href="#tvb.core.services.settings_service.SettingsService.KEY_STORAGE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.settings_service.SettingsService.check_db_url">
+<tt class="descname">check_db_url</tt><big>(</big><em>url</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/settings_service.html#SettingsService.check_db_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.settings_service.SettingsService.check_db_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate DB URL, that a connection can be done.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.settings_service.SettingsService.get_disk_free_space">
+<em class="property">static </em><tt class="descname">get_disk_free_space</tt><big>(</big><em>storage_path</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/settings_service.html#SettingsService.get_disk_free_space"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.settings_service.SettingsService.get_disk_free_space" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the available HDD space in KB in TVB_STORAGE folder.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.settings_service.SettingsService.is_first_run">
+<em class="property">static </em><tt class="descname">is_first_run</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/services/settings_service.html#SettingsService.is_first_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.settings_service.SettingsService.is_first_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if this is the first time TVB was started.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.settings_service.SettingsService.save_settings">
+<tt class="descname">save_settings</tt><big>(</big><em>**data</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/settings_service.html#SettingsService.save_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.settings_service.SettingsService.save_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if new settings are correct.  Make necessary changes, then save new data in configuration file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">two boolean values
+-there were any changes to the configuration;
+-a reset should be performed on the TVB relaunch.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.core.services.user_service">
+<span id="user-service-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">user_service</span></tt> Module<a class="headerlink" href="#module-tvb.core.services.user_service" title="Permalink to this headline">¶</a></h2>
+<p>Service layer for USER entities.</p>
+<dl class="class">
+<dt id="tvb.core.services.user_service.UserService">
+<em class="property">class </em><tt class="descclassname">tvb.core.services.user_service.</tt><tt class="descname">UserService</tt><a class="reference internal" href="_modules/tvb/core/services/user_service.html#UserService"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.user_service.UserService" title="Permalink to this definition">¶</a></dt>
+<dd><p>CRUD methods for USER entities are here.</p>
+<dl class="attribute">
+<dt id="tvb.core.services.user_service.UserService.USER_ROLES">
+<tt class="descname">USER_ROLES</tt><em class="property"> = ['ADMINISTRATOR', 'CLINICIAN', 'RESEARCHER']</em><a class="headerlink" href="#tvb.core.services.user_service.UserService.USER_ROLES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.user_service.UserService.check_login">
+<em class="property">static </em><tt class="descname">check_login</tt><big>(</big><em>username</em>, <em>password</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/user_service.html#UserService.check_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.user_service.UserService.check_login" title="Permalink to this definition">¶</a></dt>
+<dd><p>Service layer to check if given UserName and Password are according to DB.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.user_service.UserService.create_user">
+<tt class="descname">create_user</tt><big>(</big><em>username=None</em>, <em>password=None</em>, <em>password2=None</em>, <em>role=None</em>, <em>email=None</em>, <em>comment=None</em>, <em>email_msg=None</em>, <em>validated=False</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/user_service.html#UserService.create_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.user_service.UserService.create_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Service Layer for creating a new user.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.user_service.UserService.delete_user">
+<tt class="descname">delete_user</tt><big>(</big><em>user_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/user_service.html#UserService.delete_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.user_service.UserService.delete_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a user with a given ID. 
+Return True when successfully, or False.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.user_service.UserService.edit_user">
+<tt class="descname">edit_user</tt><big>(</big><em>edited_user</em>, <em>old_password=None</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/user_service.html#UserService.edit_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.user_service.UserService.edit_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a user by and id, then modify it&#8217;s role and validate status.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.user_service.UserService.get_administrators">
+<em class="property">static </em><tt class="descname">get_administrators</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/tvb/core/services/user_service.html#UserService.get_administrators"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.user_service.UserService.get_administrators" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve system administrators.
+Will be used for sending emails, for example.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.user_service.UserService.get_user_by_id">
+<em class="property">static </em><tt class="descname">get_user_by_id</tt><big>(</big><em>user_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/user_service.html#UserService.get_user_by_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.user_service.UserService.get_user_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a user by its id.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.user_service.UserService.get_users_for_project">
+<tt class="descname">get_users_for_project</tt><big>(</big><em>user_name</em>, <em>project_id</em>, <em>page=1</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/user_service.html#UserService.get_users_for_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.user_service.UserService.get_users_for_project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return tuple: (All Users except the project administrator, Project Members).
+Parameter &#8220;user_name&#8221; is the current user. 
+Parameter &#8220;user_name&#8221; is used for new projects (project_id is None). 
+When &#8220;project_id&#8221; not None, parameter &#8220;user_name&#8221; is ignored.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.user_service.UserService.is_username_valid">
+<em class="property">static </em><tt class="descname">is_username_valid</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/user_service.html#UserService.is_username_valid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.user_service.UserService.is_username_valid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Service layer for checking if a given UserName is unique or not.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.user_service.UserService.reset_password">
+<tt class="descname">reset_password</tt><big>(</big><em>**data</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/user_service.html#UserService.reset_password"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.user_service.UserService.reset_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>Service Layer for resetting a password.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.user_service.UserService.retrieve_all_users">
+<em class="property">static </em><tt class="descname">retrieve_all_users</tt><big>(</big><em>username</em>, <em>current_page=1</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/user_service.html#UserService.retrieve_all_users"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.user_service.UserService.retrieve_all_users" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all users from the database except the given user</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.user_service.UserService.save_project_to_user">
+<em class="property">static </em><tt class="descname">save_project_to_user</tt><big>(</big><em>user_id</em>, <em>project_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/user_service.html#UserService.save_project_to_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.user_service.UserService.save_project_to_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mark for current user that the given project is the last one selected.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.user_service.UserService.upgrade_file_storage">
+<tt class="descname">upgrade_file_storage</tt><big>(</big><em>*args</em>, <em>**kw</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/user_service.html#UserService.upgrade_file_storage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.user_service.UserService.upgrade_file_storage" title="Permalink to this definition">¶</a></dt>
+<dd><p>New function will actually write the Lock.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.user_service.UserService.validate_user">
+<tt class="descname">validate_user</tt><big>(</big><em>name=''</em>, <em>user_id=None</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/user_service.html#UserService.validate_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.user_service.UserService.validate_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Service layer for editing a user and validating the account.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tvb.core.services.workflow_service">
+<span id="workflow-service-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">workflow_service</span></tt> Module<a class="headerlink" href="#module-tvb.core.services.workflow_service" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tvb.core.services.workflow_service.WorkflowService">
+<em class="property">class </em><tt class="descclassname">tvb.core.services.workflow_service.</tt><tt class="descname">WorkflowService</tt><a class="reference internal" href="_modules/tvb/core/services/workflow_service.html#WorkflowService"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.workflow_service.WorkflowService" title="Permalink to this definition">¶</a></dt>
+<dd><p>service layer for work-flow entity.</p>
+<dl class="staticmethod">
+<dt id="tvb.core.services.workflow_service.WorkflowService.create_and_store_workflow">
+<em class="property">static </em><tt class="descname">create_and_store_workflow</tt><big>(</big><em>project_id</em>, <em>burst_id</em>, <em>simulator_index</em>, <em>simulator_id</em>, <em>operations</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/workflow_service.html#WorkflowService.create_and_store_workflow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.workflow_service.WorkflowService.create_and_store_workflow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create and store the workflow given the project, user and burst in which the workflow is created.
+:param simulator_index: the index of the simulator in the workflow
+:param simulator_id: the id of the simulator adapter
+:param operations: a list with the operations created for the simulator steps</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.workflow_service.WorkflowService.mark_burst_finished">
+<tt class="descname">mark_burst_finished</tt><big>(</big><em>burst_entity</em>, <em>error=False</em>, <em>success=False</em>, <em>cancel=False</em>, <em>error_message=None</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/workflow_service.html#WorkflowService.mark_burst_finished"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.workflow_service.WorkflowService.mark_burst_finished" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mark Burst status field.
+Also compute &#8216;weight&#8217; for current burst: no of operations inside, estimate time on disk...</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>burst_entity</strong> &#8211; BurstConfiguration to be updated, at finish time.</li>
+<li><strong>error</strong> &#8211; When True, burst will be marked as finished with error.</li>
+<li><strong>success</strong> &#8211; When True, burst will be marked successfully.</li>
+<li><strong>cancel</strong> &#8211; When True, burst will be marked as user-canceled.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.workflow_service.WorkflowService.prepare_next_step">
+<tt class="descname">prepare_next_step</tt><big>(</big><em>last_executed_op_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/workflow_service.html#WorkflowService.prepare_next_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.workflow_service.WorkflowService.prepare_next_step" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the operation with id &#8216;last_executed_op_id&#8217; resulted after
+the execution of a workflow step then this method will launch
+the operation corresponding to the next step from the workflow.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.workflow_service.WorkflowService.set_dynamic_step_references">
+<em class="property">static </em><tt class="descname">set_dynamic_step_references</tt><big>(</big><em>workflow_step</em>, <em>step_reference</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/workflow_service.html#WorkflowService.set_dynamic_step_references"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.workflow_service.WorkflowService.set_dynamic_step_references" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>workflow_step</strong> &#8211; a valid instance of a workflow_step</li>
+<li><strong>step_reference</strong> &#8211; the step to which every dataType reference index should be set</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>For each dynamic parameter of the given workflow_step set the &#8216;step_index&#8217; at step_reference.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tvb.core.services.workflow_service.WorkflowService.store_workflow_step">
+<em class="property">static </em><tt class="descname">store_workflow_step</tt><big>(</big><em>workflow_step</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/workflow_service.html#WorkflowService.store_workflow_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.workflow_service.WorkflowService.store_workflow_step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Store a workflow step entity.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.core.services.workflow_service.WorkflowService.update_executed_workflow_state">
+<tt class="descname">update_executed_workflow_state</tt><big>(</big><em>operation_id</em><big>)</big><a class="reference internal" href="_modules/tvb/core/services/workflow_service.html#WorkflowService.update_executed_workflow_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tvb.core.services.workflow_service.WorkflowService.update_executed_workflow_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used for updating the state of an executed workflow.
+Only if the operation with the specified id has resulted after the execution
+of an ExecutedWorkflowStep than the state of the ExecutedWorkflow
+to which belongs the step will be updated.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">services</span></tt> Package</a><ul>
+<li><a class="reference internal" href="#module-tvb.core.services.backend_client"><tt class="docutils literal"><span class="pre">backend_client</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.core.services.burst_service"><tt class="docutils literal"><span class="pre">burst_service</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.core.services.dti_pipeline_service"><tt class="docutils literal"><span class="pre">dti_pipeline_service</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.core.services.email_sender"><tt class="docutils literal"><span class="pre">email_sender</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.core.services.event_handlers"><tt class="docutils literal"><span class="pre">event_handlers</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.core.services.exceptions"><tt class="docutils literal"><span class="pre">exceptions</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.core.services.figure_service"><tt class="docutils literal"><span class="pre">figure_service</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.core.services.flow_service"><tt class="docutils literal"><span class="pre">flow_service</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.core.services.import_service"><tt class="docutils literal"><span class="pre">import_service</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.core.services.initializer"><tt class="docutils literal"><span class="pre">initializer</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.core.services.operation_service"><tt class="docutils literal"><span class="pre">operation_service</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.core.services.project_service"><tt class="docutils literal"><span class="pre">project_service</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.core.services.settings_service"><tt class="docutils literal"><span class="pre">settings_service</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.core.services.user_service"><tt class="docutils literal"><span class="pre">user_service</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.core.services.workflow_service"><tt class="docutils literal"><span class="pre">workflow_service</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tvb.core.portlets.html"
+                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">portlets</span></tt> Package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tvb.core.traits.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">traits</span></tt> Package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tvb.core.services.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tvb.core.traits.html" title="traits Package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tvb.core.portlets.html" title="portlets Package"
+             >previous</a> |</li>
+        <li><a href="index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="tvb.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">tvb</span></tt> Package</a> &raquo;</li>
+          <li><a href="tvb.core.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">core</span></tt> Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

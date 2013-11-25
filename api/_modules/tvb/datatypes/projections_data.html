@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.datatypes.projections_data &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.datatypes.projections_data</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The Data component of ProjectionMatrices DataTypes.</span>
+
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Stuart A. Knock &lt;Stuart Knock &lt;stuart.knock@gmail.com&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.types_basic</span> <span class="kn">as</span> <span class="nn">basic</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.arrays</span> <span class="kn">as</span> <span class="nn">arrays</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.surfaces</span> <span class="kn">as</span> <span class="nn">surfaces_module</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.sensors</span> <span class="kn">as</span> <span class="nn">sensors_module</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.connectivity</span> <span class="kn">as</span> <span class="nn">connectivity_module</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.traits.types_mapped</span> <span class="kn">import</span> <span class="n">MappedType</span>
+
+
+<div class="viewcode-block" id="ProjectionMatrixData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.projections_data.ProjectionMatrixData">[docs]</a><span class="k">class</span> <span class="nc">ProjectionMatrixData</span><span class="p">(</span><span class="n">MappedType</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base DataType for representing a ProjectionMatrix.</span>
+<span class="sd">    The projection is between a source of type Connectivity regions or Surface and a set of Sensors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">sources</span> <span class="o">=</span> <span class="n">MappedType</span><span class="p">(</span><span class="n">label</span> <span class="o">=</span> <span class="s">&quot;surface or region&quot;</span><span class="p">,</span>
+                                <span class="n">default</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">required</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+    
+    
+    <span class="c">## We can not use base class sensors here due to polymorphic selection</span>
+    <span class="n">sensors</span> <span class="o">=</span> <span class="n">MappedType</span><span class="p">(</span><span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Sensors&quot;</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">required</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+                                <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot; A set of sensors to compute projection matrix for them. &quot;&quot;&quot;</span><span class="p">)</span>
+    
+    <span class="n">projection_data</span> <span class="o">=</span> <span class="n">arrays</span><span class="o">.</span><span class="n">FloatArray</span><span class="p">(</span><span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Projection Matrix Data&quot;</span><span class="p">,</span>
+                                        <span class="n">default</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">required</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+     
+     
+    <span class="c">#size = basic.Integer(label = &quot;dummy&quot;, default = int(1))</span>
+    
+    
+</div>
+<div class="viewcode-block" id="ProjectionRegionEEGData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.projections_data.ProjectionRegionEEGData">[docs]</a><span class="k">class</span> <span class="nc">ProjectionRegionEEGData</span><span class="p">(</span><span class="n">ProjectionMatrixData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specific projection, from a Connectivity Regions to EEG Sensors,</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sensors</span> <span class="o">=</span> <span class="n">sensors_module</span><span class="o">.</span><span class="n">SensorsEEG</span>
+    
+    <span class="n">sources</span> <span class="o">=</span> <span class="n">connectivity_module</span><span class="o">.</span><span class="n">Connectivity</span>
+    
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
+    
+</div>
+<div class="viewcode-block" id="ProjectionSurfaceEEGData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.projections_data.ProjectionSurfaceEEGData">[docs]</a><span class="k">class</span> <span class="nc">ProjectionSurfaceEEGData</span><span class="p">(</span><span class="n">ProjectionMatrixData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specific projection, from a CorticalSurface to EEG sensors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">brain_skull</span> <span class="o">=</span> <span class="n">surfaces_module</span><span class="o">.</span><span class="n">BrainSkull</span><span class="p">(</span><span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Brain Skull&quot;</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">required</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+                                             <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;Boundary between skull and cortex domains.&quot;&quot;&quot;</span><span class="p">)</span>
+        
+    <span class="n">skull_skin</span> <span class="o">=</span> <span class="n">surfaces_module</span><span class="o">.</span><span class="n">SkullSkin</span><span class="p">(</span><span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Skull Skin&quot;</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">required</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+                                           <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;Boundary between skull and skin domains.&quot;&quot;&quot;</span><span class="p">)</span>
+        
+    <span class="n">skin_air</span> <span class="o">=</span> <span class="n">surfaces_module</span><span class="o">.</span><span class="n">SkinAir</span><span class="p">(</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Skin Air&quot;</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">required</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+                                        <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;Boundary between skin and air domains.&quot;&quot;&quot;</span><span class="p">)</span>
+    
+    <span class="n">conductances</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Dict</span><span class="p">(</span><span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Domain conductances&quot;</span><span class="p">,</span> <span class="n">required</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+                              <span class="n">default</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;air&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s">&#39;skin&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s">&#39;skull&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s">&#39;brain&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">},</span>
+                              <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot; A dictionary representing the conductances of ... &quot;&quot;&quot;</span><span class="p">)</span>    
+    
+    <span class="n">sensors</span> <span class="o">=</span> <span class="n">sensors_module</span><span class="o">.</span><span class="n">SensorsEEG</span>
+    
+    <span class="n">sources</span> <span class="o">=</span> <span class="n">surfaces_module</span><span class="o">.</span><span class="n">CorticalSurface</span>
+    
+    </div>
+<div class="viewcode-block" id="ProjectionRegionMEGData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.projections_data.ProjectionRegionMEGData">[docs]</a><span class="k">class</span> <span class="nc">ProjectionRegionMEGData</span><span class="p">(</span><span class="n">ProjectionMatrixData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specific projection, from a Connectivity datatype to a MEGSensors datatype,</span>
+<span class="sd">    .. warning :: PLACEHOLDER</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sensors</span> <span class="o">=</span> <span class="n">sensors_module</span><span class="o">.</span><span class="n">SensorsMEG</span>
+    
+    <span class="n">sources</span> <span class="o">=</span> <span class="n">connectivity_module</span><span class="o">.</span><span class="n">Connectivity</span>
+    
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="bp">None</span>
+    
+    </div>
+<div class="viewcode-block" id="ProjectionSurfaceMEGData"><a class="viewcode-back" href="../../../tvb.datatypes.html#tvb.datatypes.projections_data.ProjectionSurfaceMEGData">[docs]</a><span class="k">class</span> <span class="nc">ProjectionSurfaceMEGData</span><span class="p">(</span><span class="n">ProjectionMatrixData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specific projection, from a CorticalSurface to MEG sensors.</span>
+<span class="sd">    ... warning :: PLACEHOLDER</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">brain_skull</span> <span class="o">=</span> <span class="n">surfaces_module</span><span class="o">.</span><span class="n">BrainSkull</span><span class="p">(</span><span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Brain Skull&quot;</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">required</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+                                             <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;Boundary between skull and cortex domains.&quot;&quot;&quot;</span><span class="p">)</span>
+        
+    <span class="n">skull_skin</span> <span class="o">=</span> <span class="n">surfaces_module</span><span class="o">.</span><span class="n">SkullSkin</span><span class="p">(</span><span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Skull Skin&quot;</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">required</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+                                           <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;Boundary between skull and skin domains.&quot;&quot;&quot;</span><span class="p">)</span>
+        
+    <span class="n">skin_air</span> <span class="o">=</span> <span class="n">surfaces_module</span><span class="o">.</span><span class="n">SkinAir</span><span class="p">(</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Skin Air&quot;</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">required</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+                                        <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;Boundary between skin and air domains.&quot;&quot;&quot;</span><span class="p">)</span>
+    
+    <span class="n">conductances</span> <span class="o">=</span> <span class="n">basic</span><span class="o">.</span><span class="n">Dict</span><span class="p">(</span><span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Domain conductances&quot;</span><span class="p">,</span> <span class="n">required</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+                              <span class="n">default</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;air&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s">&#39;skin&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s">&#39;skull&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s">&#39;brain&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">},</span>
+                              <span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot; A dictionary representing the conductances of ... &quot;&quot;&quot;</span><span class="p">)</span>    
+    
+    <span class="n">sensors</span> <span class="o">=</span> <span class="n">sensors_module</span><span class="o">.</span><span class="n">SensorsMEG</span>
+    
+    <span class="n">sources</span> <span class="o">=</span> <span class="n">surfaces_module</span><span class="o">.</span><span class="n">CorticalSurface</span>
+    
+    
+    
+    
+    
+    </div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

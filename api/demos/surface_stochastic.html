@@ -1,0 +1,284 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Demo surface_stochastic.py &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../index.html" />
+    <link rel="up" title="demos" href="../demos.html" />
+    <link rel="next" title="Demo surface_deterministic_stimulus.py" href="surface_deterministic_stimulus.html" />
+    <link rel="prev" title="Demo generate_region_demo_data.py" href="generate_region_demo_data.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="surface_deterministic_stimulus.html" title="Demo surface_deterministic_stimulus.py"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="generate_region_demo_data.html" title="Demo generate_region_demo_data.py"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../demos.html" accesskey="U">demos</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="demo-surface-stochastic-py">
+<h1>Demo surface_stochastic.py<a class="headerlink" href="#demo-surface-stochastic-py" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#  TheVirtualBrain-Scientific Package. This package holds all simulators, and </span>
+<span class="c"># analysers necessary to run brain-simulations. You can use it stand alone or</span>
+<span class="c"># in conjunction with TheVirtualBrain-Framework Package. See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Demonstrate using the simulator for a surface simulation, deterministic </span>
+<span class="sd">intergation.</span>
+
+<span class="sd">``Run time``: approximately 30 seconds (workstation circa 2010).</span>
+
+<span class="sd">``Memory requirement``: &lt; 1 GB</span>
+
+<span class="sd">.. moduleauthor:: Stuart A. Knock &lt;Stuart@tvb.invalid&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c"># Third party python libraries</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">from tvb.basic.logger.builder import get_logger</span>
+<span class="sd">LOG = get_logger(__name__)</span>
+
+<span class="sd">#Import from tvb.simulator modules:</span>
+<span class="sd">import tvb.simulator.simulator as simulator</span>
+<span class="sd">import tvb.simulator.models as models</span>
+<span class="sd">import tvb.simulator.coupling as coupling</span>
+<span class="sd">import tvb.simulator.integrators as integrators</span>
+<span class="sd">import tvb.simulator.noise as noise</span>
+<span class="sd">import tvb.simulator.monitors as monitors</span>
+
+<span class="sd">import tvb.datatypes.connectivity as connectivity</span>
+<span class="sd">import tvb.datatypes.surfaces as surfaces</span>
+
+<span class="sd">from matplotlib.pyplot import *</span>
+<span class="sd">from tvb.simulator.plot.tools import *</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">tvb.simulator.lab</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c">##----------------------------------------------------------------------------##</span>
+<span class="c">##-                      Perform the simulation                              -##</span>
+<span class="c">##----------------------------------------------------------------------------##</span>
+
+<span class="c">#Initialise a Model, Coupling, and Connectivity.</span>
+<span class="n">rfhn</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ReducedSetFitzHughNagumo</span><span class="p">()</span>
+<span class="n">white_matter</span> <span class="o">=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">Connectivity</span><span class="p">()</span>
+<span class="n">white_matter</span><span class="o">.</span><span class="n">speed</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">4.0</span><span class="p">])</span>
+
+<span class="n">white_matter_coupling</span> <span class="o">=</span> <span class="n">coupling</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mf">0.0043</span><span class="p">)</span> <span class="c">#0.0066</span>
+
+<span class="c">#Initialise an Integrator</span>
+<span class="n">hiss</span> <span class="o">=</span> <span class="n">noise</span><span class="o">.</span><span class="n">Additive</span><span class="p">(</span><span class="n">nsig</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="o">**-</span><span class="mi">16</span><span class="p">,]))</span>
+<span class="n">heunint</span> <span class="o">=</span> <span class="n">integrators</span><span class="o">.</span><span class="n">HeunStochastic</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="mi">2</span><span class="o">**-</span><span class="mi">4</span><span class="p">,</span> <span class="n">noise</span><span class="o">=</span><span class="n">hiss</span><span class="p">)</span>
+
+<span class="c">#Initialise some Monitors with period in physical time</span>
+<span class="n">mon_tavg</span> <span class="o">=</span> <span class="n">monitors</span><span class="o">.</span><span class="n">TemporalAverage</span><span class="p">(</span><span class="n">period</span><span class="o">=</span><span class="mi">2</span><span class="o">**-</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">mon_savg</span> <span class="o">=</span> <span class="n">monitors</span><span class="o">.</span><span class="n">SpatialAverage</span><span class="p">(</span><span class="n">period</span><span class="o">=</span><span class="mi">2</span><span class="o">**-</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">mon_eeg</span> <span class="o">=</span> <span class="n">monitors</span><span class="o">.</span><span class="n">EEG</span><span class="p">(</span><span class="n">period</span><span class="o">=</span><span class="mi">2</span><span class="o">**-</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c">#Bundle them</span>
+<span class="n">what_to_watch</span> <span class="o">=</span> <span class="p">(</span><span class="n">mon_tavg</span><span class="p">,</span> <span class="n">mon_savg</span><span class="p">,</span> <span class="n">mon_eeg</span><span class="p">)</span>
+
+<span class="c">#Initialise a surface</span>
+<span class="n">default_cortex</span> <span class="o">=</span> <span class="n">surfaces</span><span class="o">.</span><span class="n">Cortex</span><span class="p">()</span>
+<span class="n">default_cortex</span><span class="o">.</span><span class="n">coupling_strength</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1835</span><span class="p">])</span>
+
+<span class="c">#Initialise Simulator -- Model, Connectivity, Integrator, Monitors, and surface.</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">Simulator</span><span class="p">(</span><span class="n">model</span> <span class="o">=</span> <span class="n">rfhn</span><span class="p">,</span> <span class="n">connectivity</span> <span class="o">=</span> <span class="n">white_matter</span><span class="p">,</span> 
+                          <span class="n">coupling</span> <span class="o">=</span> <span class="n">white_matter_coupling</span><span class="p">,</span> 
+                          <span class="n">integrator</span> <span class="o">=</span> <span class="n">heunint</span><span class="p">,</span> <span class="n">monitors</span> <span class="o">=</span> <span class="n">what_to_watch</span><span class="p">,</span> 
+                          <span class="n">surface</span> <span class="o">=</span> <span class="n">default_cortex</span><span class="p">)</span>
+
+<span class="n">sim</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+
+<span class="c">#Clear initial transient</span>
+<span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Inital run to clear transient...&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">sim</span><span class="p">(</span><span class="n">simulation_length</span><span class="o">=</span><span class="mi">2</span><span class="o">**</span><span class="mi">6</span><span class="p">):</span>
+    <span class="k">pass</span>
+<span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Finished inital run to clear transient.&quot;</span><span class="p">)</span>
+
+
+<span class="c">#Perform the simulation</span>
+<span class="n">tavg_data</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">tavg_time</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">savg_data</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">savg_time</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">eeg_data</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">eeg_time</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">tavg</span><span class="p">,</span> <span class="n">savg</span><span class="p">,</span> <span class="n">eeg</span> <span class="ow">in</span> <span class="n">sim</span><span class="p">(</span><span class="n">simulation_length</span><span class="o">=</span><span class="mi">2</span><span class="o">**</span><span class="mi">6</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">tavg</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">tavg_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tavg</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">tavg_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tavg</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">savg</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">savg_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">savg</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">savg_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">savg</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">eeg</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">eeg_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">eeg</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">eeg_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">eeg</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;finished simulation&quot;</span><span class="p">)</span>
+
+<span class="c">##----------------------------------------------------------------------------##</span>
+<span class="c">##-               Plot pretty pictures of what we just did                   -##</span>
+<span class="c">##----------------------------------------------------------------------------##</span>
+    
+<span class="c">#Make the lists numpy.arrays for easier use.</span>
+<span class="n">TAVG</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">tavg_data</span><span class="p">)</span>
+<span class="n">SAVG</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">savg_data</span><span class="p">)</span>
+<span class="n">EEG</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">eeg_data</span><span class="p">)</span>
+
+<span class="c">#Plot region averaged time series</span>
+<span class="n">figure</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">savg_time</span><span class="p">,</span> <span class="n">SAVG</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">title</span><span class="p">(</span><span class="s">&quot;Region average&quot;</span><span class="p">)</span>
+
+<span class="c">#Plot EEG time series</span>
+<span class="n">figure</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">eeg_time</span><span class="p">,</span> <span class="n">EEG</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">title</span><span class="p">(</span><span class="s">&quot;EEG&quot;</span><span class="p">)</span>
+
+<span class="n">show</span><span class="p">()</span>
+
+<span class="c">#Surface movie, requires mayavi.malb</span>
+<span class="k">if</span> <span class="n">IMPORTED_MAYAVI</span><span class="p">:</span>
+    <span class="n">st</span> <span class="o">=</span> <span class="n">surface_timeseries</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">surface</span><span class="p">,</span> <span class="n">TAVG</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">])</span>
+
+<span class="c">###EoF###</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="generate_region_demo_data.html"
+                        title="previous chapter">Demo generate_region_demo_data.py</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="surface_deterministic_stimulus.html"
+                        title="next chapter">Demo surface_deterministic_stimulus.py</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/demos/surface_stochastic.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="surface_deterministic_stimulus.html" title="Demo surface_deterministic_stimulus.py"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="generate_region_demo_data.html" title="Demo generate_region_demo_data.py"
+             >previous</a> |</li>
+        <li><a href="../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../demos.html" >demos</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

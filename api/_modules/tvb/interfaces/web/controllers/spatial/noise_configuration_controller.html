@@ -1,0 +1,273 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.interfaces.web.controllers.spatial.noise_configuration_controller &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.interfaces.web.controllers.spatial.noise_configuration_controller</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Ionel Ortelecan &lt;ionel.ortelecan@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">cherrypy</span>
+<span class="kn">from</span> <span class="nn">tvb.config</span> <span class="kn">import</span> <span class="n">SIMULATOR_MODULE</span><span class="p">,</span> <span class="n">SIMULATOR_CLASS</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.abcadapter</span> <span class="kn">import</span> <span class="n">ABCAdapter</span>
+<span class="kn">from</span> <span class="nn">tvb.core.services.flow_service</span> <span class="kn">import</span> <span class="n">FlowService</span>
+<span class="kn">import</span> <span class="nn">tvb.interfaces.web.controllers.base_controller</span> <span class="kn">as</span> <span class="nn">base</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.users_controller</span> <span class="kn">import</span> <span class="n">logged</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.base_controller</span> <span class="kn">import</span> <span class="n">using_template</span><span class="p">,</span> <span class="n">ajax_call</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.entities.context_noise_configuration</span> <span class="kn">import</span> <span class="n">ContextNoiseParameters</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.spatial.base_spatio_temporal_controller</span> <span class="kn">import</span> <span class="n">SpatioTemporalController</span>
+
+
+<span class="c">### SESSION KEY for ContextModelParameter entity.</span>
+<span class="n">KEY_CONTEXT_NC</span> <span class="o">=</span> <span class="s">&quot;ContextForModelParametersOnRegion&quot;</span>
+
+
+<div class="viewcode-block" id="NoiseConfigurationController"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.noise_configuration_controller.NoiseConfigurationController">[docs]</a><span class="k">class</span> <span class="nc">NoiseConfigurationController</span><span class="p">(</span><span class="n">SpatioTemporalController</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Controller class for editing Model Parameters on regions in a visual manner.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">SpatioTemporalController</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;base_template&#39;</span><span class="p">)</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="NoiseConfigurationController.edit_noise_parameters"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.noise_configuration_controller.NoiseConfigurationController.edit_noise_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">edit_noise_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Main method, to initialize Model-Parameter visual-set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">model</span><span class="p">,</span> <span class="n">integrator</span><span class="p">,</span> <span class="n">connectivity</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_from_burst_configuration</span><span class="p">()</span>
+
+        <span class="n">connectivity_viewer_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_connectivity_parameters</span><span class="p">(</span><span class="n">connectivity</span><span class="p">)</span>
+        <span class="n">context_noise_config</span> <span class="o">=</span> <span class="n">ContextNoiseParameters</span><span class="p">(</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">integrator</span><span class="p">)</span>
+        <span class="n">param_names</span><span class="p">,</span> <span class="n">param_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_for_param_sliders</span><span class="p">(</span><span class="s">&#39;0&#39;</span><span class="p">,</span> <span class="n">context_noise_config</span><span class="p">)</span>
+        <span class="n">base</span><span class="o">.</span><span class="n">add2session</span><span class="p">(</span><span class="n">KEY_CONTEXT_NC</span><span class="p">,</span> <span class="n">context_noise_config</span><span class="p">)</span>
+
+        <span class="n">template_specification</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&quot;Simulation - Noise configuration&quot;</span><span class="p">)</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;submit_parameters_url&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;/spatial/noiseconfiguration/submit_noise_configuration&#39;</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;parametersNames&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">param_names</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;paramSlidersData&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">param_data</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;isSingleMode&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">template_specification</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">connectivity_viewer_params</span><span class="p">)</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;mainContent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;spatial/noise_configuration_main&#39;</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;displayDefaultSubmitBtn&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_default_attributes</span><span class="p">(</span><span class="n">template_specification</span><span class="p">)</span>
+    
+    </div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@ajax_call</span><span class="p">()</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="NoiseConfigurationController.update_noise_configuration"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.noise_configuration_controller.NoiseConfigurationController.update_noise_configuration">[docs]</a>    <span class="k">def</span> <span class="nf">update_noise_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the specified model parameter for the first node from the &#39;connectivity_node_indexes&#39;</span>
+<span class="sd">        list and after that replace the model of each node from the &#39;connectivity_node_indexes&#39; list</span>
+<span class="sd">        with the model of the first node from the list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">noise_values</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;noiseValues&#39;</span><span class="p">])</span>
+        <span class="n">selected_regions</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;selectedNodes&#39;</span><span class="p">])</span>
+        <span class="n">context_noise_config</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_CONTEXT_NC</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">node_idx</span> <span class="ow">in</span> <span class="n">selected_regions</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">model_param_idx</span> <span class="ow">in</span> <span class="n">noise_values</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">context_noise_config</span><span class="o">.</span><span class="n">update_noise_configuration</span><span class="p">(</span><span class="n">node_idx</span><span class="p">,</span> <span class="n">model_param_idx</span><span class="p">,</span>
+                                                                <span class="n">noise_values</span><span class="p">[</span><span class="n">model_param_idx</span><span class="p">])</span>
+
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@ajax_call</span><span class="p">()</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="NoiseConfigurationController.load_initial_values"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.noise_configuration_controller.NoiseConfigurationController.load_initial_values">[docs]</a>    <span class="k">def</span> <span class="nf">load_initial_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a json with the current noise configuration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">context_noise_config</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_CONTEXT_NC</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">context_noise_config</span><span class="o">.</span><span class="n">noise_values</span>
+
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@ajax_call</span><span class="p">()</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="NoiseConfigurationController.load_noise_values_for_connectivity_node"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.noise_configuration_controller.NoiseConfigurationController.load_noise_values_for_connectivity_node">[docs]</a>    <span class="k">def</span> <span class="nf">load_noise_values_for_connectivity_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connectivity_index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets currently configured noise parameters for the specified connectivity node</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">connectivity_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">connectivity_index</span><span class="p">)</span>
+        <span class="n">context_noise_config</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_CONTEXT_NC</span><span class="p">)</span>
+        <span class="n">node_values</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">context_noise_config</span><span class="o">.</span><span class="n">noise_values</span><span class="p">)):</span>
+            <span class="n">node_values</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">context_noise_config</span><span class="o">.</span><span class="n">noise_values</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">connectivity_index</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">node_values</span>
+
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@ajax_call</span><span class="p">()</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="NoiseConfigurationController.copy_configuration"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.noise_configuration_controller.NoiseConfigurationController.copy_configuration">[docs]</a>    <span class="k">def</span> <span class="nf">copy_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_node</span><span class="p">,</span> <span class="n">to_nodes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads a noise configuration from ``from_node`` and copies that to all</span>
+<span class="sd">        nodes named in the ``to_nodes`` array</span>
+<span class="sd">        :returns: noise values json array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">from_node</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">from_node</span><span class="p">)</span>
+        <span class="n">to_nodes</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">to_nodes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">from_node</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">to_nodes</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="n">context_model_parameters</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_CONTEXT_NC</span><span class="p">)</span>
+        <span class="n">context_model_parameters</span><span class="o">.</span><span class="n">set_noise_connectivity_nodes</span><span class="p">(</span><span class="n">from_node</span><span class="p">,</span> <span class="n">to_nodes</span><span class="p">)</span>
+        <span class="n">base</span><span class="o">.</span><span class="n">add2session</span><span class="p">(</span><span class="n">KEY_CONTEXT_NC</span><span class="p">,</span> <span class="n">context_model_parameters</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">context_model_parameters</span><span class="o">.</span><span class="n">noise_values</span>
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@ajax_call</span><span class="p">()</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="NoiseConfigurationController.submit_noise_configuration"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.noise_configuration_controller.NoiseConfigurationController.submit_noise_configuration">[docs]</a>    <span class="k">def</span> <span class="nf">submit_noise_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Collects the model parameters values from all the models used for the connectivity nodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">context_noise_config</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_CONTEXT_NC</span><span class="p">)</span>
+        <span class="n">burst_configuration</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">KEY_BURST_CONFIG</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">simulator_group</span> <span class="o">=</span> <span class="n">FlowService</span><span class="p">()</span><span class="o">.</span><span class="n">get_algorithm_by_module_and_class</span><span class="p">(</span><span class="n">SIMULATOR_MODULE</span><span class="p">,</span> <span class="n">SIMULATOR_CLASS</span><span class="p">)</span>
+        <span class="n">simulator_adapter</span> <span class="o">=</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">build_adapter</span><span class="p">(</span><span class="n">simulator_group</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="n">simulator_adapter</span><span class="o">.</span><span class="n">noise_configurable_parameters</span><span class="p">():</span>
+            <span class="n">burst_configuration</span><span class="o">.</span><span class="n">update_simulation_parameter</span><span class="p">(</span><span class="n">param_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">context_noise_config</span><span class="o">.</span><span class="n">noise_values</span><span class="p">))</span> 
+        <span class="c">### Clean from session drawing context</span>
+        <span class="n">base</span><span class="o">.</span><span class="n">remove_from_session</span><span class="p">(</span><span class="n">KEY_CONTEXT_NC</span><span class="p">)</span>
+        <span class="c">### Update in session BURST configuration for burst-page. </span>
+        <span class="n">base</span><span class="o">.</span><span class="n">add2session</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">KEY_BURST_CONFIG</span><span class="p">,</span> <span class="n">burst_configuration</span><span class="o">.</span><span class="n">clone</span><span class="p">())</span>
+        <span class="k">raise</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">HTTPRedirect</span><span class="p">(</span><span class="s">&quot;/burst/&quot;</span><span class="p">)</span>
+
+        </div>
+<div class="viewcode-block" id="NoiseConfigurationController.fill_default_attributes"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.noise_configuration_controller.NoiseConfigurationController.fill_default_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">fill_default_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_dictionary</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overwrite base controller to add required parameters for adapter templates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">base</span><span class="o">.</span><span class="n">KEY_SECTION</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;burst&#39;</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">base</span><span class="o">.</span><span class="n">KEY_SUB_SECTION</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;noiseconfig&#39;</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">base</span><span class="o">.</span><span class="n">KEY_INCLUDE_RESOURCES</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;spatial/included_resources&#39;</span>
+        <span class="n">base</span><span class="o">.</span><span class="n">BaseController</span><span class="o">.</span><span class="n">fill_default_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_dictionary</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">template_dictionary</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../../index.html">
+              <img class="logo" src="../../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

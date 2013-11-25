@@ -1,0 +1,413 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.interfaces.web.controllers.spatial.surface_model_parameters_controller &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.interfaces.web.controllers.spatial.surface_model_parameters_controller</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Bogdan Neacsa &lt;bogdan.neacsa@codemart.ro&gt;</span>
+<span class="sd">.. moduleauthor:: Ionel Ortelecan &lt;ionel.ortelecan@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">cherrypy</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">tvb.basic.traits.traited_interface</span> <span class="kn">as</span> <span class="nn">interface</span>
+<span class="kn">import</span> <span class="nn">tvb.datatypes.equations</span> <span class="kn">as</span> <span class="nn">equations</span>
+<span class="kn">import</span> <span class="nn">tvb.interfaces.web.controllers.base_controller</span> <span class="kn">as</span> <span class="nn">base</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.abcadapter</span> <span class="kn">import</span> <span class="n">ABCAdapter</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.users_controller</span> <span class="kn">import</span> <span class="n">logged</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.base_controller</span> <span class="kn">import</span> <span class="n">using_template</span><span class="p">,</span> <span class="n">ajax_call</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.traits.parameters_factory</span> <span class="kn">import</span> <span class="n">get_traited_instance_for_name</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.spatial.base_spatio_temporal_controller</span> <span class="kn">import</span> <span class="n">SpatioTemporalController</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.controllers.spatial.base_spatio_temporal_controller</span> <span class="kn">import</span> <span class="n">PARAMS_MODEL_PATTERN</span>
+<span class="kn">from</span> <span class="nn">tvb.interfaces.web.entities.context_model_parameters</span> <span class="kn">import</span> <span class="n">SurfaceContextModelParameters</span><span class="p">,</span> <span class="n">EquationDisplayer</span>
+<span class="kn">from</span> <span class="nn">tvb.core.adapters.abcadapter</span> <span class="kn">import</span> <span class="n">KEY_EQUATION</span><span class="p">,</span> <span class="n">KEY_FOCAL_POINTS</span>
+
+
+<span class="n">MODEL_PARAM</span> <span class="o">=</span> <span class="s">&#39;model_param&#39;</span>
+<span class="n">MODEL_PARAM_EQUATION</span> <span class="o">=</span> <span class="s">&#39;model_param_equation&#39;</span>
+<span class="n">PARAM_SUFFIX</span> <span class="o">=</span> <span class="s">&#39;_parameters&#39;</span>
+<span class="n">PARAMETERS</span> <span class="o">=</span> <span class="s">&#39;parameters&#39;</span>
+
+<span class="c">### SESSION KEY for ContextModelParameter entity.</span>
+<span class="n">KEY_CONTEXT_MPS</span> <span class="o">=</span> <span class="s">&quot;ContextForModelParametersOnSurface&quot;</span>
+
+
+<div class="viewcode-block" id="SurfaceModelParametersController"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_model_parameters_controller.SurfaceModelParametersController">[docs]</a><span class="k">class</span> <span class="nc">SurfaceModelParametersController</span><span class="p">(</span><span class="n">SpatioTemporalController</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Control for defining parameters of a model in a visual manner.</span>
+<span class="sd">    Here we focus on model-parameters spread over a brain surface.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">SpatioTemporalController</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotted_equations_prefixes</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;model_param&#39;</span><span class="p">,</span> <span class="s">&#39;min_x&#39;</span><span class="p">,</span> <span class="s">&#39;max_x&#39;</span><span class="p">]</span>
+
+
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;base_template&#39;</span><span class="p">)</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="SurfaceModelParametersController.edit_model_parameters"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_model_parameters_controller.SurfaceModelParametersController.edit_model_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">edit_model_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Main method, to initialize Model-Parameter visual-set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">model</span><span class="p">,</span> <span class="n">integrator</span><span class="p">,</span> <span class="n">connectivity</span><span class="p">,</span> <span class="n">surface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_from_burst_configuration</span><span class="p">()</span>
+        <span class="n">context_model_parameters</span> <span class="o">=</span> <span class="n">SurfaceContextModelParameters</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">connectivity</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">integrator</span><span class="p">)</span>
+        <span class="n">base</span><span class="o">.</span><span class="n">add2session</span><span class="p">(</span><span class="n">KEY_CONTEXT_MPS</span><span class="p">,</span> <span class="n">context_model_parameters</span><span class="p">)</span>
+
+        <span class="n">template_specification</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&quot;Spatio temporal - Model parameters&quot;</span><span class="p">)</span>
+        <span class="n">template_specification</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">display_surface</span><span class="p">(</span><span class="n">surface</span><span class="o">.</span><span class="n">gid</span><span class="p">))</span>
+        <span class="n">model_params_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_surface_model_parameters_data</span><span class="p">()</span>
+        <span class="n">model_params_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_entra_equation_entries</span><span class="p">(</span><span class="n">model_params_data</span><span class="p">)</span>
+        <span class="n">template_specification</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">model_params_data</span><span class="p">)</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;submit_parameters_url&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;/spatial/modelparameters/surface/submit_model_parameters&#39;</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;mainContent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;spatial/model_param_surface_main&#39;</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;equationViewerUrl&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;/spatial/modelparameters/surface/get_equation_chart&#39;</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;equationsPrefixes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plotted_equations_prefixes</span><span class="p">)</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;submitSurfaceParametersBtn&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_default_attributes</span><span class="p">(</span><span class="n">template_specification</span><span class="p">)</span>
+
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;spatial/model_param_surface_left&#39;</span><span class="p">)</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="SurfaceModelParametersController.apply_equation"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_model_parameters_controller.SurfaceModelParametersController.apply_equation">[docs]</a>    <span class="k">def</span> <span class="nf">apply_equation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Applies an equations for computing a model parameter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">submitted_data</span> <span class="o">=</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">collapse_arrays</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;model_param&#39;</span><span class="p">])</span>
+        <span class="n">model_param</span><span class="p">,</span> <span class="n">equation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_equation</span><span class="p">(</span><span class="n">submitted_data</span><span class="p">)</span>
+        <span class="n">context_model_parameters</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_CONTEXT_MPS</span><span class="p">)</span>
+        <span class="n">context_model_parameters</span><span class="o">.</span><span class="n">apply_equation</span><span class="p">(</span><span class="n">model_param</span><span class="p">,</span> <span class="n">equation</span><span class="p">)</span>
+        <span class="n">base</span><span class="o">.</span><span class="n">add2session</span><span class="p">(</span><span class="n">KEY_CONTEXT_MPS</span><span class="p">,</span> <span class="n">context_model_parameters</span><span class="p">)</span>
+        <span class="n">template_specification</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_surface_model_parameters_data</span><span class="p">(</span><span class="n">model_param</span><span class="p">)</span>
+        <span class="n">template_specification</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_entra_equation_entries</span><span class="p">(</span><span class="n">template_specification</span><span class="p">,</span>
+                                                                  <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;min_x&#39;</span><span class="p">],</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;max_x&#39;</span><span class="p">])</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;equationViewerUrl&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;/spatial/modelparameters/surface/get_equation_chart&#39;</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;equationsPrefixes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plotted_equations_prefixes</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_default_attributes</span><span class="p">(</span><span class="n">template_specification</span><span class="p">)</span>
+
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;spatial/model_param_surface_focal_points&#39;</span><span class="p">)</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="SurfaceModelParametersController.apply_focal_point"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_model_parameters_controller.SurfaceModelParametersController.apply_focal_point">[docs]</a>    <span class="k">def</span> <span class="nf">apply_focal_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_param</span><span class="p">,</span> <span class="n">triangle_index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds the given focal point to the list of focal points specified for</span>
+<span class="sd">        the equation used for computing the values for the specified model param.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">template_specification</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">context_model_parameters</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_CONTEXT_MPS</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">context_model_parameters</span><span class="o">.</span><span class="n">get_equation_for_parameter</span><span class="p">(</span><span class="n">model_param</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">context_model_parameters</span><span class="o">.</span><span class="n">apply_focal_point</span><span class="p">(</span><span class="n">model_param</span><span class="p">,</span> <span class="n">triangle_index</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;error_msg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;You have no equation applied for this parameter.&quot;</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;focal_points&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">context_model_parameters</span><span class="o">.</span><span class="n">get_focal_points_for_parameter</span><span class="p">(</span><span class="n">model_param</span><span class="p">)</span>
+        <span class="n">template_specification</span><span class="p">[</span><span class="s">&#39;focal_points_json&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">context_model_parameters</span><span class="o">.</span><span class="n">get_focal_points_for_parameter</span><span class="p">(</span><span class="n">model_param</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">template_specification</span>
+
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;spatial/model_param_surface_focal_points&#39;</span><span class="p">)</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="SurfaceModelParametersController.remove_focal_point"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_model_parameters_controller.SurfaceModelParametersController.remove_focal_point">[docs]</a>    <span class="k">def</span> <span class="nf">remove_focal_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_param</span><span class="p">,</span> <span class="n">vertex_index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes the given focal point from the list of focal points specified for</span>
+<span class="sd">        the equation used for computing the values for the specified model param.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">context_model_parameters</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_CONTEXT_MPS</span><span class="p">)</span>
+        <span class="n">context_model_parameters</span><span class="o">.</span><span class="n">remove_focal_point</span><span class="p">(</span><span class="n">model_param</span><span class="p">,</span> <span class="n">vertex_index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;focal_points&#39;</span><span class="p">:</span> <span class="n">context_model_parameters</span><span class="o">.</span><span class="n">get_focal_points_for_parameter</span><span class="p">(</span><span class="n">model_param</span><span class="p">),</span>
+                <span class="s">&#39;focal_points_json&#39;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">context_model_parameters</span><span class="o">.</span><span class="n">get_focal_points_for_parameter</span><span class="p">(</span><span class="n">model_param</span><span class="p">))}</span>
+
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;spatial/model_param_surface_focal_points&#39;</span><span class="p">)</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="SurfaceModelParametersController.get_focal_points"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_model_parameters_controller.SurfaceModelParametersController.get_focal_points">[docs]</a>    <span class="k">def</span> <span class="nf">get_focal_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_param</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the html which displays the list of focal points selected for the</span>
+<span class="sd">        equation used for computing the values for the given model parameter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">context_model_parameters</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_CONTEXT_MPS</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;focal_points&#39;</span><span class="p">:</span> <span class="n">context_model_parameters</span><span class="o">.</span><span class="n">get_focal_points_for_parameter</span><span class="p">(</span><span class="n">model_param</span><span class="p">),</span>
+                <span class="s">&#39;focal_points_json&#39;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">context_model_parameters</span><span class="o">.</span><span class="n">get_focal_points_for_parameter</span><span class="p">(</span><span class="n">model_param</span><span class="p">))}</span>
+
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@ajax_call</span><span class="p">()</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="SurfaceModelParametersController.submit_model_parameters"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_model_parameters_controller.SurfaceModelParametersController.submit_model_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">submit_model_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Collects the model parameters values from all the models used for the surface vertices.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">context_model_parameters</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_CONTEXT_MPS</span><span class="p">)</span>
+        <span class="n">burst_configuration</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">KEY_BURST_CONFIG</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">original_param</span><span class="p">,</span> <span class="n">modified_param</span> <span class="ow">in</span> <span class="n">context_model_parameters</span><span class="o">.</span><span class="n">prepared_model_parameter_names</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">full_name</span> <span class="o">=</span> <span class="n">PARAMS_MODEL_PATTERN</span> <span class="o">%</span> <span class="p">(</span><span class="n">context_model_parameters</span><span class="o">.</span><span class="n">model_name</span><span class="p">,</span> <span class="n">original_param</span><span class="p">)</span>
+            <span class="n">param_data</span> <span class="o">=</span> <span class="n">context_model_parameters</span><span class="o">.</span><span class="n">get_data_for_model_param</span><span class="p">(</span><span class="n">original_param</span><span class="p">,</span> <span class="n">modified_param</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param_data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">equation</span> <span class="o">=</span> <span class="n">param_data</span><span class="p">[</span><span class="n">KEY_EQUATION</span><span class="p">]</span>
+                <span class="n">param_data</span><span class="p">[</span><span class="n">KEY_EQUATION</span><span class="p">]</span> <span class="o">=</span> <span class="n">equation</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">equation</span><span class="p">)</span>
+                <span class="n">param_data</span><span class="p">[</span><span class="n">KEY_FOCAL_POINTS</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">param_data</span><span class="p">[</span><span class="n">KEY_FOCAL_POINTS</span><span class="p">])</span>
+                <span class="n">param_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">param_data</span><span class="p">)</span>
+            <span class="n">burst_configuration</span><span class="o">.</span><span class="n">update_simulation_parameter</span><span class="p">(</span><span class="n">full_name</span><span class="p">,</span> <span class="n">param_data</span><span class="p">)</span>
+        <span class="c">### Clean from session drawing context</span>
+        <span class="n">base</span><span class="o">.</span><span class="n">remove_from_session</span><span class="p">(</span><span class="n">KEY_CONTEXT_MPS</span><span class="p">)</span>
+        <span class="c">### Update in session BURST configuration for burst-page.</span>
+        <span class="n">base</span><span class="o">.</span><span class="n">add2session</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">KEY_BURST_CONFIG</span><span class="p">,</span> <span class="n">burst_configuration</span><span class="o">.</span><span class="n">clone</span><span class="p">())</span>
+        <span class="k">raise</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">HTTPRedirect</span><span class="p">(</span><span class="s">&quot;/burst/&quot;</span><span class="p">)</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">_add_entra_equation_entries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_list</span><span class="p">,</span> <span class="n">min_x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_x</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add additional entries for the min and max of the plot.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">plot_axis_parameters</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">min_x</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;min_x&#39;</span><span class="p">,</span> <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Min distance(mm)&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;str&#39;</span><span class="p">,</span> <span class="s">&quot;disabled&quot;</span><span class="p">:</span> <span class="s">&quot;False&quot;</span><span class="p">,</span> <span class="s">&quot;default&quot;</span><span class="p">:</span> <span class="n">min_x</span><span class="p">,</span>
+                 <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;The minimum value of the x-axis for spatial equation plot.&quot;</span><span class="p">}</span>
+        <span class="n">max_x</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;max_x&#39;</span><span class="p">,</span> <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Max distance(mm)&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;str&#39;</span><span class="p">,</span> <span class="s">&quot;disabled&quot;</span><span class="p">:</span> <span class="s">&quot;False&quot;</span><span class="p">,</span> <span class="s">&quot;default&quot;</span><span class="p">:</span> <span class="n">max_x</span><span class="p">,</span>
+                 <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;The maximum value of the x-axis for spatial equation plot.&quot;</span><span class="p">}</span>
+        <span class="n">plot_axis_parameters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">min_x</span><span class="p">)</span>
+        <span class="n">plot_axis_parameters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">max_x</span><span class="p">)</span>
+        <span class="n">input_list</span><span class="p">[</span><span class="s">&#39;parametersEquationPlotDict&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">plot_axis_parameters</span>
+        <span class="k">return</span> <span class="n">input_list</span>
+
+
+<div class="viewcode-block" id="SurfaceModelParametersController.get_surface_model_parameters_data"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_model_parameters_controller.SurfaceModelParametersController.get_surface_model_parameters_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_surface_model_parameters_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_selected_model_param</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dictionary which contains all the data needed for drawing the</span>
+<span class="sd">        model parameters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">context_model_parameters</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_CONTEXT_MPS</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">default_selected_model_param</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">default_selected_model_param</span> <span class="o">=</span> <span class="n">context_model_parameters</span><span class="o">.</span><span class="n">prepared_model_parameter_names</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">equation_displayer</span> <span class="o">=</span> <span class="n">EquationDisplayer</span><span class="p">()</span>
+        <span class="n">equation_displayer</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">bound</span> <span class="o">=</span> <span class="n">interface</span><span class="o">.</span><span class="n">INTERFACE_ATTRIBUTES_ONLY</span>
+        <span class="n">input_list</span> <span class="o">=</span> <span class="n">equation_displayer</span><span class="o">.</span><span class="n">interface</span><span class="p">[</span><span class="n">interface</span><span class="o">.</span><span class="n">INTERFACE_ATTRIBUTES</span><span class="p">]</span>
+        <span class="n">input_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock_midpoints</span><span class="p">(</span><span class="n">input_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">options</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">original_param</span><span class="p">,</span> <span class="n">modified_param</span> <span class="ow">in</span> <span class="n">context_model_parameters</span><span class="o">.</span><span class="n">prepared_model_parameter_names</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">attributes</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">input_list</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fill_default_values</span><span class="p">(</span><span class="n">attributes</span><span class="p">,</span> <span class="n">modified_param</span><span class="p">)</span>
+            <span class="n">option</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="n">original_param</span><span class="p">,</span> <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">modified_param</span><span class="p">,</span> <span class="s">&#39;attributes&#39;</span><span class="p">:</span> <span class="n">attributes</span><span class="p">}</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
+
+        <span class="n">input_list</span> <span class="o">=</span> <span class="p">[{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;model_param&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;select&#39;</span><span class="p">,</span> <span class="s">&#39;default&#39;</span><span class="p">:</span> <span class="n">default_selected_model_param</span><span class="p">,</span>
+                       <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Model param&#39;</span><span class="p">,</span> <span class="s">&#39;required&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span> <span class="s">&#39;options&#39;</span><span class="p">:</span> <span class="n">options</span><span class="p">}]</span>
+        <span class="n">input_list</span> <span class="o">=</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">prepare_param_names</span><span class="p">(</span><span class="n">input_list</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">base</span><span class="o">.</span><span class="n">KEY_PARAMETERS_CONFIG</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span> <span class="s">&#39;inputList&#39;</span><span class="p">:</span> <span class="n">input_list</span><span class="p">,</span>
+                <span class="s">&#39;applied_equations&#39;</span><span class="p">:</span> <span class="n">context_model_parameters</span><span class="o">.</span><span class="n">get_configure_info</span><span class="p">()}</span>
+
+</div>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_fill_default_values</span><span class="p">(</span><span class="n">input_list</span><span class="p">,</span> <span class="n">model_param</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If the user already applied an equation, for the given model parameter,</span>
+<span class="sd">        than the form should be filled with the provided data for that equation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#TODO: try to use fill_defaults from abcadapter</span>
+
+        <span class="n">context_model_parameters</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_from_session</span><span class="p">(</span><span class="n">KEY_CONTEXT_MPS</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">model_param</span> <span class="ow">in</span> <span class="n">context_model_parameters</span><span class="o">.</span><span class="n">applied_equations</span><span class="p">:</span>
+            <span class="n">model_param_data</span> <span class="o">=</span> <span class="n">context_model_parameters</span><span class="o">.</span><span class="n">applied_equations</span><span class="p">[</span><span class="n">model_param</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">KEY_EQUATION</span> <span class="ow">in</span> <span class="n">model_param_data</span><span class="p">:</span>
+                <span class="n">equation</span> <span class="o">=</span> <span class="n">model_param_data</span><span class="p">[</span><span class="n">KEY_EQUATION</span><span class="p">]</span>
+                <span class="n">equation_name</span> <span class="o">=</span> <span class="n">equation</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+                <span class="n">equation_params</span> <span class="o">=</span> <span class="n">equation</span><span class="o">.</span><span class="n">parameters</span>
+                <span class="k">for</span> <span class="nb">input</span> <span class="ow">in</span> <span class="n">input_list</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">input</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;model_param_equation&#39;</span><span class="p">:</span>
+                        <span class="nb">input</span><span class="p">[</span><span class="s">&#39;default&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">equation_name</span>
+                        <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="nb">input</span><span class="p">[</span><span class="s">&#39;options&#39;</span><span class="p">]:</span>
+                            <span class="k">if</span> <span class="n">option</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">equation_name</span><span class="p">:</span>
+                                <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">option</span><span class="p">[</span><span class="s">&#39;attributes&#39;</span><span class="p">]:</span>
+                                    <span class="k">if</span> <span class="n">attr</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;parameters&#39;</span><span class="p">:</span>
+                                        <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">[</span><span class="s">&#39;attributes&#39;</span><span class="p">]:</span>
+                                            <span class="n">attribute</span><span class="p">[</span><span class="s">&#39;default&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">equation_params</span><span class="p">[</span><span class="n">attribute</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]]</span>
+                                        <span class="k">return</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_compute_equation</span><span class="p">(</span><span class="n">parameters</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method will return an equation and the model parameter on</span>
+<span class="sd">        which should be applied the equation.</span>
+<span class="sd">        The equation is constructed based on the parameters collected from the UI.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">model_param</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="n">MODEL_PARAM</span><span class="p">]</span>
+        <span class="n">equation</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="n">MODEL_PARAM</span> <span class="o">+</span> <span class="n">PARAM_SUFFIX</span><span class="p">][</span><span class="n">MODEL_PARAM_EQUATION</span><span class="p">]</span>
+        <span class="n">equation_params</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="n">MODEL_PARAM</span> <span class="o">+</span> <span class="n">PARAM_SUFFIX</span><span class="p">][</span><span class="n">MODEL_PARAM_EQUATION</span> <span class="o">+</span> <span class="n">PARAM_SUFFIX</span><span class="p">][</span><span class="n">equation</span><span class="p">]</span>
+        <span class="n">equation_params</span> <span class="o">=</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">collapse_arrays</span><span class="p">(</span><span class="n">equation_params</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">if</span> <span class="n">PARAMETERS</span> <span class="o">+</span> <span class="n">PARAM_SUFFIX</span> <span class="ow">in</span> <span class="n">equation_params</span><span class="p">:</span>
+            <span class="n">equation_params</span> <span class="o">=</span> <span class="n">equation_params</span><span class="p">[</span><span class="n">PARAMETERS</span> <span class="o">+</span> <span class="n">PARAM_SUFFIX</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">equation_params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">equation_params</span><span class="p">:</span>
+            <span class="n">equation_params</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">equation_params</span><span class="p">[</span><span class="n">param</span><span class="p">])</span>
+        <span class="n">selected_equation</span> <span class="o">=</span> <span class="n">get_traited_instance_for_name</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">equations</span><span class="o">.</span><span class="n">Equation</span><span class="p">,</span> <span class="p">{</span><span class="n">PARAMETERS</span><span class="p">:</span> <span class="n">equation_params</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">model_param</span><span class="p">,</span> <span class="n">selected_equation</span>
+
+
+<div class="viewcode-block" id="SurfaceModelParametersController.fill_default_attributes"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_model_parameters_controller.SurfaceModelParametersController.fill_default_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">fill_default_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_dictionary</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overwrite base controller to add required parameters for adapter templates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">base</span><span class="o">.</span><span class="n">KEY_SECTION</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;burst&#39;</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">base</span><span class="o">.</span><span class="n">KEY_SUB_SECTION</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;surfacemodel&#39;</span>
+        <span class="n">template_dictionary</span><span class="p">[</span><span class="n">base</span><span class="o">.</span><span class="n">KEY_INCLUDE_RESOURCES</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;spatial/included_resources&#39;</span>
+        <span class="n">base</span><span class="o">.</span><span class="n">BaseController</span><span class="o">.</span><span class="n">fill_default_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_dictionary</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">template_dictionary</span>
+
+</div>
+    <span class="nd">@cherrypy.expose</span>
+    <span class="nd">@using_template</span><span class="p">(</span><span class="s">&#39;spatial/equation_displayer&#39;</span><span class="p">)</span>
+    <span class="nd">@logged</span><span class="p">()</span>
+<div class="viewcode-block" id="SurfaceModelParametersController.get_equation_chart"><a class="viewcode-back" href="../../../../../../tvb.interfaces.web.controllers.spatial.html#tvb.interfaces.web.controllers.spatial.surface_model_parameters_controller.SurfaceModelParametersController.get_equation_chart">[docs]</a>    <span class="k">def</span> <span class="nf">get_equation_chart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">form_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the html which contains the plot with the equation selected by the user for a certain model param.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">min_x</span><span class="p">,</span> <span class="n">max_x</span><span class="p">,</span> <span class="n">ui_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_x_axis_range</span><span class="p">(</span><span class="n">form_data</span><span class="p">[</span><span class="s">&#39;min_x&#39;</span><span class="p">],</span> <span class="n">form_data</span><span class="p">[</span><span class="s">&#39;max_x&#39;</span><span class="p">])</span>
+            <span class="n">form_data</span> <span class="o">=</span> <span class="n">ABCAdapter</span><span class="o">.</span><span class="n">collapse_arrays</span><span class="p">(</span><span class="n">form_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">plotted_equations_prefixes</span><span class="p">)</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">equation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_equation</span><span class="p">(</span><span class="n">form_data</span><span class="p">)</span>
+            <span class="n">series_data</span><span class="p">,</span> <span class="n">display_ui_message</span> <span class="o">=</span> <span class="n">equation</span><span class="o">.</span><span class="n">get_series_data</span><span class="p">(</span><span class="n">min_range</span><span class="o">=</span><span class="n">min_x</span><span class="p">,</span> <span class="n">max_range</span><span class="o">=</span><span class="n">max_x</span><span class="p">)</span>
+            <span class="n">json_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_series_json</span><span class="p">(</span><span class="n">series_data</span><span class="p">,</span> <span class="s">&quot;Spatial&quot;</span><span class="p">)</span>
+            <span class="n">all_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_final_json</span><span class="p">([</span><span class="n">json_data</span><span class="p">])</span>
+            <span class="n">ui_message</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+            <span class="k">if</span> <span class="n">display_ui_message</span><span class="p">:</span>
+                <span class="n">ui_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ui_message</span><span class="p">([</span><span class="s">&quot;spatial&quot;</span><span class="p">])</span>
+
+            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;allSeries&#39;</span><span class="p">:</span> <span class="n">all_series</span><span class="p">,</span> <span class="s">&#39;prefix&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">plotted_equations_prefixes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;message&#39;</span><span class="p">:</span> <span class="n">ui_message</span><span class="p">}</span>
+        <span class="k">except</span> <span class="ne">NameError</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;allSeries&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span> <span class="s">&#39;errorMsg&#39;</span><span class="p">:</span> <span class="s">&quot;Incorrect parameters for equation passed.&quot;</span><span class="p">}</span>
+        <span class="k">except</span> <span class="ne">SyntaxError</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;allSeries&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span> <span class="s">&#39;errorMsg&#39;</span><span class="p">:</span> <span class="s">&quot;Some of the parameters hold invalid characters.&quot;</span><span class="p">}</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;allSeries&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span> <span class="s">&#39;errorMsg&#39;</span><span class="p">:</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">}</span>
+        </div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../../index.html">
+              <img class="logo" src="../../../../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

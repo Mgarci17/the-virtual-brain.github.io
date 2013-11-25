@@ -1,0 +1,523 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tvb.core.utils &mdash; The Virtual Brain 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="top" title="The Virtual Brain 1.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tvb.core.utils</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># TheVirtualBrain-Framework Package. This package holds all Data Management, and </span>
+<span class="c"># Web-UI helpful to run brain-simulations. To use it, you also need do download</span>
+<span class="c"># TheVirtualBrain-Scientific Package (for simulators). See content of the</span>
+<span class="c"># documentation-folder for more details. See also http://www.thevirtualbrain.org</span>
+<span class="c">#</span>
+<span class="c"># (c) 2012-2013, Baycrest Centre for Geriatric Care (&quot;Baycrest&quot;)</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it under </span>
+<span class="c"># the terms of the GNU General Public License version 2 as published by the Free</span>
+<span class="c"># Software Foundation. This program is distributed in the hope that it will be</span>
+<span class="c"># useful, but WITHOUT ANY WARRANTY; without even the implied warranty of </span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public</span>
+<span class="c"># License for more details. You should have received a copy of the GNU General </span>
+<span class="c"># Public License along with this program; if not, you can download it here</span>
+<span class="c"># http://www.gnu.org/licenses/old-licenses/gpl-2.0</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c">#   CITATION:</span>
+<span class="c"># When using The Virtual Brain for scientific publications, please cite it as follows:</span>
+<span class="c">#</span>
+<span class="c">#   Paula Sanz Leon, Stuart A. Knock, M. Marmaduke Woodman, Lia Domide,</span>
+<span class="c">#   Jochen Mersmann, Anthony R. McIntosh, Viktor Jirsa (2013)</span>
+<span class="c">#       The Virtual Brain: a simulator of primate brain network dynamics.</span>
+<span class="c">#   Frontiers in Neuroinformatics (7:10. doi: 10.3389/fninf.2013.00010)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. moduleauthor:: Lia Domide &lt;lia.domide@codemart.ro&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">io</span> <span class="k">as</span> <span class="n">scipy_io</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.config.settings</span> <span class="kn">import</span> <span class="n">TVBSettings</span> <span class="k">as</span> <span class="n">configFile</span>
+<span class="kn">from</span> <span class="nn">tvb.basic.logger.builder</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">tvb.core.decorators</span> <span class="kn">import</span> <span class="n">user_environment_execution</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+<span class="n">MATLAB</span> <span class="o">=</span> <span class="s">&quot;matlab&quot;</span>
+<span class="n">OCTAVE</span> <span class="o">=</span> <span class="s">&quot;octave&quot;</span>
+
+<span class="n">CHAR_SEPARATOR</span> <span class="o">=</span> <span class="s">&quot;__&quot;</span>
+<span class="n">CHAR_SPACE</span> <span class="o">=</span> <span class="s">&quot;--&quot;</span>
+<span class="n">CHAR_DRIVE</span> <span class="o">=</span> <span class="s">&quot;-DriVe-&quot;</span>
+<span class="n">DRIVE_SEP</span> <span class="o">=</span> <span class="s">&quot;:&quot;</span>
+<span class="n">COMPLEX_TIME_FORMAT</span> <span class="o">=</span> <span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s">,%H-%M-%S.</span><span class="si">%f</span><span class="s">&#39;</span>
+<span class="c"># LESS_COMPLEX_TIME_FORMAT is also compatible with data exported from TVB 1.0. </span>
+<span class="c"># This is only used as a fallback in the string to date conversion.</span>
+<span class="n">LESS_COMPLEX_TIME_FORMAT</span> <span class="o">=</span> <span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s">,%H-%M-%S&#39;</span>
+<span class="n">SIMPLE_TIME_FORMAT</span> <span class="o">=</span> <span class="s">&quot;%m-</span><span class="si">%d</span><span class="s">-%Y&quot;</span>
+
+
+<span class="c">################## PATH related methods start here ###############</span>
+
+<div class="viewcode-block" id="path2url_part"><a class="viewcode-back" href="../../../tvb.core.html#tvb.core.utils.path2url_part">[docs]</a><span class="k">def</span> <span class="nf">path2url_part</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare a File System Path for passing into an URL.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">configFile</span><span class="o">.</span><span class="n">TVB_STORAGE</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">file_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span> <span class="n">CHAR_SEPARATOR</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="n">CHAR_SPACE</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">DRIVE_SEP</span><span class="p">,</span> <span class="n">CHAR_DRIVE</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="url2path"><a class="viewcode-back" href="../../../tvb.core.html#tvb.core.utils.url2path">[docs]</a><span class="k">def</span> <span class="nf">url2path</span><span class="p">(</span><span class="n">encoded_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve File System Path from encoded URL (inverse of path2url_part).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">encoded_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">CHAR_SEPARATOR</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">CHAR_SPACE</span><span class="p">,</span> <span class="s">&quot; &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">CHAR_DRIVE</span><span class="p">,</span> <span class="n">DRIVE_SEP</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="get_unique_file_name"><a class="viewcode-back" href="../../../tvb.core.html#tvb.core.utils.get_unique_file_name">[docs]</a><span class="k">def</span> <span class="nf">get_unique_file_name</span><span class="p">(</span><span class="n">storage_folder</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">try_number</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute non-existent file name, in storage_folder.</span>
+<span class="sd">    Try file_name, and if already exists, try adding a number.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c">#TODO this method should be re-tought</span>
+    <span class="n">name</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">try_number</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">file_</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">-</span><span class="si">%s%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">ext</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">file_</span> <span class="o">=</span> <span class="n">file_name</span>
+    <span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">storage_folder</span><span class="p">,</span> <span class="n">file_</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">full_path</span><span class="p">):</span>
+        <span class="c">#Try another name, by appending the consecutive try_number</span>
+        <span class="k">return</span> <span class="n">get_unique_file_name</span><span class="p">(</span><span class="n">storage_folder</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">try_number</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">full_path</span><span class="p">,</span> <span class="n">file_</span>
+
+
+<span class="c">################## PATH related methods end here ###############    </span>
+
+
+<span class="c">################## FILE related methods start here ###############</span>
+</div>
+<div class="viewcode-block" id="read_matlab_data"><a class="viewcode-back" href="../../../tvb.core.html#tvb.core.utils.read_matlab_data">[docs]</a><span class="k">def</span> <span class="nf">read_matlab_data</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">matlab_data_name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read array from matlab file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">matlab_data</span> <span class="o">=</span> <span class="n">scipy_io</span><span class="o">.</span><span class="n">matlab</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Could not read Matlab content from: &quot;</span> <span class="o">+</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Matlab files must be saved in a format &lt;= -V7...&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">exc</span>
+
+    <span class="k">return</span> <span class="n">matlab_data</span><span class="p">[</span><span class="n">matlab_data_name</span><span class="p">]</span>
+
+
+</div>
+<div class="viewcode-block" id="store_list_data"><a class="viewcode-back" href="../../../tvb.core.html#tvb.core.utils.store_list_data">[docs]</a><span class="k">def</span> <span class="nf">store_list_data</span><span class="p">(</span><span class="n">data_list</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">storage_folder</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write a list into a file using CSV writer.</span>
+<span class="sd">    CSV writer, better than numpy, write also Strings</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">data_list</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">data_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_list</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Invalid given type!! &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">data_list</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
+        <span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">storage_folder</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">full_path</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">full_path</span><span class="p">,</span> <span class="n">file_name</span> <span class="o">=</span> <span class="n">get_unique_file_name</span><span class="p">(</span><span class="n">storage_folder</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+
+    <span class="c"># generic writer, capable to write strings also</span>
+    <span class="n">destination</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">)</span>
+    <span class="n">csv_writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s">&#39; &#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data_list</span><span class="p">:</span>
+            <span class="n">csv_writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">csv_writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">data_list</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">file_name</span>
+
+
+<span class="c">################## FILE related methods end here ###############  </span>
+
+
+<span class="c">################## CONVERT related methods start here ###############</span>
+</div>
+<div class="viewcode-block" id="parse_json_parameters"><a class="viewcode-back" href="../../../tvb.core.html#tvb.core.utils.parse_json_parameters">[docs]</a><span class="k">def</span> <span class="nf">parse_json_parameters</span><span class="p">(</span><span class="n">parameters</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    From JSON with Unicodes, return a dictionary having strings as keys.</span>
+<span class="sd">    Loading from DB a JSON will return instead of string keys, unicodes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+    <span class="n">new_params</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="n">new_params</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="k">return</span> <span class="n">new_params</span>
+
+
+</div>
+<div class="viewcode-block" id="string2date"><a class="viewcode-back" href="../../../tvb.core.html#tvb.core.utils.string2date">[docs]</a><span class="k">def</span> <span class="nf">string2date</span><span class="p">(</span><span class="n">string_input</span><span class="p">,</span> <span class="n">complex_format</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">date_format</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read date from string, after internal format&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">date_format</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">string_input</span><span class="p">,</span> <span class="n">date_format</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">complex_format</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">string_input</span><span class="p">,</span> <span class="n">COMPLEX_TIME_FORMAT</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="c"># For backwards compatibility with TVB 1.0</span>
+            <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">string_input</span><span class="p">,</span> <span class="n">LESS_COMPLEX_TIME_FORMAT</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">string_input</span><span class="p">,</span> <span class="n">SIMPLE_TIME_FORMAT</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="date2string"><a class="viewcode-back" href="../../../tvb.core.html#tvb.core.utils.date2string">[docs]</a><span class="k">def</span> <span class="nf">date2string</span><span class="p">(</span><span class="n">date_input</span><span class="p">,</span> <span class="n">complex_format</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">date_format</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert date into string, after internal format&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">date_input</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&quot;None&quot;</span>
+
+    <span class="k">if</span> <span class="n">date_format</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">date_input</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">date_format</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">complex_format</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">date_input</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">COMPLEX_TIME_FORMAT</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">date_input</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">SIMPLE_TIME_FORMAT</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="timedelta2string"><a class="viewcode-back" href="../../../tvb.core.html#tvb.core.utils.timedelta2string">[docs]</a><span class="k">def</span> <span class="nf">timedelta2string</span><span class="p">(</span><span class="n">timedelta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a datetime.timedelta object into a nice string, to be displayed in UI.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">timedelta</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">timedelta</span><span class="p">)</span>
+
+    <span class="n">days</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="s">&#39;days,&#39;</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;days,&#39;</span><span class="p">)</span>
+        <span class="n">days</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="s">&#39;day,&#39;</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;day,&#39;</span><span class="p">)</span>
+        <span class="n">days</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">)</span>
+
+    <span class="n">hours</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">minutes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">seconds</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="n">days</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">days</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;d &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">hours</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;h&quot;</span>
+    <span class="k">if</span> <span class="n">hours</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">hours</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;h &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">minutes</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;m&quot;</span>
+    <span class="k">if</span> <span class="n">minutes</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">minutes</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;m &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;s&quot;</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;s&quot;</span>
+
+
+</div>
+<div class="viewcode-block" id="string2bool"><a class="viewcode-back" href="../../../tvb.core.html#tvb.core.utils.string2bool">[docs]</a><span class="k">def</span> <span class="nf">string2bool</span><span class="p">(</span><span class="n">string_input</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert given string into boolean value.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">string_input</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">string_input</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">):</span>
+            <span class="n">string_input</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">string_input</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">string_input</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">string_input</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&quot;yes&quot;</span><span class="p">,</span> <span class="s">&quot;true&quot;</span><span class="p">,</span> <span class="s">&quot;t&quot;</span><span class="p">,</span> <span class="s">&quot;1&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="bp">False</span>
+
+
+</div>
+<div class="viewcode-block" id="bool2string"><a class="viewcode-back" href="../../../tvb.core.html#tvb.core.utils.bool2string">[docs]</a><span class="k">def</span> <span class="nf">bool2string</span><span class="p">(</span><span class="n">bool_value</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert boolean value to string &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">bool_value</span><span class="p">)</span>
+
+
+</div>
+<span class="n">ARRAY_BEGIN</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">DATA_UNCONVERTED</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">DATA_CONVERTED</span> <span class="o">=</span> <span class="mi">2</span>
+
+
+
+<div class="viewcode-block" id="string2array"><a class="viewcode-back" href="../../../tvb.core.html#tvb.core.utils.string2array">[docs]</a><span class="k">def</span> <span class="nf">string2array</span><span class="p">(</span><span class="n">input_data_str</span><span class="p">,</span> <span class="n">split_char</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given an input string first try to load it using JSON and if that fails,</span>
+<span class="sd">     meaning some weird array is given by the user, fall-back to _custom_string2array.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">prepared_input_data_str</span> <span class="o">=</span> <span class="n">input_data_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">split_char</span><span class="p">,</span> <span class="s">&#39;,&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">prepared_input_data_str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;[&#39;</span><span class="p">):</span>
+        <span class="c"># In case of range for a model parameter for example, the input string here is just a float</span>
+        <span class="c"># which will be converted to a 0-d numpy array instead of a 1-d array if brackets are missing.</span>
+        <span class="n">prepared_input_data_str</span> <span class="o">=</span> <span class="s">&#39;[&#39;</span> <span class="o">+</span> <span class="n">prepared_input_data_str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">+</span> <span class="s">&#39;]&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">prepared_input_data_str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Received input array </span><span class="si">%s</span><span class="s"> is poorly formated and could not be evaluated by Python.&quot;</span>
+                       <span class="s">&quot;Falling back to _custom_string2array.&quot;</span> <span class="o">%</span> <span class="n">prepared_input_data_str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_custom_string2array</span><span class="p">(</span><span class="n">input_data_str</span><span class="p">,</span> <span class="n">split_char</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
+
+
+</div>
+<span class="k">def</span> <span class="nf">_custom_string2array</span><span class="p">(</span><span class="n">input_data_str</span><span class="p">,</span> <span class="n">split_char</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    From a long string, parse a NumPy array.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">class</span> <span class="nc">HelperData</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Helper for parsing arrays&quot;&quot;&quot;</span>
+
+
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">type_</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">type_</span>
+
+    <span class="n">input_str</span> <span class="o">=</span> <span class="n">input_data_str</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+    <span class="n">to_replace</span> <span class="o">=</span> <span class="n">split_char</span> <span class="o">+</span> <span class="n">split_char</span>
+    <span class="k">while</span> <span class="n">to_replace</span> <span class="ow">in</span> <span class="n">input_str</span><span class="p">:</span>
+        <span class="n">input_str</span> <span class="o">=</span> <span class="n">input_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">to_replace</span><span class="p">,</span> <span class="n">split_char</span><span class="p">)</span>
+    <span class="n">input_str</span> <span class="o">=</span> <span class="n">input_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;[&#39;</span> <span class="o">+</span> <span class="n">split_char</span><span class="p">,</span> <span class="s">&#39;[&#39;</span><span class="p">)</span>
+    <span class="n">input_str</span> <span class="o">=</span> <span class="n">input_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">split_char</span> <span class="o">+</span> <span class="s">&#39;]&#39;</span><span class="p">,</span> <span class="s">&#39;]&#39;</span><span class="p">)</span>
+    <span class="n">input_str</span> <span class="o">=</span> <span class="n">input_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">split_char</span><span class="p">,</span> <span class="n">split_char</span><span class="p">)</span>
+    <span class="n">input_str</span> <span class="o">=</span> <span class="n">input_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">split_char</span> <span class="o">+</span> <span class="s">&#39; &#39;</span><span class="p">,</span> <span class="n">split_char</span><span class="p">)</span>
+    <span class="n">input_str</span> <span class="o">=</span> <span class="n">input_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;[ &#39;</span><span class="p">,</span> <span class="s">&#39;[&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; ]&#39;</span><span class="p">,</span> <span class="s">&#39;]&#39;</span><span class="p">)</span>
+
+    <span class="n">str_pos</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">data_stack</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="n">str_pos</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">input_str</span><span class="p">[</span><span class="n">str_pos</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;[&#39;</span><span class="p">:</span>
+            <span class="n">data_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">HelperData</span><span class="p">(</span><span class="s">&#39;[&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">input_str</span><span class="p">[</span><span class="n">str_pos</span><span class="p">]</span> <span class="o">==</span> <span class="n">split_char</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DATA_UNCONVERTED</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">elem_type</span> <span class="o">=</span> <span class="n">dtype</span> <span class="o">+</span> <span class="s">&quot;(&#39;&quot;</span> <span class="o">+</span> <span class="n">data_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">+</span> <span class="s">&quot;&#39;)&quot;</span>
+                    <span class="n">data_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">elem_type</span><span class="p">)</span>
+                <span class="n">data_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">DATA_CONVERTED</span>
+        <span class="k">elif</span> <span class="n">input_str</span><span class="p">[</span><span class="n">str_pos</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;]&#39;</span><span class="p">:</span>
+            <span class="n">new_array</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">data_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DATA_UNCONVERTED</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">elem_type</span> <span class="o">=</span> <span class="n">dtype</span> <span class="o">+</span> <span class="s">&quot;(&#39;&quot;</span> <span class="o">+</span> <span class="n">data_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">+</span> <span class="s">&quot;&#39;)&quot;</span>
+                    <span class="n">data_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">elem_type</span><span class="p">)</span>
+                <span class="n">data_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">DATA_CONVERTED</span>
+            <span class="k">while</span> <span class="n">data_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="n">ARRAY_BEGIN</span><span class="p">:</span>
+                <span class="n">last_data</span> <span class="o">=</span> <span class="n">data_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                <span class="n">new_array</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">last_data</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">data_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">new_array</span> <span class="o">=</span> <span class="n">HelperData</span><span class="p">(</span><span class="n">new_array</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">data_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_array</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_stack</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">data_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="n">DATA_UNCONVERTED</span><span class="p">:</span>
+            <span class="n">data_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">HelperData</span><span class="p">(</span><span class="n">input_str</span><span class="p">[</span><span class="n">str_pos</span><span class="p">],</span> <span class="n">DATA_UNCONVERTED</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">+</span> <span class="n">input_str</span><span class="p">[</span><span class="n">str_pos</span><span class="p">]</span>
+        <span class="n">str_pos</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_stack</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_stack</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="s">&#39;None&#39;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">None</span>
+            <span class="n">elem_type</span> <span class="o">=</span> <span class="n">dtype</span> <span class="o">+</span> <span class="s">&quot;(&#39;&quot;</span> <span class="o">+</span> <span class="n">data_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">+</span> <span class="s">&quot;&#39;)&quot;</span>
+            <span class="n">data_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">elem_type</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data_stack</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data_stack</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+
+<span class="c">################## CONVERT related methods end here ###############</span>
+
+
+<span class="c">################## MATLAB related method start here ###############</span>
+
+<div class="viewcode-block" id="get_matlab_executable"><a class="viewcode-back" href="../../../tvb.core.html#tvb.core.utils.get_matlab_executable">[docs]</a><span class="k">def</span> <span class="nf">get_matlab_executable</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check If MATLAB is installed on current system.</span>
+<span class="sd">    Return True or False.</span>
+<span class="sd">    Return True, when MATLAB executable is found in Path.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">matlab_exe_path</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;win&#39;</span><span class="p">):</span>
+        <span class="n">split_char</span> <span class="o">=</span> <span class="s">&quot;;&quot;</span>
+        <span class="n">octave_exec</span> <span class="o">=</span> <span class="n">OCTAVE</span> <span class="o">+</span> <span class="s">&quot;.exe&quot;</span>
+        <span class="n">matlab_exec</span> <span class="o">=</span> <span class="n">MATLAB</span> <span class="o">+</span> <span class="s">&quot;.exe&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">split_char</span> <span class="o">=</span> <span class="s">&quot;:&quot;</span>
+        <span class="n">octave_exec</span> <span class="o">=</span> <span class="n">OCTAVE</span>
+        <span class="n">matlab_exec</span> <span class="o">=</span> <span class="n">MATLAB</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Searching Matlab in path: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&quot;PATH&quot;</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&quot;PATH&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">split_char</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">matlab_exec</span><span class="p">)):</span>
+            <span class="n">matlab_exe_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">matlab_exec</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;MATLAB was found:&quot;</span> <span class="o">+</span> <span class="n">path</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">matlab_exe_path</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&quot;PATH&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">split_char</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">octave_exec</span><span class="p">)):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;OCTAVE was found:&quot;</span> <span class="o">+</span> <span class="n">path</span><span class="p">)</span>
+            <span class="n">matlab_exe_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">octave_exec</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">matlab_exe_path</span>
+    <span class="k">return</span> <span class="n">matlab_exe_path</span>
+
+
+</div>
+<div class="viewcode-block" id="check_matlab_version"><a class="viewcode-back" href="../../../tvb.core.html#tvb.core.utils.check_matlab_version">[docs]</a><span class="k">def</span> <span class="nf">check_matlab_version</span><span class="p">(</span><span class="n">matlab_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Try to get the current version of matlab from a given path.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">matlab_version_txt</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;tvb_checking_version = version</span>
+<span class="s">    quit()</span>
+<span class="s">    &quot;&quot;&quot;</span>
+    <span class="n">matlab_test_file</span> <span class="o">=</span> <span class="s">&#39;test_mat_version&#39;</span>
+    <span class="n">matlab_log_file</span> <span class="o">=</span> <span class="s">&#39;version_log.txt&#39;</span>
+    <span class="n">file_p</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">matlab_test_file</span> <span class="o">+</span> <span class="s">&#39;.m&#39;</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">file_p</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">matlab_version_txt</span><span class="p">)</span>
+    <span class="n">file_p</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">matlab_cmd</span><span class="p">(</span><span class="n">matlab_path</span><span class="p">,</span> <span class="n">matlab_test_file</span><span class="p">,</span> <span class="n">matlab_log_file</span><span class="p">)</span>
+    <span class="n">log_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">matlab_log_file</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">result_data</span> <span class="o">=</span> <span class="n">log_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="n">result_data</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;tvb_checking_version&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">log_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">matlab_log_file</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">version</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+</div>
+<span class="nd">@user_environment_execution</span>
+<span class="k">def</span> <span class="nf">matlab_cmd</span><span class="p">(</span><span class="n">matlab_path</span><span class="p">,</span> <span class="n">script_name</span><span class="p">,</span> <span class="n">log_file</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Called in order to obtain the command for calling MATLAB</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">folder_path</span><span class="p">,</span> <span class="n">exe_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">matlab_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">folder_path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;PATH&#39;</span><span class="p">]:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;PATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;PATH&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">pathsep</span> <span class="o">+</span> <span class="n">folder_path</span>
+    <span class="k">if</span> <span class="n">MATLAB</span> <span class="ow">in</span> <span class="n">exe_name</span><span class="p">:</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">exe_name</span> <span class="o">+</span> <span class="s">&#39; &#39;</span>
+        <span class="n">opts</span> <span class="o">=</span> <span class="s">&#39; -nodesktop -nojvm -nosplash -logfile </span><span class="si">%s</span><span class="s"> -r &quot;</span><span class="si">%s</span><span class="s">;&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">log_file</span><span class="p">,</span> <span class="n">script_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s">&#39;nt&#39;</span><span class="p">:</span>
+            <span class="n">opts</span> <span class="o">=</span> <span class="s">&#39;-minimize &#39;</span> <span class="o">+</span> <span class="n">opts</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">base</span> <span class="o">+</span> <span class="n">opts</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c"># if OCTAVE in exe_name:</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">exe_name</span> <span class="o">+</span> <span class="s">&#39; </span><span class="si">%s</span><span class="s">.m &gt;&gt; </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">script_name</span><span class="p">,</span> <span class="n">log_file</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+
+<span class="c">################## MATLAB methods end here     ##############</span>
+
+<span class="c">################## GENERIC  methods start here ###############</span>
+
+
+<div class="viewcode-block" id="generate_guid"><a class="viewcode-back" href="../../../tvb.core.html#tvb.core.utils.generate_guid">[docs]</a><span class="k">def</span> <span class="nf">generate_guid</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    Generate new Global Unique Identifier.</span>
+<span class="sd">    This identifier should be unique per each station, </span>
+<span class="sd">    and unique for different machines.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">())</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evil_tvb_logo_transparent.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">The Virtual Brain 1.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
