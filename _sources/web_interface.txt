@@ -2,7 +2,14 @@
 
 
 ******************************************
-The documentation of the web interface
+Web Interface
 ******************************************
 
-here goes the doc of the web interface
+
+some words about the web interface
+
+.. toctree::
+   :maxdepth: 2
+
+   UserGuide
+

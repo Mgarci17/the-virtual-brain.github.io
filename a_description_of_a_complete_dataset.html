@@ -43,7 +43,7 @@
         <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
 	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
 	<li><a href="api/index.html">API</a>|&nbsp;</li>
-	<li><a href="https://github.com/the-virtual-brain/">Developer (Github)</a>|&nbsp;</li>
+	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
  
       </ul>
     </div>
@@ -53,8 +53,16 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">A Description of a Complete Dataset</a><ul>
+<li><a class="reference internal" href="#a-general-considerations">A) GENERAL CONSIDERATIONS</a></li>
+<li><a class="reference internal" href="#b-parcellation-mask">B) PARCELLATION MASK</a></li>
+<li><a class="reference internal" href="#c-connectivity-and-path-length-data">C) CONNECTIVITY AND PATH LENGTH DATA</a></li>
+<li><a class="reference internal" href="#d-cortical-mesh">D) CORTICAL MESH</a></li>
+<li><a class="reference internal" href="#e-region-mapping">E) REGION MAPPING</a></li>
+<li><a class="reference internal" href="#f-head-model">F) HEAD MODEL</a><ul>
 <li><a class="reference internal" href="#hagmann">Hagmann</a></li>
 <li><a class="reference internal" href="#the-human-connectome-project">The Human Connectome Project</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -111,7 +119,8 @@ simulated data under different output modalities (eg, EEG, MEG,
 fMRI).</li>
 <li>increase reproducibility of the results.</li>
 </ul>
-<p>### A) GENERAL CONSIDERATIONS</p>
+<div class="section" id="a-general-considerations">
+<h2>A) GENERAL CONSIDERATIONS<a class="headerlink" href="#a-general-considerations" title="Permalink to this headline">¶</a></h2>
 <p>A dataset should be made available on one single place (eg, through XNAT) to
 ensure traceability and if required for clinical/privacy reasons, restricted
 access.</p>
@@ -151,7 +160,9 @@ represent mm and must be relative to an origin (x=0, y=0, z=0). The &#8220;same
 coordinate system&#8221; means that the origin is in the same location relative to the
 head, and that the axis(x,y,z) point in the same direction with the same
 orientation.</p>
-<p>### B) PARCELLATION MASK</p>
+</div>
+<div class="section" id="b-parcellation-mask">
+<h2>B) PARCELLATION MASK<a class="headerlink" href="#b-parcellation-mask" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><strong>What is the purpose of the mask?</strong></dt>
 <dd>A brain mask basically covers the standard brain. The mask needs to
@@ -234,7 +245,9 @@ NOTE: (reference to Hagmann and Zalesky).</div></blockquote>
 <div>It depends on how the parcellation mask was obtained. In principle, it should
 be registered to a standard space such as MNI. This coordinate systems should
 be consitent with the surface&#8217;s coordinate systems.</div></blockquote>
-<p>### C) CONNECTIVITY AND PATH LENGTH DATA</p>
+</div>
+<div class="section" id="c-connectivity-and-path-length-data">
+<h2>C) CONNECTIVITY AND PATH LENGTH DATA<a class="headerlink" href="#c-connectivity-and-path-length-data" title="Permalink to this headline">¶</a></h2>
 <p><strong>What is it required to build a connectivity matrix (parcellated connectome)?</strong></p>
 <blockquote>
 <div>Diffusion data, a parcellation mask and probably the white matter surface (in
@@ -259,7 +272,9 @@ For TVB a Connectivity refers to a set of two matrices (of size &#8220;anatomica
 regions x anatomical regions &#8221;), one with weights giving the strength of     the
 connections between anatomical regions and a second matrix with the     white
 matter fibre lengths between regions;</p>
-<p>### D) CORTICAL MESH</p>
+</div>
+<div class="section" id="d-cortical-mesh">
+<h2>D) CORTICAL MESH<a class="headerlink" href="#d-cortical-mesh" title="Permalink to this headline">¶</a></h2>
 <p>We encourage to use the MNI brain template (eg, MNI152) to register your
 subjects data and extract the corresponding cortical surface.</p>
 <p><strong>Is the cortical surface essential?</strong></p>
@@ -290,7 +305,9 @@ arrays, for instance &#8216;normals&#8217;. A normal determine&#8217;s the orien
 arrays, althoug bound to the surface instance they were derived from. Read
 more about normals here: <a class="reference external" href="http://user.xmission.com/~nate/smooth.html">http://user.xmission.com/~nate/smooth.html</a></p>
 <p>NOTE: and the upcoming publication where surface regularization is explained for the case of the pial surface.</p>
-<p>### E) REGION MAPPING</p>
+</div>
+<div class="section" id="e-region-mapping">
+<h2>E) REGION MAPPING<a class="headerlink" href="#e-region-mapping" title="Permalink to this headline">¶</a></h2>
 <p><strong>What is the Region Mapping?</strong></p>
 <p>The region mapping is just a relationship between the two pieces of data,
 mapping regions of a connectivity onto the nodes of a surface simulation, one
@@ -301,7 +318,9 @@ connectomes of different resolution (eg, the connectomes presented in Hagmann
 <p><strong>How is the Region Mapping obtained?</strong>
 Good question!</p>
 <p>TODO: Add links to relevant documentation.</p>
-<p>### E) HEAD MODEL</p>
+</div>
+<div class="section" id="f-head-model">
+<h2>F) HEAD MODEL<a class="headerlink" href="#f-head-model" title="Permalink to this headline">¶</a></h2>
 <p><strong>What is the purpose of the head model</strong></p>
 <p><strong>Head</strong>: the bucket that contains the brain. The head is often represented as
 a set of concentric spheres, in order to compute the electric field or
@@ -324,7 +343,7 @@ the description below.</p>
 <p>All 3D coordinates should be consistent, ie., vertices, parcellation mask, and
 region centres should be in the same units, axis orientations, alignment, etc.</p>
 <p><strong>*
-### A minimally-complete connectivity data set for TVB should include the
+A minimally-complete connectivity data set for TVB should include the
 following:
 *</strong>
 * Mesh surface for the cortex (regularised, continuous and complete per</p>
@@ -528,7 +547,7 @@ parcellation mask.</li>
 Other datasets
 *</strong></p>
 <div class="section" id="hagmann">
-<h2>Hagmann<a class="headerlink" href="#hagmann" title="Permalink to this headline">¶</a></h2>
+<h3>Hagmann<a class="headerlink" href="#hagmann" title="Permalink to this headline">¶</a></h3>
 <p>What has been provided/shown :</p>
 <ul class="simple">
 <li>A 998 ROIs connectome (weights + resampled distances)</li>
@@ -548,7 +567,7 @@ Other datasets
 </ul>
 </div>
 <div class="section" id="the-human-connectome-project">
-<h2>The Human Connectome Project<a class="headerlink" href="#the-human-connectome-project" title="Permalink to this headline">¶</a></h2>
+<h3>The Human Connectome Project<a class="headerlink" href="#the-human-connectome-project" title="Permalink to this headline">¶</a></h3>
 <p>So far, the most complete datasets available.  We aim to integrate some of the
 datasets provided by the HCP. Structural connectivity is the fundamental
 substrate for building large-scale brain network models, and being able to use
@@ -623,6 +642,15 @@ DOC ME ;)</p>
 + Stuart Knock
 + Paula Sanz-Leon
 + Petra Ritter</p>
+<hr class="docutils" />
+<ul class="simple">
+<li><a class="reference internal" href="quick_start.html#quick-start"><em>Quick Start</em></a></li>
+<li><a class="reference internal" href="tutorials.html#tutorials"><em>Tutorials</em></a></li>
+<li><a class="reference internal" href="#a-description-of-a-complete-dataset"><em>A Description of a Complete Dataset</em></a></li>
+<li><a class="reference internal" href="featured_request.html#featured-request"><em>Featured request</em></a></li>
+<li><a class="reference internal" href="future_tech.html#future-tech"><em>Future Tech</em></a></li>
+</ul>
+</div>
 </div>
 </div>
 
@@ -642,7 +670,7 @@ DOC ME ;)</p>
         <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
 	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
 	<li><a href="api/index.html">API</a>|&nbsp;</li>
-	<li><a href="https://github.com/the-virtual-brain/">Developer (Github)</a>|&nbsp;</li>
+	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
  
       </ul>
     </div>

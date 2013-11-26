@@ -79,3 +79,11 @@ Demo implementation (nokia): http://webcl.nokiaresearch.com/
 SciDB-Py: http://www.paradigm4.com/scidb-py/
 
 SciDB-Py is an open-source high-performance library to use SciDB (written in C++). It runs on a cluster or on the cloud. This DB is optimized for managing massive and multi-dimensional data. It also provides support for sparse linear algebra operations. 
+
+-------------------------------------------------------------------------------
+
+* :ref:`quick_start` 
+* :ref:`tutorials` 
+* :ref:`a_description_of_a_complete_dataset` 
+* :ref:`featured_request` 
+* :ref:`future_tech` 

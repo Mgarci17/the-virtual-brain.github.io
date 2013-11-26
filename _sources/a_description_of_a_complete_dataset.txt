@@ -1,6 +1,7 @@
 .. _a_description_of_a_complete_dataset:
 
 
+
 ******************************************
 A Description of a Complete Dataset
 ******************************************
@@ -32,8 +33,8 @@ A complete dataset should:
 + increase reproducibility of the results.
 
 
-### A) GENERAL CONSIDERATIONS
-
+A) GENERAL CONSIDERATIONS
+=============================
 
 A dataset should be made available on one single place (eg, through XNAT) to
 ensure traceability and if required for clinical/privacy reasons, restricted
@@ -83,7 +84,8 @@ head, and that the axis(x,y,z) point in the same direction with the same
 orientation.
 
 
-### B) PARCELLATION MASK
+B) PARCELLATION MASK
+=============================
 
 **What is the purpose of the mask?**
   A brain mask basically covers the standard brain. The mask needs to
@@ -178,7 +180,8 @@ A list with the region names/labels and corresponding integer index should be pr
   be consitent with the surface's coordinate systems.
 
 
-### C) CONNECTIVITY AND PATH LENGTH DATA
+C) CONNECTIVITY AND PATH LENGTH DATA
+=============================
 
 **What is it required to build a connectivity matrix (parcellated connectome)?**
 
@@ -210,8 +213,9 @@ connections between anatomical regions and a second matrix with the     white
 matter fibre lengths between regions;
 
 
-### D) CORTICAL MESH
- 
+D) CORTICAL MESH
+=============================
+
 We encourage to use the MNI brain template (eg, MNI152) to register your
 subjects data and extract the corresponding cortical surface.
 
@@ -250,7 +254,8 @@ more about normals here: http://user.xmission.com/~nate/smooth.html
 NOTE: and the upcoming publication where surface regularization is explained for the case of the pial surface.
 
 
-### E) REGION MAPPING
+E) REGION MAPPING
+=============================
 
 **What is the Region Mapping?**
  
@@ -267,8 +272,8 @@ Good question!
 TODO: Add links to relevant documentation.
 
 
-### E) HEAD MODEL
-
+F) HEAD MODEL
+=============================
 
 **What is the purpose of the head model**
 
@@ -301,8 +306,8 @@ region centres should be in the same units, axis orientations, alignment, etc.
 
 
 ***
-### A minimally-complete connectivity data set for TVB should include the       
-following:                                                                  
+A minimally-complete connectivity data set for TVB should include the       
+following:                                                       
 ***
 * Mesh surface for the cortex (regularised, continuous and complete per
  hemisphere, that is, there should be no holes in the surface and it should be
@@ -621,4 +626,12 @@ Authors:
 + Stuart Knock
 + Paula Sanz-Leon
 + Petra Ritter
+
+-------------------------------------------------------------------------------
+
+* :ref:`quick_start` 
+* :ref:`tutorials` 
+* :ref:`a_description_of_a_complete_dataset` 
+* :ref:`featured_request` 
+* :ref:`future_tech` 
 

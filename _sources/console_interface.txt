@@ -5,6 +5,9 @@
 The console interface
 ******************************************
 
+a little word on console interface
+
+
 * :ref:`quick_start` 
 * :ref:`tutorials` 
 * :ref:`a_description_of_a_complete_dataset` 

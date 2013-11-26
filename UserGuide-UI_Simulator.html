@@ -1,0 +1,516 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Simulator &mdash; tvb_doc 2.7 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="tvb_doc 2.7 documentation" href="index.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo.svg" border="0" alt="py4sci"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api/index.html">API</a>|&nbsp;</li>
+	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Simulator</a><ul>
+<li><a class="reference internal" href="#configure-a-simulation">Configure a Simulation</a><ul>
+<li><a class="reference internal" href="#region-based-simulations">Region-based simulations</a></li>
+<li><a class="reference internal" href="#surface-based-simulations">Surface-based simulations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#simulation-history">Simulation History</a></li>
+<li><a class="reference internal" href="#display-simulation-results">Display Simulation Results</a></li>
+<li><a class="reference internal" href="#simple-visualizers">Simple Visualizers</a><ul>
+<li><a class="reference internal" href="#brain-activity-visualizer">Brain Activity Visualizer</a></li>
+<li><a class="reference internal" href="#time-series-visualizer-svg-d3">Time Series Visualizer (svg/d3)</a></li>
+<li><a class="reference internal" href="#eeg-time-series-visualizer">EEG Time Series Visualizer</a></li>
+<li><a class="reference internal" href="#dual-brain-eeg-visualizer">Dual Brain - EEG Visualizer</a></li>
+<li><a class="reference internal" href="#connectivity-measure-visualizer">Connectivity Measure Visualizer</a></li>
+<li><a class="reference internal" href="#topographic-visualizer">Topographic Visualizer</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#group-display">Group Display</a><ul>
+<li><a class="reference internal" href="#discrete-pse-visualizer">Discrete PSE Visualizer</a></li>
+<li><a class="reference internal" href="#isocline-pse-visualizer">Isocline PSE Visualizer</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#analyzers-visualizers">Analyzers + Visualizers</a><ul>
+<li><a class="reference internal" href="#covariance-visualizer">Covariance Visualizer</a></li>
+<li><a class="reference internal" href="#cross-coherence-visualizer">Cross Coherence Visualizer</a></li>
+<li><a class="reference internal" href="#complex-coherence-visualizer">Complex Coherence Visualizer</a></li>
+<li><a class="reference internal" href="#cross-correlation-visualizer">Cross Correlation Visualizer</a></li>
+<li><a class="reference internal" href="#fourier-spectrum-visualizer">Fourier Spectrum Visualizer</a></li>
+<li><a class="reference internal" href="#principal-component-visualizer">Principal Component Visualizer</a></li>
+<li><a class="reference internal" href="#independent-component-visualizer">Independent Component Visualizer</a></li>
+<li><a class="reference internal" href="#wavelet-spectrogram-visualizer">Wavelet Spectrogram Visualizer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/UserGuide-UI_Simulator.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="simulator">
+<h1>Simulator<a class="headerlink" href="#simulator" title="Permalink to this headline">¶</a></h1>
+<p>A configurable multicolumn interface that combines <a href="#id1"><span class="problematic" id="id2">|TVB|</span></a> simulation, analysis
+and visualization capabilities.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/simulator.jpg" src="_images/simulator.jpg" style="width: 90%;" />
+<p class="caption">Preview for Simulator Area</p>
+</div>
+</div></blockquote>
+<div class="section" id="configure-a-simulation">
+<h2>Configure a Simulation<a class="headerlink" href="#configure-a-simulation" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<dl class="docutils">
+<dt>On the top of this column there is:</dt>
+<dd><ul class="first last simple">
+<li>a field to enter the new simulation name,</li>
+<li>the <cite>Launch</cite> button on the top right to start the simulation, and</li>
+<li>the <cite>Configure Interface</cite> button to select which of the simulation
+components are visible.</li>
+</ul>
+</dd>
+</dl>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><img alt="_images/simulator_configuration_buttons.jpg" class="align-center" src="_images/simulator_configuration_buttons.jpg" style="width: 90%;" />
+</div></blockquote>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Via this column, you have access to all the simulator components configurable
+settings:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Long Range Connectivity</li>
+<li>Long Range Coupling Function</li>
+<li>Conduction Speed</li>
+<li>Cortical Surface</li>
+<li>Stimulus</li>
+<li>Local Dynamics Model
+- State Variable Range
+- State Variables to be recorded
+- Initial Conditions</li>
+<li>Integration Scheme
+- Integration Step Size</li>
+<li>Monitors</li>
+<li>Simulation Length</li>
+</ul>
+</div></blockquote>
+<p>You can find more detailed information by clicking on the <img alt="interrogationicon" src="_images/online_help_green.png" />
+icon next to each element.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><strong>TVB performs region-based and surface-based simulations</strong></p>
+<p class="last">You can access specific configuration pages for both types of simulation.</p>
+</div>
+<div class="section" id="region-based-simulations">
+<h3>Region-based simulations<a class="headerlink" href="#region-based-simulations" title="Permalink to this headline">¶</a></h3>
+<p>The <cite>Set up region Model</cite> button leads you to an interactive phase-plane display.
+This tool shows the 2-dimensional planes of the general n-dimensional
+phase space of the local dynamics model.</p>
+<p>It allows you to observe how the dynamics of the physical model change as a
+function of its parameters. (See the API documentation for more details about
+this interactive display)</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/simulator_phase_plane_interactive.jpg" src="_images/simulator_phase_plane_interactive.jpg" style="width: 90%;" />
+<p class="caption">Preview for region model configuration.</p>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="surface-based-simulations">
+<h3>Surface-based simulations<a class="headerlink" href="#surface-based-simulations" title="Permalink to this headline">¶</a></h3>
+<p>If you are launching a surface-based simulation, then it is possible to add
+more complexity by spatially varying the model parameters.</p>
+<p>In order to do that, click on <cite>Set up surface model</cite>. A new configuration page
+will be loaded.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/simulator_spatialized_parameters.jpg" src="_images/simulator_spatialized_parameters.jpg" style="width: 90%;" />
+<p class="caption">Preview for surface model configuration.</p>
+</div>
+</div></blockquote>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p><strong>Parameter Space Exploration</strong></p>
+<p>It is possible to launch parallel simulations to systematically explore the
+parameter space of the local dynamics model. In the current TVB version, up to
+2 parameters can be inspected at the same time.</p>
+<blockquote class="last">
+<div><div class="figure align-center">
+<img alt="_images/simulator_pse_configuration.jpg" src="_images/simulator_pse_configuration.jpg" style="width: 60%;" />
+<p class="caption">The results will be presented in a discrete two dimensional graph. Each
+point represents the results of a simulation for an unique combination of
+parameters. The disk size corresponds to Global Variance and the color
+scale corresponds to Variance of the Variance of nodes.</p>
+</div>
+</div></blockquote>
+</div>
+</div>
+</div>
+<div class="section" id="simulation-history">
+<h2>Simulation History<a class="headerlink" href="#simulation-history" title="Permalink to this headline">¶</a></h2>
+<p>On the left column, a history of all simulations is kept and can be
+accessed at any time. Each simulation can be renamed or deleted by
+clicking on the upper right <img alt="pencil_icon" src="_images/pencil.png" /> icon.</p>
+<div class="figure align-center">
+<img alt="_images/simulator_history_edits.jpg" src="_images/simulator_history_edits.jpg" style="width: 20%;" />
+<p class="caption">Simulation editing menu</p>
+</div>
+<div class="admonition caution">
+<p class="first admonition-title">Caution</p>
+<p class="last">Please notice that <strong>deleting a simulation will also delete all
+resulting data that had been produced</strong>.</p>
+</div>
+<p>Each simulation has a color label that represents its current status:</p>
+<blockquote>
+<div><ul class="simple">
+<li>pale blue: simulation is running,</li>
+<li>green: simulation is finished,</li>
+<li>red: an error occured during the simulation.</li>
+</ul>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>You cannot rename a Simulation while it is running.</p>
+<blockquote class="last">
+<div><div class="figure align-center">
+<img alt="_images/simulator_history_running.jpg" src="_images/simulator_history_running.jpg" style="width: 20%;" />
+</div>
+</div></blockquote>
+</div>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">The star button allows you to create a new simulation.
+using the default
+<cite>Simulator</cite> parameters.</p>
+</div>
+</div>
+<div class="section" id="display-simulation-results">
+<h2>Display Simulation Results<a class="headerlink" href="#display-simulation-results" title="Permalink to this headline">¶</a></h2>
+<p>On the right column you will find an area where you can configure displays to exhibit
+your simulation results.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Maximize this column by clicking on the <cite>zoom</cite> icon located in the top right
+corner.</p>
+</div>
+<p>There are 4 tabs:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">three <cite>View</cite> tabs you can set up by selecting:</p>
+<blockquote>
+<div><ul class="simple">
+<li>TVB time-series <cite>Visualizers</cite> that directly plot the resulting time-series or</li>
+<li><cite>TVB-Visualizers</cite> associated with a <cite>TVB-Analyzer</cite>. In this case, simulation
+results undergo two steps: they are first analyzed and those secondary results
+are shown in a corresponding visualizer.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">one <cite>Results</cite> tab containing the current simulation data structure tree. You
+can inspect each element through this tree in the same way as in
+<cite>Projects</cite> &#8211;&gt; <cite>Data Structure</cite>.
+A full list of visualizers and analyzers is available from the component
+overlay menu.</p>
+</li>
+</ul>
+</div></blockquote>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p>Once your results are available, by clicking on <img alt="launch_full_viz" src="_images/button_launch_full_visualizer.png" /> you will be
+redirected to a new page where only the currently selected visualizer is
+presented. In this new page, you can click on <img alt="brainicon" src="_images/action_bar_brain.png" /> in the top right corner
+to access a new menu which will allow you to:</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li><cite>Save</cite> a snapshot of the current figure.</li>
+<li><cite>Relaunch</cite> the visualizer using a different entity, if available. For instance, a
+different time-series.</li>
+</ul>
+<div class="figure align-center">
+<img alt="_images/visualizer_save_figure.jpg" src="_images/visualizer_save_figure.jpg" style="width: 90%;" />
+<p class="caption">Preview for Full Visualizer mode.</p>
+</div>
+</div></blockquote>
+</div>
+<p>All the snapshots you save can be managed in  <cite>Projects</cite> &#8211;&gt; <cite>Image Archive</cite>
+page.</p>
+</div>
+<div class="section" id="simple-visualizers">
+<h2>Simple Visualizers<a class="headerlink" href="#simple-visualizers" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="brain-activity-visualizer">
+<h3>Brain Activity Visualizer<a class="headerlink" href="#brain-activity-visualizer" title="Permalink to this headline">¶</a></h3>
+<p>A 3D scene of the brain activity:</p>
+<ul class="simple">
+<li>at the region level: the brain is represented by a coarse granularity - each
+region is represented with only one color.</li>
+</ul>
+<div class="figure align-center">
+<img alt="_images/brain.jpg" src="_images/brain.jpg" style="width: 90%;" />
+<p class="caption">Preview for Brain Activity Visualizer at the region level</p>
+</div>
+<ul class="simple">
+<li>at the surface level: the brain is represented by a fine granularity - each
+surface vertex has an individual measure.</li>
+</ul>
+</div>
+<div class="section" id="time-series-visualizer-svg-d3">
+<h3>Time Series Visualizer (svg/d3)<a class="headerlink" href="#time-series-visualizer-svg-d3" title="Permalink to this headline">¶</a></h3>
+<div class="figure align-center">
+<img alt="_images/visualizer_timeseries_svgd3.jpg" src="_images/visualizer_timeseries_svgd3.jpg" style="width: 90%;" />
+<p class="caption">Preview for Time-Series Visualizer (svg/d3)</p>
+</div>
+</div>
+<div class="section" id="eeg-time-series-visualizer">
+<h3>EEG Time Series Visualizer<a class="headerlink" href="#eeg-time-series-visualizer" title="Permalink to this headline">¶</a></h3>
+<div class="figure align-center">
+<img alt="_images/visualizer_timeseries_eeg.jpg" src="_images/visualizer_timeseries_eeg.jpg" style="width: 90%;" />
+<p class="caption">Preview for EEG Time Series Visualizer</p>
+</div>
+<p>If you used an EEG monitor to record the activity of your large-scale brain
+simulation, this display allows you to select the channels of the 62-sensors
+EEG recording.</p>
+<div class="figure align-center">
+<img alt="_images/visualizer_timeseries_eeg_channel_selection.jpg" src="_images/visualizer_timeseries_eeg_channel_selection.jpg" style="width: 90%;" />
+<p class="caption">Selecting the &#8220;channels&#8221; to be displayed.</p>
+</div>
+</div>
+<div class="section" id="dual-brain-eeg-visualizer">
+<h3>Dual Brain - EEG Visualizer<a class="headerlink" href="#dual-brain-eeg-visualizer" title="Permalink to this headline">¶</a></h3>
+<div class="figure align-center">
+<img alt="_images/visualizer_timeseries_eeg.jpg" src="_images/visualizer_timeseries_eeg.jpg" style="width: 90%;" />
+<p class="caption">Preview for EEG Time Series Visualizer</p>
+</div>
+<p>This visualizer combines the brain activity on top of a 3D display of the pacient&#8217;s
+head and on the right column, the EEG channels recordings. Channel selection is
+also available.</p>
+<div class="figure align-center">
+<img alt="_images/visualizer_dual_head_eeg.jpg" src="_images/visualizer_dual_head_eeg.jpg" style="width: 90%;" />
+<p class="caption">Brain activity wit EEG recordings.</p>
+</div>
+</div>
+<div class="section" id="connectivity-measure-visualizer">
+<h3>Connectivity Measure Visualizer<a class="headerlink" href="#connectivity-measure-visualizer" title="Permalink to this headline">¶</a></h3>
+<p>This visualizer can be used for displaying various Brain Connectivity Measures, related to a given Connectivity.</p>
+<p>On the X axis, we will see the Connectivity nodes listed, and for each of them, we see the computed measure on the Y axis.</p>
+<div class="figure align-center">
+<img alt="_images/visualizer_histogram.jpg" src="_images/visualizer_histogram.jpg" style="width: 90%;" />
+<p class="caption">Connectivity Measure Visualizer.</p>
+</div>
+</div>
+<div class="section" id="topographic-visualizer">
+<h3>Topographic Visualizer<a class="headerlink" href="#topographic-visualizer" title="Permalink to this headline">¶</a></h3>
+<p>This visualizer can be used for displaying various Brain Connectivity Measures, related to a given Connectivity.
+Its input is same as for the previous visualizer (Connectivity Measure Visualizer), but the display is completely different.
+Instead of a discrete view, this time, we can have a continous display (with gradients).</p>
+<div class="figure align-center">
+<img alt="_images/visualizer_topographic.jpg" src="_images/visualizer_topographic.jpg" style="width: 90%;" />
+<p class="caption">Preview for Topographic Visualizer</p>
+</div>
+</div>
+</div>
+<div class="section" id="group-display">
+<h2>Group Display<a class="headerlink" href="#group-display" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="discrete-pse-visualizer">
+<h3>Discrete PSE Visualizer<a class="headerlink" href="#discrete-pse-visualizer" title="Permalink to this headline">¶</a></h3>
+<p>Discrete Parameter Space Exploration View, will show up to two measures of the Simulator results,
+after varying input Simulator Parameters. The two displayed measures are emphasized in the node shapes and node colors.</p>
+<p>When running a range of Simulations in TVB, it is possible to do it by varying up to 2 input parameters (displayed on
+the X and Y axis of current viewer).This visualizer supports to display results when the resulting space is not bigger
+than 200 points.</p>
+<div class="figure align-center">
+<img alt="_images/simulator_pse_configuration.jpg" src="_images/simulator_pse_configuration.jpg" style="width: 90%;" />
+<p class="caption">Preview for Discrete PSE Visualizer, when varying two input parameters of the simulator</p>
+</div>
+<p>When moving with your mouse cursor over a graph node, you will see a few details about that particular simulation result.
+When clicking a node, an overlay window will open, which gives you full access to view or further analyze that
+particular Simulation result.</p>
+</div>
+<div class="section" id="isocline-pse-visualizer">
+<h3>Isocline PSE Visualizer<a class="headerlink" href="#isocline-pse-visualizer" title="Permalink to this headline">¶</a></h3>
+<p>Continuous Parameter Space Exploration View, will show the effect of varying Simulator parameters in a continuous form.</p>
+<p>When running a range of Simulations in TVB, it is possible to do it by varying up to 2 input parameters (displayed on
+the X and Y axis of current viewer). This visualizer supports ranges with 2 dimensions only, it does not support ranges
+with only one dimension. Also both varying dimensions need to be numeric parameters (no DataType ranges are supported
+for display in this visualizer).</p>
+<div class="figure align-center">
+<img alt="_images/simulator_pse_iso.jpg" src="_images/simulator_pse_iso.jpg" style="width: 90%;" />
+<p class="caption">Preview for Continuous PSE Visualizer, when varying two numeric input parameters of the simulator</p>
+</div>
+<p>Controls for scaling or zooming the graph are available in this viewer. When you click on the coloured area, an overlay
+window will open, containing possibility to view or further analyze the simulation result closest to the point where
+you clicked.</p>
+</div>
+</div>
+<div class="section" id="analyzers-visualizers">
+<h2>Analyzers + Visualizers<a class="headerlink" href="#analyzers-visualizers" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="covariance-visualizer">
+<h3>Covariance Visualizer<a class="headerlink" href="#covariance-visualizer" title="Permalink to this headline">¶</a></h3>
+<p>Displays the covariance matrix.
+The matrix size is <cite>number of nodes</cite> x <cite>number of nodes</cite></p>
+<div class="figure align-center">
+<img alt="_images/visualizer_covariance.jpg" src="_images/visualizer_covariance.jpg" style="width: 90%;" />
+<p class="caption">Preview for Covariance Visualizer</p>
+</div>
+</div>
+<div class="section" id="cross-coherence-visualizer">
+<h3>Cross Coherence Visualizer<a class="headerlink" href="#cross-coherence-visualizer" title="Permalink to this headline">¶</a></h3>
+<p>Displays the cross-coherence matrix. Axes represent brain nodes.
+The matrix size is <cite>number of nodes</cite> x <cite>number of nodes</cite>.</p>
+<div class="figure align-center">
+<img alt="_images/visualizer_cross_coherence.jpg" src="_images/visualizer_cross_coherence.jpg" style="width: 90%;" />
+<p class="caption">Preview for Cross Coherence Visualizer</p>
+</div>
+</div>
+<div class="section" id="complex-coherence-visualizer">
+<h3>Complex Coherence Visualizer<a class="headerlink" href="#complex-coherence-visualizer" title="Permalink to this headline">¶</a></h3>
+<p>Displays the complex-cross-coherence matrix. Axes represent brain nodes.
+The matrix is a complex ndarray that contains the <cite>number of nodes</cite> x <cite>number of nodes</cite> cross
+spectrum for every frequency frequency and for every segment</p>
+<p>This visualizer is very similar with the previous one (Cross Coherence Visualizer).</p>
+</div>
+<div class="section" id="cross-correlation-visualizer">
+<h3>Cross Correlation Visualizer<a class="headerlink" href="#cross-correlation-visualizer" title="Permalink to this headline">¶</a></h3>
+<p>Displays the cross-correlation matrix. Similar to the previous three visualizers.</p>
+</div>
+<div class="section" id="fourier-spectrum-visualizer">
+<h3>Fourier Spectrum Visualizer<a class="headerlink" href="#fourier-spectrum-visualizer" title="Permalink to this headline">¶</a></h3>
+<p>Plots the power spectrum of each node time-series.</p>
+<div class="figure align-center">
+<img alt="_images/visualizer_fft.jpg" src="_images/visualizer_fft.jpg" style="width: 90%;" />
+<p class="caption">Preview for Fourier Spectrum Visualizer</p>
+</div>
+</div>
+<div class="section" id="principal-component-visualizer">
+<h3>Principal Component Visualizer<a class="headerlink" href="#principal-component-visualizer" title="Permalink to this headline">¶</a></h3>
+<p>On the left, the ring plot displays the fraction of the variance that is
+explained by each component.</p>
+<p>On the right, the first ten components are plotted against the brain nodes
+(variables).</p>
+<div class="figure align-center">
+<img alt="_images/analyzers_pca.jpg" src="_images/analyzers_pca.jpg" style="width: 90%;" />
+<p class="caption">Preview for Principal Components Analysis Visualizer</p>
+</div>
+</div>
+<div class="section" id="independent-component-visualizer">
+<h3>Independent Component Visualizer<a class="headerlink" href="#independent-component-visualizer" title="Permalink to this headline">¶</a></h3>
+<p>ICA takes time-points as observations and nodes as variables.</p>
+<p>As for PCA the TimeSeries datatype must be longer (more time-points) than the number of nodes.
+Mostly a problem for TimeSeriesSurface datatypes, which, if sampled at 1024Hz, would need to be greater than
+16 seconds long.</p>
+<div class="figure align-center">
+<img alt="_images/analyzers_ica.jpg" src="_images/analyzers_ica.jpg" style="width: 90%;" />
+<p class="caption">Preview for Independent Components Analysis Visualizer</p>
+</div>
+</div>
+<div class="section" id="wavelet-spectrogram-visualizer">
+<h3>Wavelet Spectrogram Visualizer<a class="headerlink" href="#wavelet-spectrogram-visualizer" title="Permalink to this headline">¶</a></h3>
+<p>2D representation that shows how the signals wavelet spectral coefficients (frequency)
+vary with time.</p>
+<div class="figure align-center">
+<img alt="_images/visualizer_wavelet.jpg" src="_images/visualizer_wavelet.jpg" style="width: 90%;" />
+<p class="caption">Preview for Wavelet Visualizer</p>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api/index.html">API</a>|&nbsp;</li>
+	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, timpx.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

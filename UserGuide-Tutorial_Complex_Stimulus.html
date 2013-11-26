@@ -1,0 +1,238 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>|example| Tutorial &mdash; tvb_doc 2.7 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="tvb_doc 2.7 documentation" href="index.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo.svg" border="0" alt="py4sci"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api/index.html">API</a>|&nbsp;</li>
+	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/UserGuide-Tutorial_Complex_Stimulus.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="example-tutorial">
+<h1><a href="#id1"><span class="problematic" id="id2">|example|</span></a> Tutorial<a class="headerlink" href="#example-tutorial" title="Permalink to this headline">¶</a></h1>
+<p><strong>Generate a  spatiotemporal stimulus</strong></p>
+<p><strong>Objective</strong>: learn how to create a spatiotemporal pattern to study the
+influence of a stimulation paradigm to outline different patterns of neural
+activity.</p>
+<p><strong>Summary</strong>
+The intention is to have a platform capabable of having a representation of
+stable and unstable sources. The goal is to observe the effect of
+the stimulation.</p>
+<blockquote>
+<div><ul>
+<li><p class="first">Assuming that you have already created your project:</p>
+</li>
+<li><p class="first">Go to the <cite>Stimulus</cite> area &#8211;&gt; <cite>Surface Stimulus</cite> page.</p>
+</li>
+<li><p class="first">Enter a new name for the new <cite>Surface Stimulus</cite>.</p>
+</li>
+<li><p class="first">Choose the default <cite>Cortical Surface</cite>.</p>
+</li>
+<li><p class="first">Select the <cite>Mexican-hat</cite> equation to define the spatial spread of the
+stimulus.</p>
+</li>
+<li><p class="first">Spatial parameters are:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="67%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><p class="first last">Inputs</p>
+</th>
+<th class="head"><p class="first last">Value</p>
+</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><p class="first last">midpoint1</p>
+</td>
+<td><p class="first last">20.0</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first last">midpoint2</p>
+</td>
+<td><p class="first last">0.0</p>
+</td>
+</tr>
+<tr class="row-even"><td><p class="first last">amp1</p>
+</td>
+<td><p class="first last">1.0</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first last">amp2</p>
+</td>
+<td><p class="first last">1.0</p>
+</td>
+</tr>
+<tr class="row-even"><td><p class="first last">sigma1</p>
+</td>
+<td><p class="first last">20.0</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first last">sigma2</p>
+</td>
+<td><p class="first last">10.0</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+<li><p class="first">Temporal parameters are:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="67%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><p class="first last">Inputs</p>
+</th>
+<th class="head"><p class="first last">Value</p>
+</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><p class="first last">amp</p>
+</td>
+<td><p class="first last">1.0</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first last">frequency</p>
+</td>
+<td><p class="first last">0.1</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+<li><p class="first">Click on View Stimulus Progress</p>
+</li>
+<li><p class="first">Select 10 focal nodes on the right hemisphere.</p>
+</li>
+<li><p class="first">Click on <cite>Save new Stimulus Surface</cite></p>
+</li>
+<li><p class="first">Your spatiotemporal pattern should be available. You can load it and play
+the animation on the cortical surface.</p>
+</li>
+<li><p class="first">Go back to <cite>Edit Stimulus Equation</cite></p>
+</li>
+<li><p class="first">Set new equations and parameters for both spatial and temporal profiles.</p>
+</li>
+<li><p class="first">Add 10 focal nodes on the left hemisphere.</p>
+</li>
+<li><p class="first">Enter a new name for this new <cite>Stimulus Surface</cite> and save it.</p>
+</li>
+<li><p class="first">You can visualize the new pattern.</p>
+</li>
+</ul>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="figure align-center">
+<img alt="_images/stimulus_surface_play.jpg" src="_images/stimulus_surface_play.jpg" style="width: 90%;" />
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The maximum number of focal points you are allowed to add is 20.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api/index.html">API</a>|&nbsp;</li>
+	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, timpx.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

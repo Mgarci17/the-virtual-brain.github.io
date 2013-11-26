@@ -1,0 +1,252 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>User &mdash; tvb_doc 2.7 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="tvb_doc 2.7 documentation" href="index.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo.svg" border="0" alt="py4sci"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api/index.html">API</a>|&nbsp;</li>
+	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">User</a><ul>
+<li><a class="reference internal" href="#tvb-settings">TVB Settings</a></li>
+<li><a class="reference internal" href="#login">Login</a></li>
+<li><a class="reference internal" href="#register">Register</a></li>
+<li><a class="reference internal" href="#user-profile">User Profile</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/UserGuide_UI_User.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="user">
+<h1>User<a class="headerlink" href="#user" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="tvb-settings">
+<h2>TVB Settings<a class="headerlink" href="#tvb-settings" title="Permalink to this headline">¶</a></h2>
+<p>Once started, <a href="#id1"><span class="problematic" id="id2">|TVB|</span></a> should automatically open your default browser and start on
+the default <cite>http://127.0.0.1:8080/settings/settings</cite>. If not, you should
+manually open your favorite browser from our list of supported browsers and
+open the before mentioned URL. This should open up the following settings page:</p>
+<div class="figure align-center">
+<img alt="_images/settings.jpg" src="_images/settings.jpg" style="width: 90%;" />
+<p class="caption">Settings Page</p>
+</div>
+<p>These are the configurable settings for <a href="#id3"><span class="problematic" id="id4">|TVB|</span></a>. Note that the <cite>Name</cite> of the administrator
+is the only one that cannot be changed later on. The others will be accessible afterward
+from the profile page of the administrator. These settings are:</p>
+<dl class="docutils">
+<dt>Administrator User Name:</dt>
+<dd>the name of the administrator. Default value here is <cite>admin</cite>.
+Remember it, as you will need this account for validating other accounts created with <cite>Register</cite> function.</dd>
+<dt>Password:</dt>
+<dd>the password of the administrator. Default value here is <cite>pass</cite>.
+Remember it, as you will need it at a first login.
+This password can be changed later by clicking the <cite>Change password</cite> link, from the profile page
+(available only after a login).</dd>
+<dt>Administrator Email:</dt>
+<dd>the email of the administrator. Emails requesting validations for new users will
+be sent to this address. This can be changed by clicking the <cite>edit</cite> link from the
+profile page.</dd>
+<dt>Root folder for all projects:</dt>
+<dd>this is the root storage for <a href="#id5"><span class="problematic" id="id6">|TVB|</span></a>. All your projects will be stored here, as well
+as the logging file and the files used as input and output for the backend server.
+Please provide here a valid folder path, on a drive which has enough space for storing TVB data.
+This field will be present on the settings page later on, but you won&#8217;t be able to change it.
+In case you are forced to change this path/folder, we recommend that you export your
+existing projects, stop <a href="#id7"><span class="problematic" id="id8">|TVB|</span></a>, start it with the clean option (and configure
+new folder) and then import your projects back into the system.</dd>
+<dt>Max Disk Size (in MB):</dt>
+<dd><blockquote class="first">
+<div><p>Is the amount of disk space that you (as administrator) can specify as the
+limit for each user, to occupy with <a href="#id9"><span class="problematic" id="id10">|TVB|</span></a> data. When a user exceeds this limit,
+they are no longer allowed to run simulations or other operations producing
+data. When this limit is exceeded, the user will still be able to
+visualize their previously created data, and, if desired, to remove data for making space for new results.
+For instance:</p>
+<blockquote>
+<div><ul class="simple">
+<li>A default region level simulation with length 1000 ms takes
+approximatively 1 MB of disk space.</li>
+<li>A surface level simulation, with Local Connectivity pre-computed,
+Raw monitor and length of 10 ms takes 280 MB.</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p class="last">Default value here is 5GB. We validate upon setup that a value not greater than the available physical
+disk free space is specified. In case you later get errors when running simulations (with <cite>disk full</cite>
+messages), but you still have free space on your hard-drive, feel free to come on this settings page and
+increase this value of space allocated to <a href="#id11"><span class="problematic" id="id12">|TVB|</span></a>.</p>
+</dd>
+<dt>DB engine:</dt>
+<dd>For benchmarking purposes currently supported are <em>sqlite</em> and <em>postgresql</em>
+databases. You will need to provide a valid database URL in case you choose
+postgresql. In the case of sqlite a default <cite>tvb-database.db</cite> will always
+be used. Please take into consideration that when switching to a new database
+<strong>your existing data will be lost</strong>.</dd>
+<dt>Server name:</dt>
+<dd>usually the IP of the server that will run <a href="#id13"><span class="problematic" id="id14">|TVB|</span></a>. You can also leave it as the default
+if you are just running <a href="#id15"><span class="problematic" id="id16">|TVB|</span></a> locally.</dd>
+<dt>Cherrypy port:</dt>
+<dd>the port used by cherrypy. You need to make sure this port is not used by some other
+application otherwise <a href="#id17"><span class="problematic" id="id18">|TVB|</span></a> will not start.</dd>
+<dt>Matplotlib port:</dt>
+<dd>the port used by matplotlib. You need to make sure this port is not used by some other
+application otherwise some visualizers will not work.</dd>
+<dt>Deploy on cluster:</dt>
+<dd>set true if you want to run <a href="#id19"><span class="problematic" id="id20">|TVB|</span></a> on a cluster environment.</dd>
+<dt>RPC server:</dt>
+<dd>if you are not running on a cluster, this will be the port used by the backend server. If
+<cite>Deploy on cluster</cite> is checked this will not be used.</dd>
+<dt>Maximum number of vertices:</dt>
+<dd>maximum number of vertices for a surface.</dd>
+</dl>
+<p>After selecting your desired settings press the <cite>Apply</cite> button. This will restart <a href="#id21"><span class="problematic" id="id22">|TVB|</span></a> with the
+new settings. The restart could take a few minutes.</p>
+</div>
+<div class="section" id="login">
+<h2>Login<a class="headerlink" href="#login" title="Permalink to this headline">¶</a></h2>
+<p>In order to access <a href="#id23"><span class="problematic" id="id24">|TVB|</span></a>, you need to have a user account.</p>
+<p>There is a single Administrator account in TVB (created when installing the application).
+Its default user-name and password are <strong>admin</strong> and <strong>pass</strong> (exactly these words).
+These are the default values, but when you setup <a href="#id25"><span class="problematic" id="id26">|TVB|</span></a> for the first time (section <cite>Settings</cite> from above)
+you can specify different values, if wanted. Please remember what you specify for this Administrator account,
+as you are the sole responsible for it (<a href="#id27"><span class="problematic" id="id28">|TVB|</span></a> being installed in your own environment
+we have no control of your storage).
+With the Administrator account you will be able to later validate other TVB accounts.</p>
+<div class="figure align-center">
+<img alt="_images/user_login.jpg" src="_images/user_login.jpg" style="width: 90%;" />
+<p class="caption"><a href="#id29"><span class="problematic" id="id30">|TVB|</span></a> login page</p>
+</div>
+</div>
+<div class="section" id="register">
+<h2>Register<a class="headerlink" href="#register" title="Permalink to this headline">¶</a></h2>
+<p>If you want to create a new user in <a href="#id31"><span class="problematic" id="id32">|TVB|</span></a>, you should <cite>register</cite> using the corresponding link
+(available on the <cite>User Login</cite> page), which takes you further to the following form:</p>
+<div class="figure align-center">
+<img alt="_images/register.jpg" src="_images/register.jpg" style="width: 90%;" />
+<p class="caption"><a href="#id33"><span class="problematic" id="id34">|TVB|</span></a> register page</p>
+</div>
+<p>When the <cite>register</cite> button is clicked (on the right), an email is sent to <cite>ADMINISTRATOR_EMAIL</cite>
+address. It is the administrator&#8217;s task to validate the new account. The
+administrator needs to be logged in to validate an account. Without validation from the administrator, you will not
+be able to use the new accounts. For details on how <cite>validation</cite> is done, see the <cite>User Profile</cite> section.</p>
+</div>
+<div class="section" id="user-profile">
+<h2>User Profile<a class="headerlink" href="#user-profile" title="Permalink to this headline">¶</a></h2>
+<p>This area is available after you login and gives you some basic information, such as:</p>
+<ul class="simple">
+<li>current logged user-name, and his role (left column)</li>
+<li>how much disk space is occupied with TVB Data created by current user (left column, <cite>Data</cite> field)</li>
+<li>what version of <a href="#id35"><span class="problematic" id="id36">|TVB|</span></a> you are currently running (top of the right column)</li>
+<li>a summary of recent changes to <a href="#id37"><span class="problematic" id="id38">|TVB|</span></a> software (right column)</li>
+<li>availability of updated versions of <a href="#id39"><span class="problematic" id="id40">|TVB|</span></a> (when a new version is available, a tooltip will appear on the top of the User-pages).</li>
+</ul>
+<div class="figure align-center">
+<img alt="_images/user_profile.jpg" src="_images/user_profile.jpg" style="width: 90%;" />
+<p class="caption">The User details page (also called <cite>User Profile</cite>)</p>
+</div>
+<p>You have also functionality on this page:</p>
+<ul class="simple">
+<li><cite>Manage other users</cite> (available on the left column, only when logged with Administrator account), takes you to a page for validating or invalidating other user accounts (accounts created with the <cite>register</cite> function)</li>
+<li>access <cite>TVB Settings</cite> (same settings as in the first setup iof TVB; although some of the fields become read-only after the first setup)</li>
+<li>change the password and the email address for current logged user (also links on the left column)</li>
+<li>enable or disable <cite>Online Help</cite> for current user. By <cite>Online Help</cite> we mean a bunch of question marks spread all over the application which can display a tooltip when clicked). In case you find the question marks annoying, feel free to disable them for your user from this page.</li>
+<li>logout function (button on the right side)</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api/index.html">API</a>|&nbsp;</li>
+	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, timpx.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

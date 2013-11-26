@@ -1,0 +1,156 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>|example| Tutorial &mdash; tvb_doc 2.7 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="tvb_doc 2.7 documentation" href="index.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo.svg" border="0" alt="py4sci"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api/index.html">API</a>|&nbsp;</li>
+	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/UserGuide-Tutorial_Parameter_Space_Exploration.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="example-tutorial">
+<h1><a href="#id1"><span class="problematic" id="id2">|example|</span></a> Tutorial<a class="headerlink" href="#example-tutorial" title="Permalink to this headline">¶</a></h1>
+<p><strong>Performing parameter space exploration</strong></p>
+<p><strong>Objective</strong>:
+learn how to sweep and search across different simulation
+settings that run on a distributed infrastructure.</p>
+<p><strong>Summary</strong>:
+In <a href="#id3"><span class="problematic" id="id4">|TVB|</span></a> platform it is possible to launch parallel simulations to explore the
+changes in dynamics of the brain as a function of the local dynamics parameters.
+We illustrate this process with a case study in larg-scale brain simulations
+within <a href="#id5"><span class="problematic" id="id6">|TVB|</span></a>.</p>
+<blockquote>
+<div><ul class="simple">
+<li>Assuming that you have already created your project:</li>
+<li>Enter the <cite>Simulator</cite> area.</li>
+<li>Select the default connectivity matrix.</li>
+<li>Choose the local dynamic model <cite>2D Generic Oscillator</cite></li>
+<li>Click on the &#8216;V&#8217; button next to the model parameters to unfold the available
+parameter range and step size. At present, a maximum of 2
+parameters can be explored at the same time.</li>
+<li>For <math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><msub><mi>I</mi>
+<mrow><mi>e</mi><mi>x</mi><mi>t</mi></mrow></msub></mrow></math> set the step size to 0.4 and for <math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mi>a</mi></mrow></math> 0.5</li>
+<li>Name the new simulation and launch it.</li>
+<li>After all simulation are finished, you should be able to see the Parameter
+Space Exploration Visualizer.</li>
+</ul>
+</div></blockquote>
+<div class="figure align-center">
+<img alt="_images/simulator_pse_configuration.jpg" src="_images/simulator_pse_configuration.jpg" style="width: 60%;" />
+</div>
+<p>Each point in this two dimensional graph represents two metrics: by default
+Global Variance corresponds to the size of the point and Variance of the
+Variance of nodes maps the color scale.</p>
+<blockquote>
+<div><ul class="simple">
+<li>From those results, critical combination of parameters can be
+distinguished.</li>
+<li>If you go to <cite>Project</cite> area and enter the <cite>Data Structure</cite> page. The results
+of all simulations will be held under one object called DataTypeGroup.</li>
+<li>Export the results of all simulations.</li>
+<li>You can export the results by clicking on the aforementioned object and
+selecting the <cite>Export</cite> tab: -&gt; TVB format.
+The data will be available for download in a .zip file.</li>
+<li>Within this folder you will find the TimeSeries for each possible parameter
+combination. Data are stored as HDF5 files (&#8220;filename.h5&#8221;) which can be used
+to do further analysis using other software of your choice.</li>
+</ul>
+</div></blockquote>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api/index.html">API</a>|&nbsp;</li>
+	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, timpx.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

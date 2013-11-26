@@ -1,0 +1,582 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Examples and Tutorials &mdash; tvb_doc 2.7 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="tvb_doc 2.7 documentation" href="index.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo.svg" border="0" alt="py4sci"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api/index.html">API</a>|&nbsp;</li>
+	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Examples and Tutorials</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#example-tutorial"> Tutorial</a></li>
+<li><a class="reference internal" href="#id1"> Tutorial</a></li>
+<li><a class="reference internal" href="#id2"> Tutorial</a></li>
+<li><a class="reference internal" href="#id3"> Tutorial</a></li>
+<li><a class="reference internal" href="#id4"> Tutorial</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/UserGuide-Tutorial.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="examples-and-tutorials">
+<h1>Examples and Tutorials<a class="headerlink" href="#examples-and-tutorials" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>We present here some basic simulation scenarios that the user should be able to
+reproduce through the <a href="#id5"><span class="problematic" id="id6">|TVB|</span></a> interface.</p>
+<div class="admonition-example-example-1 admonition">
+<p class="first admonition-title"><img alt="example" src="_images/applications-science.png" /> Example 1</p>
+<blockquote>
+<div><p><strong>Generating resting activity data using the default simulator configuration</strong></p>
+<p><strong>Objective</strong>: generate 16 seconds of resting state activity data, sampled at
+2048Hz, by launching a region-based simulation using a stochastic
+integration method.</p>
+</div></blockquote>
+<ol class="arabic simple">
+<li>Use the default long-range connectivity data.</li>
+<li>Apply a linear coupling function (parameters: <math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mi>a</mi></mrow></math>- rescale connection
+strength=0.016, <math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mi>b</mi></mrow></math>- shift=0).</li>
+<li>Leave the <em>Cortical Surface</em> and the <em>Stimulus</em> set to <strong>None</strong>.</li>
+<li>Use the default population model and its parameters.</li>
+<li>Select the Heun Stochastic integrator. Set the integration step to
+<math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mi>d</mi><mi>t</mi><mo>=</mo><mn>0</mn><mo>.</mo><mn>0</mn><mn>6</mn><mn>1</mn><mn>0</mn><mn>3</mn><mn>5</mn><mn>1</mn><mn>5</mn><mn>6</mn><mn>2</mn><mn>5</mn></mrow></math> and additive noise (with null correlation time
+and standard deviation <math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mi>D</mi><mo>=</mo><msup><mn>2</mn>
+<mrow><mo>-</mo><mn>1</mn><mn>0</mn></mrow></msup></mrow></math>, use the default
+random number generator parameters).</li>
+<li>Use the default model initial conditions (basically random initial
+conditions).</li>
+<li>Select a Temporal Average Monitor (sampling period = 0.48828125 ms)</li>
+<li>Configure the <cite>View</cite> tabs: select a Time Series Visualizer.</li>
+<li>Set the simulation length to 16000 ms</li>
+<li>Launch the simulation</li>
+<li>Observe the results: the default model state variable.</li>
+</ol>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<blockquote class="last">
+<div>Run time is approximately 4 minutes using one computing core of an Intel
+Xeon Westemere 3.2 GHz, memory requirement &lt; 1GB, data storage requirement
+~ 19MB.</div></blockquote>
+</div>
+</div>
+<div class="section" id="example-tutorial">
+<h2><img alt="example" src="_images/applications-science.png" /> Tutorial<a class="headerlink" href="#example-tutorial" title="Permalink to this headline">¶</a></h2>
+<p><strong>Sanity check</strong></p>
+<p><strong>Objective</strong>:
+getting started with <a href="#id7"><span class="problematic" id="id8">|TVB|</span></a>. Quickly evaluate if the produced
+data is rational.</p>
+<p><strong>Summary</strong>:
+Configuring parameters for a simulation will mainly depend on the nature of
+your scientific question. Assume that you want to simulate data to
+compare to some real MEG data.</p>
+<ol class="arabic simple">
+<li>Choose a neural population model that shows oscillatory dynamics.</li>
+<li>Invest some time analysing its phase plane to set the right set of parameters.</li>
+</ol>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/tutorial_sanity_01.jpg" src="_images/tutorial_sanity_01.jpg" style="width: 80%;" />
+<p class="caption">The Generic 2D Oscillator model in an oscillatory regime (limit cycle).
+Dynamics are similar to the Fitzhugh-Nagumo model.</p>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li>Test the network model for a coupling strength=0 and make sure that it does
+what it should do, i.e, that it reflects the node local dynamics, since the
+long-range coupling component will be absent.</li>
+<li>You might want to start by using a deterministic integration scheme such as the
+Heun method.</li>
+<li>If you are interested in seeing the effect of time delays, test the network
+model for a time delay = 0. Set the <cite>Conduction Speed</cite> to a very large value
+even if it is unrealistic. You can also launch parallel simultions using a
+range of condution speeds &#8211; see the <cite>Parameter Space Exploration</cite> tutorial.</li>
+</ol>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="figure align-center">
+<img alt="_images/tutorial_sanity_02_cs_1000.jpg" src="_images/tutorial_sanity_02_cs_1000.jpg" style="width: 70%;" />
+</div>
+<div class="figure align-center">
+<img alt="_images/tutorial_sanity_02_cs_42.jpg" src="_images/tutorial_sanity_02_cs_42.jpg" style="width: 70%;" />
+</div>
+<div class="figure align-center">
+<img alt="_images/tutorial_sanity_02_cs_3.jpg" src="_images/tutorial_sanity_02_cs_3.jpg" style="width: 70%;" />
+<p class="caption">Conduction speed is 1000, 42 and 3 [mm/ms] for the upper, middle and bottom
+panel respectively.</p>
+</div>
+<ol class="arabic simple" start="6">
+<li>For MEG signals, a good sanity test is the application of mode decompositions
+algorithms (PCA or ICA) to the simulated time series.</li>
+<li>Check the power spectra as well to distinguish frequency components.</li>
+</ol>
+</div>
+<div class="section" id="id1">
+<h2><img alt="example" src="_images/applications-science.png" /> Tutorial<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><strong>Simulating EEG-fMRI whole brain dynamics for individual connectivity matrices</strong></p>
+<p><strong>Objective</strong>: learn how to upload your own (i.e., artificial or subject-specific)
+connectivity data and generate the corresponding simulated EEG and fMRI signals.</p>
+<p><strong>Summary</strong>:
+In <a href="#id9"><span class="problematic" id="id10">|TVB|</span></a> platform it is possible to upload your own large-scale connectivity
+datasets (e.g., derived from DTI tractography), edit them (e.g., in order to
+mimic brain lesions) and generate simulated imaging signals like EEG and BOLD.
+In the present study, a lesion in a given node area is modeled by
+removing all the incoming and ongoing connections into and from this node.</p>
+<ol class="arabic simple">
+<li>Create a new project and upload a connectivity data set following the steps
+described in the <strong>Import Data</strong> section.</li>
+<li>Upon uploading, the new connectivity set appears as entry in the <cite>Project Data
+Structure Tree</cite>.</li>
+</ol>
+<blockquote>
+<div><img alt="_images/tutorial_eeg_bold_01.jpg" class="align-center" src="_images/tutorial_eeg_bold_01.jpg" style="width: 90%;" />
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li>Upon clicking the new list entry, the <cite>Datatype Details</cite> overlay appears.
+This window enables you for each dataset in TVB to examine object properties
+(e.g., summary statistics), edit the object metadata, view and launch all
+Analyzer and Visualizer operations that are defined for this data type, link
+the dataset to other projects and to export the dataset.</li>
+<li>Check your connectivity set by launching the <em>Connectivity Viewer</em> from the tab
+<em>Visualizers</em>. The viewer also enables editing of individual connectivity
+weights or tract lengths and to perform lesions by removing entire nodes
+(please refer to the tutorial <strong>A simple lesion study using TVB</strong> for
+further details on performing lesions). Select a node from the <em>Weights Matrix</em>,
+enter a custom edge weight value in the overlay field and select <em>Change edge value</em>.</li>
+</ol>
+<blockquote>
+<div><img alt="_images/tutorial_eeg_bold_02.jpg" class="align-center" src="_images/tutorial_eeg_bold_02.jpg" style="width: 90%;" />
+</div></blockquote>
+<ol class="arabic simple" start="5">
+<li>You can now simulate brain activity using your own connectivity data. Switch
+to the <em>Simulator</em> interface in order to configure simulation details.<ul>
+<li>Select your uploaded connectivity set from the <em>Long-range connectivity</em>
+drop-down menu.</li>
+<li>Configure further simulation parameters: large-scale coupling (e.g.,
+long-range coupling function, conduction speed), cortical surface, stimuli,
+local dynamics, integration scheme, monitors and the simulation length.</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li>Here we set the multiplicative long-range connection strength factor a equal
+to 17.2 and the conduction speed to 10 mm/ms.</li>
+<li>Then we choose <em>Stefanescu-Jirsa (reduced Hindmarsh-Rose)</em> as <em>Local dynamic
+model</em> and use <em>HeunStochastic</em> as <em>Integration scheme</em> and an <em>Integration step size</em> of
+<em>0.0156 ms</em>.</li>
+<li>We select <em>Spherical EEG</em> and <em>BOLD</em> as monitors and set the <em>EEG Sampling period</em>
+to <em>1 ms</em> and the simulation length to <em>4000 ms</em>.</li>
+<li>Configure portlets to view simulation results, e.g., the <em>EEG lines viewer</em>
+for EEG simulations.</li>
+<li>Name the new simulation and launch it.</li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="6">
+<li>In the <em>Projects</em> interface select <em>Operations</em> from the second-level tab menu
+to follow the current status of the simulation (hit reload button to update).</li>
+<li>Upon finishing, you can view simulation results in the portlets viewer or by
+selecting them from the <em>Project Data Structure Tree</em> (Simulation results
+will be listed under the node <em>Intermediate Data</em>).</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Please check that simulation length is larger than the BOLD sampling period!!</p>
+<img alt="_images/tutorial_eeg_bold_04.jpg" class="last align-center" src="_images/tutorial_eeg_bold_04.jpg" style="width: 90%;" />
+</div>
+</div>
+<div class="section" id="id2">
+<h2><img alt="example" src="_images/applications-science.png" /> Tutorial<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><strong>A simple lesion study using TVB</strong></p>
+<p><strong>Objective</strong>:
+learn how to generate simulated brain activity to study the impact of brain
+lesions on functional patterns of activity.</p>
+<p><strong>Summary</strong>:
+In <a href="#id11"><span class="problematic" id="id12">|TVB|</span></a> platform it is possible to edit a connectivity matrix to mimic brain
+lesions. In the present study, a lesion in a given node area is modeled by
+removing all the incoming and ongoing connections into and from this node.</p>
+<blockquote>
+<div><ul class="simple">
+<li>Assuming that you have already created your project:</li>
+<li>Enter the <cite>Connectivity</cite> area and click on <cite>Long Range Connectivity</cite>.</li>
+<li>Select the default connectivity matrix and click the <cite>Launch</cite> button.</li>
+<li>On the right side the node-by-node connectivity matrix is displayed. You
+can select the quadrant to be displayed on the screen by accessing the
+quadrant selector.</li>
+<li>Unselect the nodes you want to lesion by clicking directly on the region
+labels. This will remove all the incoming and ongoing connections into
+and from those nodes. Here we choose to lesion the following cortical
+areas: lCCA, lCCP, and lPFCORB.</li>
+<li>Enter a name for this new selection, save it  and click on the star icon
+on the top-right to save the new matrix.</li>
+<li>Go to <cite>Project</cite> area and enter the <cite>Data Structure</cite> page. The new
+connectivity matrix should be available in Intermediate Data.</li>
+<li>By selecting the new Connectivity, you will access its Datatype
+Details allowing you to get information about the data, visualize them
+and export them.</li>
+<li>From the <cite>Visualizers</cite> tab you can launch a display to see the new matrix.</li>
+<li>Simulate data using both connectivity matrices. You can now use the new
+connectivity matrix to simulate brain activity, using the TVB <cite>Simulator</cite>.
+Here we choose the BOLD model with underlying FitzHugh-Nagumo equations for
+the local dynamics. The goal is to run two long simulations, one using an
+intact connectivity and another using the connectivity with lesions. Except
+for the connectivity matrix, all parameters are the same (including the
+random number generator seed).<ul>
+<li>In the <cite>Simulator</cite> area - central column - you can choose the long-range
+connectivity. Select the new connectivity matrix containing the lesions.</li>
+<li>Set the local dynamic model to Fitz-Hugh Nagumo.</li>
+<li>Select BOLD in Monitors.</li>
+<li>Name the new simulation and launch it.</li>
+<li>Repeat the previous steps but choosing the default matrix (intact) as the
+Long-range connectivity.</li>
+</ul>
+</li>
+<li>Go to the <cite>Operations</cite> board. You can follow the state of the simulations.
+When simulations are finished your results will be represented by its
+datatype icons.</li>
+<li>Export the results of both simulations and the connectivity matrices.<ul>
+<li>You can export the results by choosing <cite>Export</cite>: -&gt; TVB format. The data
+will be stored in an HDF5 file (&#8220;filename.h5&#8221;) which can be used to do
+further analysis using other software of your choice.</li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+<p>Here we choose MatLab to process the data. To read the HDF5 file in MatLab do:</p>
+<div class="highlight-python"><pre>hinfo = hdf5info('filename.h5');
+% hinfo is a structure containing the data in the field
+% hinfo.GroupHierarchy.Datasets.</pre>
+</div>
+<p>To read the data use the <cite>hdf5read</cite> function. For our simulations
+<cite>hinfo.GroupHierarchy.Datasets(1)</cite> contains the BOLD activity and
+<cite>hinfo.GroupHierarchy.Datasets(2)</cite> contains the time:</p>
+<div class="highlight-python"><pre>Time  = hdf5read(hinfo.GroupHierarchy.Datasets(2));
+bold  = hdf5read(hinfo.GroupHierarchy.Datasets(1));
+N     = size(bold,2);
+T     = size(bold,4);
+% Where N is the number of cortical areas (=74) and T the number of time
+% points.</pre>
+</div>
+<p>You can compact the data to a 2-dimension matrix as:</p>
+<div class="highlight-python"><pre>bold_new = zeros(T,N,2);
+bold_new(:,:,1) = reshape(bold,[T N]);</pre>
+</div>
+<p>You are now ready to work with <cite>bold_new</cite> using the tools of MatLab.</p>
+<p><strong>Results</strong></p>
+<p>For each condition, intact and lesion, we calculated the correlation matrix
+(functional connectivity) and evaluated whether correlations change in pairs
+of nodes. To asses significant changes we calculated the correlation matrix
+in non-overlapping time windows of 200 time points. In this way, we obtained
+a distribution for each pair-wise correlation coefficient, allowing
+statistical treatment. Correlation coefficients were fisher z-transformed and
+compared (by means of t-tests) in intact vs. lesion conditions. We found that lesions
+induced both significant increases and decreases of correlations between
+intact nodes, even for pairs of nodes in different hemispheres.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/tutorial_lesion_results.jpg" src="_images/tutorial_lesion_results.jpg" style="width: 40%;" />
+</div>
+<p>A) Top: Intact connectivity matrix. Middle: Connectivity matrix with
+lesions. Bottom: Difference between intact and injured connectivity
+matrices. Connection strengths are indicated in color code.
+B) Top: Intact functional connectivity. Middle: Functional connectivity with
+lesions. Pearson pair-wise correlation coefficients are indicated in
+color code. Bottom: Significantly different pair-wise correlations in
+intact vs. lesion conditions (squares are proportional to correlation
+difference). Black: lesion significantly decreased correlation
+coefficient with respect to intact correlations. Gray: lesion
+significantly increased correlation coefficient with respect to intact
+correlations.
+C) Example of seed-based based correlations. Dark and
+light colors indicate significant and non-significant differences of
+correlation coefficients, respectively. Seed: left prefrontal polar cortex.</p>
+</div></blockquote>
+</div>
+<div class="section" id="id3">
+<h2><img alt="example" src="_images/applications-science.png" /> Tutorial<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p><strong>Performing parameter space exploration</strong></p>
+<p><strong>Objective</strong>:
+learn how to sweep and search across different simulation
+settings that run on a distributed infrastructure.</p>
+<p><strong>Summary</strong>:
+In <a href="#id13"><span class="problematic" id="id14">|TVB|</span></a> platform it is possible to launch parallel simulations to explore the
+changes in dynamics of the brain as a function of the local dynamics parameters.
+We illustrate this process with a case study in larg-scale brain simulations
+within <a href="#id15"><span class="problematic" id="id16">|TVB|</span></a>.</p>
+<blockquote>
+<div><ul class="simple">
+<li>Assuming that you have already created your project:</li>
+<li>Enter the <cite>Simulator</cite> area.</li>
+<li>Select the default connectivity matrix.</li>
+<li>Choose the local dynamic model <cite>2D Generic Oscillator</cite></li>
+<li>Click on the &#8216;V&#8217; button next to the model parameters to unfold the available
+parameter range and step size. At present, a maximum of 2
+parameters can be explored at the same time.</li>
+<li>For <math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><msub><mi>I</mi>
+<mrow><mi>e</mi><mi>x</mi><mi>t</mi></mrow></msub></mrow></math> set the step size to 0.4 and for <math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mi>a</mi></mrow></math> 0.5</li>
+<li>Name the new simulation and launch it.</li>
+<li>After all simulation are finished, you should be able to see the Parameter
+Space Exploration Visualizer.</li>
+</ul>
+</div></blockquote>
+<div class="figure align-center">
+<img alt="_images/simulator_pse_configuration.jpg" src="_images/simulator_pse_configuration.jpg" style="width: 60%;" />
+</div>
+<p>Each point in this two dimensional graph represents two metrics: by default
+Global Variance corresponds to the size of the point and Variance of the
+Variance of nodes maps the color scale.</p>
+<blockquote>
+<div><ul class="simple">
+<li>From those results, critical combination of parameters can be
+distinguished.</li>
+<li>If you go to <cite>Project</cite> area and enter the <cite>Data Structure</cite> page. The results
+of all simulations will be held under one object called DataTypeGroup.</li>
+<li>Export the results of all simulations.</li>
+<li>You can export the results by clicking on the aforementioned object and
+selecting the <cite>Export</cite> tab: -&gt; TVB format.
+The data will be available for download in a .zip file.</li>
+<li>Within this folder you will find the TimeSeries for each possible parameter
+combination. Data are stored as HDF5 files (&#8220;filename.h5&#8221;) which can be used
+to do further analysis using other software of your choice.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="id4">
+<h2><img alt="example" src="_images/applications-science.png" /> Tutorial<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p><strong>Generate a  spatiotemporal stimulus</strong></p>
+<p><strong>Objective</strong>: learn how to create a spatiotemporal pattern to study the
+influence of a stimulation paradigm to outline different patterns of neural
+activity.</p>
+<p><strong>Summary</strong>
+The intention is to have a platform capabable of having a representation of
+stable and unstable sources. The goal is to observe the effect of
+the stimulation.</p>
+<blockquote>
+<div><ul>
+<li><p class="first">Assuming that you have already created your project:</p>
+</li>
+<li><p class="first">Go to the <cite>Stimulus</cite> area &#8211;&gt; <cite>Surface Stimulus</cite> page.</p>
+</li>
+<li><p class="first">Enter a new name for the new <cite>Surface Stimulus</cite>.</p>
+</li>
+<li><p class="first">Choose the default <cite>Cortical Surface</cite>.</p>
+</li>
+<li><p class="first">Select the <cite>Mexican-hat</cite> equation to define the spatial spread of the
+stimulus.</p>
+</li>
+<li><p class="first">Spatial parameters are:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="67%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><p class="first last">Inputs</p>
+</th>
+<th class="head"><p class="first last">Value</p>
+</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><p class="first last">midpoint1</p>
+</td>
+<td><p class="first last">20.0</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first last">midpoint2</p>
+</td>
+<td><p class="first last">0.0</p>
+</td>
+</tr>
+<tr class="row-even"><td><p class="first last">amp1</p>
+</td>
+<td><p class="first last">1.0</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first last">amp2</p>
+</td>
+<td><p class="first last">1.0</p>
+</td>
+</tr>
+<tr class="row-even"><td><p class="first last">sigma1</p>
+</td>
+<td><p class="first last">20.0</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first last">sigma2</p>
+</td>
+<td><p class="first last">10.0</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+<li><p class="first">Temporal parameters are:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="67%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><p class="first last">Inputs</p>
+</th>
+<th class="head"><p class="first last">Value</p>
+</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><p class="first last">amp</p>
+</td>
+<td><p class="first last">1.0</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first last">frequency</p>
+</td>
+<td><p class="first last">0.1</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+<li><p class="first">Click on View Stimulus Progress</p>
+</li>
+<li><p class="first">Select 10 focal nodes on the right hemisphere.</p>
+</li>
+<li><p class="first">Click on <cite>Save new Stimulus Surface</cite></p>
+</li>
+<li><p class="first">Your spatiotemporal pattern should be available. You can load it and play
+the animation on the cortical surface.</p>
+</li>
+<li><p class="first">Go back to <cite>Edit Stimulus Equation</cite></p>
+</li>
+<li><p class="first">Set new equations and parameters for both spatial and temporal profiles.</p>
+</li>
+<li><p class="first">Add 10 focal nodes on the left hemisphere.</p>
+</li>
+<li><p class="first">Enter a new name for this new <cite>Stimulus Surface</cite> and save it.</p>
+</li>
+<li><p class="first">You can visualize the new pattern.</p>
+</li>
+</ul>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="figure align-center">
+<img alt="_images/stimulus_surface_play.jpg" src="_images/stimulus_surface_play.jpg" style="width: 90%;" />
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The maximum number of focal points you are allowed to add is 20.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api/index.html">API</a>|&nbsp;</li>
+	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, timpx.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

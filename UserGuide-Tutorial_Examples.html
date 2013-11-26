@@ -1,0 +1,149 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Examples &mdash; tvb_doc 2.7 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="tvb_doc 2.7 documentation" href="index.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo.svg" border="0" alt="py4sci"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api/index.html">API</a>|&nbsp;</li>
+	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/UserGuide-Tutorial_Examples.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<p>We present here some basic simulation scenarios that the user should be able to
+reproduce through the <a href="#id1"><span class="problematic" id="id2">|TVB|</span></a> interface.</p>
+<div class="admonition-example-example-1 admonition">
+<p class="first admonition-title"><a href="#id3"><span class="problematic" id="id4">|example|</span></a> Example 1</p>
+<blockquote>
+<div><p><strong>Generating resting activity data using the default simulator configuration</strong></p>
+<p><strong>Objective</strong>: generate 16 seconds of resting state activity data, sampled at
+2048Hz, by launching a region-based simulation using a stochastic
+integration method.</p>
+</div></blockquote>
+<ol class="arabic simple">
+<li>Use the default long-range connectivity data.</li>
+<li>Apply a linear coupling function (parameters: <math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mi>a</mi></mrow></math>- rescale connection
+strength=0.016, <math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mi>b</mi></mrow></math>- shift=0).</li>
+<li>Leave the <em>Cortical Surface</em> and the <em>Stimulus</em> set to <strong>None</strong>.</li>
+<li>Use the default population model and its parameters.</li>
+<li>Select the Heun Stochastic integrator. Set the integration step to
+<math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mi>d</mi><mi>t</mi><mo>=</mo><mn>0</mn><mo>.</mo><mn>0</mn><mn>6</mn><mn>1</mn><mn>0</mn><mn>3</mn><mn>5</mn><mn>1</mn><mn>5</mn><mn>6</mn><mn>2</mn><mn>5</mn></mrow></math> and additive noise (with null correlation time
+and standard deviation <math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mi>D</mi><mo>=</mo><msup><mn>2</mn>
+<mrow><mo>-</mo><mn>1</mn><mn>0</mn></mrow></msup></mrow></math>, use the default
+random number generator parameters).</li>
+<li>Use the default model initial conditions (basically random initial
+conditions).</li>
+<li>Select a Temporal Average Monitor (sampling period = 0.48828125 ms)</li>
+<li>Configure the <cite>View</cite> tabs: select a Time Series Visualizer.</li>
+<li>Set the simulation length to 16000 ms</li>
+<li>Launch the simulation</li>
+<li>Observe the results: the default model state variable.</li>
+</ol>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<blockquote class="last">
+<div>Run time is approximately 4 minutes using one computing core of an Intel
+Xeon Westemere 3.2 GHz, memory requirement &lt; 1GB, data storage requirement
+~ 19MB.</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api/index.html">API</a>|&nbsp;</li>
+	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, timpx.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

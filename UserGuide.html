@@ -1,0 +1,2761 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>User Guide &mdash; tvb_doc 2.7 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="tvb_doc 2.7 documentation" href="index.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo.svg" border="0" alt="py4sci"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api/index.html">API</a>|&nbsp;</li>
+	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">User Guide</a><ul>
+<li><a class="reference internal" href="#overview-of-tvb">Overview of |TVB|</a></li>
+<li><a class="reference internal" href="#installing-the-application">Installing the Application</a><ul>
+<li><a class="reference internal" href="#on-linux">On Linux</a></li>
+<li><a class="reference internal" href="#on-macos">On MacOS</a></li>
+<li><a class="reference internal" href="#on-windows">On Windows</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#shell-interface-of-tvb">Shell Interface of |TVB|</a><ul>
+<li><a class="reference internal" href="#getting-started-with-python-idle">Getting started with Python IDLE</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#user-interface-of-tvb">User Interface of |TVB|</a><ul>
+<li><a class="reference internal" href="#main-interface-description-and-typical-workflow">Main Interface Description and Typical Workflow</a></li>
+<li><a class="reference internal" href="#user">User</a><ul>
+<li><a class="reference internal" href="#tvb-settings">TVB Settings</a></li>
+<li><a class="reference internal" href="#login">Login</a></li>
+<li><a class="reference internal" href="#register">Register</a></li>
+<li><a class="reference internal" href="#user-profile">User Profile</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#project">Project</a><ul>
+<li><a class="reference internal" href="#list-of-all-projects">List of All Projects</a></li>
+<li><a class="reference internal" href="#basic-properties">Basic Properties</a></li>
+<li><a class="reference internal" href="#image-archive">Image Archive</a></li>
+<li><a class="reference internal" href="#operations">Operations</a></li>
+<li><a class="reference internal" href="#data-structure">Data Structure</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#simulator">Simulator</a><ul>
+<li><a class="reference internal" href="#configure-a-simulation">Configure a Simulation</a><ul>
+<li><a class="reference internal" href="#region-based-simulations">Region-based simulations</a></li>
+<li><a class="reference internal" href="#surface-based-simulations">Surface-based simulations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#simulation-history">Simulation History</a></li>
+<li><a class="reference internal" href="#display-simulation-results">Display Simulation Results</a></li>
+<li><a class="reference internal" href="#simple-visualizers">Simple Visualizers</a><ul>
+<li><a class="reference internal" href="#brain-activity-visualizer">Brain Activity Visualizer</a></li>
+<li><a class="reference internal" href="#time-series-visualizer-svg-d3">Time Series Visualizer (svg/d3)</a></li>
+<li><a class="reference internal" href="#eeg-time-series-visualizer">EEG Time Series Visualizer</a></li>
+<li><a class="reference internal" href="#dual-brain-eeg-visualizer">Dual Brain - EEG Visualizer</a></li>
+<li><a class="reference internal" href="#connectivity-measure-visualizer">Connectivity Measure Visualizer</a></li>
+<li><a class="reference internal" href="#topographic-visualizer">Topographic Visualizer</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#group-display">Group Display</a><ul>
+<li><a class="reference internal" href="#discrete-pse-visualizer">Discrete PSE Visualizer</a></li>
+<li><a class="reference internal" href="#isocline-pse-visualizer">Isocline PSE Visualizer</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#analyzers-visualizers">Analyzers + Visualizers</a><ul>
+<li><a class="reference internal" href="#covariance-visualizer">Covariance Visualizer</a></li>
+<li><a class="reference internal" href="#cross-coherence-visualizer">Cross Coherence Visualizer</a></li>
+<li><a class="reference internal" href="#complex-coherence-visualizer">Complex Coherence Visualizer</a></li>
+<li><a class="reference internal" href="#cross-correlation-visualizer">Cross Correlation Visualizer</a></li>
+<li><a class="reference internal" href="#fourier-spectrum-visualizer">Fourier Spectrum Visualizer</a></li>
+<li><a class="reference internal" href="#principal-component-visualizer">Principal Component Visualizer</a></li>
+<li><a class="reference internal" href="#independent-component-visualizer">Independent Component Visualizer</a></li>
+<li><a class="reference internal" href="#wavelet-spectrogram-visualizer">Wavelet Spectrogram Visualizer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#analyze">Analyze</a><ul>
+<li><a class="reference internal" href="#cross-correlation-of-nodes">Cross-correlation of nodes</a></li>
+<li><a class="reference internal" href="#fourier-spectral-analysis">Fourier Spectral Analysis</a></li>
+<li><a class="reference internal" href="#timeseries-metrics">TimeSeries Metrics</a></li>
+<li><a class="reference internal" href="#cross-coherence-of-nodes">Cross coherence of nodes</a></li>
+<li><a class="reference internal" href="#temporal-covariance-of-nodes">Temporal covariance of nodes</a></li>
+<li><a class="reference internal" href="#principal-component-analysis-pca">Principal Component Analysis (PCA)</a></li>
+<li><a class="reference internal" href="#independent-component-analysis-ica">Independent Component Analysis (ICA)</a></li>
+<li><a class="reference internal" href="#continuous-wavelet-transform-cwt">Continuous Wavelet Transform (CWT)</a></li>
+<li><a class="reference internal" href="#brain-connectivity-toolbox-analyzers">Brain Connectivity Toolbox Analyzers</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#stimulus">Stimulus</a><ul>
+<li><a class="reference internal" href="#region-level-stimulus">Region level stimulus</a></li>
+<li><a class="reference internal" href="#surface-level-stimulus">Surface level stimulus</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#connectivity">Connectivity</a><ul>
+<li><a class="reference internal" href="#long-range-connectivity">Long Range Connectivity</a><ul>
+<li><a class="reference internal" href="#connectivity-matrix-editor">Connectivity Matrix Editor</a></li>
+<li><a class="reference internal" href="#viewers">Viewers</a></li>
+<li><a class="reference internal" href="#connectivity-3d-edges">Connectivity 3D Edges</a></li>
+<li><a class="reference internal" href="#connectivty-3d-nodes">Connectivty 3D Nodes</a></li>
+<li><a class="reference internal" href="#connectivity-2d-viewer">Connectivity 2D Viewer</a></li>
+<li><a class="reference internal" href="#matrix-overview">Matrix Overview</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#local-connectivity">Local Connectivity</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#examples-and-tutorials">Examples and Tutorials</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#example-tutorial"> Tutorial</a></li>
+<li><a class="reference internal" href="#id1"> Tutorial</a></li>
+<li><a class="reference internal" href="#id2"> Tutorial</a></li>
+<li><a class="reference internal" href="#id3"> Tutorial</a></li>
+<li><a class="reference internal" href="#id4"> Tutorial</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tvb-data-storage">|TVB| Data Storage</a><ul>
+<li><a class="reference internal" href="#exchange-projects">Exchange Projects</a><ul>
+<li><a class="reference internal" href="#export-project">Export Project</a><ul>
+<li><a class="reference internal" href="#file-format">File Format</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#import-project">Import Project</a><ul>
+<li><a class="reference internal" href="#id5">File Format</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#export-import-data">Export/Import Data</a><ul>
+<li><a class="reference internal" href="#export-data">Export Data</a><ul>
+<li><a class="reference internal" href="#export-data-in-tvb-format">Export Data in |TVB| Format</a><ul>
+<li><a class="reference internal" href="#id6">File Format</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#export-data-in-cifti-format">Export Data in CIFTI Format</a><ul>
+<li><a class="reference internal" href="#id7">File Format</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#import-data">Import Data</a><ul>
+<li><a class="reference internal" href="#import-data-in-tvb-format">Import Data in |TVB| Format</a><ul>
+<li><a class="reference internal" href="#id8">File Format</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#import-volume-time-series-from-nifti-1-format">Import Volume Time Series from NIFTI-1 Format</a><ul>
+<li><a class="reference internal" href="#id9">File Format</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#import-sensors">Import Sensors</a><ul>
+<li><a class="reference internal" href="#id10">File Format</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#import-connectivity-from-zip">Import Connectivity from ZIP</a><ul>
+<li><a class="reference internal" href="#id11">File Format</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#import-surface-from-zip">Import Surface from ZIP</a><ul>
+<li><a class="reference internal" href="#id12">File Format</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#import-surface-and-timeseries-from-gifti">Import Surface and TimeSeries from GIFTI</a><ul>
+<li><a class="reference internal" href="#id13">File Format</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#import-data-from-cff">Import Data from CFF</a><ul>
+<li><a class="reference internal" href="#id14">File Format</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#import-region-mapping">Import Region Mapping</a><ul>
+<li><a class="reference internal" href="#id15">File Format</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#import-projection-matrix">Import Projection Matrix</a><ul>
+<li><a class="reference internal" href="#id16">File Format</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/UserGuide.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="user-guide">
+<h1>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview-of-tvb">
+<h2>Overview of <a href="#id19"><span class="problematic" id="id20">|TVB|</span></a><a class="headerlink" href="#overview-of-tvb" title="Permalink to this headline">¶</a></h2>
+<p><a href="#id21"><span class="problematic" id="id22">|TVB|</span></a> is a framework for the simulation of the dynamics of large-scale brain
+networks with biologically realistic connectivity. <a href="#id23"><span class="problematic" id="id24">|TVB|</span></a> uses tractographic data
+(DTI/DSI) to generate connectivity matrices and build cortical and subcortical
+brain networks. The connectivity matrix defines the connection strengths and
+time delays via signal transmission between all network nodes. Various neural
+mass models are available in the repertoire of <a href="#id25"><span class="problematic" id="id26">|TVB|</span></a> and define the dynamics of
+a network node.  Together, the neural mass models at the network nodes and the
+connectivity matrix define <strong>the Virtual Brain</strong>. <a href="#id27"><span class="problematic" id="id28">|TVB|</span></a> simulates and generates
+the time courses of various forms of neural activity including Local Field
+Potentials (LFP) and firing rate, as well as brain imaging data such as
+EEG, MEG and BOLD activations as observed in fMRI.</p>
+<p><a href="#id29"><span class="problematic" id="id30">|TVB|</span></a> is foremost a scientific simulation platform and provides all means
+necessary to generate, manipulate and visualize connectivity and network
+dynamics. In addition, <a href="#id31"><span class="problematic" id="id32">|TVB|</span></a> comprises a set of classical time series analysis
+tools, structural and functional connectivity analysis tools, as well as
+parameter exploration facilities by launching parallel simulations on a cluster.
+The workflow of TVB is divided in <strong>User</strong>, <strong>Project</strong>, <strong>Simulator</strong>,
+<strong>Analysis</strong>, <strong>Stimulus</strong> and <strong>Conectivity</strong>. In <strong>User</strong>, the user can
+manage their account and <a href="#id33"><span class="problematic" id="id34">|TVB|</span></a> settings. In <strong>Project</strong>, the individual projects
+are defined with all their data and infrastructure. In <strong>Simulator</strong> the
+large-scale simulation is defined and different options to view structural and
+functional data are offered in 2D, 3D, as well other representations to
+visualize results. Having multiple panels allows having a quick overview of the
+current <a href="#id35"><span class="problematic" id="id36">|TVB|</span></a> model parameters, simulations and results. In <strong>Analysis</strong> certain
+options for data and connectivity analysis are offered. In <strong>Stimulus</strong>,
+patterns of stimuli can be generated. And finally in <strong>Connectivity</strong>, the user
+can edit the connectivity matrices assisted by interactive visualization tools.</p>
+<p>This document provides the most basic tutorial to get the new user started
+working with <a href="#id37"><span class="problematic" id="id38">|TVB|</span></a>, version 1.0. As <a href="#id39"><span class="problematic" id="id40">|TVB|</span></a> will be updated regularly, please
+check for updates on our web site: <a class="reference external" href="http://www.thevirtualbrain.org">http://www.thevirtualbrain.org</a>.</p>
+</div>
+<div class="section" id="installing-the-application">
+<h2>Installing the Application<a class="headerlink" href="#installing-the-application" title="Permalink to this headline">¶</a></h2>
+<p>As <a href="#id41"><span class="problematic" id="id42">|TVB|</span></a> redefines what&#8217;s possible in neuroscience utilizing off-the-shelf computer hardware, a few requirements are essential when using the software.</p>
+<p>Requirements for front-end visualization:</p>
+<ul class="simple">
+<li><strong>High definition monitor</strong> -
+Your monitor should be capable of displaying at least 1600 x 1000 pixels. Some views might be truncated if TVB is run on smaller monitors.</li>
+<li><strong>WebGL and WebSockets compatible browser</strong> -
+We&#8217;ve tested the software on Mozilla Firefox 14+, Apple Safari 5.1+ and Google Chrome 20+.
+Using a different, less capable browser might result in some features not working or the user interface looking awkward at times.</li>
+<li><strong>WebGL-compatible graphics card</strong> -
+The graphic card has to support OpenGL version 2.0 or higher. The operating system needs to have a proper card driver as well to expose the graphic card towards WebGL.
+This requirement only affects PCs, not (somewhat recent) Macs.</li>
+</ul>
+<p>Requirements for computation/storage power, dependent on the number of parallel simulations that will be executed concurrently:</p>
+<ul class="simple">
+<li><strong>CPU power</strong> -
+1 CPU core is needed for one simulation. When launching more simulations than the number of available cores, a serialization is recommended.
+This can be done by setting the &#8220;maximum number of parallel threads&#8221; (in TVB settings) to the same value as the number of cores.</li>
+<li><strong>Memory</strong> -
+For a single simulation 8GB of RAM should be sufficient but 16GB are recommended.</li>
+<li><strong>Disk space</strong> is also important, as simulating only 10 ms on surface level will occupy 280MB of disk space. A minimum of 50GB of space per user is a rough approximation.</li>
+<li>32 bit packages will work fine, also when running on a 64 bit architecture.
+Please take note that some simulations on surface level might require more memory that 32 bit programs can address,
+at which point the TVB software will notify you about this with a &#8220;Memory Error&#8221;.</li>
+<li>Optional <strong>MatLab or Octave</strong> -
+A special feature in TVB is utilizing functions from the Brain Connectivity Toolbox.
+This feature thus requires a MatLab or Octave package on your computer (installed, activated and added to your OS&#8217; global PATH variable).
+The Brain Connectivity Toolbox doesn&#8217;t need to be installed or enabled separately in any way, as TVB will temporarily append it to your MatLab/Octave path.</li>
+</ul>
+<p>The TVB software package can be used in 3 different configurations:</p>
+<ul>
+<li><p class="first">on a single machine (personal usage).
+This machine will need to meet the technical requirements from above for both the visualization and the computation/storage part.
+Any operation launched will use resources from current machine (graphic card, CPU, disk and RAM).</p>
+</li>
+<li><p class="first">in a client/server configuration, where TVB is installed on a server and made accessible to an unlimited number of users.</p>
+<p>This configuration is recommended when you have a powerful server to be used as back-end, where TVB is running and simulation or analysis operations are to be executed.
+The server machine will not require powerful graphics, as visualization will not be done here at all. Only the computation requirements from above will need to be met by the server.</p>
+<p>The visualization can be accessed from a personal computers by a browser (via HTTP).
+A network connection needs to exist between the server where TVB is running and the computer doing the visualization and access.
+<a class="reference external" href="http:/">http:/</a>/${SERVER-IP}:8080 is the default URL.</p>
+</li>
+<li><p class="first">using a cluster (similar with server installation, but with parallelization support).
+Please note that for cluster installations, OAR is expected to be configured separately from TVB and accessible to the user for which the TVB software is launched.</p>
+</li>
+</ul>
+<p>Launching the application is described in the next paragraphs, on all supported platforms.</p>
+<div class="section" id="on-linux">
+<h3>On Linux<a class="headerlink" href="#on-linux" title="Permalink to this headline">¶</a></h3>
+<p>Unzip the package and it will create a folder TVB_Distribution. In this folder
+you should find a sub-folder <cite>bin</cite> with a number of scripts:</p>
+<ul class="simple">
+<li>tvb_start.sh</li>
+<li>tvb_clean.sh</li>
+<li>tvb_stop.sh</li>
+<li>tvb_command.sh</li>
+<li>tvb_library.sh</li>
+<li>contributor_setup.sh</li>
+</ul>
+<p>To start <a href="#id43"><span class="problematic" id="id44">|TVB|</span></a> graphical interface in your web-browser, run the
+<cite>tvb_start.sh</cite> script. You can run at any time <cite>tvb_clean.sh</cite> which
+will start <a href="#id45"><span class="problematic" id="id46">|TVB|</span></a> in a clean state, resetting your program database and deleting
+ALL folders and their content created by <a href="#id47"><span class="problematic" id="id48">|TVB|</span></a>. Be careful!</p>
+<p>To make sure that no processes will remain open after you use the application,
+you should always close <a href="#id49"><span class="problematic" id="id50">|TVB|</span></a> by running the <cite>tvb_stop.sh</cite> script.</p>
+<p>To access the console interface, on a terminal, run <cite>tvb_command.sh</cite> or <cite>tvb_library.sh</cite>.
+The interactive Python shell will appear. See the Shell and User Interface sections in this document for
+more details on how to use the different interfaces of <a href="#id51"><span class="problematic" id="id52">|TVB|</span></a>.</p>
+<p>The current <a href="#id53"><span class="problematic" id="id54">|TVB|</span></a> package was tested on Debian Squeeze and Fedora 16.
+Other Linux flavors might also work as long as you have installed a glibc
+version of 2.11 or higher.</p>
+<p>For details on script <cite>contributor_setup</cite>, please read document <cite>ContributorsManual.pdf</cite>.</p>
+</div>
+<div class="section" id="on-macos">
+<h3>On MacOS<a class="headerlink" href="#on-macos" title="Permalink to this headline">¶</a></h3>
+<p>Unzip the package and it will create a folder: TVB_Distribution. In this folder
+you should find a number of scripts (in <cite>bin</cite> sub-folder) and an application package (<cite>tvb.app</cite>).</p>
+<p>To start <a href="#id55"><span class="problematic" id="id56">|TVB|</span></a> in your web browser you should double-click on the <cite>tvb.app</cite>
+application. If you would rather use the shell interface, then execute one of the files
+<cite>tvb_command</cite> or <cite>tvb_library</cite> from the <cite>bin</cite> folder. See the Shell and User Interface sections in this document for
+more details on how to use the different interfaces of <a href="#id57"><span class="problematic" id="id58">|TVB|</span></a>.</p>
+<p>Double click on <cite>tvb.app</cite> will launch the TVB software as a background process and will also try to
+fire a browser window for you to start working with TVB. Please be patient, as depending on your computer
+resources, the startup process might take about 1-2 minutes.</p>
+<p>You can at any time run the <cite>tvb_clean.command</cite> which will reset
+your TVB database and delete all folders created by <a href="#id59"><span class="problematic" id="id60">|TVB|</span></a>.</p>
+<p>To make sure that no processes will remain open after you use the application,
+you should always close <a href="#id61"><span class="problematic" id="id62">|TVB|</span></a> by running the <cite>tvb_stop.command</cite> script.</p>
+<p>The current <a href="#id63"><span class="problematic" id="id64">|TVB|</span></a> version was tested on Mac OS X 10.5.8 (Leopard), 10.6.8 (Snow Leopard) and 10.7.2 (Lion)
+but should also run smoothly on subsequent versions.</p>
+</div>
+<div class="section" id="on-windows">
+<h3>On Windows<a class="headerlink" href="#on-windows" title="Permalink to this headline">¶</a></h3>
+<p>Unzip the package and it will create a folder TVB_Distribution.
+In this folder you should find sub-folder <cite>bin</cite> with a number of .bat scripts.</p>
+<p>To start <a href="#id65"><span class="problematic" id="id66">|TVB|</span></a> you should use <cite>tvb_start.bat</cite>. This will launch the TVB software with a console
+process for debugging, and will also try to fire a browser window for you to start working with TVB web interface.
+If you rather use the shell interface, then execute one of the files
+<cite>tvb_command</cite> or <cite>tvb_library</cite> from the <cite>bin</cite> folder. See the Shell and User Interface sections in this document for
+more details on how to use the different interfaces of <a href="#id67"><span class="problematic" id="id68">|TVB|</span></a>.</p>
+<p>You can at any time run <cite>tvb_clean.bat</cite> which will start tvb in a clean state, resetting
+your program database and deleting all folders created by <a href="#id69"><span class="problematic" id="id70">|TVB|</span></a>.</p>
+<p>To make sure that no processes will remain open after you use the application,
+you should close <a href="#id71"><span class="problematic" id="id72">|TVB|</span></a> by running <cite>tvb_stop.bat</cite>, or close the previous opened console.</p>
+<p>This version was tested on Windows XP (x32), Windows Server 2008 (x64) and Windows 7 (x64).</p>
+</div>
+</div>
+<div class="section" id="shell-interface-of-tvb">
+<h2>Shell Interface of <a href="#id73"><span class="problematic" id="id74">|TVB|</span></a><a class="headerlink" href="#shell-interface-of-tvb" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="getting-started-with-python-idle">
+<h3>Getting started with Python IDLE<a class="headerlink" href="#getting-started-with-python-idle" title="Permalink to this headline">¶</a></h3>
+<div class="figure align-center">
+<img alt="_images/linux_shell.jpg" src="_images/linux_shell.jpg" style="width: 90%;" />
+<p class="caption">Interactive Python Shell</p>
+</div>
+<p>IDLE font size, syntax higlighting and keys can be configured according to your
+needs. Go to the Options menu in the menu bar and select <cite>Configure IDLE</cite>.</p>
+<div class="figure align-center">
+<img alt="_images/linux_shell_idle_options.jpg" src="_images/linux_shell_idle_options.jpg" style="width: 90%;" />
+<p class="caption">Configure IDLE options.</p>
+</div>
+<p>There is a number of scripting demos to show how to build a network model and
+run a simulation.</p>
+<p>To run any demo use the <cite>execfile</cite> command:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">execfile</span><span class="p">(</span><span class="s">&#39;/home/user/Downloads/TVB_Distribution/tvb_data/tvb/simulator/demos/region_deterministic.py&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The above command should work on Linux and Windows, as long as you replace &#8216;/home/user/Downloads/TVB_Distribution&#8217;
+with your personal path towards the folder where TVB was being downloaded.
+On Mac OS the path is just a little different:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">execfile</span><span class="p">(</span><span class="s">&#39;../Resources/lib/python2.7/tvb/simulator/demos/region_deterministic.py&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-center">
+<img alt="_images/linux_shell_run_demo.jpg" src="_images/linux_shell_run_demo.jpg" style="width: 90%;" />
+<p class="caption">Run a demo</p>
+</div>
+<p>Another way to run a script, that also allows to see and edit the code, is opening
+the file from the File menu. A new window will pop out. Then select Run Module
+from the Run menu. The script will be executed.</p>
+<div class="figure align-center">
+<img alt="_images/linux_shell_run_demo_2.jpg" src="_images/linux_shell_run_demo_2.jpg" style="width: 90%;" />
+<p class="caption">Run a demo from the Run Module</p>
+</div>
+<p>To work interactively in the Python shell you need a few modules:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">tvb.simulator.lab</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<p>This will import all the scientific simulator modules as well as some datatypes
+that wrap important data as the <cite>Connectivity</cite> matrix and cortical <cite>Surface</cite>.</p>
+</div>
+</div>
+<div class="section" id="user-interface-of-tvb">
+<h2>User Interface of <a href="#id75"><span class="problematic" id="id76">|TVB|</span></a><a class="headerlink" href="#user-interface-of-tvb" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="main-interface-description-and-typical-workflow">
+<h3>Main Interface Description and Typical Workflow<a class="headerlink" href="#main-interface-description-and-typical-workflow" title="Permalink to this headline">¶</a></h3>
+<p>On the right, the <cite>login</cite> button has changed to a <cite>logout</cite> button with obvious
+functionality.</p>
+<p>The main menu of <a href="#id77"><span class="problematic" id="id78">|TVB|</span></a> interface lays at the bottom of the page and is composed
+of six basic options:</p>
+<dl class="docutils">
+<dt>User:</dt>
+<dd>where user&#8217;s details are managed.</dd>
+<dt>Project:</dt>
+<dd>where projects are defined and administered.</dd>
+<dt>Simulator:</dt>
+<dd>where simulations are launched, combined with the analyzers and visualizers.
+It allows to have quick overview of the ongoing Project, which explains why
+we consider the Simulator to be the core of <a href="#id79"><span class="problematic" id="id80">|TVB|</span></a>.</dd>
+<dt>Stimulus:</dt>
+<dd>where spatiotemporal stimuli can be generated.</dd>
+<dt>Analyze:</dt>
+<dd>where experimental and simulated data can be analyzed.</dd>
+<dt>Connectivity:</dt>
+<dd>where connectivity visualization and editing facilities of <a href="#id81"><span class="problematic" id="id82">|TVB|</span></a> are stored.</dd>
+</dl>
+<p>These options sum up the typical workflow within <a href="#id83"><span class="problematic" id="id84">|TVB|</span></a> framework which proceeds
+through these steps:</p>
+<ol class="arabic simple">
+<li>a project is defined and/or selected and user data, (e. g. a connectivity matrix), are uploaded into this project;</li>
+<li>new data is obtained by simulating large scale brain dynamics with some set of parameters;</li>
+<li>results are analyzed and visualized;</li>
+</ol>
+<p>A history of launched simulations is kept to have the traceability of any
+modifications that took place in the simulation chain.</p>
+</div>
+<div class="section" id="user">
+<h3>User<a class="headerlink" href="#user" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="tvb-settings">
+<h4>TVB Settings<a class="headerlink" href="#tvb-settings" title="Permalink to this headline">¶</a></h4>
+<p>Once started, <a href="#id85"><span class="problematic" id="id86">|TVB|</span></a> should automatically open your default browser and start on
+the default <cite>http://127.0.0.1:8080/settings/settings</cite>. If not, you should
+manually open your favorite browser from our list of supported browsers and
+open the before mentioned URL. This should open up the following settings page:</p>
+<div class="figure align-center">
+<img alt="_images/settings.jpg" src="_images/settings.jpg" style="width: 90%;" />
+<p class="caption">Settings Page</p>
+</div>
+<p>These are the configurable settings for <a href="#id87"><span class="problematic" id="id88">|TVB|</span></a>. Note that the <cite>Name</cite> of the administrator
+is the only one that cannot be changed later on. The others will be accessible afterward
+from the profile page of the administrator. These settings are:</p>
+<dl class="docutils">
+<dt>Administrator User Name:</dt>
+<dd>the name of the administrator. Default value here is <cite>admin</cite>.
+Remember it, as you will need this account for validating other accounts created with <cite>Register</cite> function.</dd>
+<dt>Password:</dt>
+<dd>the password of the administrator. Default value here is <cite>pass</cite>.
+Remember it, as you will need it at a first login.
+This password can be changed later by clicking the <cite>Change password</cite> link, from the profile page
+(available only after a login).</dd>
+<dt>Administrator Email:</dt>
+<dd>the email of the administrator. Emails requesting validations for new users will
+be sent to this address. This can be changed by clicking the <cite>edit</cite> link from the
+profile page.</dd>
+<dt>Root folder for all projects:</dt>
+<dd>this is the root storage for <a href="#id89"><span class="problematic" id="id90">|TVB|</span></a>. All your projects will be stored here, as well
+as the logging file and the files used as input and output for the backend server.
+Please provide here a valid folder path, on a drive which has enough space for storing TVB data.
+This field will be present on the settings page later on, but you won&#8217;t be able to change it.
+In case you are forced to change this path/folder, we recommend that you export your
+existing projects, stop <a href="#id91"><span class="problematic" id="id92">|TVB|</span></a>, start it with the clean option (and configure
+new folder) and then import your projects back into the system.</dd>
+<dt>Max Disk Size (in MB):</dt>
+<dd><blockquote class="first">
+<div><p>Is the amount of disk space that you (as administrator) can specify as the
+limit for each user, to occupy with <a href="#id93"><span class="problematic" id="id94">|TVB|</span></a> data. When a user exceeds this limit,
+they are no longer allowed to run simulations or other operations producing
+data. When this limit is exceeded, the user will still be able to
+visualize their previously created data, and, if desired, to remove data for making space for new results.
+For instance:</p>
+<blockquote>
+<div><ul class="simple">
+<li>A default region level simulation with length 1000 ms takes
+approximatively 1 MB of disk space.</li>
+<li>A surface level simulation, with Local Connectivity pre-computed,
+Raw monitor and length of 10 ms takes 280 MB.</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p class="last">Default value here is 5GB. We validate upon setup that a value not greater than the available physical
+disk free space is specified. In case you later get errors when running simulations (with <cite>disk full</cite>
+messages), but you still have free space on your hard-drive, feel free to come on this settings page and
+increase this value of space allocated to <a href="#id95"><span class="problematic" id="id96">|TVB|</span></a>.</p>
+</dd>
+<dt>DB engine:</dt>
+<dd>For benchmarking purposes currently supported are <em>sqlite</em> and <em>postgresql</em>
+databases. You will need to provide a valid database URL in case you choose
+postgresql. In the case of sqlite a default <cite>tvb-database.db</cite> will always
+be used. Please take into consideration that when switching to a new database
+<strong>your existing data will be lost</strong>.</dd>
+<dt>Server name:</dt>
+<dd>usually the IP of the server that will run <a href="#id97"><span class="problematic" id="id98">|TVB|</span></a>. You can also leave it as the default
+if you are just running <a href="#id99"><span class="problematic" id="id100">|TVB|</span></a> locally.</dd>
+<dt>Cherrypy port:</dt>
+<dd>the port used by cherrypy. You need to make sure this port is not used by some other
+application otherwise <a href="#id101"><span class="problematic" id="id102">|TVB|</span></a> will not start.</dd>
+<dt>Matplotlib port:</dt>
+<dd>the port used by matplotlib. You need to make sure this port is not used by some other
+application otherwise some visualizers will not work.</dd>
+<dt>Deploy on cluster:</dt>
+<dd>set true if you want to run <a href="#id103"><span class="problematic" id="id104">|TVB|</span></a> on a cluster environment.</dd>
+<dt>RPC server:</dt>
+<dd>if you are not running on a cluster, this will be the port used by the backend server. If
+<cite>Deploy on cluster</cite> is checked this will not be used.</dd>
+<dt>Maximum number of vertices:</dt>
+<dd>maximum number of vertices for a surface.</dd>
+</dl>
+<p>After selecting your desired settings press the <cite>Apply</cite> button. This will restart <a href="#id105"><span class="problematic" id="id106">|TVB|</span></a> with the
+new settings. The restart could take a few minutes.</p>
+</div>
+<div class="section" id="login">
+<h4>Login<a class="headerlink" href="#login" title="Permalink to this headline">¶</a></h4>
+<p>In order to access <a href="#id107"><span class="problematic" id="id108">|TVB|</span></a>, you need to have a user account.</p>
+<p>There is a single Administrator account in TVB (created when installing the application).
+Its default user-name and password are <strong>admin</strong> and <strong>pass</strong> (exactly these words).
+These are the default values, but when you setup <a href="#id109"><span class="problematic" id="id110">|TVB|</span></a> for the first time (section <cite>Settings</cite> from above)
+you can specify different values, if wanted. Please remember what you specify for this Administrator account,
+as you are the sole responsible for it (<a href="#id111"><span class="problematic" id="id112">|TVB|</span></a> being installed in your own environment
+we have no control of your storage).
+With the Administrator account you will be able to later validate other TVB accounts.</p>
+<div class="figure align-center">
+<img alt="_images/user_login.jpg" src="_images/user_login.jpg" style="width: 90%;" />
+<p class="caption"><a href="#id113"><span class="problematic" id="id114">|TVB|</span></a> login page</p>
+</div>
+</div>
+<div class="section" id="register">
+<h4>Register<a class="headerlink" href="#register" title="Permalink to this headline">¶</a></h4>
+<p>If you want to create a new user in <a href="#id115"><span class="problematic" id="id116">|TVB|</span></a>, you should <cite>register</cite> using the corresponding link
+(available on the <cite>User Login</cite> page), which takes you further to the following form:</p>
+<div class="figure align-center">
+<img alt="_images/register.jpg" src="_images/register.jpg" style="width: 90%;" />
+<p class="caption"><a href="#id117"><span class="problematic" id="id118">|TVB|</span></a> register page</p>
+</div>
+<p>When the <cite>register</cite> button is clicked (on the right), an email is sent to <cite>ADMINISTRATOR_EMAIL</cite>
+address. It is the administrator&#8217;s task to validate the new account. The
+administrator needs to be logged in to validate an account. Without validation from the administrator, you will not
+be able to use the new accounts. For details on how <cite>validation</cite> is done, see the <cite>User Profile</cite> section.</p>
+</div>
+<div class="section" id="user-profile">
+<h4>User Profile<a class="headerlink" href="#user-profile" title="Permalink to this headline">¶</a></h4>
+<p>This area is available after you login and gives you some basic information, such as:</p>
+<ul class="simple">
+<li>current logged user-name, and his role (left column)</li>
+<li>how much disk space is occupied with TVB Data created by current user (left column, <cite>Data</cite> field)</li>
+<li>what version of <a href="#id119"><span class="problematic" id="id120">|TVB|</span></a> you are currently running (top of the right column)</li>
+<li>a summary of recent changes to <a href="#id121"><span class="problematic" id="id122">|TVB|</span></a> software (right column)</li>
+<li>availability of updated versions of <a href="#id123"><span class="problematic" id="id124">|TVB|</span></a> (when a new version is available, a tooltip will appear on the top of the User-pages).</li>
+</ul>
+<div class="figure align-center">
+<img alt="_images/user_profile.jpg" src="_images/user_profile.jpg" style="width: 90%;" />
+<p class="caption">The User details page (also called <cite>User Profile</cite>)</p>
+</div>
+<p>You have also functionality on this page:</p>
+<ul class="simple">
+<li><cite>Manage other users</cite> (available on the left column, only when logged with Administrator account), takes you to a page for validating or invalidating other user accounts (accounts created with the <cite>register</cite> function)</li>
+<li>access <cite>TVB Settings</cite> (same settings as in the first setup iof TVB; although some of the fields become read-only after the first setup)</li>
+<li>change the password and the email address for current logged user (also links on the left column)</li>
+<li>enable or disable <cite>Online Help</cite> for current user. By <cite>Online Help</cite> we mean a bunch of question marks spread all over the application which can display a tooltip when clicked). In case you find the question marks annoying, feel free to disable them for your user from this page.</li>
+<li>logout function (button on the right side)</li>
+</ul>
+</div>
+</div>
+<div class="section" id="project">
+<h3>Project<a class="headerlink" href="#project" title="Permalink to this headline">¶</a></h3>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p>Projects are the way you organise data and simulations in <a href="#id125"><span class="problematic" id="id126">|TVB|</span></a>. They
+correspond to directories where related data sets and simulation results
+are stored. Information on the currently selected project is always
+available by clicking on the upper left corner of the interface:</p>
+<blockquote class="last">
+<div><div class="figure align-center">
+<img alt="_images/project_info.jpg" src="_images/project_info.jpg" style="width: 90%;" />
+<p class="caption">The main information about the selected project.</p>
+</div>
+</div></blockquote>
+</div>
+<p>The <cite>Project</cite> tab provides access to the projects that you have created within
+<a href="#id127"><span class="problematic" id="id128">|TVB|</span></a>. The second level menu in the top left corner, next to the Project number,
+allows you to navigate between five main subpages, each of which is described in
+more detail in the sections below:</p>
+<blockquote>
+<div><ul class="simple">
+<li>List of All Projects</li>
+<li>Basic Properties</li>
+<li>Operations</li>
+<li>Data Structure</li>
+<li>Saved Figures</li>
+</ul>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/project.jpg" src="_images/project.jpg" style="width: 90%;" />
+<p class="caption">The Project second level menu</p>
+</div>
+</div></blockquote>
+<div class="section" id="list-of-all-projects">
+<h4>List of All Projects<a class="headerlink" href="#list-of-all-projects" title="Permalink to this headline">¶</a></h4>
+<p>This page provides a list of all the existing projects. Upon first user
+registration, a default project is created for you:</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/default_project.jpg" src="_images/default_project.jpg" style="width: 90%;" />
+<p class="caption">The default Project</p>
+</div>
+</div></blockquote>
+<p>The list of projects includes basic information about each project:</p>
+<ul class="simple">
+<li>who owns it</li>
+<li>the number of completed, pending, and failed operations.</li>
+</ul>
+<p>as well as providing mechanisms for:</p>
+<ul class="simple">
+<li>selecting which project is currently active.</li>
+<li>editing any project&#8217;s properties</li>
+<li>direct  access to <cite>Operations</cite> and <cite>Data Structure</cite> pages for any project.</li>
+</ul>
+<p>In addition to the list of existing projects, the right hand menu provides a
+way to:</p>
+<ul class="simple">
+<li>Create a new project.</li>
+<li>Import an existing project structure (for example, Exported from a
+colleague&#8217;s installation of <a href="#id129"><span class="problematic" id="id130">|TVB|</span></a>).</li>
+</ul>
+</div>
+<div class="section" id="basic-properties">
+<h4>Basic Properties<a class="headerlink" href="#basic-properties" title="Permalink to this headline">¶</a></h4>
+<p>Enables you to edit the current project&#8217;s properties, you are also directed
+to this page when you first create a new project:</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/project_form.jpg" src="_images/project_form.jpg" style="width: 90%;" />
+<p class="caption">The Project Properties page</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You can also access this page for any existing project by clicking the
+edit button near a projects name on the <cite>List of all Projects</cite> page.</p>
+</div>
+</div></blockquote>
+<p>Fill in the form by:</p>
+<blockquote>
+<div><ul class="simple">
+<li>adding a project&#8217;s name (<em>without spaces</em>)</li>
+<li>writing a short description about the project.</li>
+</ul>
+</div></blockquote>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">If there are other users registered in the framework, you can choose to
+share the project with them by checking their respective &#8220;Visible for&#8221;
+boxes.</p>
+</div>
+<p>On the right side of the browser there is the <cite>Action Column</cite> from where you can:</p>
+<blockquote>
+<div><ul class="simple">
+<li>delete the project,</li>
+<li>export the project or,</li>
+<li>save changes.</li>
+</ul>
+</div></blockquote>
+<p>Clicking on the &#8220;X&#8221; button takes you back to the <cite>List of All Projects</cite> page.</p>
+<p>If you were creating a new project it should now be visible.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Project properties cannot be edited while operations are running!</p>
+</div>
+</div>
+<div class="section" id="image-archive">
+<h4>Image Archive<a class="headerlink" href="#image-archive" title="Permalink to this headline">¶</a></h4>
+<p><a href="#id131"><span class="problematic" id="id132">|TVB|</span></a> provides you with the possibility of saving image snapshots.</p>
+<p>From this page you can manage all the images stored within the current working
+<cite>Project</cite>, as well as:</p>
+<blockquote>
+<div><ul class="simple">
+<li>edit figure title,</li>
+<li>create categories to group your images,</li>
+<li>search through your figure collection,</li>
+<li>visualize, download and delete your images.</li>
+</ul>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Only the current project figures will be available. If you want to visualize
+images from another project, you will have to switch to that project.</p>
+<blockquote class="last">
+<div><div class="figure align-center">
+<img alt="_images/project_image_archive.jpg" src="_images/project_image_archive.jpg" style="width: 90%;" />
+<p class="caption">The Image Archive page</p>
+</div>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="operations">
+<h4>Operations<a class="headerlink" href="#operations" title="Permalink to this headline">¶</a></h4>
+<p>A table with the history of operations related to the currently selected
+project is displayed. From this board the user can filter, view, reload or
+cancel any operation:</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/default_operations.jpg" src="_images/default_operations.jpg" style="width: 90%;" />
+<p class="caption">The operation page with default operations</p>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="data-structure">
+<h4>Data Structure<a class="headerlink" href="#data-structure" title="Permalink to this headline">¶</a></h4>
+<p>This page provides a way to navigate through the data associated with the
+current project, plus Upload capability.</p>
+<p>On the most-right area of this page, an <cite>upload</cite> button appears. This
+launches an overlay with tabs for each type of TVB-compatible data:</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/data_uploaders.jpg" src="_images/data_uploaders.jpg" style="width: 90%;" />
+<p class="caption">The data upload overlay</p>
+</div>
+</div></blockquote>
+<p>Currently the data-types and/or structures supported for upload are:</p>
+<ul class="simple">
+<li>CFF connectome format</li>
+<li>Surface GIFTI</li>
+<li>TimeSeries GIFTI</li>
+<li>NIFTI</li>
+<li>RegionMapping</li>
+<li>TVB DataType</li>
+<li>Sensors</li>
+<li>Connectivity (zip)</li>
+<li>Upload Surface (zip)</li>
+</ul>
+<p>Launching any uploader with success will generate you a new leaf in the Tree
+displayed centrally on this page.</p>
+<p>The left-most area of the Data Structure page contains basic filters for the
+centrally displayed entities.
+We display fixed filters (entities declared relevant / irrelevant) of free-text
+filtering (when using the input text field and then pressing Button &#8216;Filter&#8217;).
+Filtering based on free-test searches into all fields of an entity, and it is case insensitive.</p>
+<p>Data Structure page contains 2 options for viewing in the central area:</p>
+<p>a Tree view:</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/data.jpg" src="_images/data.jpg" style="width: 90%;" />
+<p class="caption">The data structure of the default project &#8211; which automatically
+loads the default structural data necessary for a simulation.</p>
+</div>
+</div></blockquote>
+<p>and a Graph view:</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/data_graph.jpg" src="_images/data_graph.jpg" style="width: 90%;" />
+<p class="caption">A graph view of the project&#8217;s data-structure</p>
+</div>
+</div></blockquote>
+<p>The main target for the Graph view is to show you in a mixed manner both DataTypes and Operations.
+The edges that link the Graph are of type: &#8216;Operation generated DataType&#8217; and &#8216;DataType is input for Operation&#8217;.</p>
+<p>When switching from the Tree display to the Graph display, the same node (if DataType) remains selected.
+This way you could filter entities in the Tree display, check generic meta-data, then switch to the Graph display and see what Operation was parent for this entity.</p>
+<p>Selecting a data node in the Tree structure causes an overlay to appear:</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/data_overlay.jpg" src="_images/data_overlay.jpg" style="width: 90%;" />
+<p class="caption">A data nodes overlay</p>
+</div>
+</div></blockquote>
+<p>From this overlay, the user can:</p>
+<ul class="simple">
+<li>edit metadata</li>
+<li>launch <cite>Analyzers</cite> and <cite>Visualizers</cite></li>
+<li>link data to other projects</li>
+<li>export data.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="simulator">
+<h3>Simulator<a class="headerlink" href="#simulator" title="Permalink to this headline">¶</a></h3>
+<p>A configurable multicolumn interface that combines <a href="#id133"><span class="problematic" id="id134">|TVB|</span></a> simulation, analysis
+and visualization capabilities.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/simulator.jpg" src="_images/simulator.jpg" style="width: 90%;" />
+<p class="caption">Preview for Simulator Area</p>
+</div>
+</div></blockquote>
+<div class="section" id="configure-a-simulation">
+<h4>Configure a Simulation<a class="headerlink" href="#configure-a-simulation" title="Permalink to this headline">¶</a></h4>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<dl class="docutils">
+<dt>On the top of this column there is:</dt>
+<dd><ul class="first last simple">
+<li>a field to enter the new simulation name,</li>
+<li>the <cite>Launch</cite> button on the top right to start the simulation, and</li>
+<li>the <cite>Configure Interface</cite> button to select which of the simulation
+components are visible.</li>
+</ul>
+</dd>
+</dl>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><img alt="_images/simulator_configuration_buttons.jpg" class="align-center" src="_images/simulator_configuration_buttons.jpg" style="width: 90%;" />
+</div></blockquote>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Via this column, you have access to all the simulator components configurable
+settings:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Long Range Connectivity</li>
+<li>Long Range Coupling Function</li>
+<li>Conduction Speed</li>
+<li>Cortical Surface</li>
+<li>Stimulus</li>
+<li>Local Dynamics Model
+- State Variable Range
+- State Variables to be recorded
+- Initial Conditions</li>
+<li>Integration Scheme
+- Integration Step Size</li>
+<li>Monitors</li>
+<li>Simulation Length</li>
+</ul>
+</div></blockquote>
+<p>You can find more detailed information by clicking on the <img alt="interrogationicon" src="_images/online_help_green.png" />
+icon next to each element.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><strong>TVB performs region-based and surface-based simulations</strong></p>
+<p class="last">You can access specific configuration pages for both types of simulation.</p>
+</div>
+<div class="section" id="region-based-simulations">
+<h5>Region-based simulations<a class="headerlink" href="#region-based-simulations" title="Permalink to this headline">¶</a></h5>
+<p>The <cite>Set up region Model</cite> button leads you to an interactive phase-plane display.
+This tool shows the 2-dimensional planes of the general n-dimensional
+phase space of the local dynamics model.</p>
+<p>It allows you to observe how the dynamics of the physical model change as a
+function of its parameters. (See the API documentation for more details about
+this interactive display)</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/simulator_phase_plane_interactive.jpg" src="_images/simulator_phase_plane_interactive.jpg" style="width: 90%;" />
+<p class="caption">Preview for region model configuration.</p>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="surface-based-simulations">
+<h5>Surface-based simulations<a class="headerlink" href="#surface-based-simulations" title="Permalink to this headline">¶</a></h5>
+<p>If you are launching a surface-based simulation, then it is possible to add
+more complexity by spatially varying the model parameters.</p>
+<p>In order to do that, click on <cite>Set up surface model</cite>. A new configuration page
+will be loaded.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/simulator_spatialized_parameters.jpg" src="_images/simulator_spatialized_parameters.jpg" style="width: 90%;" />
+<p class="caption">Preview for surface model configuration.</p>
+</div>
+</div></blockquote>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p><strong>Parameter Space Exploration</strong></p>
+<p>It is possible to launch parallel simulations to systematically explore the
+parameter space of the local dynamics model. In the current TVB version, up to
+2 parameters can be inspected at the same time.</p>
+<blockquote class="last">
+<div><div class="figure align-center">
+<img alt="_images/simulator_pse_configuration.jpg" src="_images/simulator_pse_configuration.jpg" style="width: 60%;" />
+<p class="caption">The results will be presented in a discrete two dimensional graph. Each
+point represents the results of a simulation for an unique combination of
+parameters. The disk size corresponds to Global Variance and the color
+scale corresponds to Variance of the Variance of nodes.</p>
+</div>
+</div></blockquote>
+</div>
+</div>
+</div>
+<div class="section" id="simulation-history">
+<h4>Simulation History<a class="headerlink" href="#simulation-history" title="Permalink to this headline">¶</a></h4>
+<p>On the left column, a history of all simulations is kept and can be
+accessed at any time. Each simulation can be renamed or deleted by
+clicking on the upper right <img alt="pencil_icon" src="_images/pencil.png" /> icon.</p>
+<div class="figure align-center">
+<img alt="_images/simulator_history_edits.jpg" src="_images/simulator_history_edits.jpg" style="width: 20%;" />
+<p class="caption">Simulation editing menu</p>
+</div>
+<div class="admonition caution">
+<p class="first admonition-title">Caution</p>
+<p class="last">Please notice that <strong>deleting a simulation will also delete all
+resulting data that had been produced</strong>.</p>
+</div>
+<p>Each simulation has a color label that represents its current status:</p>
+<blockquote>
+<div><ul class="simple">
+<li>pale blue: simulation is running,</li>
+<li>green: simulation is finished,</li>
+<li>red: an error occured during the simulation.</li>
+</ul>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>You cannot rename a Simulation while it is running.</p>
+<blockquote class="last">
+<div><div class="figure align-center">
+<img alt="_images/simulator_history_running.jpg" src="_images/simulator_history_running.jpg" style="width: 20%;" />
+</div>
+</div></blockquote>
+</div>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">The star button allows you to create a new simulation.
+using the default
+<cite>Simulator</cite> parameters.</p>
+</div>
+</div>
+<div class="section" id="display-simulation-results">
+<h4>Display Simulation Results<a class="headerlink" href="#display-simulation-results" title="Permalink to this headline">¶</a></h4>
+<p>On the right column you will find an area where you can configure displays to exhibit
+your simulation results.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Maximize this column by clicking on the <cite>zoom</cite> icon located in the top right
+corner.</p>
+</div>
+<p>There are 4 tabs:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">three <cite>View</cite> tabs you can set up by selecting:</p>
+<blockquote>
+<div><ul class="simple">
+<li>TVB time-series <cite>Visualizers</cite> that directly plot the resulting time-series or</li>
+<li><cite>TVB-Visualizers</cite> associated with a <cite>TVB-Analyzer</cite>. In this case, simulation
+results undergo two steps: they are first analyzed and those secondary results
+are shown in a corresponding visualizer.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">one <cite>Results</cite> tab containing the current simulation data structure tree. You
+can inspect each element through this tree in the same way as in
+<cite>Projects</cite> &#8211;&gt; <cite>Data Structure</cite>.
+A full list of visualizers and analyzers is available from the component
+overlay menu.</p>
+</li>
+</ul>
+</div></blockquote>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p>Once your results are available, by clicking on <img alt="launch_full_viz" src="_images/button_launch_full_visualizer.png" /> you will be
+redirected to a new page where only the currently selected visualizer is
+presented. In this new page, you can click on <img alt="brainicon" src="_images/action_bar_brain.png" /> in the top right corner
+to access a new menu which will allow you to:</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li><cite>Save</cite> a snapshot of the current figure.</li>
+<li><cite>Relaunch</cite> the visualizer using a different entity, if available. For instance, a
+different time-series.</li>
+</ul>
+<div class="figure align-center">
+<img alt="_images/visualizer_save_figure.jpg" src="_images/visualizer_save_figure.jpg" style="width: 90%;" />
+<p class="caption">Preview for Full Visualizer mode.</p>
+</div>
+</div></blockquote>
+</div>
+<p>All the snapshots you save can be managed in  <cite>Projects</cite> &#8211;&gt; <cite>Image Archive</cite>
+page.</p>
+</div>
+<div class="section" id="simple-visualizers">
+<h4>Simple Visualizers<a class="headerlink" href="#simple-visualizers" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="brain-activity-visualizer">
+<h5>Brain Activity Visualizer<a class="headerlink" href="#brain-activity-visualizer" title="Permalink to this headline">¶</a></h5>
+<p>A 3D scene of the brain activity:</p>
+<ul class="simple">
+<li>at the region level: the brain is represented by a coarse granularity - each
+region is represented with only one color.</li>
+</ul>
+<div class="figure align-center">
+<img alt="_images/brain.jpg" src="_images/brain.jpg" style="width: 90%;" />
+<p class="caption">Preview for Brain Activity Visualizer at the region level</p>
+</div>
+<ul class="simple">
+<li>at the surface level: the brain is represented by a fine granularity - each
+surface vertex has an individual measure.</li>
+</ul>
+</div>
+<div class="section" id="time-series-visualizer-svg-d3">
+<h5>Time Series Visualizer (svg/d3)<a class="headerlink" href="#time-series-visualizer-svg-d3" title="Permalink to this headline">¶</a></h5>
+<div class="figure align-center">
+<img alt="_images/visualizer_timeseries_svgd3.jpg" src="_images/visualizer_timeseries_svgd3.jpg" style="width: 90%;" />
+<p class="caption">Preview for Time-Series Visualizer (svg/d3)</p>
+</div>
+</div>
+<div class="section" id="eeg-time-series-visualizer">
+<h5>EEG Time Series Visualizer<a class="headerlink" href="#eeg-time-series-visualizer" title="Permalink to this headline">¶</a></h5>
+<div class="figure align-center">
+<img alt="_images/visualizer_timeseries_eeg.jpg" src="_images/visualizer_timeseries_eeg.jpg" style="width: 90%;" />
+<p class="caption">Preview for EEG Time Series Visualizer</p>
+</div>
+<p>If you used an EEG monitor to record the activity of your large-scale brain
+simulation, this display allows you to select the channels of the 62-sensors
+EEG recording.</p>
+<div class="figure align-center">
+<img alt="_images/visualizer_timeseries_eeg_channel_selection.jpg" src="_images/visualizer_timeseries_eeg_channel_selection.jpg" style="width: 90%;" />
+<p class="caption">Selecting the &#8220;channels&#8221; to be displayed.</p>
+</div>
+</div>
+<div class="section" id="dual-brain-eeg-visualizer">
+<h5>Dual Brain - EEG Visualizer<a class="headerlink" href="#dual-brain-eeg-visualizer" title="Permalink to this headline">¶</a></h5>
+<div class="figure align-center">
+<img alt="_images/visualizer_timeseries_eeg.jpg" src="_images/visualizer_timeseries_eeg.jpg" style="width: 90%;" />
+<p class="caption">Preview for EEG Time Series Visualizer</p>
+</div>
+<p>This visualizer combines the brain activity on top of a 3D display of the pacient&#8217;s
+head and on the right column, the EEG channels recordings. Channel selection is
+also available.</p>
+<div class="figure align-center">
+<img alt="_images/visualizer_dual_head_eeg.jpg" src="_images/visualizer_dual_head_eeg.jpg" style="width: 90%;" />
+<p class="caption">Brain activity wit EEG recordings.</p>
+</div>
+</div>
+<div class="section" id="connectivity-measure-visualizer">
+<h5>Connectivity Measure Visualizer<a class="headerlink" href="#connectivity-measure-visualizer" title="Permalink to this headline">¶</a></h5>
+<p>This visualizer can be used for displaying various Brain Connectivity Measures, related to a given Connectivity.</p>
+<p>On the X axis, we will see the Connectivity nodes listed, and for each of them, we see the computed measure on the Y axis.</p>
+<div class="figure align-center">
+<img alt="_images/visualizer_histogram.jpg" src="_images/visualizer_histogram.jpg" style="width: 90%;" />
+<p class="caption">Connectivity Measure Visualizer.</p>
+</div>
+</div>
+<div class="section" id="topographic-visualizer">
+<h5>Topographic Visualizer<a class="headerlink" href="#topographic-visualizer" title="Permalink to this headline">¶</a></h5>
+<p>This visualizer can be used for displaying various Brain Connectivity Measures, related to a given Connectivity.
+Its input is same as for the previous visualizer (Connectivity Measure Visualizer), but the display is completely different.
+Instead of a discrete view, this time, we can have a continous display (with gradients).</p>
+<div class="figure align-center">
+<img alt="_images/visualizer_topographic.jpg" src="_images/visualizer_topographic.jpg" style="width: 90%;" />
+<p class="caption">Preview for Topographic Visualizer</p>
+</div>
+</div>
+</div>
+<div class="section" id="group-display">
+<h4>Group Display<a class="headerlink" href="#group-display" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="discrete-pse-visualizer">
+<h5>Discrete PSE Visualizer<a class="headerlink" href="#discrete-pse-visualizer" title="Permalink to this headline">¶</a></h5>
+<p>Discrete Parameter Space Exploration View, will show up to two measures of the Simulator results,
+after varying input Simulator Parameters. The two displayed measures are emphasized in the node shapes and node colors.</p>
+<p>When running a range of Simulations in TVB, it is possible to do it by varying up to 2 input parameters (displayed on
+the X and Y axis of current viewer).This visualizer supports to display results when the resulting space is not bigger
+than 200 points.</p>
+<div class="figure align-center">
+<img alt="_images/simulator_pse_configuration.jpg" src="_images/simulator_pse_configuration.jpg" style="width: 90%;" />
+<p class="caption">Preview for Discrete PSE Visualizer, when varying two input parameters of the simulator</p>
+</div>
+<p>When moving with your mouse cursor over a graph node, you will see a few details about that particular simulation result.
+When clicking a node, an overlay window will open, which gives you full access to view or further analyze that
+particular Simulation result.</p>
+</div>
+<div class="section" id="isocline-pse-visualizer">
+<h5>Isocline PSE Visualizer<a class="headerlink" href="#isocline-pse-visualizer" title="Permalink to this headline">¶</a></h5>
+<p>Continuous Parameter Space Exploration View, will show the effect of varying Simulator parameters in a continuous form.</p>
+<p>When running a range of Simulations in TVB, it is possible to do it by varying up to 2 input parameters (displayed on
+the X and Y axis of current viewer). This visualizer supports ranges with 2 dimensions only, it does not support ranges
+with only one dimension. Also both varying dimensions need to be numeric parameters (no DataType ranges are supported
+for display in this visualizer).</p>
+<div class="figure align-center">
+<img alt="_images/simulator_pse_iso.jpg" src="_images/simulator_pse_iso.jpg" style="width: 90%;" />
+<p class="caption">Preview for Continuous PSE Visualizer, when varying two numeric input parameters of the simulator</p>
+</div>
+<p>Controls for scaling or zooming the graph are available in this viewer. When you click on the coloured area, an overlay
+window will open, containing possibility to view or further analyze the simulation result closest to the point where
+you clicked.</p>
+</div>
+</div>
+<div class="section" id="analyzers-visualizers">
+<h4>Analyzers + Visualizers<a class="headerlink" href="#analyzers-visualizers" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="covariance-visualizer">
+<h5>Covariance Visualizer<a class="headerlink" href="#covariance-visualizer" title="Permalink to this headline">¶</a></h5>
+<p>Displays the covariance matrix.
+The matrix size is <cite>number of nodes</cite> x <cite>number of nodes</cite></p>
+<div class="figure align-center">
+<img alt="_images/visualizer_covariance.jpg" src="_images/visualizer_covariance.jpg" style="width: 90%;" />
+<p class="caption">Preview for Covariance Visualizer</p>
+</div>
+</div>
+<div class="section" id="cross-coherence-visualizer">
+<h5>Cross Coherence Visualizer<a class="headerlink" href="#cross-coherence-visualizer" title="Permalink to this headline">¶</a></h5>
+<p>Displays the cross-coherence matrix. Axes represent brain nodes.
+The matrix size is <cite>number of nodes</cite> x <cite>number of nodes</cite>.</p>
+<div class="figure align-center">
+<img alt="_images/visualizer_cross_coherence.jpg" src="_images/visualizer_cross_coherence.jpg" style="width: 90%;" />
+<p class="caption">Preview for Cross Coherence Visualizer</p>
+</div>
+</div>
+<div class="section" id="complex-coherence-visualizer">
+<h5>Complex Coherence Visualizer<a class="headerlink" href="#complex-coherence-visualizer" title="Permalink to this headline">¶</a></h5>
+<p>Displays the complex-cross-coherence matrix. Axes represent brain nodes.
+The matrix is a complex ndarray that contains the <cite>number of nodes</cite> x <cite>number of nodes</cite> cross
+spectrum for every frequency frequency and for every segment</p>
+<p>This visualizer is very similar with the previous one (Cross Coherence Visualizer).</p>
+</div>
+<div class="section" id="cross-correlation-visualizer">
+<h5>Cross Correlation Visualizer<a class="headerlink" href="#cross-correlation-visualizer" title="Permalink to this headline">¶</a></h5>
+<p>Displays the cross-correlation matrix. Similar to the previous three visualizers.</p>
+</div>
+<div class="section" id="fourier-spectrum-visualizer">
+<h5>Fourier Spectrum Visualizer<a class="headerlink" href="#fourier-spectrum-visualizer" title="Permalink to this headline">¶</a></h5>
+<p>Plots the power spectrum of each node time-series.</p>
+<div class="figure align-center">
+<img alt="_images/visualizer_fft.jpg" src="_images/visualizer_fft.jpg" style="width: 90%;" />
+<p class="caption">Preview for Fourier Spectrum Visualizer</p>
+</div>
+</div>
+<div class="section" id="principal-component-visualizer">
+<h5>Principal Component Visualizer<a class="headerlink" href="#principal-component-visualizer" title="Permalink to this headline">¶</a></h5>
+<p>On the left, the ring plot displays the fraction of the variance that is
+explained by each component.</p>
+<p>On the right, the first ten components are plotted against the brain nodes
+(variables).</p>
+<div class="figure align-center">
+<img alt="_images/analyzers_pca.jpg" src="_images/analyzers_pca.jpg" style="width: 90%;" />
+<p class="caption">Preview for Principal Components Analysis Visualizer</p>
+</div>
+</div>
+<div class="section" id="independent-component-visualizer">
+<h5>Independent Component Visualizer<a class="headerlink" href="#independent-component-visualizer" title="Permalink to this headline">¶</a></h5>
+<p>ICA takes time-points as observations and nodes as variables.</p>
+<p>As for PCA the TimeSeries datatype must be longer (more time-points) than the number of nodes.
+Mostly a problem for TimeSeriesSurface datatypes, which, if sampled at 1024Hz, would need to be greater than
+16 seconds long.</p>
+<div class="figure align-center">
+<img alt="_images/analyzers_ica.jpg" src="_images/analyzers_ica.jpg" style="width: 90%;" />
+<p class="caption">Preview for Independent Components Analysis Visualizer</p>
+</div>
+</div>
+<div class="section" id="wavelet-spectrogram-visualizer">
+<h5>Wavelet Spectrogram Visualizer<a class="headerlink" href="#wavelet-spectrogram-visualizer" title="Permalink to this headline">¶</a></h5>
+<p>2D representation that shows how the signals wavelet spectral coefficients (frequency)
+vary with time.</p>
+<div class="figure align-center">
+<img alt="_images/visualizer_wavelet.jpg" src="_images/visualizer_wavelet.jpg" style="width: 90%;" />
+<p class="caption">Preview for Wavelet Visualizer</p>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="analyze">
+<h3>Analyze<a class="headerlink" href="#analyze" title="Permalink to this headline">¶</a></h3>
+<p>This area offers a set of techniques for data analysis.</p>
+<div class="figure align-center">
+<img alt="_images/analyze.jpg" src="_images/analyze.jpg" style="width: 80%;" />
+<p class="caption">Current available analyzers</p>
+</div>
+<p>The <cite>Analysis</cite> area has several interfaces that support the following operations
+for time-series analysis:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Cross-correlation of nodes</li>
+<li>Fourier Spectral Analysis</li>
+<li>Global TimeSeries Metrics</li>
+<li>Cross coherence of nodes</li>
+<li>Temporal covariance of nodes</li>
+<li>Principal Component Analysis</li>
+<li>Independent Component Analysis</li>
+<li>Continuous Wavelet Transform</li>
+</ul>
+</div></blockquote>
+<div class="section" id="cross-correlation-of-nodes">
+<h4>Cross-correlation of nodes<a class="headerlink" href="#cross-correlation-of-nodes" title="Permalink to this headline">¶</a></h4>
+<p>Compute pairwise temporal cross-correlation of all nodes in a 4D TimeSeries
+object. Cross-correlation, or normalized cross-covariance, is a measure that
+quantifies the degree of linear dependence between two time-series.</p>
+<p>To calculate the correlation coefficient of all nodes of a given multi-node
+time-series, simply select the TimeSeries object from the drop-down list in the
+<cite>Cross-correlation of nodes</cite> interface and hit <cite>Launch</cite>.</p>
+<p>The algorithm returns a CrossCorrelation object that contains cross correlation
+coefficients for all possible combinations of nodes.
+Results are visualized with the <cite>Correlation viewer</cite>.</p>
+</div>
+<div class="section" id="fourier-spectral-analysis">
+<h4>Fourier Spectral Analysis<a class="headerlink" href="#fourier-spectral-analysis" title="Permalink to this headline">¶</a></h4>
+<p>Compute a fast Fourier transform (FFT) of a TimeSeries object. FFT is an
+algorithm to compute the discrete Fourier transform (DFT) and its inverse for a 1
+given sequence of values. DFT transforms a function into its frequency-domain
+representation, that is, a sum of weighted sinusoids while preserving all of the
+information about the original signal. After decomposing the signal, spectrum
+analysis quantifies the relative amounts of amplitudes, powers, intensities or
+phases of a component versus its frequency.</p>
+<p>In order to perform a Fourier analysis of your time-series data follow these steps:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Go to the <cite>Fourier Spectral Analysis</cite> interface and select a <cite>Windowing function</cite>, you can choose among ‘hamming’, ‘bartlett’, ‘blackman’ and ‘hanning’.</li>
+<li>Select the time-series.</li>
+<li>Select a segment length.</li>
+<li>Hit <cite>Launch</cite>.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="timeseries-metrics">
+<h4>TimeSeries Metrics<a class="headerlink" href="#timeseries-metrics" title="Permalink to this headline">¶</a></h4>
+<p>Calculate one scalar metric to characterize the time-series dataset.</p>
+</div>
+<div class="section" id="cross-coherence-of-nodes">
+<h4>Cross coherence of nodes<a class="headerlink" href="#cross-coherence-of-nodes" title="Permalink to this headline">¶</a></h4>
+<p>Calculate pairwise temporal coherence of all nodes in a 4D TimeSeries object.
+Coherence analysis, or cross-spectral analysis, can be used to estimate how two
+time series are related in the spectral domain. Cross-coherence indicates the
+degree to which amplitude and phase between two signals relate to each other as
+a function of frequency.</p>
+<p>To calculate the cross-coherence of all nodes of a given multi-node time-series,
+simply select the TimeSeries object from the drop-down list in the <cite>Cross coherence of nodes</cite>
+interface, select an appropriate block-size for the Fourier Transform and hit <cite>Launch</cite>.</p>
+<p>The resulting coherence spectrum can be viewed with the <cite>Cross coherence visualizer</cite>.</p>
+<img alt="_images/visualizer_cross_coherence.jpg" class="align-center" src="_images/visualizer_cross_coherence.jpg" style="width: 90%;" />
+</div>
+<div class="section" id="temporal-covariance-of-nodes">
+<h4>Temporal covariance of nodes<a class="headerlink" href="#temporal-covariance-of-nodes" title="Permalink to this headline">¶</a></h4>
+<p>Compute pairwise temporal covariance of all nodes in a 4D TimeSeries object.
+Covariance resembles the un-normalized correlation coefficient and measures how
+much two time-series change together.</p>
+<p>To calculate the temporal covariance of all nodes of a given multi-node time-series,
+select the TimeSeries object from the drop-down list in the <cite>Independent Component Analysis</cite>
+interface and hit <cite>Launch</cite>.</p>
+<p>The algorithm returns a Covariance object that is a 4D-Matrix with the Dimensions
+{nodes, nodes, 1, 1}. The resulting covariance matrix can be viewed with the <cite>Covariance visualizer</cite>.</p>
+<img alt="_images/visualizer_covariance.jpg" class="align-center" src="_images/visualizer_covariance.jpg" style="width: 90%;" />
+</div>
+<div class="section" id="principal-component-analysis-pca">
+<h4>Principal Component Analysis (PCA)<a class="headerlink" href="#principal-component-analysis-pca" title="Permalink to this headline">¶</a></h4>
+<p>Compute a PCA of a 4D TimeSeries object. PCA is a computational method for
+multivariate data analysis that uses an orthogonal transformation to convert a
+set of (possibly correlated) variables into a set of linearly uncorrelated
+variables called principal components.</p>
+<p>To calculate a PCA of all nodes of a given multi-node time-series, select the
+4D-TimeSeries object from the drop-down list in the <cite>Principal Components Analysis</cite>
+interface and hit <cite>Launch</cite>.</p>
+<p>The algorithm returns an PrincipalComponents object that is a xD-Matrix with the
+Dimensions {x,y,z}. The resulting time-series can be viewed with the <cite>Pca viewer</cite>.</p>
+<img alt="_images/analyzers_pca.jpg" class="align-center" src="_images/analyzers_pca.jpg" style="width: 90%;" />
+</div>
+<div class="section" id="independent-component-analysis-ica">
+<h4>Independent Component Analysis (ICA)<a class="headerlink" href="#independent-component-analysis-ica" title="Permalink to this headline">¶</a></h4>
+<p>Compute a time-domain ICA decomposition of a 4D TimeSeries object. ICA is a
+statistical and computational method for separating a multivariate signal into
+additive subcomponents by maximizing the mutual statistical independence of
+source signals.</p>
+<p>To calculate a temporal ICA of all nodes of a given multi-node time-series,
+select the 4D-TimeSeries object from the drop-down list in the <cite>Independent Component Analysis</cite>
+interface and hit <cite>Launch</cite>.</p>
+<p>The algorithm returns an IndependentComponents object that is a xD-Matrix with the
+Dimensions {x,y,z}. The resulting time-series can be viewed with the the corresponding ICA viewer.</p>
+</div>
+<div class="section" id="continuous-wavelet-transform-cwt">
+<h4>Continuous Wavelet Transform (CWT)<a class="headerlink" href="#continuous-wavelet-transform-cwt" title="Permalink to this headline">¶</a></h4>
+<p>Compute a CWT of a 4D TimeSeries object. CWT decomposes a signal into wavelets
+of different frequencies yielding a time-frequency representation of the signal.</p>
+<p>To calculate a CWT of all nodes of a given multi-node time-series, select the
+4D-TimeSeries object from the drop-down list in the <cite>Continuous Wavelet Transform</cite>
+interface, specify transformation parameters like:</p>
+<blockquote>
+<div><ul class="simple">
+<li>mother wavelet function</li>
+<li>frequency resolution and range</li>
+<li>type of the normalization for the resulting wavelet spectrum</li>
+<li>Q-ratio</li>
+<li>Sampling period of the spectrum</li>
+</ul>
+</div></blockquote>
+<p>and hit <cite>Launch</cite>.</p>
+<p>The algorithm returns an <cite>WaveletCoefficients</cite> object that is a xD-Matrix with the Dimensions {x,y,z}.
+The resulting spectrogram of wavelet power can be viewed with the <cite>Wavelet viewer</cite>.</p>
+<img alt="_images/visualizer_wavelet.jpg" class="align-center" src="_images/visualizer_wavelet.jpg" style="width: 90%;" />
+</div>
+<div class="section" id="brain-connectivity-toolbox-analyzers">
+<h4>Brain Connectivity Toolbox Analyzers<a class="headerlink" href="#brain-connectivity-toolbox-analyzers" title="Permalink to this headline">¶</a></h4>
+<p>If you have <cite>matlab</cite> or <cite>octave</cite> installed and available through the command
+line then all the algorithms offered by <cite>Brain Connectivity Toolbox</cite> (BCT)
+can be used directly from <a href="#id135"><span class="problematic" id="id136">|TVB|</span></a> interface and the results can later be displayed
+in one of our visualizers.</p>
+<p>Additional BCT techniques are:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Degree and Similarity Algorithms</li>
+<li>Centrality Algorithms</li>
+<li>Distance Algorithms</li>
+<li>Modularity Algorithms</li>
+<li>Clustering Algorithms</li>
+<li>Density Algorithms</li>
+</ul>
+</div></blockquote>
+<p>For more details, please refer to <a class="reference external" href="https://sites.google.com/site/bctnet/">BCT</a> web site</p>
+</div>
+</div>
+<div class="section" id="stimulus">
+<h3>Stimulus<a class="headerlink" href="#stimulus" title="Permalink to this headline">¶</a></h3>
+<p>Spatio-temporal patterns can be generated to create stimulation patterns.</p>
+<div class="figure align-center">
+<img alt="_images/stimulus_area.jpg" src="_images/stimulus_area.jpg" style="width: 90%;" />
+<p class="caption">Preview for Stimulus Area</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><strong>You can build stimuli for region-based and surface-based simulations</strong></p>
+</div>
+<div class="section" id="region-level-stimulus">
+<h4>Region level stimulus<a class="headerlink" href="#region-level-stimulus" title="Permalink to this headline">¶</a></h4>
+<p><strong>Edit Stimulus Equations page</strong></p>
+<p>In this page we can define a stimulus temporal profile for each node
+independently.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/stimulus_region_edit.jpg" src="_images/stimulus_region_edit.jpg" style="width: 90%;" />
+</div>
+</div></blockquote>
+<ul>
+<li><p class="first">On the left column, you will find configurable fields that will allow you to:</p>
+<blockquote>
+<div><ul class="simple">
+<li>load a  preexisting <cite>Region Stimulus</cite> entity,</li>
+<li>enter the name for a new entity and</li>
+<li>select the associated <cite>Connectivity</cite> matrix that will be used to create a stimulus pattern.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Additionally, you can:</p>
+<blockquote>
+<div><ul class="simple">
+<li>select the Temporal Equation that defines the profile and</li>
+<li>modify its parameters.</li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li>On the right column, the stimulus temporal profile is presented.</li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>From the action bar in the right side you have access to:</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Set Region Scaling</strong> page where you can:</p>
+<blockquote>
+<div><ul class="simple">
+<li>select the nodes to which the temporal stimulus will be applied and</li>
+<li>set the scaling value (stimulus strength) for those nodes.</li>
+</ul>
+<div class="figure align-center">
+<img alt="_images/stimulus_region_set_scaling.jpg" src="_images/stimulus_region_set_scaling.jpg" style="width: 90%;" />
+<p class="caption">Preview for node selection in Stimulus at a region level</p>
+</div>
+</div></blockquote>
+<p>Click on <strong>Save New Stimulus Region</strong> button to create the new stimulus entity.</p>
+</div>
+<div class="section" id="surface-level-stimulus">
+<h4>Surface level stimulus<a class="headerlink" href="#surface-level-stimulus" title="Permalink to this headline">¶</a></h4>
+<p><strong>Edit Stimulus Equations</strong></p>
+<p>In the case of a surface level stimulus, besides the temporal profile, you can
+define the spatial profile of your pattern.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/stimulus_surface_edit.jpg" src="_images/stimulus_surface_edit.jpg" style="width: 90%;" />
+<p class="caption">Preview for Stimulus Surface edits</p>
+</div>
+</div></blockquote>
+<p>On the left column:</p>
+<blockquote>
+<div><ul class="simple">
+<li>choose a preexisting <cite>Surface Stimulus</cite> or</li>
+<li>enter the name for a new entity and :<ul>
+<li>select the associated <cite>Surface</cite> datatype.</li>
+<li>select the Spatial Equation that describes the spatial spread of the
+stimulus and</li>
+<li>set its parameters.</li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+<p>From the action bar in the right side you have access to:</p>
+<p><strong>View Stimulus Progress</strong> page where you are able to:</p>
+<blockquote>
+<div><ul class="simple">
+<li>select the spatial focal points:<ul>
+<li>click on the surface, a blue pin will point to the selected point;</li>
+<li>click on <cite>Add Focal Point</cite> button to select this vertex, an orange
+arrow will mark the added point;</li>
+<li>repeat for each focal point.</li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="figure align-center">
+<img alt="_images/stimulus_surface_set_focal_points.jpg" src="_images/stimulus_surface_set_focal_points.jpg" style="width: 90%;" />
+<p class="caption">Preview for selecting the focal points</p>
+</div>
+<p>On the right column you will have the list of the selected focal points. You can
+delete them independently.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">The spatial pattern will be centered around the focal points.</p>
+</div>
+<p>Finally, after clicking on <strong>Save New Stimulus Surface</strong> button to create the
+new stimulus entity, you can visualize the evolution of the spatiotemporal pattern.</p>
+<p>Click on the <img alt="play_icon" src="_images/play_icon.png" /> button to launch the animation.</p>
+<div class="figure align-center">
+<img alt="_images/stimulus_surface_play.jpg" src="_images/stimulus_surface_play.jpg" style="width: 90%;" />
+<p class="caption">Preview of a spatiotemporal stimulus animation</p>
+</div>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p>You can increase the complexity of a stimulus pattern by building
+on top of one Stimulus entity.</p>
+<p class="last">For an example on how to do it, please read the Test Cases in the User
+Guide document.</p>
+</div>
+</div>
+</div>
+<div class="section" id="connectivity">
+<h3>Connectivity<a class="headerlink" href="#connectivity" title="Permalink to this headline">¶</a></h3>
+<p>In this area you can edit both types of TVB connectivity objects:</p>
+<blockquote>
+<div><ul class="simple">
+<li>long-range connectivity and,</li>
+<li>local connectivity.</li>
+</ul>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/connectivity_area.jpg" src="_images/connectivity_area.jpg" style="width: 90%;" />
+<p class="caption">Preview for Connectivity Area</p>
+</div>
+</div></blockquote>
+<div class="section" id="long-range-connectivity">
+<h4>Long Range Connectivity<a class="headerlink" href="#long-range-connectivity" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/connectivity_large_scale.jpg" src="_images/connectivity_large_scale.jpg" style="width: 90%;" />
+<p class="caption">Large Scale Connectivity configuration page</p>
+</div>
+</div></blockquote>
+<p>From this page you can access:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">an interactive display tool on the <cite>Control</cite> right column and</p>
+</li>
+<li><p class="first">several Long Range Connectivity visualizations on the left <cite>View</cite> column.</p>
+<blockquote>
+<div><ul class="simple">
+<li>3D Views<ul>
+<li>Edges</li>
+<li>Nodes</li>
+</ul>
+</li>
+<li>2D Projections<ul>
+<li>Left</li>
+<li>Right</li>
+<li>Top</li>
+</ul>
+</li>
+<li>a MPLH5 matrix plot</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+<div class="section" id="connectivity-matrix-editor">
+<h5>Connectivity Matrix Editor<a class="headerlink" href="#connectivity-matrix-editor" title="Permalink to this headline">¶</a></h5>
+<div class="figure align-center">
+<img alt="_images/connectivity_editor.jpg" src="_images/connectivity_editor.jpg" style="width: 90%;" />
+<p class="caption">Preview for the Matrix Editor</p>
+</div>
+<p>From the this 2D display allows you to:</p>
+<blockquote>
+<div><ul class="simple">
+<li>easily edit the connectivity (tract lengths) matrix, and</li>
+<li>create a modified version of your connectivity matrix</li>
+<li>select a small subset of nodes
+- perform basic algebraic operations on that group</li>
+<li>save all changes to use the new Connectivity object in a simulation.</li>
+</ul>
+</div></blockquote>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p>In the Matrix Editor only one quadrant is displayed at a time.
+You can select which quadrant is shown by accessing the quadrant selector
+button in the upper left corner of the matrix display.</p>
+<ul class="last">
+<li><p class="first">quadrants 1 and 4 are the intra-hemisphere connectivity weights,</p>
+</li>
+<li><p class="first">and quadrants 2 and 3 are the inter-hemisphere connectivity weights.</p>
+<div class="figure align-center">
+<img alt="_images/connectivity_quadrants.jpg" src="_images/connectivity_quadrants.jpg" style="width: 50%;" />
+</div>
+<p>Preview for Quadrant Selection</p>
+</li>
+</ul>
+</div>
+<p>The <strong>Weights</strong> button opens a menu that allows you to perform basic algebraic
+operations on a set of selected nodes specifying the edge type:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Incoming &#8211;&gt; Incoming</li>
+<li>Incoming &#8211;&gt; Outgoing</li>
+<li>Outgoing &#8211;&gt; Incoming</li>
+<li>Outgoing &#8211;&gt; Outgoing</li>
+</ul>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="figure align-center">
+<img alt="_images/connectivity3d_edges_operations.jpg" src="_images/connectivity3d_edges_operations.jpg" style="width: 90%;" />
+<p class="caption">Preview for Operations on a selection of nodes</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Available operations are:</p>
+<ul class="last simple">
+<li>Assignation (set): assigns the given numeric value to all the nodes within
+the set.</li>
+<li>Addition (add): adds the new value to the current value in the connectivity
+matrix.</li>
+<li>Subtraction (decrease): subtracts the new value to the current value in the
+connectivity matrix.</li>
+<li>Multiplication (multiply): multiplies the current value in the connectivity
+matrix by the given numeric value.</li>
+<li>Division (divide): divides the current value in the connectivity matrix by
+the given numeric value.</li>
+</ul>
+</div>
+<p>Click on the <cite>Apply weight change</cite> button to perform the selected operation.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>TVB is designed to handle connectivity matrices whose values are:</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li>positive real values, meaning that there is a connection, or</li>
+<li>zero values, meaning the absence of a connection</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<ul class="last simple">
+<li>TVB does not handle unknowns such as NaNs or Infs.</li>
+<li>If your connectivity matrix contains negative values, such as -1 values
+you should either set these values to zero or an estimated value based
+on your research assumptions.</li>
+</ul>
+</div>
+<p>By default the set includes all the available nodes in the connectivity matrix.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/connectivity3d_newselection.jpg" src="_images/connectivity3d_newselection.jpg" style="width: 90%;" />
+<p class="caption">Preview for New Selection</p>
+</div>
+</div></blockquote>
+<p>You can create a smaller selection by clicking on the <cite>Quick-select</cite> button and
+editing the list of node names.</p>
+<div class="figure align-center">
+<img alt="_images/connectivity_quick_select.jpg" src="_images/connectivity_quick_select.jpg" style="width: 90%;" />
+<p class="caption">Preview for <cite>Quick-select</cite> list</p>
+</div>
+<p>TVB enables you to save:</p>
+<blockquote>
+<div><ul class="simple">
+<li>a particular selection by entering a name and clicking on <img alt="savetick" src="_images/save_tick.png" /> or,</li>
+<li>a new <cite>Connectivity</cite> object by clicking on <img alt="staricon" src="_images/star_icon.png" />. This entity can be
+used later on in <a href="#id137"><span class="problematic" id="id138">|TVB|</span></a> <cite>Simulator</cite>.</li>
+</ul>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><br /></div>
+<div class="line"><br /></div>
+</div>
+</div>
+<div class="section" id="viewers">
+<h5>Viewers<a class="headerlink" href="#viewers" title="Permalink to this headline">¶</a></h5>
+</div>
+<div class="section" id="connectivity-3d-edges">
+<h5>Connectivity 3D Edges<a class="headerlink" href="#connectivity-3d-edges" title="Permalink to this headline">¶</a></h5>
+<p>This connectivity visualizer allows you to see the structural information as a
+base model part of TVB.</p>
+<div class="figure align-center">
+<img alt="_images/connectivity3d.jpg" src="_images/connectivity3d.jpg" style="width: 50%;" />
+<p class="caption">Preview for Connectivity Viewer 3D Edges</p>
+</div>
+<p>The 3D semi-transparent surface arround the connectivity nodes, whether it is
+the cortical surface or the outer-skin, is used just for giving space guidance.</p>
+<p>You can select an individual node and right-click on it to activate the incoming
+or outgoing edges.</p>
+<p>For each node you can choose a different color to apply to its
+edges.</p>
+<div class="figure align-center">
+<img alt="_images/connectivity3d_coloredges.jpg" src="_images/connectivity3d_coloredges.jpg" style="width: 50%;" />
+<p class="caption">Preview for Connectivity Viewer 3D Edges - Coloring incoming / outgoing edges</p>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+<div class="line"><br /></div>
+</div>
+</div>
+<div class="section" id="connectivty-3d-nodes">
+<h5>Connectivty 3D Nodes<a class="headerlink" href="#connectivty-3d-nodes" title="Permalink to this headline">¶</a></h5>
+<p>A 3D representation of the connectivity matrix nodes. (WebGL)</p>
+<p>Two specific connectivity node-metrics, (previously computed using one of BCT
+analyzers) can be used to independently set:</p>
+<blockquote>
+<div><ul class="simple">
+<li>the node color and</li>
+<li>the node size.</li>
+</ul>
+</div></blockquote>
+<div class="figure align-center">
+<img alt="_images/connectivity3d_viewer.jpg" src="_images/connectivity3d_viewer.jpg" style="width: 50%;" />
+<p class="caption">Preview for Connectivity 3D Viewer</p>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+<div class="line"><br /></div>
+</div>
+</div>
+<div class="section" id="connectivity-2d-viewer">
+<h5>Connectivity 2D Viewer<a class="headerlink" href="#connectivity-2d-viewer" title="Permalink to this headline">¶</a></h5>
+<p>A 2D representation of the connectivity matrix nodes and edges.</p>
+<p>There are three main views (projections):</p>
+<blockquote>
+<div><ul class="simple">
+<li>Left sagittal view</li>
+<li>Transverse view</li>
+<li>Right sagittal view</li>
+</ul>
+</div></blockquote>
+<div class="figure align-center">
+<img alt="_images/connectivity2d_left.jpg" src="_images/connectivity2d_left.jpg" style="width: 50%;" />
+</div>
+<div class="figure align-center">
+<img alt="_images/connectivity2d_top.jpg" src="_images/connectivity2d_top.jpg" style="width: 50%;" />
+</div>
+<div class="figure align-center">
+<img alt="_images/connectivity2d_right.jpg" src="_images/connectivity2d_right.jpg" style="width: 50%;" />
+<p class="caption">Preview for Connectivity 2D Viewer</p>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>The node size can be defined using a ConnectivityMeasure datatype
+(e.g. the output of a BCT Anlayzer). Additionally, a threshold can be set for
+the node color. The nodes with values above the threshold will be red and those
+whose value are below the threshold will be yellow.</p>
+<p>To display the changes, click on the <cite>Show details</cite> button.</p>
+<div class="figure align-center">
+<img alt="_images/connectivity2d_left_metrics.jpg" src="_images/connectivity2d_left_metrics.jpg" style="width: 50%;" />
+<p class="caption">Preview of 2D Connectivity Viewer (left lateral view). Node size is defined
+by the Participation Coefficient. Color threshold is 1.8; this values is based
+on the the Clustering Coefficient (BU) of the default Connectivity matrix.</p>
+</div>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<blockquote>
+<div><p>If you wish to change:</p>
+<blockquote>
+<div><ul class="simple">
+<li>the color threshold,</li>
+<li>the metrics used to define the node features,</li>
+<li>the colormap used in the Connectivity Matrix Editor, or</li>
+<li>the Connectivity entity</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p>go to the <cite>brain</cite> menu on the top right corner</p>
+<div class="last figure align-center">
+<img alt="_images/connectivity_context_menu.jpg" src="_images/connectivity_context_menu.jpg" style="width: 50%;" />
+</div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+<div class="line"><br /></div>
+</div>
+</div>
+<div class="section" id="matrix-overview">
+<h5>Matrix Overview<a class="headerlink" href="#matrix-overview" title="Permalink to this headline">¶</a></h5>
+<p>A 2D matrix plot to have a complete overview of the initially selected weighted
+connectivity matrix.</p>
+<div class="figure align-center">
+<img alt="_images/connectivity_mplh5.jpg" src="_images/connectivity_mplh5.jpg" style="width: 50%;" />
+<p class="caption">Preview for Matrix Overview display</p>
+</div>
+</div>
+</div>
+<div class="section" id="local-connectivity">
+<h4>Local Connectivity<a class="headerlink" href="#local-connectivity" title="Permalink to this headline">¶</a></h4>
+<p>In this page, you can generate the spatial profile of local connectivity that
+will be used in surface-based simulations.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/connectivity_local.jpg" src="_images/connectivity_local.jpg" style="width: 90%;" />
+</div>
+<p>Local Connectivity editing page</p>
+</div></blockquote>
+<p>On the lower right of the browser you will have access to different
+functionalities by clicking on:</p>
+<blockquote>
+<div><ul>
+<li><p class="first"><cite>Create new Local Connectivity</cite> button: to generate the Local Connectivity entity.</p>
+</li>
+<li><p class="first"><cite>View Local Connectivity</cite> button: to launch a 3D brain visualizer displaying the spatial profile of the newly generated entity.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/local_connectivity_viewer.jpg" src="_images/local_connectivity_viewer.jpg" style="width: 70%;" />
+</div>
+<p>Local Connectivity Viewer</p>
+</div></blockquote>
+</li>
+<li><p class="first"><cite>Edit Local Connectivity</cite> button: to go back to the main Local Connectivity editing page.</p>
+</li>
+</ul>
+</div></blockquote>
+<p>On the right column there is a display showing different estimations of the
+spatial profile based on the length of :</p>
+<blockquote>
+<div><ul>
+<li><p class="first">Theoretical case: is the ideal case.</p>
+</li>
+<li><p class="first">Most probable case: resolution is based on the mean length of the edges of the surface mesh.</p>
+</li>
+<li><p class="first">Worst case: resolution is based on the longest edge in the surface mesh.</p>
+</li>
+<li><p class="first">Best case: resolution is based on the shortest edge in the surface mesh.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/local_connectivity_estimations.jpg" src="_images/local_connectivity_estimations.jpg" style="width: 70%;" />
+<p class="caption">Local connectivity profile estimations.</p>
+</div>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+<p>and the red-dotted vertical line represents the cut-off distance.</p>
+<p>The x-axis range is automatically set to two times the cut-off distance.</p>
+</div>
+</div>
+</div>
+<div class="section" id="examples-and-tutorials">
+<h2>Examples and Tutorials<a class="headerlink" href="#examples-and-tutorials" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<p>We present here some basic simulation scenarios that the user should be able to
+reproduce through the <a href="#id139"><span class="problematic" id="id140">|TVB|</span></a> interface.</p>
+<div class="admonition-example-example-1 admonition">
+<p class="first admonition-title"><img alt="example" src="_images/applications-science.png" /> Example 1</p>
+<blockquote>
+<div><p><strong>Generating resting activity data using the default simulator configuration</strong></p>
+<p><strong>Objective</strong>: generate 16 seconds of resting state activity data, sampled at
+2048Hz, by launching a region-based simulation using a stochastic
+integration method.</p>
+</div></blockquote>
+<ol class="arabic simple">
+<li>Use the default long-range connectivity data.</li>
+<li>Apply a linear coupling function (parameters: <math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mi>a</mi></mrow></math>- rescale connection
+strength=0.016, <math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mi>b</mi></mrow></math>- shift=0).</li>
+<li>Leave the <em>Cortical Surface</em> and the <em>Stimulus</em> set to <strong>None</strong>.</li>
+<li>Use the default population model and its parameters.</li>
+<li>Select the Heun Stochastic integrator. Set the integration step to
+<math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mi>d</mi><mi>t</mi><mo>=</mo><mn>0</mn><mo>.</mo><mn>0</mn><mn>6</mn><mn>1</mn><mn>0</mn><mn>3</mn><mn>5</mn><mn>1</mn><mn>5</mn><mn>6</mn><mn>2</mn><mn>5</mn></mrow></math> and additive noise (with null correlation time
+and standard deviation <math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mi>D</mi><mo>=</mo><msup><mn>2</mn>
+<mrow><mo>-</mo><mn>1</mn><mn>0</mn></mrow></msup></mrow></math>, use the default
+random number generator parameters).</li>
+<li>Use the default model initial conditions (basically random initial
+conditions).</li>
+<li>Select a Temporal Average Monitor (sampling period = 0.48828125 ms)</li>
+<li>Configure the <cite>View</cite> tabs: select a Time Series Visualizer.</li>
+<li>Set the simulation length to 16000 ms</li>
+<li>Launch the simulation</li>
+<li>Observe the results: the default model state variable.</li>
+</ol>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<blockquote class="last">
+<div>Run time is approximately 4 minutes using one computing core of an Intel
+Xeon Westemere 3.2 GHz, memory requirement &lt; 1GB, data storage requirement
+~ 19MB.</div></blockquote>
+</div>
+</div>
+<div class="section" id="example-tutorial">
+<h3><img alt="example" src="_images/applications-science.png" /> Tutorial<a class="headerlink" href="#example-tutorial" title="Permalink to this headline">¶</a></h3>
+<p><strong>Sanity check</strong></p>
+<p><strong>Objective</strong>:
+getting started with <a href="#id141"><span class="problematic" id="id142">|TVB|</span></a>. Quickly evaluate if the produced
+data is rational.</p>
+<p><strong>Summary</strong>:
+Configuring parameters for a simulation will mainly depend on the nature of
+your scientific question. Assume that you want to simulate data to
+compare to some real MEG data.</p>
+<ol class="arabic simple">
+<li>Choose a neural population model that shows oscillatory dynamics.</li>
+<li>Invest some time analysing its phase plane to set the right set of parameters.</li>
+</ol>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/tutorial_sanity_01.jpg" src="_images/tutorial_sanity_01.jpg" style="width: 80%;" />
+<p class="caption">The Generic 2D Oscillator model in an oscillatory regime (limit cycle).
+Dynamics are similar to the Fitzhugh-Nagumo model.</p>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li>Test the network model for a coupling strength=0 and make sure that it does
+what it should do, i.e, that it reflects the node local dynamics, since the
+long-range coupling component will be absent.</li>
+<li>You might want to start by using a deterministic integration scheme such as the
+Heun method.</li>
+<li>If you are interested in seeing the effect of time delays, test the network
+model for a time delay = 0. Set the <cite>Conduction Speed</cite> to a very large value
+even if it is unrealistic. You can also launch parallel simultions using a
+range of condution speeds &#8211; see the <cite>Parameter Space Exploration</cite> tutorial.</li>
+</ol>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="figure align-center">
+<img alt="_images/tutorial_sanity_02_cs_1000.jpg" src="_images/tutorial_sanity_02_cs_1000.jpg" style="width: 70%;" />
+</div>
+<div class="figure align-center">
+<img alt="_images/tutorial_sanity_02_cs_42.jpg" src="_images/tutorial_sanity_02_cs_42.jpg" style="width: 70%;" />
+</div>
+<div class="figure align-center">
+<img alt="_images/tutorial_sanity_02_cs_3.jpg" src="_images/tutorial_sanity_02_cs_3.jpg" style="width: 70%;" />
+<p class="caption">Conduction speed is 1000, 42 and 3 [mm/ms] for the upper, middle and bottom
+panel respectively.</p>
+</div>
+<ol class="arabic simple" start="6">
+<li>For MEG signals, a good sanity test is the application of mode decompositions
+algorithms (PCA or ICA) to the simulated time series.</li>
+<li>Check the power spectra as well to distinguish frequency components.</li>
+</ol>
+</div>
+<div class="section" id="id1">
+<h3><img alt="example" src="_images/applications-science.png" /> Tutorial<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p><strong>Simulating EEG-fMRI whole brain dynamics for individual connectivity matrices</strong></p>
+<p><strong>Objective</strong>: learn how to upload your own (i.e., artificial or subject-specific)
+connectivity data and generate the corresponding simulated EEG and fMRI signals.</p>
+<p><strong>Summary</strong>:
+In <a href="#id143"><span class="problematic" id="id144">|TVB|</span></a> platform it is possible to upload your own large-scale connectivity
+datasets (e.g., derived from DTI tractography), edit them (e.g., in order to
+mimic brain lesions) and generate simulated imaging signals like EEG and BOLD.
+In the present study, a lesion in a given node area is modeled by
+removing all the incoming and ongoing connections into and from this node.</p>
+<ol class="arabic simple">
+<li>Create a new project and upload a connectivity data set following the steps
+described in the <strong>Import Data</strong> section.</li>
+<li>Upon uploading, the new connectivity set appears as entry in the <cite>Project Data
+Structure Tree</cite>.</li>
+</ol>
+<blockquote>
+<div><img alt="_images/tutorial_eeg_bold_01.jpg" class="align-center" src="_images/tutorial_eeg_bold_01.jpg" style="width: 90%;" />
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li>Upon clicking the new list entry, the <cite>Datatype Details</cite> overlay appears.
+This window enables you for each dataset in TVB to examine object properties
+(e.g., summary statistics), edit the object metadata, view and launch all
+Analyzer and Visualizer operations that are defined for this data type, link
+the dataset to other projects and to export the dataset.</li>
+<li>Check your connectivity set by launching the <em>Connectivity Viewer</em> from the tab
+<em>Visualizers</em>. The viewer also enables editing of individual connectivity
+weights or tract lengths and to perform lesions by removing entire nodes
+(please refer to the tutorial <strong>A simple lesion study using TVB</strong> for
+further details on performing lesions). Select a node from the <em>Weights Matrix</em>,
+enter a custom edge weight value in the overlay field and select <em>Change edge value</em>.</li>
+</ol>
+<blockquote>
+<div><img alt="_images/tutorial_eeg_bold_02.jpg" class="align-center" src="_images/tutorial_eeg_bold_02.jpg" style="width: 90%;" />
+</div></blockquote>
+<ol class="arabic simple" start="5">
+<li>You can now simulate brain activity using your own connectivity data. Switch
+to the <em>Simulator</em> interface in order to configure simulation details.<ul>
+<li>Select your uploaded connectivity set from the <em>Long-range connectivity</em>
+drop-down menu.</li>
+<li>Configure further simulation parameters: large-scale coupling (e.g.,
+long-range coupling function, conduction speed), cortical surface, stimuli,
+local dynamics, integration scheme, monitors and the simulation length.</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li>Here we set the multiplicative long-range connection strength factor a equal
+to 17.2 and the conduction speed to 10 mm/ms.</li>
+<li>Then we choose <em>Stefanescu-Jirsa (reduced Hindmarsh-Rose)</em> as <em>Local dynamic
+model</em> and use <em>HeunStochastic</em> as <em>Integration scheme</em> and an <em>Integration step size</em> of
+<em>0.0156 ms</em>.</li>
+<li>We select <em>Spherical EEG</em> and <em>BOLD</em> as monitors and set the <em>EEG Sampling period</em>
+to <em>1 ms</em> and the simulation length to <em>4000 ms</em>.</li>
+<li>Configure portlets to view simulation results, e.g., the <em>EEG lines viewer</em>
+for EEG simulations.</li>
+<li>Name the new simulation and launch it.</li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="6">
+<li>In the <em>Projects</em> interface select <em>Operations</em> from the second-level tab menu
+to follow the current status of the simulation (hit reload button to update).</li>
+<li>Upon finishing, you can view simulation results in the portlets viewer or by
+selecting them from the <em>Project Data Structure Tree</em> (Simulation results
+will be listed under the node <em>Intermediate Data</em>).</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Please check that simulation length is larger than the BOLD sampling period!!</p>
+<img alt="_images/tutorial_eeg_bold_04.jpg" class="last align-center" src="_images/tutorial_eeg_bold_04.jpg" style="width: 90%;" />
+</div>
+</div>
+<div class="section" id="id2">
+<h3><img alt="example" src="_images/applications-science.png" /> Tutorial<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p><strong>A simple lesion study using TVB</strong></p>
+<p><strong>Objective</strong>:
+learn how to generate simulated brain activity to study the impact of brain
+lesions on functional patterns of activity.</p>
+<p><strong>Summary</strong>:
+In <a href="#id145"><span class="problematic" id="id146">|TVB|</span></a> platform it is possible to edit a connectivity matrix to mimic brain
+lesions. In the present study, a lesion in a given node area is modeled by
+removing all the incoming and ongoing connections into and from this node.</p>
+<blockquote>
+<div><ul class="simple">
+<li>Assuming that you have already created your project:</li>
+<li>Enter the <cite>Connectivity</cite> area and click on <cite>Long Range Connectivity</cite>.</li>
+<li>Select the default connectivity matrix and click the <cite>Launch</cite> button.</li>
+<li>On the right side the node-by-node connectivity matrix is displayed. You
+can select the quadrant to be displayed on the screen by accessing the
+quadrant selector.</li>
+<li>Unselect the nodes you want to lesion by clicking directly on the region
+labels. This will remove all the incoming and ongoing connections into
+and from those nodes. Here we choose to lesion the following cortical
+areas: lCCA, lCCP, and lPFCORB.</li>
+<li>Enter a name for this new selection, save it  and click on the star icon
+on the top-right to save the new matrix.</li>
+<li>Go to <cite>Project</cite> area and enter the <cite>Data Structure</cite> page. The new
+connectivity matrix should be available in Intermediate Data.</li>
+<li>By selecting the new Connectivity, you will access its Datatype
+Details allowing you to get information about the data, visualize them
+and export them.</li>
+<li>From the <cite>Visualizers</cite> tab you can launch a display to see the new matrix.</li>
+<li>Simulate data using both connectivity matrices. You can now use the new
+connectivity matrix to simulate brain activity, using the TVB <cite>Simulator</cite>.
+Here we choose the BOLD model with underlying FitzHugh-Nagumo equations for
+the local dynamics. The goal is to run two long simulations, one using an
+intact connectivity and another using the connectivity with lesions. Except
+for the connectivity matrix, all parameters are the same (including the
+random number generator seed).<ul>
+<li>In the <cite>Simulator</cite> area - central column - you can choose the long-range
+connectivity. Select the new connectivity matrix containing the lesions.</li>
+<li>Set the local dynamic model to Fitz-Hugh Nagumo.</li>
+<li>Select BOLD in Monitors.</li>
+<li>Name the new simulation and launch it.</li>
+<li>Repeat the previous steps but choosing the default matrix (intact) as the
+Long-range connectivity.</li>
+</ul>
+</li>
+<li>Go to the <cite>Operations</cite> board. You can follow the state of the simulations.
+When simulations are finished your results will be represented by its
+datatype icons.</li>
+<li>Export the results of both simulations and the connectivity matrices.<ul>
+<li>You can export the results by choosing <cite>Export</cite>: -&gt; TVB format. The data
+will be stored in an HDF5 file (&#8220;filename.h5&#8221;) which can be used to do
+further analysis using other software of your choice.</li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+<p>Here we choose MatLab to process the data. To read the HDF5 file in MatLab do:</p>
+<div class="highlight-python"><pre>hinfo = hdf5info('filename.h5');
+% hinfo is a structure containing the data in the field
+% hinfo.GroupHierarchy.Datasets.</pre>
+</div>
+<p>To read the data use the <cite>hdf5read</cite> function. For our simulations
+<cite>hinfo.GroupHierarchy.Datasets(1)</cite> contains the BOLD activity and
+<cite>hinfo.GroupHierarchy.Datasets(2)</cite> contains the time:</p>
+<div class="highlight-python"><pre>Time  = hdf5read(hinfo.GroupHierarchy.Datasets(2));
+bold  = hdf5read(hinfo.GroupHierarchy.Datasets(1));
+N     = size(bold,2);
+T     = size(bold,4);
+% Where N is the number of cortical areas (=74) and T the number of time
+% points.</pre>
+</div>
+<p>You can compact the data to a 2-dimension matrix as:</p>
+<div class="highlight-python"><pre>bold_new = zeros(T,N,2);
+bold_new(:,:,1) = reshape(bold,[T N]);</pre>
+</div>
+<p>You are now ready to work with <cite>bold_new</cite> using the tools of MatLab.</p>
+<p><strong>Results</strong></p>
+<p>For each condition, intact and lesion, we calculated the correlation matrix
+(functional connectivity) and evaluated whether correlations change in pairs
+of nodes. To asses significant changes we calculated the correlation matrix
+in non-overlapping time windows of 200 time points. In this way, we obtained
+a distribution for each pair-wise correlation coefficient, allowing
+statistical treatment. Correlation coefficients were fisher z-transformed and
+compared (by means of t-tests) in intact vs. lesion conditions. We found that lesions
+induced both significant increases and decreases of correlations between
+intact nodes, even for pairs of nodes in different hemispheres.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/tutorial_lesion_results.jpg" src="_images/tutorial_lesion_results.jpg" style="width: 40%;" />
+</div>
+<p>A) Top: Intact connectivity matrix. Middle: Connectivity matrix with
+lesions. Bottom: Difference between intact and injured connectivity
+matrices. Connection strengths are indicated in color code.
+B) Top: Intact functional connectivity. Middle: Functional connectivity with
+lesions. Pearson pair-wise correlation coefficients are indicated in
+color code. Bottom: Significantly different pair-wise correlations in
+intact vs. lesion conditions (squares are proportional to correlation
+difference). Black: lesion significantly decreased correlation
+coefficient with respect to intact correlations. Gray: lesion
+significantly increased correlation coefficient with respect to intact
+correlations.
+C) Example of seed-based based correlations. Dark and
+light colors indicate significant and non-significant differences of
+correlation coefficients, respectively. Seed: left prefrontal polar cortex.</p>
+</div></blockquote>
+</div>
+<div class="section" id="id3">
+<h3><img alt="example" src="_images/applications-science.png" /> Tutorial<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p><strong>Performing parameter space exploration</strong></p>
+<p><strong>Objective</strong>:
+learn how to sweep and search across different simulation
+settings that run on a distributed infrastructure.</p>
+<p><strong>Summary</strong>:
+In <a href="#id147"><span class="problematic" id="id148">|TVB|</span></a> platform it is possible to launch parallel simulations to explore the
+changes in dynamics of the brain as a function of the local dynamics parameters.
+We illustrate this process with a case study in larg-scale brain simulations
+within <a href="#id149"><span class="problematic" id="id150">|TVB|</span></a>.</p>
+<blockquote>
+<div><ul class="simple">
+<li>Assuming that you have already created your project:</li>
+<li>Enter the <cite>Simulator</cite> area.</li>
+<li>Select the default connectivity matrix.</li>
+<li>Choose the local dynamic model <cite>2D Generic Oscillator</cite></li>
+<li>Click on the &#8216;V&#8217; button next to the model parameters to unfold the available
+parameter range and step size. At present, a maximum of 2
+parameters can be explored at the same time.</li>
+<li>For <math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><msub><mi>I</mi>
+<mrow><mi>e</mi><mi>x</mi><mi>t</mi></mrow></msub></mrow></math> set the step size to 0.4 and for <math xmlns="http://www.w3.org/1998/Math/MathML">
+<mrow><mi>a</mi></mrow></math> 0.5</li>
+<li>Name the new simulation and launch it.</li>
+<li>After all simulation are finished, you should be able to see the Parameter
+Space Exploration Visualizer.</li>
+</ul>
+</div></blockquote>
+<div class="figure align-center">
+<img alt="_images/simulator_pse_configuration.jpg" src="_images/simulator_pse_configuration.jpg" style="width: 60%;" />
+</div>
+<p>Each point in this two dimensional graph represents two metrics: by default
+Global Variance corresponds to the size of the point and Variance of the
+Variance of nodes maps the color scale.</p>
+<blockquote>
+<div><ul class="simple">
+<li>From those results, critical combination of parameters can be
+distinguished.</li>
+<li>If you go to <cite>Project</cite> area and enter the <cite>Data Structure</cite> page. The results
+of all simulations will be held under one object called DataTypeGroup.</li>
+<li>Export the results of all simulations.</li>
+<li>You can export the results by clicking on the aforementioned object and
+selecting the <cite>Export</cite> tab: -&gt; TVB format.
+The data will be available for download in a .zip file.</li>
+<li>Within this folder you will find the TimeSeries for each possible parameter
+combination. Data are stored as HDF5 files (&#8220;filename.h5&#8221;) which can be used
+to do further analysis using other software of your choice.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="id4">
+<h3><img alt="example" src="_images/applications-science.png" /> Tutorial<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p><strong>Generate a  spatiotemporal stimulus</strong></p>
+<p><strong>Objective</strong>: learn how to create a spatiotemporal pattern to study the
+influence of a stimulation paradigm to outline different patterns of neural
+activity.</p>
+<p><strong>Summary</strong>
+The intention is to have a platform capabable of having a representation of
+stable and unstable sources. The goal is to observe the effect of
+the stimulation.</p>
+<blockquote>
+<div><ul>
+<li><p class="first">Assuming that you have already created your project:</p>
+</li>
+<li><p class="first">Go to the <cite>Stimulus</cite> area &#8211;&gt; <cite>Surface Stimulus</cite> page.</p>
+</li>
+<li><p class="first">Enter a new name for the new <cite>Surface Stimulus</cite>.</p>
+</li>
+<li><p class="first">Choose the default <cite>Cortical Surface</cite>.</p>
+</li>
+<li><p class="first">Select the <cite>Mexican-hat</cite> equation to define the spatial spread of the
+stimulus.</p>
+</li>
+<li><p class="first">Spatial parameters are:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="67%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><p class="first last">Inputs</p>
+</th>
+<th class="head"><p class="first last">Value</p>
+</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><p class="first last">midpoint1</p>
+</td>
+<td><p class="first last">20.0</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first last">midpoint2</p>
+</td>
+<td><p class="first last">0.0</p>
+</td>
+</tr>
+<tr class="row-even"><td><p class="first last">amp1</p>
+</td>
+<td><p class="first last">1.0</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first last">amp2</p>
+</td>
+<td><p class="first last">1.0</p>
+</td>
+</tr>
+<tr class="row-even"><td><p class="first last">sigma1</p>
+</td>
+<td><p class="first last">20.0</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first last">sigma2</p>
+</td>
+<td><p class="first last">10.0</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+<li><p class="first">Temporal parameters are:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="67%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><p class="first last">Inputs</p>
+</th>
+<th class="head"><p class="first last">Value</p>
+</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><p class="first last">amp</p>
+</td>
+<td><p class="first last">1.0</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first last">frequency</p>
+</td>
+<td><p class="first last">0.1</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+<li><p class="first">Click on View Stimulus Progress</p>
+</li>
+<li><p class="first">Select 10 focal nodes on the right hemisphere.</p>
+</li>
+<li><p class="first">Click on <cite>Save new Stimulus Surface</cite></p>
+</li>
+<li><p class="first">Your spatiotemporal pattern should be available. You can load it and play
+the animation on the cortical surface.</p>
+</li>
+<li><p class="first">Go back to <cite>Edit Stimulus Equation</cite></p>
+</li>
+<li><p class="first">Set new equations and parameters for both spatial and temporal profiles.</p>
+</li>
+<li><p class="first">Add 10 focal nodes on the left hemisphere.</p>
+</li>
+<li><p class="first">Enter a new name for this new <cite>Stimulus Surface</cite> and save it.</p>
+</li>
+<li><p class="first">You can visualize the new pattern.</p>
+</li>
+</ul>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="figure align-center">
+<img alt="_images/stimulus_surface_play.jpg" src="_images/stimulus_surface_play.jpg" style="width: 90%;" />
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The maximum number of focal points you are allowed to add is 20.</p>
+</div>
+</div>
+</div>
+<div class="section" id="tvb-data-storage">
+<h2><a href="#id151"><span class="problematic" id="id152">|TVB|</span></a> Data Storage<a class="headerlink" href="#tvb-data-storage" title="Permalink to this headline">¶</a></h2>
+<p>The purpose of this chapter is to provide some details about the way <a href="#id153"><span class="problematic" id="id154">|TVB|</span></a>
+instance/installation can exchange data with other <a href="#id155"><span class="problematic" id="id156">|TVB|</span></a> instances, or with
+other applications available in the neuroscience community. Currently, there are
+several applications that can analyze and record brain activity in different
+formats, and one of the goals of <a href="#id157"><span class="problematic" id="id158">|TVB|</span></a> is to allow users from different
+backgrounds to have quick access to their recorded data.</p>
+<p>To achieve this, we have implemented some mechanisms to <strong>IMPORT / EXPORT</strong> data
+at different levels and formats:</p>
+<ul class="simple">
+<li><strong>Project</strong> - As you may know, <a href="#id159"><span class="problematic" id="id160">|TVB|</span></a> data is organized in projects and
+one of the options is to transfer projects (with attached data) entirely
+between <a href="#id161"><span class="problematic" id="id162">|TVB|</span></a> installations. This mechanism can be used only between <a href="#id163"><span class="problematic" id="id164">|TVB|</span></a>
+applications, and no other external tools.</li>
+<li><strong>Simple Data</strong> - This feature allows you to transfer independent data (e.g.
+surface, connectivity, time series) between two <a href="#id165"><span class="problematic" id="id166">|TVB|</span></a> instances or between <a href="#id167"><span class="problematic" id="id168">|TVB|</span></a>
+and an external application. As you may note later, depending on the targeted
+application, data can be exchanged in a custom <a href="#id169"><span class="problematic" id="id170">|TVB|</span></a> format or a commonly used
+format used in the neuroscience community (e.g. CFF, GIFTI, NIFTI ...)</li>
+</ul>
+<div class="admonition-important admonition">
+<p class="first admonition-title">Important</p>
+<img alt="_images/important.png" class="align-left" src="_images/important.png" />
+<p class="last">During export and import operations <a href="#id171"><span class="problematic" id="id172">|TVB|</span></a> does not apply any space
+transformation, so users have to ensure their data (especially in case
+of import) is generated/stored in the same space.</p>
+</div>
+<p>Before proceeding with more details about data exchange, it would be helpful to
+give you an idea how <a href="#id173"><span class="problematic" id="id174">|TVB|</span></a> stores its data. Basically there are two major
+storage areas:</p>
+<ol class="arabic simple">
+<li><em>Database</em> - where general information/metadata are stored and relation
+between stored elements (e.g. assignment of data to a project, data metadata
+- creation date, owner, etc...)</li>
+<li><em>Disk</em> - here we store &#8220;the real&#8221; data in a HDF5 format
+(<a class="reference external" href="http://www.hdfgroup.org/HDF5">http://www.hdfgroup.org/HDF5</a>). This means that for each data type (e.g.
+surface, connectivity, time series) we store on the disk, it is given a
+folder structure in an HDF5 / H5 file which contains all data (e.g. vertices,
+triangles, etc ...). This format has the following advantages which made it an
+optimal solution for our product:<ul>
+<li>can store huge pieces of data and can access it very fast (even random
+access)</li>
+<li>can organize data in a tree structure (groups and leaves)</li>
+<li>allows assignment of metadata on every level</li>
+<li>is a format agreed upon by the community and can be used/opened with
+different tools/languages (Python, Matlab, java, C++ ...)</li>
+</ul>
+</li>
+</ol>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>An important aspect of <a href="#id175"><span class="problematic" id="id176">|TVB|</span></a> storage is that each data/datatype has associated a
+GUID, which makes it unique on every system where that data exists.</p>
+<div class="section" id="exchange-projects">
+<h3>Exchange Projects<a class="headerlink" href="#exchange-projects" title="Permalink to this headline">¶</a></h3>
+<p><a href="#id177"><span class="problematic" id="id178">|TVB|</span></a> product can be installed both on a server, to be used concurrent by multiple
+users, but also as a standalone application on a desktop/laptop for personal use.
+Specifically for the second scenario, there was an important request to allow
+people to exchange data. So, <a href="#id179"><span class="problematic" id="id180">|TVB|</span></a> has a mechanism to export and import an entire
+project to another system.</p>
+<div class="section" id="export-project">
+<h4>Export Project<a class="headerlink" href="#export-project" title="Permalink to this headline">¶</a></h4>
+<p>Using <a href="#id181"><span class="problematic" id="id182">|TVB|</span></a> interface, any user can export their projects in a custom format that
+can be transferred to other users.</p>
+<div class="section" id="file-format">
+<h5>File Format<a class="headerlink" href="#file-format" title="Permalink to this headline">¶</a></h5>
+<p>Export results are a ZIP file (named: date + project name), containing in a
+folder structure, all the details about the project. More specifically, it
+contains:</p>
+<ul>
+<li><p class="first">A root level XML file with details about the project itself</p>
+</li>
+<li><p class="first">Folders for each operation performed as part of the project</p>
+</li>
+<li><p class="first">Operation folder contains an XML file with details of the operation and
+a set of H5/HDF5 files for each data type generated during that operation.</p>
+<blockquote>
+<div><div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">each of the H5 files has a structure as described above in
+<a href="#id183"><span class="problematic" id="id184">|TVB|</span></a> Storage section.</p>
+</div>
+</div></blockquote>
+</li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+</div>
+<div class="section" id="import-project">
+<h4>Import Project<a class="headerlink" href="#import-project" title="Permalink to this headline">¶</a></h4>
+<p>A project exported on one system can now be imported on another machine. In the
+projects area, <a href="#id185"><span class="problematic" id="id186">|TVB|</span></a> offers the possibility to import a project packed as ZIP
+file.</p>
+<div class="section" id="id5">
+<h5>File Format<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h5>
+<p>To import a project, the user has to provide a ZIP with the same structure like the
+one described above for &#8216;Export Project&#8217;.</p>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p class="last">The same project cannot be imported multiple times on the same machine,
+because each project/data has a unique identifier (GUID).</p>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="export-import-data">
+<h3>Export/Import Data<a class="headerlink" href="#export-import-data" title="Permalink to this headline">¶</a></h3>
+<p>Apart from exchanging projects between <a href="#id187"><span class="problematic" id="id188">|TVB|</span></a> instances, there is another option to
+transfer data, but at a lower level - that is to exchange only <strong>datatypes</strong>
+(generated during &#8216;Simulation&#8217; or &#8216;Analyze&#8217;).</p>
+<div class="section" id="export-data">
+<h4>Export Data<a class="headerlink" href="#export-data" title="Permalink to this headline">¶</a></h4>
+<p>Using <a href="#id189"><span class="problematic" id="id190">|TVB|</span></a> interface, users can view all data types associated with a project and
+choose to export any of them in different formats. Below you can see supported
+export formats and file formats for each of them.</p>
+<div class="section" id="export-data-in-tvb-format">
+<h5>Export Data in <a href="#id191"><span class="problematic" id="id192">|TVB|</span></a> Format<a class="headerlink" href="#export-data-in-tvb-format" title="Permalink to this headline">¶</a></h5>
+<p>This export operation results in a file with a format specific to <a href="#id193"><span class="problematic" id="id194">|TVB|</span></a>; it is not
+a standard format that can be used automatically by other software. This is
+basically HDF5/H5 format
+[<a class="reference external" href="http://www.hdfgroup.org/HDF5">http://www.hdfgroup.org/HDF5</a>] which, for each
+data type, contains both data and metadata. These files can be easily opened in
+Python / Matlab / Java / C++ for additional processing.</p>
+<p>In case you want to process HDF5 files with Matlab you can find API
+documentation here:</p>
+<blockquote>
+<div><a class="reference external" href="http://www.mathworks.com/help/matlab/ref/hdf5read.html">http://www.mathworks.com/help/matlab/ref/hdf5read.html</a></div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The HDF5 functionality referenced above was only introduced in Matlab 2011a.</p>
+</div>
+<div class="section" id="id6">
+<h6>File Format<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h6>
+<p>As a result of a Simulation or Analyze function, <a href="#id195"><span class="problematic" id="id196">|TVB|</span></a> can generate either a data
+type or a group of data types. Each of such structures can be exported as follows:</p>
+<ol class="arabic simple">
+<li>if a simple data type is exported, the result is an HDF5 file which has a root
+node datatype metadata and leaves the real data.</li>
+<li>if a data type group is exported, the result is a ZIP file containing:<ul>
+<li>at root level, an XML file with the details of the operation that
+generated the data types</li>
+<li>a list of HDF5 files, one for each data type included in the exported
+group. Each file has structure/details as described above in the case of
+simple data type export. <em>This format applies to any |TVB| data type.</em></li>
+</ul>
+</li>
+</ol>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+</div>
+<div class="section" id="export-data-in-cifti-format">
+<h5>Export Data in CIFTI Format<a class="headerlink" href="#export-data-in-cifti-format" title="Permalink to this headline">¶</a></h5>
+<p>This operation is not implemented yet. The goal is to generate a CIFTI file
+according to format described here:</p>
+<blockquote>
+<div><a class="reference external" href="http://www.nitrc.org/projects/cifti/">http://www.nitrc.org/projects/cifti/</a></div></blockquote>
+<div class="section" id="id7">
+<h6>File Format<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h6>
+<p>Will be defined when export implemented.</p>
+</div>
+</div>
+</div>
+<div class="section" id="import-data">
+<h4>Import Data<a class="headerlink" href="#import-data" title="Permalink to this headline">¶</a></h4>
+<p>Probably this is the most important feature of data exchange, since it allows
+<a href="#id197"><span class="problematic" id="id198">|TVB|</span></a> to bring together data generated independently by other systems/applications
+and allows it&#8217;s users to perform different analyses on it and visualize them.
+Since there is an abundance of formats available for neuroimaging data, <a href="#id199"><span class="problematic" id="id200">|TVB|</span></a>
+tries to support as many as possible for an improved user experience.</p>
+<div class="admonition-important admonition">
+<p class="first admonition-title">Important</p>
+<img alt="_images/important.png" class="align-left" src="_images/important.png" />
+<p>In case the imported data includes/represents a surface, <a href="#id201"><span class="problematic" id="id202">|TVB|</span></a> does an extra
+check regarding the number of vertices of that surface. Basically you can
+not import into <a href="#id203"><span class="problematic" id="id204">|TVB|</span></a> a surface that has more vertices than a MAX value.</p>
+<p class="last">This MAX value is defines and can be changed in the Application Settings
+area, depending on the configuration/performance of your hardware.</p>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="section" id="import-data-in-tvb-format">
+<h5>Import Data in <a href="#id205"><span class="problematic" id="id206">|TVB|</span></a> Format<a class="headerlink" href="#import-data-in-tvb-format" title="Permalink to this headline">¶</a></h5>
+<p>In correlation with export operations, <a href="#id207"><span class="problematic" id="id208">|TVB|</span></a> interface allows import of data in
+<a href="#id209"><span class="problematic" id="id210">|TVB|</span></a> format that has been exported from other systems. This format applies to any
+<a href="#id211"><span class="problematic" id="id212">|TVB|</span></a> data type. Depending on the uploaded file format, imported data can be as
+follows:</p>
+<div class="section" id="id8">
+<h6>File Format<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h6>
+<ol class="arabic simple">
+<li>If user uploads a ZIP file, the system automatically assumes a datatype group
+must be imported and then process the file accordingly. More specifically, it
+tries to find an XML file, within the ZIP file, describing the operation(s)
+that generated the data types and the list of HDF5 files for each datatype.</li>
+<li>If user uploads a simple HDF5/H5 file, the system assumes that a simple data
+type is imported and tries to process the file accordingly. Basically it
+reads the metadata stored in the root node group and determines the data type
+(e.g. connectivity, time series ...). Based on the detected type of data, the
+rest of the details are filled and the object is stored in the database.</li>
+</ol>
+<div class="line-block">
+<div class="line"><br /></div>
+<div class="line"><br /></div>
+</div>
+</div>
+</div>
+<div class="section" id="import-volume-time-series-from-nifti-1-format">
+<h5>Import Volume Time Series from NIFTI-1 Format<a class="headerlink" href="#import-volume-time-series-from-nifti-1-format" title="Permalink to this headline">¶</a></h5>
+<p>NIFTI [<a class="reference external" href="http://www.nitrc.org/projects/nifti">http://www.nitrc.org/projects/nifti</a> ] is a standard format maintained by
+&#8220;The Neuroimaging Informatics Technology Initiative (NIfTI) and NIfTI Data
+Format Working Group&#8221; and allows the exchange of data with different meanings
+(imaging data, statistical values, etc.; stored as vectors, matrix, label set or
+mesh). NIFTI data can be stored in &lt;.nii&gt; or &lt;.hdr+.img&gt; files, or any of these
+in zipped format (&lt;.gz&gt; files).</p>
+<p>For the moment, <a href="#id213"><span class="problematic" id="id214">|TVB|</span></a> accommodates import of Volume Time Series from NIFTI files.</p>
+<div class="section" id="id9">
+<h6>File Format<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h6>
+<p>For import, <a href="#id215"><span class="problematic" id="id216">|TVB|</span></a> users can upload either .nii or .gz files containing NIFTI data
+in the format specified by [<a class="reference external" href="http://www.nitrc.org/projects/nifti">http://www.nitrc.org/projects/nifti</a>]</p>
+<div class="line-block">
+<div class="line"><br /></div>
+<div class="line"><br /></div>
+</div>
+</div>
+</div>
+<div class="section" id="import-sensors">
+<h5>Import Sensors<a class="headerlink" href="#import-sensors" title="Permalink to this headline">¶</a></h5>
+<p><a href="#id217"><span class="problematic" id="id218">|TVB|</span></a> allows users to import data about sensors used for brain imaging. More
+specifically, <a href="#id219"><span class="problematic" id="id220">|TVB|</span></a> supports three types of sensors: EEG, MEG and INTERNAL. During
+the import process, the user has to select a file to import and the type of the
+imported sensors. Based on the selected type, the data from the uploaded file
+will be processed accordingly.</p>
+<div class="section" id="id10">
+<h6>File Format<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h6>
+<p>During import, the user might upload either a TXT file or a zipped TXT in bz2
+format. This TXT file should contain data separated by spaces and grouped as
+follows:</p>
+<ol class="arabic simple">
+<li>each line contains details of a sensor</li>
+<li>for each sensor there are four or seven columns<ul>
+<li>first column represents the name / label of the sensor</li>
+<li>next three columns represents the position of sensor (x, y, z)</li>
+<li>next three columns (if present) represents the orientation of sensor.
+These are required only for MEG sensors.</li>
+</ul>
+</li>
+</ol>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+</div>
+<div class="section" id="import-connectivity-from-zip">
+<h5>Import Connectivity from ZIP<a class="headerlink" href="#import-connectivity-from-zip" title="Permalink to this headline">¶</a></h5>
+<p>This feature allows import of connectivity from a ZIP file. The ZIP should
+contain files with connectivity details as follows:</p>
+<div class="section" id="id11">
+<h6>File Format<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h6>
+<p>ZIP file should include files with the following naming schema and format:</p>
+<ol class="arabic simple">
+<li>If any file name contains &#8220;weight&#8221;, it will be considered as the container
+for connectivity weights and the parse process expects the following format:<ul>
+<li>text file containing values separated by spaces / tabs</li>
+<li>contains a matrix of weights</li>
+<li>any value greater than zero is considered as a connection. You should not have negative values in your weights file.</li>
+</ul>
+</li>
+<li>If any file name contains &#8220;position&#8221; it will be considered as the container
+for connectivity centers and the parse process expects the following format:<ul>
+<li>text file containing values separated by spaces / tabs</li>
+<li>on the first row there should be  a header of the form &#8216;labels X Y Z&#8217;</li>
+<li>each row represents data for a region center</li>
+<li>each row should have at least 4 columns: region label and center position
+(x, y, z)</li>
+</ul>
+</li>
+<li>If any file name contains &#8220;tract&#8221; it will be considered as container for
+connectivity tract lengths and the parse process expects the following
+format:<ul>
+<li>text file containing values separated by spaces / tabs</li>
+<li>contains a matrix of tract lengths</li>
+<li>any value greater than zero is considered as a connection. You should not have negative values in your tract file.</li>
+</ul>
+</li>
+<li>If any file name contains &#8220;orientation&#8221; it will be considered as container
+for connectivity center orientations and parse process expects the following
+format:<ul>
+<li>text file containing values separated by spaces / tabs</li>
+<li>each row represents orientation for a region center</li>
+<li>each row should have at least 3 columns for region center orientation (3
+float values separated with spaces or tabs)</li>
+</ul>
+</li>
+<li>If any file name contains &#8220;area&#8221; it will be considered as container for
+connectivity areas and the parse process expects the following format:<ul>
+<li>text file containing one area on each line (as float value)</li>
+</ul>
+</li>
+<li>If any file name contains &#8220;cortical&#8221; it will be considered as container for
+connectivity cortical/non-cortical region flags, and the parse process expects the following format:<ul>
+<li>text file containing one boolean value on each line (as 0 or 1 value) being 1 when corresponding region is cortical.</li>
+</ul>
+</li>
+<li>If any file name contains &#8220;hemisphere&#8221; it will be considered as container for
+hemisphere inclusion flag for connectivity regions, and the parse process expects the following format:<ul>
+<li>text file containing one boolean value on each line (as 0 or 1 value) being 1 when corresponding region is in the right hemisphere and 0 when in left hemisphere.</li>
+</ul>
+</li>
+</ol>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+</div>
+<div class="section" id="import-surface-from-zip">
+<h5>Import Surface from ZIP<a class="headerlink" href="#import-surface-from-zip" title="Permalink to this headline">¶</a></h5>
+<p>Using this option, users have the possibility to import a surface from a more
+human readable format into TVB. Basically users have to upload a zip file
+containing surface data and specify what type of surface they upload (Cortical
+Surface, Brain Skull, Skull Skin or Skin Air).</p>
+<div class="section" id="id12">
+<h6>File Format<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h6>
+<p>Uploaded ZIP file should contain files with a specified naming schema and format
+as follow:</p>
+<ol class="arabic simple">
+<li>If any file name contains &#8220;vertices&#8221; it will be considered as container for
+surface vertices and parse process expects the following format:<ul>
+<li>this is a space separated values file</li>
+<li>each row represents position of a vertex</li>
+<li>each row should have three columns (x, y, z as float values)</li>
+</ul>
+</li>
+<li>If any file name contains &#8220;normals&#8221; it will be considered as container for
+surface vertices normals and parse process expects the following format:<ul>
+<li>this is a space separated values file</li>
+<li>each row represents a vertex normal</li>
+<li>each row should have three columns (with float values)</li>
+</ul>
+</li>
+<li>If any file name contains &#8220;triangles&#8221; it will be considered as container for
+surface triangles and parse process expects the following format:<ul>
+<li>this is a space separated values file</li>
+<li>each row represents a triangle</li>
+<li>each row should have three columns (int values) - each value representing
+the index of a vertex from the vertices array. This indices could be ZERO
+based or not, depending on the source which generated the surface. This
+is the user is required to specify this at import time.</li>
+</ul>
+</li>
+</ol>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>There are systems/applications that generate and store surface data in two parts:
+for left and right side. If this is the case, the imported ZIP file is expected
+to contain text files with the same naming and format, but the name should
+contain letter &#8220;r&#8221; or &#8220;l&#8221; at the end of the suffix (e.g. &lt;trianglesl.txt&gt; and
+&lt;trianglesr.txt&gt;)</p>
+<div class="line-block">
+<div class="line"><br /></div>
+<div class="line"><br /></div>
+</div>
+</div>
+</div>
+<div class="section" id="import-surface-and-timeseries-from-gifti">
+<h5>Import Surface and TimeSeries from GIFTI<a class="headerlink" href="#import-surface-and-timeseries-from-gifti" title="Permalink to this headline">¶</a></h5>
+<p>This is a geometry format (<a class="reference external" href="http://www.nitrc.org/projects/gifti/">http://www.nitrc.org/projects/gifti/</a>) under the
+Neuroimaging Informatics Technology Initiative (NIfTI) that allows exchange of
+brain data (surface, time series, shapes, labels ...). Basically format is
+XML based which stores both data and associated metadata in a single file, with
+.gii extension.</p>
+<p>If uploaded .gii file contains a surface (Cortical Surface or SkinAir) during
+import <a href="#id221"><span class="problematic" id="id222">|TVB|</span></a> stores found vertices / triangles and computes normals for them.</p>
+<p>In case .gii file contains a TimeSeries, user will be asked to specify what is
+the surface for which TimeSeries is imported. Important to know: number of
+vertices from imported time series must be the same as the one selected for surface.
+Otherwise import procedure will fail.</p>
+<div class="section" id="id13">
+<h6>File Format<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h6>
+<p>This is a standard format, supported by a large community so all details about
+it and samples can be found here:</p>
+<blockquote>
+<div><a class="reference external" href="http://www.nitrc.org/projects/gifti">http://www.nitrc.org/projects/gifti</a></div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">At this moment <a href="#id223"><span class="problematic" id="id224">|TVB|</span></a> supports only import of data from a single .gii file.
+It does not handles cases when metadata is defines in .gii (XML) file and
+real data in external files.</p>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+<div class="line"><br /></div>
+</div>
+</div>
+</div>
+<div class="section" id="import-data-from-cff">
+<h5>Import Data from CFF<a class="headerlink" href="#import-data-from-cff" title="Permalink to this headline">¶</a></h5>
+<p>CFF (Connectome File) is a complex format that tries to put together all data
+necessary for brain simulations or analysis. Because of its complexity and lack
+of support from the community, this format is not used very often. For this
+reason, we decided to implement <strong>import</strong> only of a custom form of CFF, for
+demo purposes.  Support for CFF import might be removed in the future versions.</p>
+<p>The current <a href="#id225"><span class="problematic" id="id226">|TVB|</span></a> version includes a set of demo data, housed in a folder that
+contains two CFF files which could be imported for testing.</p>
+<p>Since CFF is a complex format you can use it for uploading single data (e.g one
+surface, connectivity, local connectivity, region mapping) but also you could
+group multiple such data into a single CFF file.</p>
+<div class="section" id="id14">
+<h6>File Format<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h6>
+<p>For this feature, the user has to upload a CFF file (which is basically a ZIP
+file) containing a root file &lt;meta.cml&gt; which describes the content of the
+archive. This file specifies what data types are packed (e.g. connectivity,
+surface, region mapping) and which files contain data for these types. In our
+demo data, files are in different formats: starting from raw data (numpy dump),
+GIFTI, NXGPickle.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+</div>
+<div class="section" id="import-region-mapping">
+<h5>Import Region Mapping<a class="headerlink" href="#import-region-mapping" title="Permalink to this headline">¶</a></h5>
+<p>A Region Mapping in <a href="#id227"><span class="problematic" id="id228">|TVB|</span></a> is a vector, defining a map between a Cortical Surface and a Connectivity.
+At import time, you will need to have at least 2 entities in <a href="#id229"><span class="problematic" id="id230">|TVB|</span></a> system: Connectivity and Cortical Surface.
+The two entities need to be spatially aligned (overlap correctly in 3D space).</p>
+<div class="section" id="id15">
+<h6>File Format<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h6>
+<p>For this upload we expect a text file (possibly compressed with bz2). The text file should have no headers,
+only numeric values separated with spaces.</p>
+<p>The file is expected to hold a vector of length number of vertices in the Cortical Surface.
+The numeric values should be in the interval (0...n-1), where n is the number of regions in  the connectivity.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+</div>
+<div class="section" id="import-projection-matrix">
+<h5>Import Projection Matrix<a class="headerlink" href="#import-projection-matrix" title="Permalink to this headline">¶</a></h5>
+<p>A Projection Matrix, is intended to define a mapping from a source object and a set of sensors.
+The source entity can be either a Cortical Surface or a Connectivity, in <a href="#id231"><span class="problematic" id="id232">|TVB|</span></a>.
+In order for this import to work, you will need to have previously imported in <a href="#id233"><span class="problematic" id="id234">|TVB|</span></a>:
+both the source and the sensors entities.</p>
+<div class="section" id="id16">
+<h6>File Format<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h6>
+<p>For this upload we expect a single text file, with numeric values, space and line separated.
+The numeric values in the uploaded file should hold a matrix of size (n, m).
+<strong>n</strong> is the number of sensors, and <strong>m</strong> is the  number of nodes. When the
+projection matrix we want to import is a
+Surface Projection Matrix, <strong>m</strong> will be the number of vertices in the target Cortical Surface.
+When the projection matrix is a region-level one, <strong>m</strong> will be the number of regions in the Connectivity.
+Having headers in the text file is not accepted. An incorrect number of values (lines or rows) in the
+Projection Matrix will also raise an exception.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api/index.html">API</a>|&nbsp;</li>
+	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, timpx.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,268 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Analyze &mdash; tvb_doc 2.7 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="tvb_doc 2.7 documentation" href="index.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo.svg" border="0" alt="py4sci"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api/index.html">API</a>|&nbsp;</li>
+	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Analyze</a><ul>
+<li><a class="reference internal" href="#cross-correlation-of-nodes">Cross-correlation of nodes</a></li>
+<li><a class="reference internal" href="#fourier-spectral-analysis">Fourier Spectral Analysis</a></li>
+<li><a class="reference internal" href="#timeseries-metrics">TimeSeries Metrics</a></li>
+<li><a class="reference internal" href="#cross-coherence-of-nodes">Cross coherence of nodes</a></li>
+<li><a class="reference internal" href="#temporal-covariance-of-nodes">Temporal covariance of nodes</a></li>
+<li><a class="reference internal" href="#principal-component-analysis-pca">Principal Component Analysis (PCA)</a></li>
+<li><a class="reference internal" href="#independent-component-analysis-ica">Independent Component Analysis (ICA)</a></li>
+<li><a class="reference internal" href="#continuous-wavelet-transform-cwt">Continuous Wavelet Transform (CWT)</a></li>
+<li><a class="reference internal" href="#brain-connectivity-toolbox-analyzers">Brain Connectivity Toolbox Analyzers</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/UserGuide-UI_Analyze.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="analyze">
+<h1>Analyze<a class="headerlink" href="#analyze" title="Permalink to this headline">¶</a></h1>
+<p>This area offers a set of techniques for data analysis.</p>
+<div class="figure align-center">
+<img alt="_images/analyze.jpg" src="_images/analyze.jpg" style="width: 80%;" />
+<p class="caption">Current available analyzers</p>
+</div>
+<p>The <cite>Analysis</cite> area has several interfaces that support the following operations
+for time-series analysis:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Cross-correlation of nodes</li>
+<li>Fourier Spectral Analysis</li>
+<li>Global TimeSeries Metrics</li>
+<li>Cross coherence of nodes</li>
+<li>Temporal covariance of nodes</li>
+<li>Principal Component Analysis</li>
+<li>Independent Component Analysis</li>
+<li>Continuous Wavelet Transform</li>
+</ul>
+</div></blockquote>
+<div class="section" id="cross-correlation-of-nodes">
+<h2>Cross-correlation of nodes<a class="headerlink" href="#cross-correlation-of-nodes" title="Permalink to this headline">¶</a></h2>
+<p>Compute pairwise temporal cross-correlation of all nodes in a 4D TimeSeries
+object. Cross-correlation, or normalized cross-covariance, is a measure that
+quantifies the degree of linear dependence between two time-series.</p>
+<p>To calculate the correlation coefficient of all nodes of a given multi-node
+time-series, simply select the TimeSeries object from the drop-down list in the
+<cite>Cross-correlation of nodes</cite> interface and hit <cite>Launch</cite>.</p>
+<p>The algorithm returns a CrossCorrelation object that contains cross correlation
+coefficients for all possible combinations of nodes.
+Results are visualized with the <cite>Correlation viewer</cite>.</p>
+</div>
+<div class="section" id="fourier-spectral-analysis">
+<h2>Fourier Spectral Analysis<a class="headerlink" href="#fourier-spectral-analysis" title="Permalink to this headline">¶</a></h2>
+<p>Compute a fast Fourier transform (FFT) of a TimeSeries object. FFT is an
+algorithm to compute the discrete Fourier transform (DFT) and its inverse for a 1
+given sequence of values. DFT transforms a function into its frequency-domain
+representation, that is, a sum of weighted sinusoids while preserving all of the
+information about the original signal. After decomposing the signal, spectrum
+analysis quantifies the relative amounts of amplitudes, powers, intensities or
+phases of a component versus its frequency.</p>
+<p>In order to perform a Fourier analysis of your time-series data follow these steps:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Go to the <cite>Fourier Spectral Analysis</cite> interface and select a <cite>Windowing function</cite>, you can choose among ‘hamming’, ‘bartlett’, ‘blackman’ and ‘hanning’.</li>
+<li>Select the time-series.</li>
+<li>Select a segment length.</li>
+<li>Hit <cite>Launch</cite>.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="timeseries-metrics">
+<h2>TimeSeries Metrics<a class="headerlink" href="#timeseries-metrics" title="Permalink to this headline">¶</a></h2>
+<p>Calculate one scalar metric to characterize the time-series dataset.</p>
+</div>
+<div class="section" id="cross-coherence-of-nodes">
+<h2>Cross coherence of nodes<a class="headerlink" href="#cross-coherence-of-nodes" title="Permalink to this headline">¶</a></h2>
+<p>Calculate pairwise temporal coherence of all nodes in a 4D TimeSeries object.
+Coherence analysis, or cross-spectral analysis, can be used to estimate how two
+time series are related in the spectral domain. Cross-coherence indicates the
+degree to which amplitude and phase between two signals relate to each other as
+a function of frequency.</p>
+<p>To calculate the cross-coherence of all nodes of a given multi-node time-series,
+simply select the TimeSeries object from the drop-down list in the <cite>Cross coherence of nodes</cite>
+interface, select an appropriate block-size for the Fourier Transform and hit <cite>Launch</cite>.</p>
+<p>The resulting coherence spectrum can be viewed with the <cite>Cross coherence visualizer</cite>.</p>
+<img alt="_images/visualizer_cross_coherence.jpg" class="align-center" src="_images/visualizer_cross_coherence.jpg" style="width: 90%;" />
+</div>
+<div class="section" id="temporal-covariance-of-nodes">
+<h2>Temporal covariance of nodes<a class="headerlink" href="#temporal-covariance-of-nodes" title="Permalink to this headline">¶</a></h2>
+<p>Compute pairwise temporal covariance of all nodes in a 4D TimeSeries object.
+Covariance resembles the un-normalized correlation coefficient and measures how
+much two time-series change together.</p>
+<p>To calculate the temporal covariance of all nodes of a given multi-node time-series,
+select the TimeSeries object from the drop-down list in the <cite>Independent Component Analysis</cite>
+interface and hit <cite>Launch</cite>.</p>
+<p>The algorithm returns a Covariance object that is a 4D-Matrix with the Dimensions
+{nodes, nodes, 1, 1}. The resulting covariance matrix can be viewed with the <cite>Covariance visualizer</cite>.</p>
+<img alt="_images/visualizer_covariance.jpg" class="align-center" src="_images/visualizer_covariance.jpg" style="width: 90%;" />
+</div>
+<div class="section" id="principal-component-analysis-pca">
+<h2>Principal Component Analysis (PCA)<a class="headerlink" href="#principal-component-analysis-pca" title="Permalink to this headline">¶</a></h2>
+<p>Compute a PCA of a 4D TimeSeries object. PCA is a computational method for
+multivariate data analysis that uses an orthogonal transformation to convert a
+set of (possibly correlated) variables into a set of linearly uncorrelated
+variables called principal components.</p>
+<p>To calculate a PCA of all nodes of a given multi-node time-series, select the
+4D-TimeSeries object from the drop-down list in the <cite>Principal Components Analysis</cite>
+interface and hit <cite>Launch</cite>.</p>
+<p>The algorithm returns an PrincipalComponents object that is a xD-Matrix with the
+Dimensions {x,y,z}. The resulting time-series can be viewed with the <cite>Pca viewer</cite>.</p>
+<img alt="_images/analyzers_pca.jpg" class="align-center" src="_images/analyzers_pca.jpg" style="width: 90%;" />
+</div>
+<div class="section" id="independent-component-analysis-ica">
+<h2>Independent Component Analysis (ICA)<a class="headerlink" href="#independent-component-analysis-ica" title="Permalink to this headline">¶</a></h2>
+<p>Compute a time-domain ICA decomposition of a 4D TimeSeries object. ICA is a
+statistical and computational method for separating a multivariate signal into
+additive subcomponents by maximizing the mutual statistical independence of
+source signals.</p>
+<p>To calculate a temporal ICA of all nodes of a given multi-node time-series,
+select the 4D-TimeSeries object from the drop-down list in the <cite>Independent Component Analysis</cite>
+interface and hit <cite>Launch</cite>.</p>
+<p>The algorithm returns an IndependentComponents object that is a xD-Matrix with the
+Dimensions {x,y,z}. The resulting time-series can be viewed with the the corresponding ICA viewer.</p>
+</div>
+<div class="section" id="continuous-wavelet-transform-cwt">
+<h2>Continuous Wavelet Transform (CWT)<a class="headerlink" href="#continuous-wavelet-transform-cwt" title="Permalink to this headline">¶</a></h2>
+<p>Compute a CWT of a 4D TimeSeries object. CWT decomposes a signal into wavelets
+of different frequencies yielding a time-frequency representation of the signal.</p>
+<p>To calculate a CWT of all nodes of a given multi-node time-series, select the
+4D-TimeSeries object from the drop-down list in the <cite>Continuous Wavelet Transform</cite>
+interface, specify transformation parameters like:</p>
+<blockquote>
+<div><ul class="simple">
+<li>mother wavelet function</li>
+<li>frequency resolution and range</li>
+<li>type of the normalization for the resulting wavelet spectrum</li>
+<li>Q-ratio</li>
+<li>Sampling period of the spectrum</li>
+</ul>
+</div></blockquote>
+<p>and hit <cite>Launch</cite>.</p>
+<p>The algorithm returns an <cite>WaveletCoefficients</cite> object that is a xD-Matrix with the Dimensions {x,y,z}.
+The resulting spectrogram of wavelet power can be viewed with the <cite>Wavelet viewer</cite>.</p>
+<img alt="_images/visualizer_wavelet.jpg" class="align-center" src="_images/visualizer_wavelet.jpg" style="width: 90%;" />
+</div>
+<div class="section" id="brain-connectivity-toolbox-analyzers">
+<h2>Brain Connectivity Toolbox Analyzers<a class="headerlink" href="#brain-connectivity-toolbox-analyzers" title="Permalink to this headline">¶</a></h2>
+<p>If you have <cite>matlab</cite> or <cite>octave</cite> installed and available through the command
+line then all the algorithms offered by <cite>Brain Connectivity Toolbox</cite> (BCT)
+can be used directly from <a href="#id1"><span class="problematic" id="id2">|TVB|</span></a> interface and the results can later be displayed
+in one of our visualizers.</p>
+<p>Additional BCT techniques are:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Degree and Similarity Algorithms</li>
+<li>Centrality Algorithms</li>
+<li>Distance Algorithms</li>
+<li>Modularity Algorithms</li>
+<li>Clustering Algorithms</li>
+<li>Density Algorithms</li>
+</ul>
+</div></blockquote>
+<p>For more details, please refer to <a class="reference external" href="https://sites.google.com/site/bctnet/">BCT</a> web site</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api/index.html">API</a>|&nbsp;</li>
+	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, timpx.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

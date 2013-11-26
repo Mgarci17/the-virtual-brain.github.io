@@ -1,0 +1,157 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>|example| Tutorial &mdash; tvb_doc 2.7 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="tvb_doc 2.7 documentation" href="index.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo.svg" border="0" alt="py4sci"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api/index.html">API</a>|&nbsp;</li>
+	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/UserGuide-Tutorial_Quick_Start.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="example-tutorial">
+<h1><a href="#id1"><span class="problematic" id="id2">|example|</span></a> Tutorial<a class="headerlink" href="#example-tutorial" title="Permalink to this headline">¶</a></h1>
+<p><strong>Sanity check</strong></p>
+<p><strong>Objective</strong>:
+getting started with <a href="#id3"><span class="problematic" id="id4">|TVB|</span></a>. Quickly evaluate if the produced
+data is rational.</p>
+<p><strong>Summary</strong>:
+Configuring parameters for a simulation will mainly depend on the nature of
+your scientific question. Assume that you want to simulate data to
+compare to some real MEG data.</p>
+<ol class="arabic simple">
+<li>Choose a neural population model that shows oscillatory dynamics.</li>
+<li>Invest some time analysing its phase plane to set the right set of parameters.</li>
+</ol>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="_images/tutorial_sanity_01.jpg" src="_images/tutorial_sanity_01.jpg" style="width: 80%;" />
+<p class="caption">The Generic 2D Oscillator model in an oscillatory regime (limit cycle).
+Dynamics are similar to the Fitzhugh-Nagumo model.</p>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li>Test the network model for a coupling strength=0 and make sure that it does
+what it should do, i.e, that it reflects the node local dynamics, since the
+long-range coupling component will be absent.</li>
+<li>You might want to start by using a deterministic integration scheme such as the
+Heun method.</li>
+<li>If you are interested in seeing the effect of time delays, test the network
+model for a time delay = 0. Set the <cite>Conduction Speed</cite> to a very large value
+even if it is unrealistic. You can also launch parallel simultions using a
+range of condution speeds &#8211; see the <cite>Parameter Space Exploration</cite> tutorial.</li>
+</ol>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="figure align-center">
+<img alt="_images/tutorial_sanity_02_cs_1000.jpg" src="_images/tutorial_sanity_02_cs_1000.jpg" style="width: 70%;" />
+</div>
+<div class="figure align-center">
+<img alt="_images/tutorial_sanity_02_cs_42.jpg" src="_images/tutorial_sanity_02_cs_42.jpg" style="width: 70%;" />
+</div>
+<div class="figure align-center">
+<img alt="_images/tutorial_sanity_02_cs_3.jpg" src="_images/tutorial_sanity_02_cs_3.jpg" style="width: 70%;" />
+<p class="caption">Conduction speed is 1000, 42 and 3 [mm/ms] for the upper, middle and bottom
+panel respectively.</p>
+</div>
+<ol class="arabic simple" start="6">
+<li>For MEG signals, a good sanity test is the application of mode decompositions
+algorithms (PCA or ICA) to the simulated time series.</li>
+<li>Check the power spectra as well to distinguish frequency components.</li>
+</ol>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api/index.html">API</a>|&nbsp;</li>
+	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, timpx.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>
