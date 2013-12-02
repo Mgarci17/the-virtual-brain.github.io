@@ -1,0 +1,295 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>services Package &mdash; tvb_doc 2.7 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="tvb_doc 2.7 documentation" href="index.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left;  padding: 10px 10px 15px 15px">
+<a href="http://www.thevirtualbrain.org/"><img src="_static/logo.svg" height="148" border="0" alt="The Virtual Brain Project"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api.html">API</a>|&nbsp;</li>
+	<li><a href="developer.html">Developer</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">services Package</a><ul>
+<li><a class="reference internal" href="#backend-client-module"><tt class="docutils literal"><span class="pre">backend_client</span></tt> Module</a></li>
+<li><a class="reference internal" href="#burst-service-module"><tt class="docutils literal"><span class="pre">burst_service</span></tt> Module</a></li>
+<li><a class="reference internal" href="#dti-pipeline-service-module"><tt class="docutils literal"><span class="pre">dti_pipeline_service</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.core.services.email_sender"><tt class="docutils literal"><span class="pre">email_sender</span></tt> Module</a></li>
+<li><a class="reference internal" href="#event-handlers-module"><tt class="docutils literal"><span class="pre">event_handlers</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.core.services.exceptions"><tt class="docutils literal"><span class="pre">exceptions</span></tt> Module</a></li>
+<li><a class="reference internal" href="#figure-service-module"><tt class="docutils literal"><span class="pre">figure_service</span></tt> Module</a></li>
+<li><a class="reference internal" href="#flow-service-module"><tt class="docutils literal"><span class="pre">flow_service</span></tt> Module</a></li>
+<li><a class="reference internal" href="#import-service-module"><tt class="docutils literal"><span class="pre">import_service</span></tt> Module</a></li>
+<li><a class="reference internal" href="#initializer-module"><tt class="docutils literal"><span class="pre">initializer</span></tt> Module</a></li>
+<li><a class="reference internal" href="#operation-service-module"><tt class="docutils literal"><span class="pre">operation_service</span></tt> Module</a></li>
+<li><a class="reference internal" href="#project-service-module"><tt class="docutils literal"><span class="pre">project_service</span></tt> Module</a></li>
+<li><a class="reference internal" href="#settings-service-module"><tt class="docutils literal"><span class="pre">settings_service</span></tt> Module</a></li>
+<li><a class="reference internal" href="#user-service-module"><tt class="docutils literal"><span class="pre">user_service</span></tt> Module</a></li>
+<li><a class="reference internal" href="#workflow-service-module"><tt class="docutils literal"><span class="pre">workflow_service</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tvb.core.services.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="services-package">
+<h1>services Package<a class="headerlink" href="#services-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="backend-client-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">backend_client</span></tt> Module<a class="headerlink" href="#backend-client-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="burst-service-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">burst_service</span></tt> Module<a class="headerlink" href="#burst-service-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="dti-pipeline-service-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">dti_pipeline_service</span></tt> Module<a class="headerlink" href="#dti-pipeline-service-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-tvb.core.services.email_sender">
+<span id="email-sender-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">email_sender</span></tt> Module<a class="headerlink" href="#module-tvb.core.services.email_sender" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tvb.core.services.email_sender.send">
+<tt class="descclassname">tvb.core.services.email_sender.</tt><tt class="descname">send</tt><big>(</big><em>address_from</em>, <em>address_to</em>, <em>email_subject</em>, <em>email_content</em><big>)</big><a class="headerlink" href="#tvb.core.services.email_sender.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends an Email Message</p>
+</dd></dl>
+
+</div>
+<div class="section" id="event-handlers-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">event_handlers</span></tt> Module<a class="headerlink" href="#event-handlers-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-tvb.core.services.exceptions">
+<span id="exceptions-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">exceptions</span></tt> Module<a class="headerlink" href="#module-tvb.core.services.exceptions" title="Permalink to this headline">¶</a></h2>
+<p>Exceptions for services layer of the application.</p>
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.BurstServiceException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">BurstServiceException</tt><big>(</big><em>message</em><big>)</big><a class="headerlink" href="#tvb.core.services.exceptions.BurstServiceException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown in case of a problem at project import.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.ConnectException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">ConnectException</tt><big>(</big><em>message</em>, <em>parent_exception=None</em><big>)</big><a class="headerlink" href="#tvb.core.services.exceptions.ConnectException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown when DTI Pipeline error happened.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.InvalidPortletConfiguration">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">InvalidPortletConfiguration</tt><big>(</big><em>message</em><big>)</big><a class="headerlink" href="#tvb.core.services.exceptions.InvalidPortletConfiguration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception thrown in cases related to wrong portlet configurations.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.InvalidSettingsException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">InvalidSettingsException</tt><big>(</big><em>message</em><big>)</big><a class="headerlink" href="#tvb.core.services.exceptions.InvalidSettingsException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown in case of a problem at project import.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.OperationException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">OperationException</tt><big>(</big><em>message</em>, <em>parent_exception=None</em><big>)</big><a class="headerlink" href="#tvb.core.services.exceptions.OperationException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown in case of a problem related to Launching 
+and Executing TVB specific Operations.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.ProjectImportException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">ProjectImportException</tt><big>(</big><em>message</em><big>)</big><a class="headerlink" href="#tvb.core.services.exceptions.ProjectImportException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown in case of a problem at project import.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.ProjectServiceException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">ProjectServiceException</tt><big>(</big><em>message</em><big>)</big><a class="headerlink" href="#tvb.core.services.exceptions.ProjectServiceException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown in case of a problem in the projectservice
+module.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.RemoveDataTypeError">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">RemoveDataTypeError</tt><big>(</big><em>message</em><big>)</big><a class="headerlink" href="#tvb.core.services.exceptions.RemoveDataTypeError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown in case some one tries to remove an entity that should
+not be possible to be removed. E.g. If some one tries to remove the array
+wrapper corresponding to a time series (inheritance relationship).</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.RemoveDataTypeException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">RemoveDataTypeException</tt><big>(</big><em>message</em><big>)</big><a class="headerlink" href="#tvb.core.services.exceptions.RemoveDataTypeException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown in case some one tries to remove an
+entity that is used by other entities.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.ServicesBaseException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">ServicesBaseException</tt><big>(</big><em>message</em>, <em>parent_exception=None</em><big>)</big><a class="headerlink" href="#tvb.core.services.exceptions.ServicesBaseException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="tvb.basic.traits.html#tvb.basic.traits.exceptions.TVBException" title="tvb.basic.traits.exceptions.TVBException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.basic.traits.exceptions.TVBException</span></tt></a></p>
+<p>Base Exception class for Services layer in the application.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.StructureException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">StructureException</tt><big>(</big><em>message</em><big>)</big><a class="headerlink" href="#tvb.core.services.exceptions.StructureException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown in case of a problem related to Structure Storage.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.UsernameException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">UsernameException</tt><big>(</big><em>message</em><big>)</big><a class="headerlink" href="#tvb.core.services.exceptions.UsernameException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown in case of a problem related to creating
+or managing a user.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.WorkflowException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">WorkflowException</tt><big>(</big><em>message</em><big>)</big><a class="headerlink" href="#tvb.core.services.exceptions.WorkflowException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.ServicesBaseException" title="tvb.core.services.exceptions.ServicesBaseException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.ServicesBaseException</span></tt></a></p>
+<p>Exception to be thrown in case of a problem related to creating
+or managing a workflow.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="tvb.core.services.exceptions.WorkflowInterStepsException">
+<em class="property">exception </em><tt class="descclassname">tvb.core.services.exceptions.</tt><tt class="descname">WorkflowInterStepsException</tt><big>(</big><em>message</em><big>)</big><a class="headerlink" href="#tvb.core.services.exceptions.WorkflowInterStepsException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tvb.core.services.exceptions.WorkflowException" title="tvb.core.services.exceptions.WorkflowException"><tt class="xref py py-class docutils literal"><span class="pre">tvb.core.services.exceptions.WorkflowException</span></tt></a></p>
+<p>Exception to be thrown in case of a problem happened between steps of a workflow.
+Status ERROR needs to be reported at a top level (e.g. Burst) as workflow 
+steps individually can not be made responsible.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="figure-service-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">figure_service</span></tt> Module<a class="headerlink" href="#figure-service-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="flow-service-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">flow_service</span></tt> Module<a class="headerlink" href="#flow-service-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="import-service-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">import_service</span></tt> Module<a class="headerlink" href="#import-service-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="initializer-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">initializer</span></tt> Module<a class="headerlink" href="#initializer-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="operation-service-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">operation_service</span></tt> Module<a class="headerlink" href="#operation-service-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="project-service-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">project_service</span></tt> Module<a class="headerlink" href="#project-service-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="settings-service-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">settings_service</span></tt> Module<a class="headerlink" href="#settings-service-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="user-service-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">user_service</span></tt> Module<a class="headerlink" href="#user-service-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="workflow-service-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">workflow_service</span></tt> Module<a class="headerlink" href="#workflow-service-module" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api.html">API</a>|&nbsp;</li>
+	<li><a href="developer.html">Developer</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, timpx.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

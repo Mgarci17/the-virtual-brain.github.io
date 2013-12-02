@@ -1,0 +1,254 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>visualizers Package &mdash; tvb_doc 2.7 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="tvb_doc 2.7 documentation" href="index.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left;  padding: 10px 10px 15px 15px">
+<a href="http://www.thevirtualbrain.org/"><img src="_static/logo.svg" height="148" border="0" alt="The Virtual Brain Project"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api.html">API</a>|&nbsp;</li>
+	<li><a href="developer.html">Developer</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">visualizers Package</a><ul>
+<li><a class="reference internal" href="#brain-module"><tt class="docutils literal"><span class="pre">brain</span></tt> Module</a></li>
+<li><a class="reference internal" href="#connectivity-module"><tt class="docutils literal"><span class="pre">connectivity</span></tt> Module</a></li>
+<li><a class="reference internal" href="#covariance-module"><tt class="docutils literal"><span class="pre">covariance</span></tt> Module</a></li>
+<li><a class="reference internal" href="#cross-coherence-module"><tt class="docutils literal"><span class="pre">cross_coherence</span></tt> Module</a></li>
+<li><a class="reference internal" href="#cross-correlation-module"><tt class="docutils literal"><span class="pre">cross_correlation</span></tt> Module</a></li>
+<li><a class="reference internal" href="#eeg-monitor-module"><tt class="docutils literal"><span class="pre">eeg_monitor</span></tt> Module</a></li>
+<li><a class="reference internal" href="#histogram-module"><tt class="docutils literal"><span class="pre">histogram</span></tt> Module</a></li>
+<li><a class="reference internal" href="#ica-module"><tt class="docutils literal"><span class="pre">ica</span></tt> Module</a></li>
+<li><a class="reference internal" href="#mplh5-coherence-spectrum-module"><tt class="docutils literal"><span class="pre">mplh5_coherence_spectrum</span></tt> Module</a></li>
+<li><a class="reference internal" href="#mplh5-fourier-spectrum-module"><tt class="docutils literal"><span class="pre">mplh5_fourier_spectrum</span></tt> Module</a></li>
+<li><a class="reference internal" href="#mplh5-topographic-module"><tt class="docutils literal"><span class="pre">mplh5_topographic</span></tt> Module</a></li>
+<li><a class="reference internal" href="#mplh5-wavelet-spectrogram-module"><tt class="docutils literal"><span class="pre">mplh5_wavelet_spectrogram</span></tt> Module</a></li>
+<li><a class="reference internal" href="#pca-module"><tt class="docutils literal"><span class="pre">pca</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.adapters.visualizers.phase_plane_interactive"><tt class="docutils literal"><span class="pre">phase_plane_interactive</span></tt> Module</a></li>
+<li><a class="reference internal" href="#pse-discrete-module"><tt class="docutils literal"><span class="pre">pse_discrete</span></tt> Module</a></li>
+<li><a class="reference internal" href="#pse-isocline-module"><tt class="docutils literal"><span class="pre">pse_isocline</span></tt> Module</a></li>
+<li><a class="reference internal" href="#time-series-module"><tt class="docutils literal"><span class="pre">time_series</span></tt> Module</a></li>
+<li><a class="reference internal" href="#time-series-volume-module"><tt class="docutils literal"><span class="pre">time_series_volume</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tvb.adapters.visualizers.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="visualizers-package">
+<h1>visualizers Package<a class="headerlink" href="#visualizers-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="brain-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">brain</span></tt> Module<a class="headerlink" href="#brain-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="connectivity-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">connectivity</span></tt> Module<a class="headerlink" href="#connectivity-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="covariance-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">covariance</span></tt> Module<a class="headerlink" href="#covariance-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="cross-coherence-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">cross_coherence</span></tt> Module<a class="headerlink" href="#cross-coherence-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="cross-correlation-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">cross_correlation</span></tt> Module<a class="headerlink" href="#cross-correlation-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="eeg-monitor-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">eeg_monitor</span></tt> Module<a class="headerlink" href="#eeg-monitor-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="histogram-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">histogram</span></tt> Module<a class="headerlink" href="#histogram-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="ica-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">ica</span></tt> Module<a class="headerlink" href="#ica-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="mplh5-coherence-spectrum-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">mplh5_coherence_spectrum</span></tt> Module<a class="headerlink" href="#mplh5-coherence-spectrum-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="mplh5-fourier-spectrum-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">mplh5_fourier_spectrum</span></tt> Module<a class="headerlink" href="#mplh5-fourier-spectrum-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="mplh5-topographic-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">mplh5_topographic</span></tt> Module<a class="headerlink" href="#mplh5-topographic-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="mplh5-wavelet-spectrogram-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">mplh5_wavelet_spectrogram</span></tt> Module<a class="headerlink" href="#mplh5-wavelet-spectrogram-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="pca-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">pca</span></tt> Module<a class="headerlink" href="#pca-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-tvb.adapters.visualizers.phase_plane_interactive">
+<span id="phase-plane-interactive-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">phase_plane_interactive</span></tt> Module<a class="headerlink" href="#module-tvb.adapters.visualizers.phase_plane_interactive" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive">
+<em class="property">class </em><tt class="descclassname">tvb.adapters.visualizers.phase_plane_interactive.</tt><tt class="descname">PhasePlaneInteractive</tt><big>(</big><em>model</em>, <em>integrator</em><big>)</big><a class="headerlink" href="#tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>An interactive phase-plane plot generated from a TVB model object.</p>
+<p>A TVB integrator object will be use for generating sample trajectories
+&#8211; not the phase-plane. This is mainly interesting for visualising
+the effect of noise on a trajectory.</p>
+<dl class="method">
+<dt id="tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive.draw_phase_plane">
+<tt class="descname">draw_phase_plane</tt><big>(</big><big>)</big><a class="headerlink" href="#tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive.draw_phase_plane" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the interactive phase-plane figure.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive.get_required_memory_size">
+<tt class="descname">get_required_memory_size</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive.get_required_memory_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the required memory to run this algorithm.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive.update_all_model_parameters">
+<tt class="descname">update_all_model_parameters</tt><big>(</big><em>model_instance</em><big>)</big><a class="headerlink" href="#tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive.update_all_model_parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive.update_model_parameter">
+<tt class="descname">update_model_parameter</tt><big>(</big><em>param_name</em>, <em>param_new_value</em><big>)</big><a class="headerlink" href="#tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive.update_model_parameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update model parameters based on the current parameter slider values.</p>
+<dl class="docutils">
+<dt>NOTE: Haven&#8217;t figured out how to update independantly, so just update</dt>
+<dd>everything.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive.update_model_parameters_from_dict">
+<tt class="descname">update_model_parameters_from_dict</tt><big>(</big><em>parameters_dict</em><big>)</big><a class="headerlink" href="#tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive.update_model_parameters_from_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOTE: I expect that the given parameters exists on the current
+model and also that they are numpy arrays.</p>
+<p>Sets the parameters from the given dict on the current
+model instance and also updates the phase-plane.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive.update_xrange_sliders">
+<tt class="descname">update_xrange_sliders</tt><big>(</big><big>)</big><a class="headerlink" href="#tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive.update_xrange_sliders" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive.update_yrange_sliders">
+<tt class="descname">update_yrange_sliders</tt><big>(</big><big>)</big><a class="headerlink" href="#tvb.adapters.visualizers.phase_plane_interactive.PhasePlaneInteractive.update_yrange_sliders" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.adapters.visualizers.phase_plane_interactive.get_color">
+<tt class="descclassname">tvb.adapters.visualizers.phase_plane_interactive.</tt><tt class="descname">get_color</tt><big>(</big><em>num_colours</em><big>)</big><a class="headerlink" href="#tvb.adapters.visualizers.phase_plane_interactive.get_color" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="pse-discrete-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">pse_discrete</span></tt> Module<a class="headerlink" href="#pse-discrete-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="pse-isocline-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">pse_isocline</span></tt> Module<a class="headerlink" href="#pse-isocline-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="time-series-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">time_series</span></tt> Module<a class="headerlink" href="#time-series-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="time-series-volume-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">time_series_volume</span></tt> Module<a class="headerlink" href="#time-series-volume-module" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api.html">API</a>|&nbsp;</li>
+	<li><a href="developer.html">Developer</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, timpx.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

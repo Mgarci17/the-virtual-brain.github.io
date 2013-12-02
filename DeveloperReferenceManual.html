@@ -1,0 +1,998 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Developer Reference Manual &mdash; tvb_doc 2.7 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="tvb_doc 2.7 documentation" href="index.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left;  padding: 10px 10px 15px 15px">
+<a href="http://www.thevirtualbrain.org/"><img src="_static/logo.svg" height="148" border="0" alt="The Virtual Brain Project"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api.html">API</a>|&nbsp;</li>
+	<li><a href="developer.html">Developer</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Developer Reference Manual</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#requirements">Requirements</a><ul>
+<li><a class="reference internal" href="#functional-requirements">Functional Requirements</a></li>
+<li><a class="reference internal" href="#nonfunctional-requirements">Nonfunctional Requirements</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#i-main-system-components">I. Main System Components</a><ul>
+<li><a class="reference internal" href="#application-interfaces">1. APPLICATION INTERFACES</a></li>
+<li><a class="reference internal" href="#back-end-system">2. BACK-END SYSTEM</a></li>
+<li><a class="reference internal" href="#storage-system-s">3. STORAGE SYSTEM(S)</a></li>
+<li><a class="reference internal" href="#data-connector">4. DATA CONNECTOR</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ii-second-level-of-detail">II. Second Level of Detail</a><ul>
+<li><a class="reference internal" href="#id1">1. APPLICATION INTERFACES</a><ul>
+<li><a class="reference internal" href="#a-html-interface">A. HTML Interface</a></li>
+<li><a class="reference internal" href="#b-console-interface">B. Console Interface</a></li>
+<li><a class="reference internal" href="#c-stand-alone-client">C. Stand-Alone Client</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id2">2. BACK-END SYSTEM</a><ul>
+<li><a class="reference internal" href="#a-web-server-application">A. Web Server Application</a></li>
+<li><a class="reference internal" href="#b-framework-flow-manager">B. Framework &amp; Flow Manager</a></li>
+<li><a class="reference internal" href="#c-upload-component">C. Upload Component</a></li>
+<li><a class="reference internal" href="#d-simulation-component">D. Simulation Component</a></li>
+<li><a class="reference internal" href="#e-data-analyzer-component">E. Data Analyzer Component</a></li>
+<li><a class="reference internal" href="#f-visualization-back-end">F. Visualization  Back-End</a></li>
+<li><a class="reference internal" href="#g-data-types">G. Data Types</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#storage-systems">3. STORAGE SYSTEMS</a><ul>
+<li><a class="reference internal" href="#a-database-s">A. Database(s)</a></li>
+<li><a class="reference internal" href="#b-file-system-s">B. File System(s)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id3">4. DATA CONNECTOR</a><ul>
+<li><a class="reference internal" href="#a-connector-core">A. Connector Core</a></li>
+<li><a class="reference internal" href="#b-pre-post-processors">B. Pre/Post Processors</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#iii-third-level-of-detail">III. Third Level of Detail</a><ul>
+<li><a class="reference internal" href="#id4">1. APPLICATION INTERFACES</a><ul>
+<li><a class="reference internal" href="#id5">A. HTML Interface</a><ul>
+<li><a class="reference internal" href="#a1-html-adapters-extensions">A1. HTML Adapters (Extensions)</a></li>
+<li><a class="reference internal" href="#a2-tvb-data-renderer">A2. TVB Data Renderer</a></li>
+<li><a class="reference internal" href="#a3-ui-framework">A3. UI Framework</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id6">B. Console Interface</a><ul>
+<li><a class="reference internal" href="#b1-input-reader">B1. Input Reader</a></li>
+<li><a class="reference internal" href="#b2-parser">B2. Parser</a></li>
+<li><a class="reference internal" href="#b3-s-adapter">B3. S-Adapter</a></li>
+<li><a class="reference internal" href="#b4-result-displayer">B4. Result Displayer</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id7">C. Stand Alone Client</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id8">2. BACK-END SYSTEM</a><ul>
+<li><a class="reference internal" href="#id9">A. Web Server Application</a></li>
+<li><a class="reference internal" href="#id10">B. Framework &amp; Flow Manager</a><ul>
+<li><a class="reference internal" href="#b1-flow-manager">B1. Flow Manager</a></li>
+<li><a class="reference internal" href="#b2-framework-core">B2. Framework Core</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id11">C. Upload Component</a></li>
+<li><a class="reference internal" href="#id12">D. Simulation Component</a><ul>
+<li><a class="reference internal" href="#d1-tvb-simulation-library">D1. TVB Simulation Library</a></li>
+<li><a class="reference internal" href="#d2-model-adapters">D2. Model Adapters</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id13">E. Data Analyzer Component</a></li>
+<li><a class="reference internal" href="#id14">F. Visualization  Back-End</a></li>
+<li><a class="reference internal" href="#id15">G. Data Types</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id16">3. STORAGE SYSTEMS</a></li>
+<li><a class="reference internal" href="#id17">4. DATA CONNECTOR</a><ul>
+<li><a class="reference internal" href="#id18">A. Connector Core</a><ul>
+<li><a class="reference internal" href="#a1-connector-factory">A1. Connector Factory</a></li>
+<li><a class="reference internal" href="#a2-processor-factory">A2. Processor Factory</a></li>
+<li><a class="reference internal" href="#a3-abstract-remote-connector">A3. Abstract Remote Connector</a></li>
+<li><a class="reference internal" href="#a4-concrete-remote-connector-r-c">A4. Concrete Remote Connector(R.C.)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#b-abstract-processor">B. Abstract Processor</a></li>
+<li><a class="reference internal" href="#c-pre-post-processors">C. Pre/Post Processors</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#iv-forth-level-of-detail">IV. Forth Level of Detail</a><ul>
+<li><a class="reference internal" href="#id19">1. APPLICATION INTERFACES</a><ul>
+<li><a class="reference internal" href="#id20">A. HTML Interface</a><ul>
+<li><a class="reference internal" href="#a1-1-data-reader">A1.1 Data Reader</a></li>
+<li><a class="reference internal" href="#a2-1-webgl-renderer">A2.1 WebGL Renderer</a></li>
+<li><a class="reference internal" href="#a2-2-graph-renderer">A2.2 Graph Renderer</a></li>
+<li><a class="reference internal" href="#a2-3-x-renderer">A2.3 X Renderer</a></li>
+<li><a class="reference internal" href="#a3-1-command-adapter">A3.1 Command Adapter</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id21">2. BACK-END SYSTEM</a><ul>
+<li><a class="reference internal" href="#id22">A. Web Server Application</a></li>
+<li><a class="reference internal" href="#id23">B. Framework &amp; Flow Manager</a><ul>
+<li><a class="reference internal" href="#id24">B1. Flow Manager</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#c-simulator-component">C. Simulator Component</a><ul>
+<li><a class="reference internal" href="#c1-tvb-simulation-library">C1. TVB Simulation Library</a></li>
+<li><a class="reference internal" href="#c2-simulation-component">C2. Simulation Component</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#d-analyzer-component">D. Analyzer Component</a><ul>
+<li><a class="reference internal" href="#d1-analysis-library">D1. Analysis Library</a></li>
+<li><a class="reference internal" href="#d2-analyzer-controller">D2. Analyzer Controller</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#e-visualization-component">E. Visualization Component</a><ul>
+<li><a class="reference internal" href="#e1-visualization-library">E1. Visualization Library</a></li>
+<li><a class="reference internal" href="#e2-visualization-controller">E2. Visualization Controller</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#storage-system">3. STORAGE SYSTEM</a></li>
+<li><a class="reference internal" href="#id25">4. DATA CONNECTOR</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#v-fifth-level-of-detail">V. Fifth Level of Detail</a><ul>
+<li><a class="reference internal" href="#id26">1. APPLICATION INTERFACES</a></li>
+<li><a class="reference internal" href="#id27">2. BACK-END SYSTEM</a><ul>
+<li><a class="reference internal" href="#b2-1-abstract-adapter">B2.1 Abstract Adapter</a></li>
+<li><a class="reference internal" href="#id28">D1. TVB Simulation Library</a></li>
+<li><a class="reference internal" href="#d2-simulation-model-adapters">D2. Simulation Model Adapters</a></li>
+<li><a class="reference internal" href="#id29">E. Data Analyzer Component</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id30">3. STORAGE SYSTEM</a></li>
+<li><a class="reference internal" href="#id31">4. DATA CONNECTOR</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/DeveloperReferenceManual.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="developer-reference-manual">
+<h1>Developer Reference Manual<a class="headerlink" href="#developer-reference-manual" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>The Virtual Brain project (TVB project) has the purpose of offering some modern tools to the Neurosciences community, for computing, simulating and analyzing functional and structural data of human brains. It will try to bring customized engineering tools into the hands of basic and clinical Neuroscience researchers. TVB will be a modeling and analysis platform, which will allow the simulation of functional brain data specific to individual brain structures and connectivity. Experimental functional and structural data will be read into TVB and the same degree of analyses will be applicable to both simulated and experimental data.</p>
+<p>The final goal of TVB is to create a new revolutionary tool for clinical interventions. As an example case, a clinical researcher will be able to upload brain imaging data from their patients unique neural architecture after a stroke, for example, into the synthetic healthy brain model to see how it responds to the disruption of normal network patterns and attempts to re-stabilize. This will assist the clinician in determining the treatment interventions that will likely have the best outcomes for their patient.</p>
+<p>The project is not the first simulation tool in the computational neuroscience community, though it is the first for large-scale brain modeling, and arguably the most ambitious one.  TVB will be open to learn from and to take advantage of new existing tools. TVB is intended to be an open-source software-product, available for usage in an on-line installation, but also available for download and install by any interested person or institution.</p>
+<p>TVB project has the goal to manipulate multiple brain models, at a middle-grain to large-scale level. It doesn&#8217;t intend to build brain models at the grain of neurons, but will use information from microscopic models to improve the performance of the neural population models acting as the building blocks of the Virtual Brain network.</p>
+<p>TVB is not a project of artificial intelligence, but it rather simulates the physical characteristics of the human brain. TVB has also the purpose of building a high-performance cluster, accessible over web from anywhere. It will avoid the necessity of multiplying big and powerful computers in several laboratories.</p>
+<p>Input data for TVB can be retrieved from multiple sources: functional neuroimaging like EEG, MEG, sEEG, fMRI and structural imaging such as MRI, DTI, DSI, but also data from the literature etc.</p>
+<p>This paper is intended to give a brief starting point on the Virtual Brain project, from the technical point of view. It will refer to architectural and few implementation details. It is meant to bring together important architectural decisions, some already made and others in course of being accepted.</p>
+<p>This white-paper should provide the technical fundaments for future implementations of components and changes required for the pieces of software already existent. Several partners will work in parallel on multiple project parts, so this document will serve as a guiding line in offering an overall image of the entire Virtual Brain project to the involved programming teams.</p>
+<p>The Virtual Brain project cannot exist without other previous open-source projects in the area of Neuroscience, some of which are listed in the references part of the document. Nevertheless, from the technical point of view, the Virtual Brain is unique in its modern and new access to the domain.</p>
+</div>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="functional-requirements">
+<h3>Functional Requirements<a class="headerlink" href="#functional-requirements" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><strong>Scientific Usage</strong></li>
+</ul>
+<p>These three are the main functional requirements for TVB, from the science point of view:</p>
+<blockquote>
+<div><ul class="simple">
+<li>possibility to configure, execute and monitor large scale brain <strong>simulations</strong>;</li>
+<li>configure and execute <strong>data analysis</strong> algorithms and methods;</li>
+<li><strong>visualize</strong> brain input data and analysis results.</li>
+</ul>
+</div></blockquote>
+<p>When using TVB, a researcher needs to have the freedom to configure simulations and data analysis. A researcher needs to both interfere with existing simulation or libraries for analysis, by <strong>configuring the equations</strong> of the brain network used by the tools, and also to be able to build his/her own libraries and to <strong>plug</strong> them into the TVB Framework. The extensions of functionality of TVB should be as easy as possible, which means as little coding as possible.</p>
+<p>A common use of TVB will be the scanning of parameter spaces of the brain network. Hence TVB will offer the functionality of operating in batch mode, in which a given simulation can be performed multiple times as a parameter is changed. The results will be captured in parametric maps of convenient measures and appropriately visualized.</p>
+<p>Each user can firstly view, but also download or export his/her own <strong>results</strong> obtained with TVB, in multiple formats. The final results will be captured in a set of images of <em>high quality</em>, sufficient to be used fort publications in scientific <em>articles</em>.</p>
+<p>Several <strong>brain models</strong> will be used that are composed of the connectivity matrix and a network node model. Generic default brain models will exist in the system, but also each user will be able to upload individualized models (for instance of a patient), in a predefined format. Brain models are based on previous brain-measurements. Users can choose what brain model they want to use for each particular simulation or data analysis they initiate.</p>
+<ul class="simple">
+<li><strong>Connect to External Storages</strong></li>
+</ul>
+<p>In the neuroscience community, several open data storages already exist, containing useful input data for brain modeling and patient analyses. It is one of the important requirements for TVB to connect to such storages to <em>import</em> and <em>export</em> data from/to them. Different protocols will be used when communicating with such <strong>External Storages</strong>.</p>
+<ul class="simple">
+<li><strong>Use in clinics</strong></li>
+</ul>
+<p>TVB is not intended in the first place to become a diagnostic tool of the clinician. However, the clinical researcher will benefit from the use of TVB to design new treatment strategies, test out hypotheses and explore alternative avenues of brain repair. In the long run, TVB may become a precursor of a future diagnostic tool.</p>
+<ul class="simple">
+<li><strong>Application Interface</strong></li>
+</ul>
+<p>The entire system should be accessible through a <strong>Web-Interface</strong>. The web-interface should be built on W3C-Standards; HTML-5 will provide the basic support for visualization. A 3D representation is expected for the brain models, in a browser environment, along with graphs and charts for several 2D results.</p>
+<p>Virtual Reality has grown a lot in the last few years, and fast, light, browser-based applications had appeared, impressing the world of computer science. We should learn from projects like: <a class="reference external" href="http://www.onlive.com/support/performance">OnLive</a> and Otoy to bring the power of graphics to the clients through a light web interface. However it might be necessary to allow for the usage of additional, browserenabled software (like Java-Applets or Flash), dependent of other open-source Projects from the domain we want to embrace.</p>
+<p>Another level of usability to be achieved is a <strong>script interface</strong> for advanced users. The <em>script interface</em> will provide rapidity and straight access to the system.</p>
+<p>The third level of usability is through a desktop, <strong>Stand-Alone Interface</strong>. This interface is not yet fully acknowledged as a requirement, but it an option nice to have. This interface could be the client-end for both TVB-Full version and Light version. This type of interface could give the user the feeling of a &#8220;really installed&#8221; application, especially for the Light Version of TVB, and would nicely mimic behavior of other existing tools in this field.</p>
+<ul class="simple">
+<li><strong>Multi-user application</strong></li>
+</ul>
+<p>You need to have an account to access the  VB system, at least for TVB Full Version distribution. A log-in page will appear, and each user will have its own data to manipulate and view, separated from the other users. Some information might be public, for all users to share (like brain structural data). For TVB Light Version, multi-user environment will not be included.</p>
+<p>Single users will be able to make their projects or parts of their results available either to all users (public) or designated other single users. In the latter case, the ensemble of single users with shared access rights to a common project forms a <strong>user group</strong>.</p>
+<p><strong>Multi-tenancy</strong> will be a good add-on here, too, as we work here with clinical data, which should live under the highest data-privacy standards. So if a patient gave consent, that a group of Doctors may look at his data, that should not apply to all Users of the System!</p>
+<ul class="simple">
+<li><strong>Customizable dashboard</strong></li>
+</ul>
+<p>A VB user will have its own personal page, something like a dashboard, where he/she can compose his/her own view over Virtual Brain. This page needs to be easily configurable, and already predefined for a new user with basic functionality (maybe dependent on the user&#8217;s role, type or group).</p>
+<p>Different VB elements like: simulation-status, 3D-models, Graph-models, Data-sets, working-queues, transformation-steps etc. shall all have different interfaces, dependent on the current user&#8217;s role. Thus, a researcher will see more details than a clinician, and a developer will have a more technical view of all this elements.</p>
+<p>The roles that are currently known for the VB view are: researcher, clinician and maybe developer, but others might be mentioned as the discussions evolve.</p>
+</div>
+<div class="section" id="nonfunctional-requirements">
+<h3>Nonfunctional Requirements<a class="headerlink" href="#nonfunctional-requirements" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><strong>Cluster infrastructure</strong></li>
+</ul>
+<p>Performance is a common requirement in any decent application, especially when user interaction exists. Regardless that, in the Virtual Brain project, some simulations might take days or weeks to be executed on regular stations, and multiple users are expected to want their data processed in the same time.</p>
+<p>Besides the obvious performance requirement, a cluster or a grid can offer a clear separation in executing tasks. In a multi-node environment different nodes could execute different types of tasks. For example we could have nodes for different users, or nodes for brain-simulations and nodes for graphical operations. TVB is so far not intended to make use of parallel programming across nodes for the brain network model. The here mentioned task distribution across nodes is intended for tasks within TVB, but not the numerical simulation of the brain network equations. Having tasks executed over a cluster or a grid is a requirement for the Virtual Brain&#8217;s Full Version deployment.</p>
+<ul class="simple">
+<li><strong>Open software</strong></li>
+</ul>
+<p>TVB is to be distributed as an open-source software, thus only Open Source <em>tools</em> and <em>standards</em> are to be used when developing it.</p>
+<p>However that still means, that we have to take a decision on the license, which we want to use for The Virtual Brain system and we need to pay attention, to only use Software, which has a compatible license.</p>
+<ul class="simple">
+<li><strong>Shrink-Wrap the software</strong></li>
+</ul>
+<p>Some users, researchers or developers in the project, might want to use the product on their local machines. Virtual Brain will offer the possibility to download and locally install, with a customizable set of parameters, the product. The software shall shrink to the needs of each person that downloads it. This TVB Light version, might come with a different Graphical User Interface, than the web interface for TVB Full.</p>
+<p>An installer shall be made available for the operating systems of Windows, Macintosh and Linux, taking as an input multiple parameters, for correctly configuring the product. The downloadable package will be a reduced version of the product, striped of multi-user or data import/export capability.</p>
+</div>
+</div>
+<div class="section" id="i-main-system-components">
+<h2>I. Main System Components<a class="headerlink" href="#i-main-system-components" title="Permalink to this headline">¶</a></h2>
+<p>In the following chapters, we intend to describe the architectural details of TVB, starting from a top level view, and going deeper in detail, as the document proceeds.</p>
+<img alt="_images/VB_level1.jpg" class="align-center" src="_images/VB_level1.jpg" style="width: 100%;" />
+<div class="section" id="application-interfaces">
+<h3>1. APPLICATION INTERFACES<a class="headerlink" href="#application-interfaces" title="Permalink to this headline">¶</a></h3>
+<p>The process of interacting with TVB Project needs to be smooth and easy, even for the complex user stories aimed to be solved by this project. Thus, a set of multiple <em>interaction interfaces</em> is to be provided, to accommodate the best support for each specific user typologies and deployment alternatives.</p>
+<p>Based on the interaction method we can identify the following categories of users:</p>
+<ul class="simple">
+<li><strong>Graphical User</strong> (G-User in the above figure) - As the name suggests, the Graphical User will access the application through a complex graphical interface. The interface is expected to fulfill usability standards and to have an intuitive and familiar outfit.</li>
+<li><strong>Script User</strong> (S-User in figure) - This type of user will access the application through a fast, scripting interface. This interaction type is recommended for advanced users only, for which the concepts proposed by TVB are known and understood.</li>
+</ul>
+<p>Based on the deployment method, we can identify the following categories of clients:</p>
+<ul class="simple">
+<li><strong>Light Cluster Client</strong> - This type of client, will come with a minimum set of installed components on the client side, and it will intensively use the cluster infrastructure for all operations, including data storage.</li>
+<li><strong>Stand Alone Client</strong> - On the opposite side of the <em>Light Cluster Client</em> is the <em>Stand Alone Client</em>. A stand alone installation, needs to be self-sufficient, to execute all TVB related operation on the client device, without communicating with the original TVB site (except maybe for regular software updates). This installation will no benefit from the cluster hardware computing power, but it will be able to work even in the absence of a network connection, and it will accomplish the most strict privacy standards.</li>
+<li><strong>Stand Alone with Cluster Fallback</strong> - This third type of client, combines the advantages from the previous two ones. On the client side we have a set of capabilities installed, and for the operations which are extremely resource consuming, this client is able to communicate with the cluster. The light operations are expected to be executed on the client-side, but the longest ones will be passed to the cluster. The cluster receives abstract sets of input data, without nominal information, or even references, and only the client will be able to interpret results, thus providing a high privacy level. In the absence of a network connection, or with a low band-with, the stand alone client is still capable to execute local operations.</li>
+</ul>
+<p>TVB is expected to have a dynamic interface; depending on the user&#8217;s role, group, process in role, etc. The above mentioned user categories and deployment procedures are to be closely considered when designing desired interfaces for TVB application.</p>
+</div>
+<div class="section" id="back-end-system">
+<h3>2. BACK-END SYSTEM<a class="headerlink" href="#back-end-system" title="Permalink to this headline">¶</a></h3>
+<p>TVB application summarizes all the logic, which enables data-sets to be:</p>
+<ul class="simple">
+<li>feed into the system;</li>
+<li>processed according to a configurable parameter-set;</li>
+<li>visualized.</li>
+</ul>
+<p>An important requirement for TVB project, to be taken into account, is performance. Due to the nature of the given problem, a single simulation-step can not be easily distributed over multiple processing threads, but each simulation-step can be fully computed in a different thread, potentially on a distinct node (with special requirements on the node - mainly in terms of available Memory). However as we will have multiple simulations (with different parameter-sets) from one user on one data-set and additionally have a multi-user environment, where multiple users work on the system in parallel, the usage of a cluster would give a great advantage, by being capable to execute multiple tasks in parallel.</p>
+<p>TVB also has to be multi-user and multi-tenant capable. The back-end component will need to fulfill this capabilities.</p>
+<p>Strictly from a <em>functional point of view</em>, the Back-End is expected to transparently handle different interfaces, and fulfill mainly the same functionality, regardless the chose interface. Anyway, there are few capabilities deployment specific, like dealing with multiple data-feeds, and managing computation on a cluster.</p>
+<p>From the <em>implementation point of view</em>, the Back-End system will have dynamic components packed, dependent on the chosen interface and deployment procedure. An automatic packaging tool will make sure the correct components are packed. For example, with the web interface, a web server is expected to be provide as main part of the Back-End, and on the cluster deployment, the full set of capabilities and clients are expected to be supported.</p>
+<p>As for the stand-alone distribution, the problem gets a bit more complex, because we would definitely want to avoid duplicating modules, but reuse same components as in the cluster distribution. One straight-forward solution would be to include in the client-distribution a small web-server instance. Starting the application on the client will start the web-server, accessible from any browser, as long as all the paths in the application are relative. Another solution is to design from the start a stand-alone interface, with a non-web graphical interface, and re-use the back-end services only.</p>
+</div>
+<div class="section" id="storage-system-s">
+<h3>3. STORAGE SYSTEM(S)<a class="headerlink" href="#storage-system-s" title="Permalink to this headline">¶</a></h3>
+<p>TVB-Application will work on structured meta-data, which should be searchable and on big data-sets (which are also structured, but do not benefit from decomposing and feeding into a standard database). Thus we would need some persistence, which is structured and searchable (most probably a relational database, but it could also be an XML-File for a &#8220;local&#8221; deployment) and a shared storage for the high-volume data-sets, which needs to be accessible from every involved node (in the cluster deployment).</p>
+<p>Where it is obvious, that design decisions around <em>access control</em> has to go into the DB design, to secure the data we process; it still has to be discussed, if the same applies for the File Storage, or if we secure access to files via other means (network restricted access, firewalls, etc.).</p>
+</div>
+<div class="section" id="data-connector">
+<h3>4. DATA CONNECTOR<a class="headerlink" href="#data-connector" title="Permalink to this headline">¶</a></h3>
+<p>Big data-sets of medical information already exist in multiple external data storages (used for other purposes, too). At some point in the usage of the Virtual Brain system, some of that data can be imported.</p>
+<p>Similar in terms, but with different data-flow, is valid that data also has to leave TVB-system towards some External Data Storages. Thus the Output Data requires to be processed and exported from an internal form into an accepted external format.</p>
+<p>Initiating a Data-Connect command will come from the Browser interface or the Console Interface, and will pass the Back-End Component, but the real executor of that job, will be the Data Connector component of the Virtual Brain.</p>
+<p>The Data Connector is expected to receive a Job Descriptor, witch includes information about the External Data Source, credentials to access the system and operation target (what to do with the data). The meaning of the data to be imported/exported can come from the External Data Source itself, in an accepted format (metadata), or from the Back-End System.</p>
+<p>The interface with the External Data Sources is to be established, and will be highly dependent on the target systems.</p>
+<p>Specific transformations of the collected data can be executed on the imported data-sets, and it is part of this component&#8217;s description to do them (based on the information in the given Job Descriptor). Depending on the effective data, and taking in consideration the accepted formats for TVB internal simulation algorithms, the transformations required can be quite complex.</p>
+<p>An alternative to this component is to have all the input data &#8220;uploaded&#8221; from the user interface, but this is a highly not desirable method, because of the size such data can have, and the frequency of the operation. Nevertheless an upload from the browser interface might be necessary, when no other external system exists and data is provided &#8220;as-it-is&#8221;.</p>
+<p>This component is expected to be part of TVB Cluster Version, and unavailable in the Light distribution for single nodes. This is still an issue to be discussed and decided, but this proposal (of excluding this component from the light version) comes from the fact that the requirements for this component to work might make the &#8220;light version&#8221;, much too &#8220;heavy&#8221;.</p>
+</div>
+</div>
+<div class="section" id="ii-second-level-of-detail">
+<h2>II. Second Level of Detail<a class="headerlink" href="#ii-second-level-of-detail" title="Permalink to this headline">¶</a></h2>
+<p>In this second drawing, you can find the same main components as in the previous level of detail, each of them only gaining several sub-components inside.</p>
+<img alt="_images/VB_level2.jpg" class="align-center" src="_images/VB_level2.jpg" style="width: 100%;" />
+<p>Important at this level of detail is the <strong>coloring scheme</strong>: it tries to identify which of the components are to be distributed in the <em>Light TVB Version</em> and which are to remain only for <em>TVB Full Version</em>. The colored blocks are expected to be distributed in the Light version, but the white components will not be distributed at all (e.g. Data Connector), or will suffer great changes (like the Web Server part).</p>
+<p>An exception from the coloring scheme is the gray block representing the <em>External Data Storages</em>, which is not part of TVB at all, is only used for communication with.</p>
+<p>To identify the visualization blocks, we used the green color (for components to be distributed in the Light TVB Version) and Italic font, for other visualization blocks, available only in TVB Full Version.</p>
+<div class="section" id="id1">
+<h3>1. APPLICATION INTERFACES<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="a-html-interface">
+<h4>A. HTML Interface<a class="headerlink" href="#a-html-interface" title="Permalink to this headline">¶</a></h4>
+<p>One of the most important requirements for the Virtual Brain project is to have a web interface. Thus a browser will be involved, and it will be the entry point in accessing the Virtual Brain Full functionality, and also in rendering this interface. The HTML Interface will be a <em>modern and extremely usable</em> interface to TVB.</p>
+<p>The exact supported browser types for the application will be decided at a later point in the development flow, but it is expected to have none, or as few as possible, third-party elements installed in browser. Nevertheless, it is expected to have Java Script enabled and HTML 5 supported (including WebGL). This will split the work for visualization between the client and the back-end server, thus minimizing the network speed dependency. We do not intend to have an extremely <em>thin client</em> nor a <em>fat back-end</em>, but rather split the work between the two components, to have a mediative solution for bandwidth dependency and rendering speed.</p>
+<p>Most user&#8217;s interaction comes from a browser interface, and also most of the processing results will be presented to the end-user in browser. Other forms of output, like &#8220;downloadable&#8221; results, are obviously necessary.</p>
+</div>
+<div class="section" id="b-console-interface">
+<h4>B. Console Interface<a class="headerlink" href="#b-console-interface" title="Permalink to this headline">¶</a></h4>
+<p>It is expected, for The Virtual Brain project, to have a special type of users, working on a very low level of abstraction, and for that, they will need and use a console interface. These users, will probably be researchers, with a previous neuroscience knowledge. They will benefit of full control over the internal parameters, flow and algorithms. Obviously, the Console Interface is harder to use, by a non-initiated user, but manuals will be provided, along with examples of extensions, and workflows.</p>
+<p>From the two categories of users expected for TVB: &#8220;G-user&#8221; (Graphical User) and &#8220;S-User&#8221; (Script User), defined in Chapter I of this document, the Console Interface will serve S-Users. S-Users, are initiated users, who need a lot of <em>freedom and speed</em> in the actions they are to do with TVB, and the Console Interface intends to support that.</p>
+</div>
+<div class="section" id="c-stand-alone-client">
+<h4>C. Stand-Alone Client<a class="headerlink" href="#c-stand-alone-client" title="Permalink to this headline">¶</a></h4>
+<p>A third type of interface, the Stand-Alone one, comes from a specific distribution scheme: stand-alone distribution, not in cluster, but installed on a personal/local computer/laptop.</p>
+<p>The Stand-Alone Client needs to re-use all the back-end business logic that is used by the other <em>Application Interfaces</em>, and only re-write the <em>View Component</em> (from Model-View-Controller Design Pattern).</p>
+<p>This Interface comes with a specific requirement support: <em>extending</em> TVB functionality with <em>custom algorithms</em> or plug-ins. It is highly risky to allow contributors to append custom components directly in the cluster public distribution, thus, the Stand-Alone Client comes as a safe solution. Also for <em>network connections</em> with very <em>low speed</em>, the stand-alone client will provide an elegant solution, by avoiding long waiting times for server responses.*</p>
+</div>
+</div>
+<div class="section" id="id2">
+<h3>2. BACK-END SYSTEM<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="a-web-server-application">
+<h4>A. Web Server Application<a class="headerlink" href="#a-web-server-application" title="Permalink to this headline">¶</a></h4>
+<p>The Web Server Application is the <strong>controlling</strong> element at the back-end level, for the HTML Interface. It should be the one receiving data from the <em>HTML Interface</em> and making sure the correct response is feed back, after corresponding operations were executed.</p>
+<p>It needs to take into account the need of having the UI decomposed into several parts (for easy maintenance and development) and possibly also the requirement to have a light version of the software deployable on a single personal computer (with a wrapped web-server on the client).</p>
+<p>Also at this level, visualization parameters and input data will be prepared, for usage at the HTML Interface level, and for passing it to the back-end components, respectively.</p>
+</div>
+<div class="section" id="b-framework-flow-manager">
+<h4>B. Framework &amp; Flow Manager<a class="headerlink" href="#b-framework-flow-manager" title="Permalink to this headline">¶</a></h4>
+<p>As the Web Server, will be used for the HTML Interface only, and possibly only for the Full TVB Distribution, <em>the Framework Flow Manager</em> is the intersection point between different Application Interfaces and the actual business logic in the Back-End. Thus this component needs to be abstract and have no connection with the interaction method (script, html or stand-alone interface). This component need to act as a framework controller for TVB business logic and also have some flow management.</p>
+<p>The next four components in Back-End (Uploading Adapter, Simulator, Data Analyzer and Visualizer), are all part of TVB specific workflow, implementing TVB specific functional requirements, but the <em>Framework Manager</em> will be an abstract package, managing different types of operations (not only TVB specific ones).</p>
+<p>We expect this block to be the common point in interacting with TVB libraries (the four mentioned above) or other custom libraries (sharing the same interfaces), from the Web Interface and Stand-Alone Client (by the G-User) and from the Console Interface (by the S-User).</p>
+<p>From the development point if view, the <em>Flow and Framework Manager</em> will have a triple role:</p>
+<ul class="simple">
+<li>recording user&#8217;s action and their results, for logging purposes or playback;</li>
+<li>playing a sequence of operations, from a previously recorded set of actions or deduced/parsed from current user&#8217;s input;</li>
+<li>and offer code support for the Application Interfaces and the Independent Plug-able Libraries.</li>
+</ul>
+</div>
+<div class="section" id="c-upload-component">
+<h4>C. Upload Component<a class="headerlink" href="#c-upload-component" title="Permalink to this headline">¶</a></h4>
+<p>This component will be the one controlling the interaction jobs into the Data Connector component, as it will trigger and configure such IO operations, and will receive feedback about them.</p>
+<p>Along with retrieving or exporting data in the background, from or into <em>External Data Storages</em>, we will want to have also data uploaded directly from the <em>Application Interfaces</em>. This will be data obtained from patient scans and needs to respect a well defined format. The <em>Upload Component</em> will take care that the correct format is followed and data is stored in the correct places.</p>
+<p>The <em>Uploading</em> block is directly controlled by the <em>Flow Manager</em>, but it further controls the <em>Data Connector</em> block.</p>
+</div>
+<div class="section" id="d-simulation-component">
+<h4>D. Simulation Component<a class="headerlink" href="#d-simulation-component" title="Permalink to this headline">¶</a></h4>
+<p>The Simulation Component is probably the most representative component in The Virtual Brain solution, as it is the component responsible for all the scientific computation related to brain models and data.</p>
+<p>The Simulation Component will receive controlling messages (a set of parameters) from the <em>Flow Manager</em>, and will know how to retrieve required Brain- Input data from the Storage System (set of input data to work on), based on that input.</p>
+<p>The <em>Simulation Component</em>, along with the <em>Data Analyzer Component</em>, will benefit of the power of a cluster, to have their operations asynchronously executed there, as fast as possible. The problem structure of the Virtual Brain project, as we know it for now, seems to be hard to paralyze (the sequential flow of steps for data preparation and simulation is highly interconnected). Thus, when splitting work over multiple stations, the main nodes in our structure will be used to execute unitary and mostly independent processing steps.</p>
+</div>
+<div class="section" id="e-data-analyzer-component">
+<h4>E. Data Analyzer Component<a class="headerlink" href="#e-data-analyzer-component" title="Permalink to this headline">¶</a></h4>
+<p>For brain related data, several Analyzer algorithms are currently available to &#8220;process&#8221; the results.</p>
+<p>It is known that most data analysis approaches are still &#8220;work in progress&#8221;, thus TVB should allow for the greatest possible flexibility on the side of the S-User when it comes to any kind of data analysis algorithm. This being the case, TVB should allow for the user to adapt his/her own analysis tools.</p>
+<p>The above mention issue is another common element between the Simulation and the Analysis Components. The S-User will be able to create and/or configure his/hers own processing algorithms to be executed. The S-User will be provided with hook-points for creating custom block to fit into TVB framework; in the same time, configuring the equations is also expected. The G-User is limited to the available algorithms inside TVB, but configuring them should be possible, too.</p>
+<p>As S-User enhancements are visible only in the local environment (TVB Light Version), malicious code is avoided in the public distribution. Integrating contributor&#8217;s work into the public TVB distribution will be manually handled, by authorized personnel. In a next generation of TVB we could provide the capability to upload code directly into the cluster distribution. In such case, we will make the new code &#8220;invisible&#8221; for most of the users, but available only to the owner, until some authorized person checks the new functionality.</p>
+</div>
+<div class="section" id="f-visualization-back-end">
+<h4>F. Visualization  Back-End<a class="headerlink" href="#f-visualization-back-end" title="Permalink to this headline">¶</a></h4>
+<p>The visualization tools are critical for TVB -they are difficult to home-brew and can really provide a quantum jump in understanding the neuroscience &#8220;secrets&#8221;.</p>
+<p>TVB should provide the capability to visualize, possibly as a movie, and where aplicable rendered in 3D, the following generic data types:</p>
+<ul class="simple">
+<li>scalp based data (EEG, MEG);</li>
+<li>cortical surface data (MODEL, SEEG);</li>
+<li>volume based data (fMRI, lesion site): visualization as a movie of selected sources with the brain as a background.</li>
+</ul>
+<p>Several data types are expected to be supported for visualization. Acknowledging the fact that data types are extremely different, in form and meaning, a different visualization library is expected to be needed for each such data type. For sure, common part are expected, also.</p>
+<p>From the <em>specific</em> visualization requirements that TVB has, based on neuroscience formats and protocols, we spot:</p>
+<ul class="simple">
+<li>visualization of connectivity matrices (structural and functional connectivity);</li>
+<li>visualization for the Connectome proposed data formats (NIFTI, GIFTI, GraphML, TrackVis);</li>
+<li>display of multiple time series with possibility to let it shift through (as known from EEG) for arbitrary sources, nodes, electrodes.</li>
+<li>display of wave let time series with possibility to let it shift through (as known from EEG) for arbitrary sources, nodes, electrodes.</li>
+<li>power spectrum for time series of arbitrary sources, nodes, electrodes;</li>
+<li>frequency-time plot of arbitrary sources, nodes, electrodes;</li>
+<li>coherence matrix of arbitrary sources, nodes, electrodes.</li>
+</ul>
+<p>The Visualization components are highly dependent on the exact <em>Application Interface</em> chosen, thus an important part of the visualization is located in the <em>Interface</em> blocks, but we are expected to have a common Back-End, for using transparently any interface, dependent on the user chosen distribution.</p>
+</div>
+<div class="section" id="g-data-types">
+<h4>G. Data Types<a class="headerlink" href="#g-data-types" title="Permalink to this headline">¶</a></h4>
+<p>The <em>Upload</em>, <em>Simulator</em>, <em>Analyzation</em> and <em>Visualization</em> Components will need to have a common &#8220;language&#8221; in order to work with the same data. In TVB architecture, that &#8220;common language&#8221; is represented by <em>Data Types</em>.</p>
+<p>A specific Data Type X will be generated after and <em>upload</em> operation from the interface, Type X is accepted by a Simulation Model as input, and it generated Type Y of Data. Type Y is accepted by an Analysis algorithm, and both Type X and Y have Visualization mechanisms. This is an abstract example of how Data Type can be used, for linking structures between different components in the Back-End block.</p>
+</div>
+</div>
+<div class="section" id="storage-systems">
+<h3>3. STORAGE SYSTEMS<a class="headerlink" href="#storage-systems" title="Permalink to this headline">¶</a></h3>
+<p>Sub-components for the Storage are: <strong>Database(s)</strong> and <strong>File System(s)</strong>. One of these two elements could be used exclusively, but a complementary solution is considered better. Different distributions (Cluster or Stand-Alone) might have differences in the way data is stored.</p>
+<p>Few distinct data collections are to be stored and later on manipulated in TVB project. Some of them will support mixing, but for others might come more natural and safer to be stored separately (distinct structures and different physical locations).</p>
+<p>On one hand we will need to store <strong>application data</strong>: users, roles, groups, simulations progress state, personal input data and associations, settings, results mappings, work progress. This is the data coming from the Web Server Application and Framework Flow Manager, and it will be used by them when composing the final content for the UI-pages. This data is expected to be stored in a relational database system, as it would make use of the organization and the search engine of such a system.</p>
+<p>All the <strong>cluster-related data</strong> needs to be stored someplace (probably database, but also xml files might work). It will refer to cluster nodes configurations, status, role, updates, etc. This data will come from the Cluster Manager component and will be used by the Cluster Job Scheduler when distributing tasks over the Simulation nodes.</p>
+<p>On the other hand, there is plenty of <strong>brain-related data</strong>: brain models, 3D structures, EEG measurements, MRI, etc. This data will enter the system through the Data Connector and Uploading Adapter components, but needs to be available for access to the end-user (when controlling the simulation flows), and will be highly accessed by the Simulation, Analysis and Visualization Components, as input data. It is to be decided at the development time, for each data set in particular, which sets are suitable for relational database storage and which for file systems storage. Currently, DB indexed references, combined with a file storage for the actual neuro-data is the chosen solution or implementation.</p>
+<p>Also the simulation and analysis <strong>results</strong> will require storage. This output data is similar with the uploaded data, so it will have the same storage mechanism as mentioned above.</p>
+<p>To summarize the storage needs for TVB, we will store:</p>
+<ul class="simple">
+<li>raw uploaded data;</li>
+<li>processed data (end operation or intermediate results);</li>
+<li>references of operations that have been executed or are planed for execution (not the actual script, but an algorithm link), so the flow of operations can be reconstructed from those.</li>
+</ul>
+<p><em>OPEN QUESTION:</em> We mentioned the cluster-distributed form of the back-end components (Simulation and Data Analysis). How can we design the Storage, so that the cluster won&#8217;t have a bottleneck in executing parallel tasks while accessing the Data Storage?  All operations will need to, firstly, read data from the Storages (Brain Models, Measurements files, etc.); in the same time, we will have the streams of results from several nodes to be written in files, maybe on a common disk. Is it enough to leave this parallel writing job to the hardware and the parallel reading to the DB management system?</p>
+<p>The hardware should do the job (when writing different files in parallel - big files with results), the DB access time for committing results references should be small enough not to create problems, and the DB system should be fine with parallel reading, but we also need to provide mechanisms for <em>job scheduling</em> and <em>resources locking</em>, to avoid problems.</p>
+<div class="section" id="a-database-s">
+<h4>A. Database(s)<a class="headerlink" href="#a-database-s" title="Permalink to this headline">¶</a></h4>
+<p>We refer here both to regular Relational Database installations, but also Relational Database clusters are acceptable, depending on the physical resources and the performance or highly-availability requirements of the project.</p>
+<p>Some tables in DB will be generic for the Framework structure that we provide, and other are highly dependent on TVB specific operations. We are to separate these two, only at the business level, and have the Framework structure independent from TVB Data, but we will use the same storage database for all.</p>
+<p>In the relational DB we store: informations about users, projects, references to algorithms (that can be executed), operations (with their status, input parameters and results-references) and data-links.</p>
+</div>
+<div class="section" id="b-file-system-s">
+<h4>B. File System(s)<a class="headerlink" href="#b-file-system-s" title="Permalink to this headline">¶</a></h4>
+<p>A File System is a suitable solution for when we want to avoid several problem that Blobs in most of the Relational DataBase Systems have.</p>
+<p>In the File Storage we store actual neuro-data (uploaded files and operation results). The file storage is a Tree of folders and files. The files in the storage are of two types:</p>
+<blockquote>
+<div><ul class="simple">
+<li>data-files (actual neuro-data) or</li>
+<li>metadata-xml files (files generated and used by TVB application, invisible to the end-user in the interface). These files can be of use for us, in generating multiple forms of storage for the end-user (e.g. do not display it as a Tree, but make a flat list or a graph from it).</li>
+</ul>
+</div></blockquote>
+<p>Also in the xml-files we will have support for the following tags:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Functional Data type (e.g. EEG. Connectivity Matrix, MRI Data, etc);</li>
+<li>Subject of Group Identifier (and maybe a second field isGroup = True/False);</li>
+<li>Source of data (simulated or real);</li>
+<li>Processing step (normalized, preprocessed, etc.);</li>
+<li>File Type (txt, binary);</li>
+<li>Experiment Date/Interval.</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="id3">
+<h3>4. DATA CONNECTOR<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="a-connector-core">
+<h4>A. Connector Core<a class="headerlink" href="#a-connector-core" title="Permalink to this headline">¶</a></h4>
+<p>The <em>Data Connector</em> component will be the link of Virtual Brain with other External Data Provider Systems, and the <em>Connector Core</em> is the coordinative part of it.</p>
+<p>The <em>Connector Core</em> will receive the External Source <em>address</em> and <em>credentials</em> from the <em>Uploading Adapter</em>, along with an optional <em>data description</em> and will execute all required jobs to retrieve data from the External System and feed it into TVB system, or export it from TVB into External Storages.</p>
+<p>Several protocols are expected to be supported, for connecting with the External Storages: SOAP, FTP, SSH, HTTP, or maybe simple DB connector. Depending on the External Source descriptor, one of the supported protocols will be chosen for communication.</p>
+</div>
+<div class="section" id="b-pre-post-processors">
+<h4>B. Pre/Post Processors<a class="headerlink" href="#b-pre-post-processors" title="Permalink to this headline">¶</a></h4>
+<p>After importing data sets from an external data store, and before actually using that data into the system, several  data-format transformations might be required (pre-processing). Also, before exporting data from TVB towards some external storage, some data post-processing steps might be required.</p>
+<p>We know the structure for the data to be imported/exported, from the external data source metadata, or from the web-application&#8217;s initial job description; a set of user configuration are possible, to interfere into the processing flow. The pre and post processor elements will consider all the above and choose the correct algorithms to be executed. The jobs in these processing flows are similar to a single simulation-run, thus can run on an arbitrary Cluster-node.</p>
+<p>The logical difference between the pre-processor component an the post-processing block, is that while the first component prepares data before using it into TVB system, the second one prepares data after internal TVB processing and before exporting it into External storages.</p>
+</div>
+</div>
+</div>
+<div class="section" id="iii-third-level-of-detail">
+<h2>III. Third Level of Detail<a class="headerlink" href="#iii-third-level-of-detail" title="Permalink to this headline">¶</a></h2>
+<img alt="_images/VB_level3.jpg" class="align-center" src="_images/VB_level3.jpg" style="width: 100%;" />
+<p>At this level of detail, we can distinct what <strong>TVB Framework</strong> means. As mentioned in the Legend area of the document, TVB framework is the architectural structure, along with the implementation artifacts that allow plugging-in independent libraries into this framework. Looking carefully at the above drawing, TVB Framework represents all the blocks present there, except for the blue bordered ones (which are the <em>independent</em> libraries, plugged into the framework).</p>
+<p>In the above drawing, the components were primary classified based on functionality (User Interface vs. Back-en Services, Simulation vs. Visualization). The separation into TVB Framework and Independent Components, on the other hand, is based on development procedure, because we want to have a Framework generic, and plugged components possible to be developed by different teams.</p>
+<p>An <strong>Independent Library</strong> is a <em>simulation or analysis algorithm</em> or even a specific <em>visualization tool</em>. In current context, a Simulation Independent Algorithm means: the minimal set of programs to run the virtual brain model in scripted fashion (not even bothering with an interface), on your favorite Laptop. The Framework can further be used, to link from Simulations to Visualizations or Data Analysis.</p>
+<div class="section" id="id4">
+<h3>1. APPLICATION INTERFACES<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id5">
+<h4>A. HTML Interface<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+<p>A browser itself is not intended to be implemented in The Virtual Brain project, but several TVB sub-components are expected to work directly with and reside inside an existent browser instance. These sub-components will <em>live</em> inside the browser, and mostly will be <em>JS and HTML based</em>.</p>
+<div class="section" id="a1-html-adapters-extensions">
+<h5>A1. HTML Adapters (Extensions)<a class="headerlink" href="#a1-html-adapters-extensions" title="Permalink to this headline">¶</a></h5>
+<p>As TVB interface is expected to be a non-trivial issue, it is a good idea to decompose it into several smaller components. In this direction, the UI-Extensions are a possible solution.</p>
+<p>The <em>UI-Extension</em>, proposed term, is close to the Portlet concept, but for now we do not want to fix architectural decisions, but to cut out functional blocks. Portlets (or similar concepts) are used for big web-applications, because they bring extensibility and flexibility in the UI and core functionality of a big and configurable application.</p>
+<p>As a multi-user application, each user will have his/hers personal needs of composing a personal useful view over the system. The smaller the UI components are, the easier a configuration will be. Also, regarding different situations, each UI-Extension can have a different view, considering current logged user, current data to display and its role, settings, or status. These will be HTML generic extensions, part of TVB Framework.</p>
+<p>Another type of extensions, are the HTML Adapters to TVB specific visualization needs, for displaying specific TVB Data Types in the HTML Interface. These adapters are not part of TVB Framework, but are treated as <em>Independent Libraries</em>, because they have a specific form (for easy management from TVB Framework), but are specific to TVB functionality (not part of the framework).</p>
+<p>Every HTML Adapter, which plugs-in new functionality, has to use the UI TVB Framework to interact with the back-end. Also a need can be foreseen, to synchronize actions between adapters (e.g. one could think of a general Inspector-Component, which needs to adapt to chosen elements).</p>
+<p>Each adapter should provide  complete and sound functionality. One adapter can depend on the TVB UI Framework, but it is not desirable to depend on other Adapters.</p>
+<p>Extension&#8217;s content displayed to a user in browser, is a result of deployed back-end blocks (e.g. <strong>HTML Visualization Adapters</strong>), and the architectural rules for describing the extension&#8217;s code will reside on the back-end system (Web Server). Having the user interface supporting multiple extensions will bring a higher complexity degree to the overall system, but it should be a price worth paying for.</p>
+<p>HTML Adapters will provide the actual content, but for rendering that content, some already defined tools will be used (browser, renderers).</p>
+</div>
+<div class="section" id="a2-tvb-data-renderer">
+<h5>A2. TVB Data Renderer<a class="headerlink" href="#a2-tvb-data-renderer" title="Permalink to this headline">¶</a></h5>
+<p>Plenty of visual effects and high level user interaction are expected to be part of TVB&#8217;s footprint. In this architectural level, the tools capable of composing such a complex user graphical interface, are called generically: <strong>TVB Data Renderer(s)</strong>.</p>
+<p>Some of the renderers will be <em>fat</em>, like the ones including Java Script code, to be executed on the client side, while others will be <em>extremely simple</em>, like displaying a simple image. All the browser&#8217;s capabilities are to be exploited here (as long a they match TVB license): HTML5, JS, WebGL, and even Flash or Applet, in case we are to include already existent solution.</p>
+</div>
+<div class="section" id="a3-ui-framework">
+<h5>A3. UI Framework<a class="headerlink" href="#a3-ui-framework" title="Permalink to this headline">¶</a></h5>
+<p>UI Framework will act like a generic component, were multiple UI Extensions are plugged. UI Framework will contain common handles (e.g. handler for mouse or keyboard interaction; generic Zoom functionality on Canvas), to be used in multiple HTML View Adapters. The UI Framework component should provide support for application extensibility. By having well established interfaces and abstract communication/control functions, it should be able to adjust to any extension needed in the future.</p>
+<p>The UI Framework is the master for all the background processes on the client side. For sure the user is the  initiator of any action, but the Framework component is the one acting asynchronously or synchronously, behind the scene, to trigger some UI data receiver. and coordinate different HTML Adapters.</p>
+</div>
+</div>
+<div class="section" id="id6">
+<h4>B. Console Interface<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<p>Implementing a raw Console is not what we had in mind for this component, we only intend to provide a command-line front-end for TVB.</p>
+<p>This component, along with all the S-User capabilities, are expected to be available only in TVB Light distribution version, at least for the first version of the product. In a future version, the S-User might be included as part of the TVB public cluster distribution, also.</p>
+<div class="section" id="b1-input-reader">
+<h5>B1. Input Reader<a class="headerlink" href="#b1-input-reader" title="Permalink to this headline">¶</a></h5>
+<p>The S-User will start the <em>Console Interface</em> by executing a TVB file in a classical console on his/hers preferred operating system. This action will place the user in a command/text interaction with the system. The <em>Input Reader</em> block will be used for getting the user&#8217;s commands, and transmitting them to the next component in the data-flow: <em>Parser</em>.</p>
+</div>
+<div class="section" id="b2-parser">
+<h5>B2. Parser<a class="headerlink" href="#b2-parser" title="Permalink to this headline">¶</a></h5>
+<p>A trivial parser will be needed, to understand several hard-coded commands, accepted by TVB console interface. The exact supported commands are to be established when the simulation and data analysis libraries are ready.</p>
+<p>A possible implementation for the <em>Console Interface</em> will be with the Python programming language. In this case, the <em>Input Reader</em> and the <em>Parser</em> are nothing more than a set of methods and functions in Python that are available for call. A precondition will be to have Python installed, and the supported Operating Systems are the ones supporting Python.</p>
+</div>
+<div class="section" id="b3-s-adapter">
+<h5>B3. S-Adapter<a class="headerlink" href="#b3-s-adapter" title="Permalink to this headline">¶</a></h5>
+<p>When having the command parsed and thus understood, one must translate it into TVB compatible language (internal existing method names to be called). The role of Script-Adapter, is to establish the correspondence between parsed items from the user&#8217;s input and internal TVB language.</p>
+<p>The S-Adapter will directly communicate with the TVB <em>Flow Manager</em> and have a command ready in a format accepted by the later. In TVB language this will mean, the S-Adapter is sending a sequence of steps to be <strong>played</strong> by the <em>Simulator</em> or <em>Data Analyzer</em>. The S-Adapter will sent towards the Flow Manager a sequence of steps in the format that you will find exemplified in a future level of details, under the Flow component.</p>
+</div>
+<div class="section" id="b4-result-displayer">
+<h5>B4. Result Displayer<a class="headerlink" href="#b4-result-displayer" title="Permalink to this headline">¶</a></h5>
+<p>The <em>Result Displayer</em> component will take care of two types of feedback, to be displayed to the user:</p>
+<ul class="simple">
+<li>When long time operations are in course, a visual feedback is needed to be sent to the user, constantly.</li>
+<li>When operations are finished, the user needs to be notified. In case results are Console-compatible (e.g. single numeric values), they will be immediately displayed. In case other types of results are present, the user needs to be pointed to the location where the files with results are placed.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="id7">
+<h4>C. Stand Alone Client<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+<p>The structure inside <em>Stand Alone Client</em> is standard for a user interaction package, it contains <em>Controllers</em>, <em>Screens</em> and <em>View Adapters</em>.</p>
+<p><strong>UI Controllers</strong> and <strong>UI Screens</strong> are the <em>Control</em> and respectively <em>View</em>, parts from the MVC Design Pattern. The <em>Model</em> block, is the same as the one used in the rest of the user-interfaces, and it is located in the <em>Back-End</em> component, in TVB Framework.</p>
+<p><strong>View Adapters</strong> are specific TVB visualization components. They will inherit, like the rest of Adapters, from the <em>Abstract Adapter</em>, and being Adapters for Visualization purpose, will also have a common logic (common for all Application Interfaces) in the <em>Visualization  Back-End</em> component.</p>
+</div>
+</div>
+<div class="section" id="id8">
+<h3>2. BACK-END SYSTEM<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id9">
+<h4>A. Web Server Application<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
+<p>As mentioned before, a Web Application is to be deployed in a Web Server Container and it will be the logical leading element, from back-end, for the HTML Interface.</p>
+<p>It is expected from this Web Application to provide the <strong>HTML pages</strong> (as templates with place-holders for business entities) and the corresponding <strong>Controlling</strong> components for them. From MVC Design Pattern, the Model will be re-used, common for all the three interfaces, and taken from the <em>Core Services</em>.</p>
+</div>
+<div class="section" id="id10">
+<h4>B. Framework &amp; Flow Manager<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
+<p>This component has as major roles:</p>
+<ul class="simple">
+<li>to manage the flow of operations in TVB;</li>
+<li>to offer a skeleton of code, for contributors to re-use easily and implement custom but intractable algorithms based on that skeleton.</li>
+</ul>
+<div class="section" id="b1-flow-manager">
+<h5>B1. Flow Manager<a class="headerlink" href="#b1-flow-manager" title="Permalink to this headline">¶</a></h5>
+<p>The <em>Flow Management</em> layer has a complex set of  roles for himself:</p>
+<ul class="simple">
+<li>to <em>configure</em> a TVB workflow with parameters and input data;</li>
+<li>to <em>play</em> a sequence of internal operations;</li>
+<li>and to <em>record</em> sequences of executed actions with their results.</li>
+</ul>
+<p>For each of the main operations enumerated above, a sub-component will appear at the next level of details.</p>
+</div>
+<div class="section" id="b2-framework-core">
+<h5>B2. Framework Core<a class="headerlink" href="#b2-framework-core" title="Permalink to this headline">¶</a></h5>
+<p>The rest of the components inside <em>Framework &amp; Flow Manager</em>, except the <em>Flow Manager</em>, all represent the <em>Framework Core</em>.</p>
+<p>The <strong>Database Interface</strong> component is self-explanatory, by name. It will not be used directly from outside this block, but used indirectly, through the Core Services.</p>
+<p><strong>Application Core Services</strong> contains several algorithms and procedures, commonly used by the Web Application and the rest of the Application Interfaces. Here we will find actual &#8220;service&#8221; classes, along with the application database interaction control.</p>
+<p>The <strong>Cluster Controller</strong> block should:</p>
+<ul class="simple">
+<li><em>distribute</em> tasks over the nodes in cluster;</li>
+<li><em>schedule</em> TVB specific jobs;</li>
+<li>and make sure the <em>results</em> and input data are retrieved in the correct order and from the correct place for each job.</li>
+</ul>
+<p>We have other two block here: the <strong>Abstract Adapter</strong> and the <strong>Abstract Data Type</strong>.</p>
+<p>One of the most important requirement for TVB is to have the <em>Simulation, Data Analysis</em> and <em>Visualization</em> libraries independent, in the sense of being possible to use then as stand-alone component, from a Python Console, for example, or imported in another project. But when included in TVB, we will want to design the interaction with such independent libraries in a generic way.</p>
+<p>A generic <em>Abstract Adapter</em> and an <em>Abstract Data Type</em> can be imagined to be used between TVB core and such independent libraries, with exact implementations of this abstract components, dependent on the exact library. In TVB components, we will use dependencies on this Abstract classes, but at run-time, instances of the concrete implementations will be created and used.</p>
+<p>The <em>Abstract Adapter</em> is the interface for integrating the actual algorithm (from simulator, analyzer or visualizer) and the <em>Abstract Data Type</em> is the interface for the entities that will be passed between such Independent Libraries.</p>
+</div>
+</div>
+<div class="section" id="id11">
+<h4>C. Upload Component<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
+<p>The <strong>IO Controller</strong> will coordinate the Input/Output operations into TVB. It will control the Import or Export with the <em>Data Connector</em>, or the local imports by uploading into the interface.</p>
+<p>The <strong>Upload Adapters</strong> are concrete implementations for the <em>Abstract Adapter</em>. They have the purpose to accommodate, each of them the integration into the system for one specific <em>Data Type</em>. Not all Data Types will need to have an <em>Upload Adapter</em>, because some Data Types are introduced into the system as results of specific operations, like running a Simulation.</p>
+</div>
+<div class="section" id="id12">
+<h4>D. Simulation Component<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="d1-tvb-simulation-library">
+<h5>D1. TVB Simulation Library<a class="headerlink" href="#d1-tvb-simulation-library" title="Permalink to this headline">¶</a></h5>
+<p>This component should model the sequential computational steps for a <em>single simulation run</em>, with a <em>single parameters set</em> on a <em>single data set</em>.</p>
+<p>This library is also called a <strong>Simulation Core</strong>, because it is a package, which most bare-bones all you need to make a TVB-simulation on your laptop. This component is expected to be independent, thus capable to be used from a Python Command line, without any other TVB interference.</p>
+<p><em>TVB Simulation Core</em> will certainly be part of the <em>TVB Light Version</em>, and although a simulation could be executed with only this package, in case we want a fancy command-line interface, a job scheduling executor, to configure the input parameters, even in the single-node installation, we will need functional elements which are found in the rest of TVB Framework.</p>
+</div>
+<div class="section" id="d2-model-adapters">
+<h5>D2. Model Adapters<a class="headerlink" href="#d2-model-adapters" title="Permalink to this headline">¶</a></h5>
+<p>These adapters will link the <em>Simulation Library</em> with TVB Framework. They are concrete implementation of the <em>Abstract Adapter</em>, specific for communicating with TVB Simulation Library. By having multiple Model Adapters, we can accommodate into the simulation library several Modeling algorithm for the brain, with different set of parameters accepted as input.</p>
+</div>
+</div>
+<div class="section" id="id13">
+<h4>E. Data Analyzer Component<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h4>
+<p>Similar to the Simulation Component, the Data Analyzer contains concrete implementations of the <em>Abstract Adapter</em>. Common algorithms or tools between different such Analyzers are expected to be hold in a package named <em>Core Analyze</em>.</p>
+<p>The <strong>Analyzer Adapters</strong>, should be built as independent components, probably implemented by different persons. The libraries will need to be aware of the purpose of being used with TVB framework, but they will not depend, when built, on other TVB components.</p>
+</div>
+<div class="section" id="id14">
+<h4>F. Visualization  Back-End<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h4>
+<p>The Visualization Back-End holds the common visualization tools, used by different Application Interfaces. This package shall store at least an abstract extension of the <em>Abstract Adapter</em>, named <em>Abstract Displayer</em>, with common part for all Visualization Extensions.</p>
+</div>
+<div class="section" id="id15">
+<h4>G. Data Types<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h4>
+<p>Data Types represent the common entities used by <em>Uploaders</em>, <em>Simulators</em>, <em>Analyzers</em> and <em>Visualizers</em>, they offer a well defined structure for the data to interchange. All Data Types will inherit from <em>Abstract Data Type</em> in <em>Framework Flow Manager</em>.</p>
+<p>Each Data Type defined, can produce a table in the default Storage System. This table is recommended to be used for storing short amount of data, and use the File Storage for huge amount of data.</p>
+</div>
+</div>
+<div class="section" id="id16">
+<h3>3. STORAGE SYSTEMS<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<p>This component remains unchanged from the upper level.</p>
+</div>
+<div class="section" id="id17">
+<h3>4. DATA CONNECTOR<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id18">
+<h4>A. Connector Core<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h4>
+<p>We propose a division of this component by using a double Factory Design Pattern.</p>
+<div class="section" id="a1-connector-factory">
+<h5>A1. Connector Factory<a class="headerlink" href="#a1-connector-factory" title="Permalink to this headline">¶</a></h5>
+<p>This Factory is the entry point into the <em>Data Connector</em> component. It will receive the Job Command (What type of job it is; which is the address of the External Storage to connect to; What are the credentials; What data to expect or put there), and it will make sure, based on that, to choose the correct <em>Connector</em> instance for being created.</p>
+</div>
+<div class="section" id="a2-processor-factory">
+<h5>A2. Processor Factory<a class="headerlink" href="#a2-processor-factory" title="Permalink to this headline">¶</a></h5>
+<p>This component will have a double role:</p>
+<ul class="simple">
+<li>firstly will be the instance creator and initiator for the Pre/Post Processor effective implementations;</li>
+<li>secondly and equally important, will make possible Processors initialization and/or chaining (in case a previous configuration exists.</li>
+</ul>
+<p>From an implementation point of view, this Factory will, most probably, not return a single object Abstract Processor, but a list of such instances, representing the processing steps to be executed on data before exporting it from, or after importing it into TVB.</p>
+</div>
+<div class="section" id="a3-abstract-remote-connector">
+<h5>A3. Abstract Remote Connector<a class="headerlink" href="#a3-abstract-remote-connector" title="Permalink to this headline">¶</a></h5>
+<p>A common and generic structure for all connector will be contained in this component.</p>
+<p>This abstract connector, along with all its implementation connectors will depend on <em>Abstract Processors</em>, to be called before or after exporting or importing data.</p>
+</div>
+<div class="section" id="a4-concrete-remote-connector-r-c">
+<h5>A4. Concrete Remote Connector(R.C.)<a class="headerlink" href="#a4-concrete-remote-connector-r-c" title="Permalink to this headline">¶</a></h5>
+<p>Depending on the exact protocol to be used when communicating with the <em>External Storage</em>, different concrete connectors are expected to be written.</p>
+<p>Examples of connectors expected to be needed are: <strong>SSH Connector</strong>, <strong>FTP Connector</strong>, <strong>SOAP Connector</strong> for web service enabled storages, Relational <strong>Database Connector</strong> for simple DB storages.</p>
+</div>
+</div>
+<div class="section" id="b-abstract-processor">
+<h4>B. Abstract Processor<a class="headerlink" href="#b-abstract-processor" title="Permalink to this headline">¶</a></h4>
+<p>A common structure for a Pre or Post Processor is defined through this component. This <em>abstract</em> block will be the one used when defining dependencies from other components to Processors, but at runtime, concrete implementation of processors will be used.</p>
+</div>
+<div class="section" id="c-pre-post-processors">
+<h4>C. Pre/Post Processors<a class="headerlink" href="#c-pre-post-processors" title="Permalink to this headline">¶</a></h4>
+<p><strong>Pre</strong> or <strong>Port Processor</strong> components are implementations of the <em>Abstract Processor</em> block described above. Different concrete implementations of processors are expected, because the data in <em>External Storages</em> will take different formats. Depending on the Storage internal formats, a specific processor might be needed to be implemented.</p>
+<p>These data processing components will have two main sub-components internally: firstly a <strong>Stream Reader</strong>, and secondly the exact <strong>Algorithm</strong> to be executed.</p>
+<p>Both the Pre and Post processors will have a similar structure, only different algorithms and step in the work-flow when to be used.</p>
+</div>
+</div>
+</div>
+<div class="section" id="iv-forth-level-of-detail">
+<h2>IV. Forth Level of Detail<a class="headerlink" href="#iv-forth-level-of-detail" title="Permalink to this headline">¶</a></h2>
+<img alt="_images/VB_level4.jpg" class="align-center" src="_images/VB_level4.jpg" style="width: 100%;" />
+<p>Current Forth Level of Detail intends to underline the main, sometimes different, flows through the application: <strong>Data Flow</strong> and <strong>Control Flow</strong>. The two different flows are drawn with two different types of lines (dotted or continuum). Several other types of links between components are spotted in this drawing, with the accepted UML specification (<em>aggregation, inheritance, dependency</em>).</p>
+<p>Some of the components that did not gained new details, and remained unchanged from previous level, are drawn as white boxes.</p>
+<p>Colors in the names of the modules, were used only to spot similarity (e.g Data Connector and Data Connector Controller, both have the same color because they fit together, from the functional point of view, and they directly communicate).</p>
+<p>The previous drawings does not include IO elements, to make the entire picture readable, but in the drawing below, some blocks got fewer sub-components, and the IO elements were included. Both drawings (previous one and next one) are at the same level of detail, they should complete each other.</p>
+<img alt="_images/VB_level4_h.jpg" class="align-center" src="_images/VB_level4_h.jpg" style="width: 100%;" />
+<div class="section" id="id19">
+<h3>1. APPLICATION INTERFACES<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<p>This component is mostly unchanged from the upper level, except for a few new sub-components, described bellow.</p>
+<div class="section" id="id20">
+<h4>A. HTML Interface<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="a1-1-data-reader">
+<h5>A1.1 Data Reader<a class="headerlink" href="#a1-1-data-reader" title="Permalink to this headline">¶</a></h5>
+<p><strong>Data Reader</strong> is a sub-component residing inside some of the <strong>HTML Adapters</strong>. UI data streams will come from the Back-End system and it is the Data-Reader&#8217;s role to feed that data for visualization to the Adapters.</p>
+<p>The Data-Reader mainly is needed for queuing, but also client transformation modules can be plugged in here, in case any will be needed and we decide that we want to translate some of the work from the Back-End towards the client side.</p>
+<p>This component can receive triggers from the Command Adapter, will react to data streams received, and the right data-listener in the UI can easily be parametrized to take over the correct visualization data.</p>
+</div>
+<div class="section" id="a2-1-webgl-renderer">
+<h5>A2.1 WebGL Renderer<a class="headerlink" href="#a2-1-webgl-renderer" title="Permalink to this headline">¶</a></h5>
+<p>A WebGL renderer is needed for the 3D objects to be displayed and manipulated by the client, on his local machine.</p>
+<p>WebGL is a generic interface, with specific implementations provided by each particular browser. Not all browsers provide WebGL support, and not all graphic cards support WebGL. Each client must have an OpenGL 2.0 compatible graphics card and a browser installation with WebGL enabled, in order to take benefit of the full TVB visualization capability. It is not planned, to have any local render-alternative (e.g. some Flash or Java Renderer) if the client does not meet the WebGL-requirements.</p>
+<p>The exact data to be rendered by this component, comes from the UI components of TVB site (HTML Adapter), but not all such components are expected to have WebGL code.</p>
+<p>A WebGL rendering component can have its input data updated asynchronously, by some software component behind the scene (call server to compute new objects coordinates), but it can also auto-sustain some visual updates to be computed locally (user rotating an object, changing the light sources, adding shadows in a 3D world of objects, etc).</p>
+<p>Especially this component moves some work from the back-end to the client. WebGL is Java Script code, executed in the client&#8217;s browser and connected directly to the local graphical card.</p>
+</div>
+<div class="section" id="a2-2-graph-renderer">
+<h5>A2.2 Graph Renderer<a class="headerlink" href="#a2-2-graph-renderer" title="Permalink to this headline">¶</a></h5>
+<p>As <em>WebGL Renderer</em> component described above is expected to be used with 3D objects, the <em>Graph Renderer</em> block will handle 2D plots to be correctly displayed. Currently we can see two alternatives for this: one is to use JS based libraries for 2D plots, and the second one is to have a back-end for Matplotlib in HTML. Both alternatives have advantages and disadvantages, thus we might end-up using both, for different graphs.</p>
+</div>
+<div class="section" id="a2-3-x-renderer">
+<h5>A2.3 X Renderer<a class="headerlink" href="#a2-3-x-renderer" title="Permalink to this headline">¶</a></h5>
+<p>Depending on the exact <em>Visualization Data</em>, these two Renderers presented above, might need to be backed-up with other similar components, for distinct data-types. In the abode architectural drawing, such a component was called <em>X Renderer</em>.</p>
+<p>We could consider also the possibility that not all users have WebGL capability, or they might want to disable client work, when lacking of local computational resources. In such cases, the back-end could provide a specific Visualizer, that will render on the server side several images to be feed to the client, and displayed in a simple Rendering component (different than the WebGL Renderer; in previous drawing present also under the name <strong>X Renderer</strong>). In this case, the network connectivity will be highly used, and most probably the quality of the visualizer will not be the same (e.g. no possibility to rotate the image in real-time).</p>
+<p>Besides the 3D or 2D images and movie renderers, one other special renderer needs to be present for allowing users to interact with the Workflow Manager (drawing states, linking them, configuring, etc); this type of renderer is also hidden under the <em>X Renderer</em> abstract umbrella.</p>
+</div>
+<div class="section" id="a3-1-command-adapter">
+<h5>A3.1 Command Adapter<a class="headerlink" href="#a3-1-command-adapter" title="Permalink to this headline">¶</a></h5>
+<p>The Command Adapter is used to transport user interaction from the UI components down to the back-end Web Server. Its main target is to control the UI Extension components with commands coming from the Back-End, but it can also be used, to transport feedback to the Virtual Brain Back-End.</p>
+</div>
+</div>
+</div>
+<div class="section" id="id21">
+<h3>2. BACK-END SYSTEM<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id22">
+<h4>A. Web Server Application<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h4>
+<p>At this level of details, the Web Application got a roughly package structure. The packages presented here were identified on functional criteria, and for sure, at the implementation level, each will split into two of three implementation sub-packages, but from the architectural point of view, these should be enough.</p>
+<p>An important package present here, is the <strong>Web Visual Adapter</strong>. Along with the <strong>Results Integrator</strong> component from the <em>Visualization Component</em>, this package should be responsible for feeding the Visualization Data Streams, produced by the Visualization libraries, into the Browser component, that will render them to the user.</p>
+</div>
+<div class="section" id="id23">
+<h4>B. Framework &amp; Flow Manager<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h4>
+<p>This component remains the same as in the previous layer, only the Flow Manager block got few sub-components.</p>
+<div class="section" id="id24">
+<h5>B1. Flow Manager<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h5>
+<p>A <strong>Flow Editor</strong> is required, to allow greater flexibility in the sequence of operations to be executed, by configuring steps. A <strong>Player</strong> will come next in role, to read the <em>flow</em> and transform it into exact operations to be executed by the correct execution block.</p>
+<p>The <strong>Recorder</strong> is the component responsible for logging into an internal format all the action a given user does, along with the action results. When recording user&#8217;s actions and results we need to make sure several previous established rules are met, especially related to occupied space. In this way, the Recorder will provide a mechanism for <em>caching</em>. The Player needs to have a special care when playing actions, to check if previous results are not already computed, and to avoid re-computing results that are already in place, but rather return previous recorded data, to enhance performance.</p>
+<p>The same format that a <em>Player</em> accepts, for identifying actions to be executed, will be known by the <em>Recorder</em> (to record actions in that format), and by the <em>Console Component</em> or <em>Web Application</em> (to encode users input into this internal format).</p>
+<p>A proposed form for encoding the sequence of action, is:</p>
+<div class="highlight-python"><pre>&lt;sequence name="Custom Name"&gt;
+    &lt;step name="Step1" component="SIMULATOR"&gt;
+        &lt;param type="INPUT_DATA"&gt;
+            &lt;reference value="ID_BRAIN_DATA"/&gt;
+        &lt;/param&gt;
+        &lt;param type="INPUT_PARAM"&gt;
+            &lt;equation value="Custom Value"/&gt;
+        &lt;/param&gt;
+        &lt;result type="FILE" path="C://data"/&gt;
+    &lt;/step&gt;
+    &lt;step name="Step2" component="ANALYSER"&gt;
+         ...
+    &lt;/step&gt;
+     ...
+    &lt;step name="StepX" component="VISUALIZER"&gt;
+        ...
+    &lt;/step&gt;
+&lt;/sequence&gt;</pre>
+</div>
+<p>Several variables could be added in this format:</p>
+<ul class="simple">
+<li>Language element to symbolize repetition (e.g. <em>for, while</em>) will be useful in case we want to describe an operation that needs to be repeated on a list of similar data sets.</li>
+<li>Parameters, to be computed at runtime: current date, current user, etc.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="c-simulator-component">
+<h4>C. Simulator Component<a class="headerlink" href="#c-simulator-component" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="c1-tvb-simulation-library">
+<h5>C1. TVB Simulation Library<a class="headerlink" href="#c1-tvb-simulation-library" title="Permalink to this headline">¶</a></h5>
+<p>The Simulation library will have, along with the obvious <strong>Mathematical</strong> component, and Processing <strong>Algorithms</strong> for simulations, also a <strong>Pre-processing</strong> component, to optionally prepare data before simulations.</p>
+</div>
+<div class="section" id="c2-simulation-component">
+<h5>C2. Simulation Component<a class="headerlink" href="#c2-simulation-component" title="Permalink to this headline">¶</a></h5>
+<p>The <strong>Simulation Cluster Integrator</strong> component will deal with highlighting how the jobs to be spread over the cluster. In case current version of the software is not distributed in cluster, this block will be skipped from the data-controll-flow, as all jobs will be executed on a single node. This is the reason why this component appears as a white box (inactive or not present in the Light TVB Version).</p>
+<p>A generic <strong>Flow Controller</strong> could also be present here. Simulations are complex operations as they are, but also multiple users will want to operate on multiple input data sets, thus complicating things even more. A Controller, using some Jobs Queue and scheduling, aims to solve this complex issue.</p>
+</div>
+</div>
+<div class="section" id="d-analyzer-component">
+<h4>D. Analyzer Component<a class="headerlink" href="#d-analyzer-component" title="Permalink to this headline">¶</a></h4>
+<p>Looking at the <em>horizontal</em> view of this component, in the image immediately above, we will notice a <em>hook-point</em> in the system, allowing researchers to easily contribute to the project, or to customize the system to match their needs, without needing to break into the code and change already existent code (that is also possible, but not desirable).</p>
+<p>In order for a contributing-researcher to extend the system with a new independent Analysis Library, he/she will add a new DA Adapter, extending the <em>Abstract Adapter</em>, where the new Library will be called. In the next level of detail, you might see slices of pseudo-code in this direction.</p>
+<p>The newly created Adapter will be easily integrated and presented to the <em>Flow Control</em> component (which will act as a Factory for such Adapters), through a settings file, specified by name.</p>
+<div class="section" id="d1-analysis-library">
+<h5>D1. Analysis Library<a class="headerlink" href="#d1-analysis-library" title="Permalink to this headline">¶</a></h5>
+<p>Each Analyzation Library will, most probably have a specific and different structure, but a generic structure is spotted in current TVB level of detail: <strong>Pre-processor</strong>, <strong>Mathematical Library</strong>, and <strong>Analysis Algorithm</strong>.</p>
+</div>
+<div class="section" id="d2-analyzer-controller">
+<h5>D2. Analyzer Controller<a class="headerlink" href="#d2-analyzer-controller" title="Permalink to this headline">¶</a></h5>
+<p>The analysis processes are expected to be executed in cluster, along with the Simulation operations. This is why, a similar controlling structure, as the one for the Simulations, is found also in the Analyzer Controller. Preparing jobs to be executed in cluster will be similar for both simulation and data analysis jobs, this is the reason why an abstract <strong>Generic Cluster Integrator</strong> component is present, inherited inside both the <em>Simulator</em> and the <em>Analyzer</em>.</p>
+<p>From the <strong>Cluster Integrator&#8217;s</strong> inside job, we&#8217;ve spotted the main call idea in the pseudo-code below:</p>
+<div class="highlight-python"><pre>for d in data_array
+    for p in parameters_sets
+        write_in_file("simulation.py", "execute_simulation(p,d)")
+        execute_command("qsub -1 other=simulation simulation.py")</pre>
+</div>
+<p><strong>Flow Control</strong> component is expected to choose the correct Analyze Library to be invoked, based on what user&#8217;s selected in the configurable Work-Flow, on Input Data or on some other constraints.</p>
+</div>
+</div>
+<div class="section" id="e-visualization-component">
+<h4>E. Visualization Component<a class="headerlink" href="#e-visualization-component" title="Permalink to this headline">¶</a></h4>
+<p>We have multiple data types to visualize. As these types are also extremely different in content, a proposed implementation schema is presented in the previous drawing (horizontal view). In most of the siuations is not a good idea to do things independently, but as the visualization data formats are extremly different, the proposed architecture seems the correct one.</p>
+<div class="section" id="e1-visualization-library">
+<h5>E1. Visualization Library<a class="headerlink" href="#e1-visualization-library" title="Permalink to this headline">¶</a></h5>
+<p>The <strong>Pre-Processing</strong> component will operate on simulation/data analysis results, to make data ready to be visualized. Depending on the exact input data available, several operations will be applied:</p>
+<ul class="simple">
+<li>Split the brain surface into smaller pieces, to make the arrays compatible with a given technology;</li>
+<li>Change sampling rate for better performance or to get more details;</li>
+<li>Filter Data (e.g. by frequency);</li>
+<li>Re-referencing data (by changing the reference point), etc.</li>
+</ul>
+<p>On the other hand, the <strong>Port-Processor</strong> will operate on the visual result, to make performance adjustments, based on exact system needs. For example:</p>
+<ul class="simple">
+<li>A post-processing step is to have the data zipped, before set to the client;</li>
+<li>Security issues might be applied here, also.</li>
+</ul>
+</div>
+<div class="section" id="e2-visualization-controller">
+<h5>E2. Visualization Controller<a class="headerlink" href="#e2-visualization-controller" title="Permalink to this headline">¶</a></h5>
+<p>The <strong>Library Chooser</strong> component will take care to automatically determine the correct Visualization Library to be used, depending on the Input data and Exact Job description that it received. This block is the first one, from the Visualization Component, in the Command Flow; it will determine the next concrete step to be executed. The <em>Library Chooser</em> will act as a <em>Factory</em>, by determining the correct <em>Adapter</em> to be called.</p>
+<p>The last step in the Visualization Data Flow, residing inside the Controller, is executed by the <strong>Result Integrator</strong> component. This block will be responsible to prepare data for being displayed to the user. It will receive data artifacts from the Visualization Libraries, and it will make sure they are passed, in an unitary mode, to the Web Server Application (exactly to sub-component <strong>Web Visual Adapter</strong>) and later on feed into the <em>Browser</em>.</p>
+</div>
+</div>
+</div>
+<div class="section" id="storage-system">
+<h3>3. STORAGE SYSTEM<a class="headerlink" href="#storage-system" title="Permalink to this headline">¶</a></h3>
+<p>This component remains unchanged from the upper level.</p>
+</div>
+<div class="section" id="id25">
+<h3>4. DATA CONNECTOR<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
+<p>This component remains unchanged from the upper level.</p>
+</div>
+</div>
+<div class="section" id="v-fifth-level-of-detail">
+<h2>V. Fifth Level of Detail<a class="headerlink" href="#v-fifth-level-of-detail" title="Permalink to this headline">¶</a></h2>
+<img alt="_images/VB_level5.jpg" class="align-center" src="_images/VB_level5.jpg" style="width: 100%;" />
+<div class="section" id="id26">
+<h3>1. APPLICATION INTERFACES<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
+<p>This component remains unchanged from the upper level.</p>
+</div>
+<div class="section" id="id27">
+<h3>2. BACK-END SYSTEM<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="b2-1-abstract-adapter">
+<h4>B2.1 Abstract Adapter<a class="headerlink" href="#b2-1-abstract-adapter" title="Permalink to this headline">¶</a></h4>
+<p>Consider the Interface <strong>Abstract Stream Writer</strong> defined inside this block, with the methods enumerated below (in a <em>pseudo-form</em> of <em>pseudo-code</em>):</p>
+<div class="highlight-python"><pre>Interface AbstractStreamWriter:
+    public void initialize(Address streamAddress);
+    public void write(Object data);
+    public void commit();
+    public Boolean isCompleteWritten();</pre>
+</div>
+<p>The <strong>File Stream Writer</strong> component is a default implementation of the interface <em>Abstract Stream Writer</em>; it is expected to store the data received as parameter inside a file, specified by its path from an upper level.</p>
+</div>
+<div class="section" id="id28">
+<h4>D1. TVB Simulation Library<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h4>
+<p>For <strong>Simulation Library</strong>, as <em>entry point</em> to the library functions, we could have a code skeleton similar to the following pseudo-code:</p>
+<div class="highlight-python"><pre>import AbstractStreamWriter;
+public executionStart(BrainData params, AbstractStreamWriter writer) {
+       while(simulation_not_finished) {
+            define String partialData;
+            partialData  = executeSimulationStepX(params);
+            writer.write(partialData);
+       }
+       writer.commit();
+}</pre>
+</div>
+<p>The code slice from above does not overrules the <strong>independence</strong> principle that <strong>TVB Simulation Library</strong> has. From the code we can spot that TVB Simulation Library depends on the interface <em>Abstract Stream Writer</em>. Depending on an Interface it only means that the library is TVB linkable, and it can still be used without the entire <em>TVB framework</em>.</p>
+</div>
+<div class="section" id="d2-simulation-model-adapters">
+<h4>D2. Simulation Model Adapters<a class="headerlink" href="#d2-simulation-model-adapters" title="Permalink to this headline">¶</a></h4>
+<p>The <strong>Specific Stream Writer</strong>, implementation of <em>Abstract Stream Writer</em>, could have a code similar to the pseudo-code bellow:</p>
+<div class="highlight-python"><pre>import AbstractStreamWriter;
+class SpecificStreamWriter implements AbstractStreamWriter {
+    private attribute resultAddress;
+    private attribute Boolean isComplete = False;
+    public void initialize(Address streamAddress) {
+              resultAddress = streamAddress;
+    }
+    public void write(Object data) {
+              resultAddress.appedData(data);
+    }
+    public void commit() {
+              resultAddress.closeAllStreams();
+              define Result result;
+              result = new Result("Simulation Finished!", resultAddress);
+              Session.commitToDB(result);
+              isComplete = True;
+    }
+    public Boolean isCompleteWritten() {
+              return isComplete;
+    }
+}</pre>
+</div>
+<p>From the <strong>Library Invoker</strong>&#8216;s code:</p>
+<div class="highlight-python"><pre>import TVBSimulationLibrary as TVB_SL;
+public Result invoke(myInputReference, myCustomResultAddress) {
+    define AbstractStreamWriter writer;
+    writer = new SpecificStreamWriter();
+    writer.initialize(myCustomResultAddress);
+    define BrainData inputParams;
+    inputParams = StorageInputDataReader.get(myInputReference);
+    TVB_SL.executionStart(inputParams, writer);
+    define Result result;
+    result = new Result("Simulation Lauched", myCustomResultAddress);
+    Session.commitToDB(result);
+    return result;
+}</pre>
+</div>
+<p>In case TVB Simulation Library is to be used in another context (outside TVB framework), a possible invocation code will be similar to the one presented above, but instead of using an instance of <em>SpecificStreamWriter</em>, one can use <strong>FileStreamWriter</strong>, another default implementation or a custom created implementation of the interface**AbstractStreamWriter**, which will be embedded into the Library distribution.</p>
+</div>
+<div class="section" id="id29">
+<h4>E. Data Analyzer Component<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h4>
+<p>For the <strong>Analyzer Adapter</strong> and <strong>Data Analysis Libraries</strong>, a similar structure to the ones in the <strong>Visualization Component</strong> are expected to appear. Anyway, there might already exist implemented libraries, that do not support integrating the AbstractStreamWriter reference inside, for streaming the results. In such cases, or other cases when streaming is not wanted (e.g. when results are extremely short), one can consider the code skeleton bellow:</p>
+<div class="highlight-python"><pre>import AbstractStreamWriter;
+import MyExistentLibrary as LIB
+class MyLibraryWrapper {
+       public executionStart(BrainData params, AbstractStreamWriter writer) {
+             define Object wholeResult;
+             wholeResult = LIB.execute(params);
+             writer.write(wholeResult);
+             writer.commit();
+       }
+}</pre>
+</div>
+</div>
+</div>
+<div class="section" id="id30">
+<h3>3. STORAGE SYSTEM<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
+<p>This component remains unchanged from the upper level.</p>
+</div>
+<div class="section" id="id31">
+<h3>4. DATA CONNECTOR<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
+<p>This component remains unchanged from the upper level.</p>
+</div>
+<div class="section" id="references">
+<h3>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li><a class="reference external" href="http://www.connectomics.org/documentation/users/connectomefileformat.html">Connectome</a> Project.</li>
+<li><a class="reference external" href="http://sccn.ucsd.edu/eeglab/">EEGLAB</a>.</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api.html">API</a>|&nbsp;</li>
+	<li><a href="developer.html">Developer</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, timpx.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

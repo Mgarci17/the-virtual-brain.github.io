@@ -1,0 +1,78 @@
+
+
+transient Package
+=================
+
+:mod:`burst_configuration_entities` Module
+------------------------------------------
+
+.. automodule:: tvb.core.entities.transient.burst_configuration_entities
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`burst_export_entities` Module
+-----------------------------------
+
+.. automodule:: tvb.core.entities.transient.burst_export_entities
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`context_local_connectivity` Module
+----------------------------------------
+
+.. automodule:: tvb.core.entities.transient.context_local_connectivity
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`context_overlay` Module
+-----------------------------
+
+.. automodule:: tvb.core.entities.transient.context_overlay
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`context_stimulus` Module
+------------------------------
+
+.. automodule:: tvb.core.entities.transient.context_stimulus
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`filtering` Module
+-----------------------
+
+.. automodule:: tvb.core.entities.transient.filtering
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`graph_structures` Module
+------------------------------
+
+.. automodule:: tvb.core.entities.transient.graph_structures
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`pse` Module
+-----------------
+
+.. automodule:: tvb.core.entities.transient.pse
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`structure_entities` Module
+--------------------------------
+
+.. automodule:: tvb.core.entities.transient.structure_entities
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+

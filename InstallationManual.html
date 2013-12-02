@@ -1,0 +1,297 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation Manual &mdash; tvb_doc 2.7 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="tvb_doc 2.7 documentation" href="index.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left;  padding: 10px 10px 15px 15px">
+<a href="http://www.thevirtualbrain.org/"><img src="_static/logo.svg" height="148" border="0" alt="The Virtual Brain Project"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api.html">API</a>|&nbsp;</li>
+	<li><a href="developer.html">Developer</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation Manual</a><ul>
+<li><a class="reference internal" href="#install-requirements">1. INSTALL REQUIREMENTS</a></li>
+<li><a class="reference internal" href="#other-requirements">2. OTHER REQUIREMENTS</a><ul>
+<li><a class="reference internal" href="#a-modern-web-browser">A. Modern web browser</a></li>
+<li><a class="reference internal" href="#b-octave-or-matlab-optional">B. Octave or Matlab (optional)</a></li>
+<li><a class="reference internal" href="#c-websocket-compatible-browser">C. WebSocket compatible browser</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#start-stop-procedure">3. START / STOP PROCEDURE</a><ul>
+<li><a class="reference internal" href="#a-mac-os">A. MAC OS</a></li>
+<li><a class="reference internal" href="#b-windows">B. WINDOWS</a></li>
+<li><a class="reference internal" href="#c-linux">C. LINUX</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#default-data">4. DEFAULT DATA</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/InstallationManual.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation-manual">
+<span id="id1"></span><h1>Installation Manual<a class="headerlink" href="#installation-manual" title="Permalink to this headline">¶</a></h1>
+<p>This file will guide you in installing and using The Virtual Brain project (TVB)
+correctly.  For a more detailed solution to any of your problems related to TVB
+software, please contact us at <a class="reference external" href="mailto:admin&#37;&#52;&#48;thevirtualbrain&#46;org">admin<span>&#64;</span>thevirtualbrain<span>&#46;</span>org</a></p>
+<div class="section" id="install-requirements">
+<h2>1. INSTALL REQUIREMENTS<a class="headerlink" href="#install-requirements" title="Permalink to this headline">¶</a></h2>
+<p>TVB has been packaged into stand-alone distributions, and using one of these
+distributions is often the most convenient choice because it does not require
+downloading or installing anything else.</p>
+<p>If you wish to install or run TVB from source, you will need to install
+several dependencies. We assume however that you already have installed
+CPython 2.6 or 2.7, along with NumPy, SciPy and Matplotlib. On Linux, this
+is most easily done via the system&#8217;s package manager. On Mac OS X &amp; Windows
+we recommend using a prepackaged distribution of Python such as PythonXY
+(<a class="reference external" href="http://www.pythonxy.com">http://www.pythonxy.com</a>) or Enthought Python Distribution
+(<a class="reference external" href="http://www.enthought.com">http://www.enthought.com</a>), that when installed, provide most
+of the dependencies.</p>
+<p>The non-standard libraries that are required for the TVB can be most easily
+installed via the command</p>
+<p>pip install cherrypy formencode sqlalchemy sqlalchemy-migrate genshi simplejson cfflib networkx nibabel apscheduler mod_pywebsocket psutil minixsv h5py</p>
+<p>where pip is the standard Python package manager.</p>
+<p>If you have a non-standard situation, please try installing the packages by hand:</p>
+<ul class="simple">
+<li>Python 2.7.1 : other versions of python might not work as expected, so we recommend that you have this version installed with all the dependencies. You should find instructions on installing Python here: <a class="reference external" href="http://diveintopython.org/installing_python/">http://diveintopython.org/installing_python/</a></li>
+<li>CherryPy 3.2 : you can download it from here: <a class="reference external" href="http://www.cherrypy.org/wiki/CherryPyDownload">http://www.cherrypy.org/wiki/CherryPyDownload</a></li>
+<li>FormEncode 1.2.3 or 1.2.4 : these are the versions the product was tested on, other versions might work also. Using python&#8217;s &#8216;easy_install&#8217; should bring you a good version, otherwise you can download and install it from here: <a class="reference external" href="http://pypi.python.org/pypi/FormEncode">http://pypi.python.org/pypi/FormEncode</a></li>
+<li>SQLAlchemy-Migrate 0.6.6 or 0.7.1 : &#8216;easy_install&#8217; should work for this too, otherwise download and install from: <a class="reference external" href="http://www.sqlalchemy.org/download.html">http://www.sqlalchemy.org/download.html</a></li>
+<li>SQLAlchemy 0.7.1 : doing an &#8216;easy_install sqlalchemy-migrate&#8217; should work. You can also download and install from: <a class="reference external" href="http://code.google.com/p/sqlalchemy-migrate/downloads/list">http://code.google.com/p/sqlalchemy-migrate/downloads/list</a></li>
+<li>Genshi 0.6 : again this should be available trough easy_install. You can also find the sources here: <a class="reference external" href="http://genshi.edgewall.org/wiki/Download">http://genshi.edgewall.org/wiki/Download</a></li>
+<li>SimpleJSON 2.1.3 or 2.1.6 : available trough easy_install or from: <a class="reference external" href="http://pypi.python.org/pypi/simplejson/2.1.3">http://pypi.python.org/pypi/simplejson/2.1.3</a></li>
+<li>Matplotlib 1.0.1 : easy_install and pip might not work. You can find a step by step install procedure here: <a class="reference external" href="http://matplotlib.sourceforge.net/users/installing.html">http://matplotlib.sourceforge.net/users/installing.html</a></li>
+<li>Numpy 1.5.1 or 1.6.0 and Scipy 0.9: you can find them here: <a class="reference external" href="http://www.scipy.org/Download">http://www.scipy.org/Download</a></li>
+<li>Scikits.learn 0.8.1 : easy_install might work. You can also find it here: <a class="reference external" href="http://pypi.python.org/pypi/scikits.learn#downloads">http://pypi.python.org/pypi/scikits.learn#downloads</a></li>
+<li>Numexpr 1.4.2 : easy_install should work, otherwise sources are found here: <a class="reference external" href="http://pypi.python.org/pypi/numexpr">http://pypi.python.org/pypi/numexpr</a></li>
+<li>Cfflib 2.0.2 or 2.0.5 : you can find the sources here: <a class="reference external" href="http://pypi.python.org/pypi/cfflib/2.0.5">http://pypi.python.org/pypi/cfflib/2.0.5</a></li>
+<li>NetworkX 1.4 : easy_install or pip should work. You can also find sources here: <a class="reference external" href="http://pypi.python.org/pypi/networkx">http://pypi.python.org/pypi/networkx</a></li>
+<li>Nibabel 1.0.1 or 1.0.2 : easy_install or pip should work. You can also find sources here: <a class="reference external" href="http://pypi.python.org/pypi/nibabel">http://pypi.python.org/pypi/nibabel</a></li>
+<li>APScheduler 2.0.2 : easy_install or pip should work. You can also find sources here: <a class="reference external" href="http://pypi.python.org/pypi/APScheduler/">http://pypi.python.org/pypi/APScheduler/</a></li>
+<li>PyWebSocket 0.7 : easy_install/pip mod_pywebsocket, or download code from <a class="reference external" href="http://code.google.com/p/pywebsocket/">http://code.google.com/p/pywebsocket/</a> then execute python setup.py install</li>
+<li>psutil : easy_install, pip</li>
+<li>minixsv (for genxmlif) : easy_install, pip</li>
+<li>h5py: easy_install, pip</li>
+</ul>
+</div>
+<div class="section" id="other-requirements">
+<h2>2. OTHER REQUIREMENTS<a class="headerlink" href="#other-requirements" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="a-modern-web-browser">
+<h3>A. Modern web browser<a class="headerlink" href="#a-modern-web-browser" title="Permalink to this headline">¶</a></h3>
+<p>The Virtual Brain&#8217;s web interface uses several newer technologies for the
+web, including Scalable Vector Graphics and WebGL, so you will need a browser
+that supports these standards. The following browsers have been tested and
+are available for most platforms:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Google Chrome (<a class="reference external" href="http://www.google.com/chrome?hl=en">http://www.google.com/chrome?hl=en</a>), versions 17 - 23</li>
+<li>Safari 5.1.1 (with Developer -Enable WebGL checked)</li>
+<li>and Mozilla Firefox (<a class="reference external" href="http://www.mozilla.org/en-US/firefox/new/">http://www.mozilla.org/en-US/firefox/new/</a>), version 17 - 18.</li>
+</ul>
+</div></blockquote>
+<p>Because current versions of Internet Explorer do not support the required standards, it is
+not advised or support to use Internet Explorer.</p>
+<p>Some other browsers might work but the browser should support WebGL as a
+requirement for part of the visualisers.  A list of browsers that support WebGL
+is found at the following link: <a class="reference external" href="http://en.wikipedia.org/wiki/WebGL">http://en.wikipedia.org/wiki/WebGL</a>.  Further
+details about WebGL can be found here: <a class="reference external" href="http://learningwebgl.com/blog/?p=11">http://learningwebgl.com/blog/?p=11</a> .</p>
+<p>Your default browser will be used when starting the application.  If you have
+an unsupported browser as default, you will need to copy the URL
+(<a class="reference external" href="http://127.0.0.1:8080/">http://127.0.0.1:8080/</a> by default) into a supported browser.</p>
+</div>
+<div class="section" id="b-octave-or-matlab-optional">
+<h3>B. Octave or Matlab (optional)<a class="headerlink" href="#b-octave-or-matlab-optional" title="Permalink to this headline">¶</a></h3>
+<p>Some of our analyzers (Brain Connectivity Toolbox) need Matlab or Octave to be installed and added to system path(available directly from console).
+If this is not the case, these specific analyzers will be hidden from the UI, as they can not be executed.
+You do not need to manually &#8220;link&#8221; between TVB and Matlab, that will be done behind the scene, you only need to have Matlab available in PATH.
+<a class="reference external" href="https://sites.google.com/a/brain-connectivity-toolbox.net/bct/Home">https://sites.google.com/a/brain-connectivity-toolbox.net/bct/Home</a></p>
+</div>
+<div class="section" id="c-websocket-compatible-browser">
+<h3>C. WebSocket compatible browser<a class="headerlink" href="#c-websocket-compatible-browser" title="Permalink to this headline">¶</a></h3>
+<p>Most of the modern browsers have this capability.</p>
+</div>
+</div>
+<div class="section" id="start-stop-procedure">
+<h2>3. START / STOP PROCEDURE<a class="headerlink" href="#start-stop-procedure" title="Permalink to this headline">¶</a></h2>
+<p>Starting the application is done by executing a &#8220;tvb start&#8221; script (name and form depends on the current OS - see bellow).
+After executing the script, a browser interface should be fired. In case that does not happen, you might see an error in file ~/TVB/TVB_Logger.
+In case you are accessing the application from a different machine, or the default browser is not found, you could manually type in your prefered browser:</p>
+<blockquote>
+<div><ul>
+<li><p class="first"><a class="reference external" href="http://[localIPwhereTVBwasInstalled]:8080/setting/settings">http://[localIPwhereTVBwasInstalled]:8080/setting/settings</a></p>
+</li>
+<li><p class="first">validate that the default settings are ok for you, or change some (see bellow some explanations).</p>
+</li>
+<li><p class="first">in case you want to be able to access the application from a different machine, make sure you change &#8220;server IP&#8221; from &#8220;127.0.0.1&#8221; into your IP, or a name that you can use for accessing the machine where TVB is installed.
+In case you do not change this IP, when accessing from a different machine, you will still be able to access most of TVB pages, except for visualizers that are using WebSockets.</p>
+</li>
+<li><dl class="first docutils">
+<dt>TVB_STORAGE - this is a local path on your file system that will be used to store TVB related projects and the sqllite database.</dt>
+<dd><p class="first last">This must be a valid path on your file system and you need to have write access on it.
+Default value it&#8217;s ~/TVB. A log files will be placed there also: ~/TVB/TVB_logger.log
+Make sure the user you start TVB with can create this folder, or change the parameter towards an empty folder you have write access to!!!</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">DB_URL - this is the  database that will be used. In case you want to choose Postgres, you need to install that separately yoruself.</p>
+</li>
+<li><dl class="first docutils">
+<dt>RPC_SERVER_PORT, WEB_SERVER_PORT - the ports that will be used by the backend server and the cherrypy server.</dt>
+<dd><p class="first last">These must be valid ports and not used by any other process.</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">press Apply button.</p>
+</li>
+<li><p class="first">you will be redirected to a new URL. If that does not happen, you can try it yourself: <a class="reference external" href="http://[serverIP]:[new">http://[serverIP]:[new</a> port if you changed it, or default 8080]/tvb</p>
+</li>
+</ul>
+</div></blockquote>
+<div class="section" id="a-mac-os">
+<h3>A. MAC OS<a class="headerlink" href="#a-mac-os" title="Permalink to this headline">¶</a></h3>
+<p>In order to start the application simply double click &#8216;tvb.app&#8217;. This will run the application with default settings and start a default browser with the starting URL.
+You can also start an IDLE console with the proper environment to use TVB from a console mode by using the &#8216;tvb_command&#8217; or &#8216;tvb_library&#8217; in &#8216;bin&#8217; folder.</p>
+<p>If by some reason you need to reset the database (for example when an important release is done, and previous DB structure can not be reused - highly not probable to happen),
+you can start with a fresh database by running the &#8216;tvb_clean.command&#8217; and after that start normally.
+NOTE: This will reset you database and delete all your data folders so you will lose all previous data unless you have a previous backup.</p>
+<p>The application might still will run in background. In order to stop it you need to use the &#8216;tvb_stop.command&#8217;.</p>
+</div>
+<div class="section" id="b-windows">
+<h3>B. WINDOWS<a class="headerlink" href="#b-windows" title="Permalink to this headline">¶</a></h3>
+<p>In order to start the application simply execute tvb_start.bat. This will start a command terminal and run the application with default settings.
+You can also start an IDLE console with the proper environment to use TVB from a console mode by executing &#8216;tvb_console.bat&#8217; or &#8216;tvb_library.bat&#8217; in &#8216;bin&#8217; folder.</p>
+<p>If by some reason you need to reset the database (for example when an important release is done, and previous DB structure can not be reused - highly not probable to happen)
+you can start with a fresh database by running the &#8216;tvb_clean.bat&#8217; file located in &#8216;bin&#8217; folder, and after that start normally.
+NOTE: This will reset you database and delete all your data folders so you will lose all previous data unless you have a previous backup.</p>
+<p>In order to stop the application all you need to do is close the terminal that was started initially.</p>
+<p>! When starting with a different user than the Administrator, on windows 7, you will be asked if you give permission to Python (the main programming language used in TVB)
+to start a server. You should answer positively if you want to have TVB running locally.</p>
+</div>
+<div class="section" id="c-linux">
+<h3>C. LINUX<a class="headerlink" href="#c-linux" title="Permalink to this headline">¶</a></h3>
+<p>In order to start the application simply execute: &#8216;sh tvb_start.sh&#8217; in &#8216;bin&#8217; folder of TVB Distribution.
+This will run the application with default settings and start a default browser with the starting URL.
+You can also start an IDLE console with the proper environment to use TVB from a console mode by using the &#8216;tvb_command.sh&#8217; or &#8216;tvb_library.sh&#8217;.</p>
+<p>If by some reason you need to reset the database you can start with a fresh database by executing &#8216;sh tvb_clean.sh&#8217; and after that start normally.
+(NOTE: This will reset you database and delete all your data folders so you will lose all previous data unless you have a backup)</p>
+<p>In order to stop them you need to use the script file located at &#8216;sh tvb_stop.sh&#8217;.</p>
+</div>
+</div>
+<div class="section" id="default-data">
+<h2>4. DEFAULT DATA<a class="headerlink" href="#default-data" title="Permalink to this headline">¶</a></h2>
+<p>The Virtual Brain comes with a set of example structural data that you can use.
+However, in order to use all this data you will need as a prerequisite to:</p>
+<blockquote>
+<div><ul class="simple">
+<li>login with the default user admin/pass</li>
+<li>go to &#8220;project&#8221; area, create a new project, save it</li>
+<li>same &#8220;project&#8221; area, select &#8220;Data Structure&#8221; link near you newly created project</li>
+<li>button &#8220;CFF Importer&#8221; on the right</li>
+<li>select &#8220;demo_data/dataset_XX.cff&#8221; from TVB distribution package you&#8217;ve previously downloaded and unpacked.</li>
+<li>you should see now one Connectivity, one or 2 surfaces and one Cortex entities in your Project Structure.</li>
+</ul>
+</div></blockquote>
+<p>However, with each new user created, a &#8220;default_project&#8221; is created, and it has a full CFF uploaded inside.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
+	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
+	<li><a href="api.html">API</a>|&nbsp;</li>
+	<li><a href="developer.html">Developer</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, timpx.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>
