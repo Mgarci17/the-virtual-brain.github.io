@@ -7,12 +7,14 @@ The console interface
 
 a little word on console interface
 
+.. toctree::
 
-* :ref:`quick_start` 
-* :ref:`tutorials` 
-* :ref:`a_description_of_a_complete_dataset` 
-* :ref:`featured_request` 
-* :ref:`future_tech` 
+   :maxdepth: 2
+
+   quickstart_console
+   tutorials 
+
+
 
 
 

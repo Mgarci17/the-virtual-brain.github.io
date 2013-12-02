@@ -1,4 +1,4 @@
-.. _user_guide
+
 
 
 .. |TITLE| replace:: User's Guide
@@ -7,6 +7,8 @@
 .. |REVISION| replace:: 0.1
 
 .. include:: ../templates/pdf_template.rst
+
+.. _user_guide:
 
 ******************************************
 User Guide

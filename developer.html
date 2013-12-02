@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Customizing the look and feel of the site &mdash; tvb_doc 2.7 documentation</title>
+    <title>Developer &mdash; tvb_doc 2.7 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -29,8 +29,8 @@
   </head>
   <body>
 
-<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
-<a href="index.html"><img src="_static/logo.svg" border="0" alt="py4sci"/></a>
+<div style="background-color: white; text-align: left;  padding: 10px 10px 15px 15px">
+<a href="http://www.thevirtualbrain.org/"><img src="_static/logo.svg" height="148" border="0" alt="The Virtual Brain Project"/></a>
 </div>
 
     <div class="related">
@@ -39,11 +39,14 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li><a href="index.html">home</a>|&nbsp;</li>
         <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
 	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
-	<li><a href="api/index.html">API</a>|&nbsp;</li>
-	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
+	<li><a href="api.html">API</a>|&nbsp;</li>
+	<li><a href="#">Developer</a>|&nbsp;</li>
  
       </ul>
     </div>
@@ -76,58 +79,31 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="customizing-the-look-and-feel-of-the-site">
-<span id="custom-look"></span><h1>Customizing the look and feel of the site<a class="headerlink" href="#customizing-the-look-and-feel-of-the-site" title="Permalink to this headline">¶</a></h1>
-<p>The <a class="reference external" href="http://sphinx.pocoo.org/">sphinx</a> site itself looks better than
-the sites created with the default css, so here we&#8217;ll invoke T. S. Eliot&#8217;s
-maxim &#8220;Talent imitates, but genius steals&#8221; and grab their css
-and part of their layout.  As before, you can either get the required
-files <tt class="file docutils literal"><span class="pre">_static/default.css</span></tt>, <tt class="file docutils literal"><span class="pre">_templates/layout.html</span></tt> and
-<tt class="file docutils literal"><span class="pre">_static/logo.png</span></tt> from the website or git (see
-<em class="xref std std-ref">fetching-the-data</em>).  Since I did a git clone before, I will
-just copy the stuff I need from there:</p>
-<div class="highlight-python"><pre>home:~/tmp/sampledoc&gt; cp ../sampledoc_tut/_static/default.css _static/
-home:~/tmp/sampledoc&gt; cp ../sampledoc_tut/_templates/layout.html _templates/
-home:~/tmp/sampledoc&gt; cp ../sampledoc_tut/_static/logo.png _static/
-home:~/tmp/sampledoc&gt; ls _static/ _templates/
-_static/:
-basic_screenshot.png        default.css             logo.png
-
-_templates/:
-layout.html</pre>
+  <div class="section" id="developer">
+<span id="id1"></span><h1>Developer<a class="headerlink" href="#developer" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ContributorsManual.html">TVB Contributors manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ContributorsManual.html#git-setup">GIT Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ContributorsManual.html#contribution-guidelines">Contribution guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ContributorsManual.html#use-tvb-framework-from-console-interface">Use TVB Framework from Console Interface</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="DeveloperReferenceManual.html">Developer Reference Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="DeveloperReferenceManual.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeveloperReferenceManual.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeveloperReferenceManual.html#i-main-system-components">I. Main System Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeveloperReferenceManual.html#ii-second-level-of-detail">II. Second Level of Detail</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeveloperReferenceManual.html#iii-third-level-of-detail">III. Third Level of Detail</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeveloperReferenceManual.html#iv-forth-level-of-detail">IV. Forth Level of Detail</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeveloperReferenceManual.html#v-fifth-level-of-detail">V. Fifth Level of Detail</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="featured_request.html">Featured request</a></li>
+<li class="toctree-l1"><a class="reference internal" href="future_tech.html">Future Tech</a></li>
+</ul>
 </div>
-<p>Sphinx will automatically pick up the css and layout html files since
-we put them in the default places with the default names, but we have
-to manually include the logo in our <tt class="file docutils literal"><span class="pre">layout.html</span></tt>.  Let&#8217;s take a
-look at the layout file: the first part puts a horizontal navigation
-bar at the top of our page, like you see on the <a class="reference external" href="http://sphinx.pocoo.org">sphinx</a> and <a class="reference external" href="http://matplotlib.sourceforge.net/">matplotlib</a> sites, the second part includes
-a logo that when we click on it will take us <cite>home</cite> and the last part
-moves the vertical navigation panels to the right side of the page:</p>
-<div class="highlight-python"><pre>{% extends "!layout.html" %}
-
-
-{% block rootrellink %}
-        &lt;li&gt;&lt;a href="{{ pathto('index') }}"&gt;home&lt;/a&gt;|&amp;nbsp;&lt;/li&gt;
-        &lt;li&gt;&lt;a href="{{ pathto('search') }}"&gt;search&lt;/a&gt;|&amp;nbsp;&lt;/li&gt;
-       &lt;li&gt;&lt;a href="{{ pathto('contents') }}"&gt;documentation &lt;/a&gt; &amp;raquo;&lt;/li&gt;
-{% endblock %}
-
-
-{% block relbar1 %}
-
-&lt;div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px"&gt;
-&lt;a href="{{ pathto('index') }}"&gt;&lt;img src="{{
-pathto("_static/logo.png", 1) }}" border="0" alt="sampledoc"/&gt;&lt;/a&gt;
-&lt;/div&gt;
-{{ super() }}
-{% endblock %}
-
-{# put the sidebar before the body #}
-{% block sidebar1 %}{{ sidebar() }}{% endblock %}
-{% block sidebar2 %}{% endblock %}</pre>
-</div>
-<p>Once you rebuild the site with a <tt class="docutils literal"><span class="pre">make</span> <span class="pre">html</span></tt> and reload the page in your browser, you should see a fancier site that looks like this</p>
-<img alt="_static/fancy_screenshot.png" src="_static/fancy_screenshot.png" />
+<p>You can see the source code on <a class="reference external" href="https://github.com/the-virtual-brain">github</a></p>
 </div>
 
 
@@ -142,11 +118,14 @@ pathto("_static/logo.png", 1) }}" border="0" alt="sampledoc"/&gt;&lt;/a&gt;
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li><a href="index.html">home</a>|&nbsp;</li>
         <li><a href="web_interface.html">web interface</a>|&nbsp;</li>
 	<li><a href="console_interface.html">console interface</a>|&nbsp;</li>
-	<li><a href="api/index.html">API</a>|&nbsp;</li>
-	<li><a href="https://github.com/the-virtual-brain">Developer (Github)</a>|&nbsp;</li>
+	<li><a href="api.html">API</a>|&nbsp;</li>
+	<li><a href="#">Developer</a>|&nbsp;</li>
  
       </ul>
     </div>

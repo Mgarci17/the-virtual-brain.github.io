@@ -124,12 +124,5 @@ Use Cases
     with a rectangular pulse train. Two simulations are launched to produce resting state and 
     stimulation-driven activity. 
 
--------------------------------------------------------------------------------
-
-* :ref:`quick_start` 
-* :ref:`tutorials` 
-* :ref:`a_description_of_a_complete_dataset` 
-* :ref:`featured_request` 
-* :ref:`future_tech` 
 
 
