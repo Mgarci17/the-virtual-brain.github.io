@@ -125,8 +125,6 @@ Use Cases
     with a rectangular pulse train. Two simulations are launched to produce resting state and 
     stimulation-driven activity. 
 
-<<<<<<< HEAD
-=======
 * `Modeling The Impact Of Structural Lesions`:
 
     * `Part I: Modeling Lesions <http://nbviewer.ipython.org/github/the-virtual-brain/scientific_library/blob/trunk/tvb/simulator/doc/tutorials/Tutorial_Modeling_The_Impact_Of_Structural_Lesions/Tutorial_Modeling_The_Impact_Of_Structural_Lesions_Part_I.ipynb>`_
@@ -151,13 +149,6 @@ Use Cases
           
 [alstott2009]: http://www.ploscompbiol.org/article/info%3Adoi%2F10.1371%2Fjournal.pcbi.1000408
 
--------------------------------------------------------------------------------
 
-* :ref:`quick_start` 
-* :ref:`tutorials` 
-* :ref:`a_description_of_a_complete_dataset` 
-* :ref:`featured_request` 
-* :ref:`future_tech` 
->>>>>>> 36a02e006f36263986041bffafdd06e690f73f8e
 
 
