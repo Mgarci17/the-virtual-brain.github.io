@@ -10,7 +10,7 @@ Welcome to The Virtual Brain documentation!
    :maxdepth: 2
    
   
-Download, see `official TVB website <http://http://thevirtualbrain.org/>`_
+Download, see `official TVB website <http://thevirtualbrain.org/app/index.html>`_
 
 Installation, see :ref:`installation_manual`
 
