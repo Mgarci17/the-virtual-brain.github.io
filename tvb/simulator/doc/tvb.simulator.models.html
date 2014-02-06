@@ -180,16 +180,16 @@ occur given a region i and a region j:</p>
 E_i-&gt; I_j 
 I_i-&gt; I_j  
 I_i-&gt; E_j</div></blockquote>
-<p>The models (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>E</mi></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>I</mi></mrow></math>) phase-plane, including a representation of
+<p>The models (<span class="formula"><i>E</i></span>
+, <span class="formula"><i>I</i></span>
+) phase-plane, including a representation of
 the vector field as well as its nullclines, using default parameters, can be
 seen below:</p>
 <blockquote>
 <div><div class="figure" id="phase-plane-wc">
-<img alt="Wilson-Cowan phase plane (E, I)" src="../../../_images/WilsonCowan_01_mode_0_pplane1.svg" /><p class="caption">The (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>E</mi></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>I</mi></mrow></math>) phase-plane for the Wilson-Cowan model.</p>
+<img alt="Wilson-Cowan phase plane (E, I)" src="../../../_images/WilsonCowan_01_mode_0_pplane1.svg" /><p class="caption">The (<span class="formula"><i>E</i></span>
+, <span class="formula"><i>I</i></span>
+) phase-plane for the Wilson-Cowan model.</p>
 </div>
 </div></blockquote>
 <dl class="method">
@@ -202,98 +202,115 @@ keywords will overide their traited default.</p>
 <dl class="method">
 <dt id="tvb.simulator.models.WilsonCowan.dfun">
 <tt class="descclassname">WilsonCowan.</tt><tt class="descname">dfun</tt><big>(</big><em>state_variables</em>, <em>coupling</em>, <em>local_coupling=0.0</em><big>)</big><a class="headerlink" href="#tvb.simulator.models.WilsonCowan.dfun" title="Permalink to this definition">¶</a></dt>
-<dd><div>
-<math xmlns="http://www.w3.org/1998/Math/MathML" mode="display">
-<mtable>
-<mtr>
-<mtd><mi>τ</mi><mover>
-<mrow><mi>x</mi></mrow><mo>˙</mo></mover><mo>(</mo><mi>t</mi><mo>)</mo></mtd>
-<mtd><mo>=</mo><mo>-</mo><mi>z</mi><mo>(</mo><mi>t</mi><mo>)</mo><mo>+</mo><mi>ϕ</mi><mo>(</mo><mi>z</mi><mo>(</mo><mi>t</mi><mo>)</mo><mo>)</mo></mtd></mtr>
-<mtr>
-<mtd><mi>ϕ</mi><mo>(</mo><mi>x</mi><mo>)</mo></mtd>
-<mtd><mo>=</mo><mfrac>
-<mrow><mi>c</mi></mrow>
-<mrow><mn>1</mn><mo>-</mo><mi>e</mi><mi>x</mi><mi>p</mi><mo>(</mo><mo>-</mo><mi>a</mi><mo>(</mo><mi>x</mi><mo>-</mo><mi>b</mi><mo>)</mo><mo>)</mo></mrow></mfrac></mtd></mtr></mtable></math>
+<dd><div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-r">
+<i>τ</i><i>ẋ</i>(<i>t</i>)
+</span>
+<span class="arraycell align-l">
+ =  − <i>z</i>(<i>t</i>) + <i>φ</i>(<i>z</i>(<i>t</i>))
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>φ</i>(<i>x</i>)
+</span>
+<span class="arraycell align-l">
+ = <span class="fraction"><span class="ignored">(</span><span class="numerator"><i>c</i></span><span class="ignored">)/(</span><span class="denominator">1 − <i>exp</i>( − <i>a</i>(<i>x</i> − <i>b</i>))</span><span class="ignored">)</span></span>
+</span>
+
+</span>
+</span>
 </div>
 </dd></dl>
 
 <p><strong>traits on this class:</strong></p>
 <blockquote>
 <div><dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">P</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>k</mi><mi>i</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">P</span></tt> (<span class="formula"><i>k</i><sub><i>i</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">External stimulus to the excitatory population. Constant intensity.Entry point for coupling.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 2.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">Q</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>k</mi><mi>i</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">Q</span></tt> (<span class="formula"><i>k</i><sub><i>i</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">External stimulus to the inhibitory population. Constant intensity.Entry point for coupling.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 2.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">a_e</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>a</mi><mi>e</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">a_e</span></tt> (<span class="formula"><i>a</i><sub><i>e</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">The slope parameter for the excitatory response function</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.2] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 1.0 ; high = 1.4 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">a_i</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>a</mi><mi>i</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">a_i</span></tt> (<span class="formula"><i>a</i><sub><i>i</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">The slope parameter for the inhibitory response function</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 2.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">c_1</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>c</mi><mn>1</mn></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">c_1</span></tt> (<span class="formula"><i>c</i><sub>1</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Excitatory to excitatory  coupling coefficient</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 12.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 11.0 ; high = 16.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">c_2</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>c</mi><mn>2</mn></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">c_2</span></tt> (<span class="formula"><i>c</i><sub>2</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Inhibitory to excitatory coupling coefficient</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 4.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 2.0 ; high = 15.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">c_3</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>c</mi><mn>3</mn></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">c_3</span></tt> (<span class="formula"><i>c</i><sub>3</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Excitatory to inhibitory coupling coefficient.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 13.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 2.0 ; high = 22.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">c_4</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>c</mi><mn>4</mn></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">c_4</span></tt> (<span class="formula"><i>c</i><sub>4</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Inhibitory to inhibitory coupling coefficient.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 11.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 2.0 ; high = 15.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">k_e</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>k</mi><mi>e</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">k_e</span></tt> (<span class="formula"><i>k</i><sub><i>e</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Maximum value of the excitatory response function</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.5 ; high = 2.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">k_i</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>k</mi><mi>i</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">k_i</span></tt> (<span class="formula"><i>k</i><sub><i>i</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Maximum value of the inhibitory response function</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
@@ -306,16 +323,16 @@ keywords will overide their traited default.</p>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.simulator.noise.Noise&#8217;&gt; </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">r_e</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>r</mi><mi>e</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">r_e</span></tt> (<span class="formula"><i>r</i><sub><i>e</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Excitatory refractory period</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.5 ; high = 2.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">r_i</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>r</mi><mi>i</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">r_i</span></tt> (<span class="formula"><i>r</i><sub><i>i</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Inhibitory refractory period</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
@@ -328,32 +345,32 @@ keywords will overide their traited default.</p>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  {&#8216;I&#8217;: array([ 0. ,  0.5]), &#8216;E&#8217;: array([ 0. ,  0.5])} </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">tau_e</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>τ</mi><mi>e</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">tau_e</span></tt> (<span class="formula"><i>τ</i><sub><i>e</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Excitatory population, membrane time-constant [ms]</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 10.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 5.0 ; high = 15.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">tau_i</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>τ</mi><mi>i</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">tau_i</span></tt> (<span class="formula"><i>τ</i><sub><i>i</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Inhibitory population, membrane time-constant [ms]</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 10.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 5.0 ; high = 15.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">theta_e</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>θ</mi><mi>e</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">theta_e</span></tt> (<span class="formula"><i>θ</i><sub><i>e</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Position of the maximum slope of a sigmoid function [in         threshold units].</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 2.8] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 1.4 ; high = 4.2 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">theta_i</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>θ</mi><mi>i</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">theta_i</span></tt> (<span class="formula"><i>θ</i><sub><i>i</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Position of the maximum slope of a sigmoid function [in         threshold units]</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 4.] </div>
@@ -362,9 +379,9 @@ keywords will overide their traited default.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Variables watched by Monitors)</dt>
 <dd><div class="first last line-block">
-<div class="line">This represents the default state-variables of this Model to be                                     monitored. It can be overridden for each Monitor if desired. The                                      corresponding state-variable indices for this model are <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>E</mi><mo>=</mo><mn>0</mn></mrow></math>                                     and <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>I</mi><mo>=</mo><mn>1</mn></mrow></math>.</div>
+<div class="line">This represents the default state-variables of this Model to be                                     monitored. It can be overridden for each Monitor if desired. The                                      corresponding state-variable indices for this model are <span class="formula"><i>E</i> = 0</span>
+                                     and <span class="formula"><i>I</i> = 1</span>
+.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [&#8216;E&#8217;] </div>
 </div>
 </dd>
@@ -377,28 +394,28 @@ keywords will overide their traited default.</p>
 <tt class="descclassname">tvb.simulator.models.</tt><tt class="descname">ReducedSetFitzHughNagumo</tt><a class="headerlink" href="#tvb.simulator.models.ReducedSetFitzHughNagumo" title="Permalink to this definition">¶</a></dt>
 <dd><p>A reduced representation of a set of Fitz-Hugh Nagumo oscillators,
 <a class="reference internal" href="#sj-2008">[SJ_2008]</a>.</p>
-<p>The models (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>ξ</mi></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>η</mi></mrow></math>) phase-plane, including a 
+<p>The models (<span class="formula"><i>ξ</i></span>
+, <span class="formula"><i>η</i></span>
+) phase-plane, including a 
 representation of the vector field as well as its nullclines, using default
 parameters, can be seen below:</p>
 <blockquote>
 <div><div class="figure" id="phase-plane-rfhn-0">
-<img alt="Reduced set of FitzHughNagumo phase plane (xi, eta), 1st mode." src="../../../_images/ReducedSetFitzHughNagumo_01_mode_0_pplane1.svg" /><p class="caption">The (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>ξ</mi></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>η</mi></mrow></math>) phase-plane for the first mode of
+<img alt="Reduced set of FitzHughNagumo phase plane (xi, eta), 1st mode." src="../../../_images/ReducedSetFitzHughNagumo_01_mode_0_pplane1.svg" /><p class="caption">The (<span class="formula"><i>ξ</i></span>
+, <span class="formula"><i>η</i></span>
+) phase-plane for the first mode of
 a reduced set of Fitz-Hugh Nagumo oscillators.</p>
 </div>
 <div class="figure" id="phase-plane-rfhn-1">
-<img alt="Reduced set of FitzHughNagumo phase plane (xi, eta), 2nd mode." src="../../../_images/ReducedSetFitzHughNagumo_01_mode_1_pplane1.svg" /><p class="caption">The (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>ξ</mi></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>η</mi></mrow></math>) phase-plane for the second mode of
+<img alt="Reduced set of FitzHughNagumo phase plane (xi, eta), 2nd mode." src="../../../_images/ReducedSetFitzHughNagumo_01_mode_1_pplane1.svg" /><p class="caption">The (<span class="formula"><i>ξ</i></span>
+, <span class="formula"><i>η</i></span>
+) phase-plane for the second mode of
 a reduced set of Fitz-Hugh Nagumo oscillators.</p>
 </div>
 <div class="figure" id="phase-plane-rfhn-2">
-<img alt="Reduced set of FitzHughNagumo phase plane (xi, eta), 3rd mode." src="../../../_images/ReducedSetFitzHughNagumo_01_mode_2_pplane1.svg" /><p class="caption">The (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>ξ</mi></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>η</mi></mrow></math>) phase-plane for the third mode of
+<img alt="Reduced set of FitzHughNagumo phase plane (xi, eta), 3rd mode." src="../../../_images/ReducedSetFitzHughNagumo_01_mode_2_pplane1.svg" /><p class="caption">The (<span class="formula"><i>ξ</i></span>
+, <span class="formula"><i>η</i></span>
+) phase-plane for the third mode of
 a reduced set of Fitz-Hugh Nagumo oscillators.</p>
 </div>
 </div></blockquote>
@@ -412,52 +429,71 @@ Fitz-Hugh Nagumo oscillators.</p>
 <dl class="method">
 <dt id="tvb.simulator.models.ReducedSetFitzHughNagumo.dfun">
 <tt class="descclassname">ReducedSetFitzHughNagumo.</tt><tt class="descname">dfun</tt><big>(</big><em>state_variables</em>, <em>coupling</em>, <em>local_coupling=0.0</em><big>)</big><a class="headerlink" href="#tvb.simulator.models.ReducedSetFitzHughNagumo.dfun" title="Permalink to this definition">¶</a></dt>
-<dd><div>
-<math xmlns="http://www.w3.org/1998/Math/MathML" mode="display">
-<mtable>
-<mtr>
-<mtd><msub><mover>
-<mrow><mi>ξ</mi></mrow><mo>˙</mo></mover><mi>i</mi></msub></mtd>
-<mtd><mo>=</mo><mi>c</mi><mfenced open="(" close=")">
-<mrow><msub><mi>ξ</mi><mi>i</mi></msub><mo>-</mo><msub><mi>e</mi><mi>i</mi></msub><mfrac>
-<mrow><msubsup><mi>ξ</mi><mi>i</mi><mn>3</mn></msubsup></mrow>
-<mrow><mn>3</mn></mrow></mfrac><mo>-</mo><msub><mi>η</mi><mi>i</mi></msub></mrow></mfenced><mo>+</mo><msub><mi>K</mi>
-<mrow><mn>1</mn><mn>1</mn></mrow></msub><mfenced open="[" close="]">
-<mrow><munderover><mo>∑</mo>
-<mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
-<mrow><mn>3</mn></mrow></munderover><msub><mi>A</mi>
-<mrow><mi>i</mi><mi>k</mi></mrow></msub><msub><mi>ξ</mi><mi>k</mi></msub><mo>-</mo><msub><mi>ξ</mi><mi>i</mi></msub></mrow></mfenced><mo>-</mo><msub><mi>K</mi>
-<mrow><mn>1</mn><mn>2</mn></mrow></msub><mfenced open="[" close="]">
-<mrow><munderover><mo>∑</mo>
-<mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
-<mrow><mn>3</mn></mrow></munderover><msub><mi>B</mi>
-<mrow><mi>i</mi><mi>k</mi></mrow></msub><msub><mi>α</mi><mi>k</mi></msub><mo>-</mo><msub><mi>ξ</mi><mi>i</mi></msub></mrow></mfenced><mo>+</mo><mi>c</mi><mi>I</mi><msub><mi>E</mi><mi>i</mi></msub></mtd></mtr>
-<mtr>
-<mtd><msub><mover>
-<mrow><mi>η</mi></mrow><mo>˙</mo></mover><mi>i</mi></msub></mtd>
-<mtd><mo>=</mo><mfrac>
-<mrow><mn>1</mn></mrow>
-<mrow><mi>c</mi></mrow></mfrac><mfenced open="(" close=")">
-<mrow><msub><mi>ξ</mi><mi>i</mi></msub><mo>-</mo><mi>b</mi><msub><mi>η</mi><mi>i</mi></msub><mo>+</mo><msub><mi>m</mi><mi>i</mi></msub></mrow></mfenced></mtd></mtr>
-<mtr>
-<mtd><msub><mover>
-<mrow><mi>α</mi></mrow><mo>˙</mo></mover><mi>i</mi></msub></mtd>
-<mtd><mo>=</mo><mi>c</mi><mfenced open="(" close=")">
-<mrow><msub><mi>α</mi><mi>i</mi></msub><mo>-</mo><msub><mi>f</mi><mi>i</mi></msub><mfrac>
-<mrow><msubsup><mi>α</mi><mi>i</mi><mn>3</mn></msubsup></mrow>
-<mrow><mn>3</mn></mrow></mfrac><mo>-</mo><msub><mi>β</mi><mi>i</mi></msub></mrow></mfenced><mo>+</mo><msub><mi>K</mi>
-<mrow><mn>2</mn><mn>1</mn></mrow></msub><mfenced open="[" close="]">
-<mrow><munderover><mo>∑</mo>
-<mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
-<mrow><mn>3</mn></mrow></munderover><msub><mi>C</mi>
-<mrow><mi>i</mi><mi>k</mi></mrow></msub><msub><mi>ξ</mi><mi>i</mi></msub><mo>-</mo><msub><mi>α</mi><mi>i</mi></msub></mrow></mfenced><mo>+</mo><mi>c</mi><mi>I</mi><msub><mi>I</mi><mi>i</mi></msub></mtd></mtr>
-<mtr>
-<mtd><msub><mover>
-<mrow><mi>β</mi></mrow><mo>˙</mo></mover><mi>i</mi></msub></mtd>
-<mtd><mo>=</mo><mfrac>
-<mrow><mn>1</mn></mrow>
-<mrow><mi>c</mi></mrow></mfrac><mfenced open="(" close=")">
-<mrow><msub><mi>α</mi><mi>i</mi></msub><mo>-</mo><mi>b</mi><msub><mi>β</mi><mi>i</mi></msub><mo>+</mo><msub><mi>n</mi><mi>i</mi></msub></mrow></mfenced></mtd></mtr></mtable></math>
+<dd><div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-r">
+<i>ξ̇</i><sub><i>i</i></sub>
+</span>
+<span class="arraycell align-l">
+ = <i>c</i><span class="array"><span class="arrayrow"><span class="bracket align-left">⎛</span></span><span class="arrayrow"><span class="bracket align-left">⎝</span></span></span><i>ξ</i><sub><i>i</i></sub> − <i>e</i><sub><i>i</i></sub><span class="fraction"><span class="ignored">(</span><span class="numerator"><i>ξ</i><span class="scripts"><sup class="script">3</sup><sub class="script"><i>i</i></sub></span></span><span class="ignored">)/(</span><span class="denominator">3</span><span class="ignored">)</span></span> − <i>η</i><sub><i>i</i></sub><span class="array"><span class="arrayrow"><span class="bracket align-right">⎞</span></span><span class="arrayrow"><span class="bracket align-right">⎠</span></span></span> + <i>K</i><sub>11</sub><span class="symbol">[</span><span class="limits"><sup class="limit">3</sup><span class="limit"><span class="symbol">∑</span></span><sub class="limit"><i>k</i> = 1</sub></span><i>A</i><sub><i>ik</i></sub><i>ξ</i><sub><i>k</i></sub> − <i>ξ</i><sub><i>i</i></sub><span class="symbol">]</span> − <i>K</i><sub>12</sub><span class="symbol">[</span><span class="limits"><sup class="limit">3</sup><span class="limit"><span class="symbol">∑</span></span><sub class="limit"><i>k</i> = 1</sub></span><i>B</i><sub><i>ik</i></sub><i>α</i><sub><i>k</i></sub> − <i>ξ</i><sub><i>i</i></sub><span class="symbol">]</span> + <i>cIE</i><sub><i>i</i></sub>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>η̇</i><sub><i>i</i></sub>
+</span>
+<span class="arraycell align-l">
+ = <span class="fraction"><span class="ignored">(</span><span class="numerator">1</span><span class="ignored">)/(</span><span class="denominator"><i>c</i></span><span class="ignored">)</span></span><span class="symbol">(</span><i>ξ</i><sub><i>i</i></sub> − <i>b</i><i>η</i><sub><i>i</i></sub> + <i>m</i><sub><i>i</i></sub><span class="symbol">)</span>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>α̇</i><sub><i>i</i></sub>
+</span>
+<span class="arraycell align-l">
+ = <i>c</i><span class="array"><span class="arrayrow"><span class="bracket align-left">⎛</span></span><span class="arrayrow"><span class="bracket align-left">⎝</span></span></span><i>α</i><sub><i>i</i></sub> − <i>f</i><sub><i>i</i></sub><span class="fraction"><span class="ignored">(</span><span class="numerator"><i>α</i><span class="scripts"><sup class="script">3</sup><sub class="script"><i>i</i></sub></span></span><span class="ignored">)/(</span><span class="denominator">3</span><span class="ignored">)</span></span> − <i>β</i><sub><i>i</i></sub><span class="array"><span class="arrayrow"><span class="bracket align-right">⎞</span></span><span class="arrayrow"><span class="bracket align-right">⎠</span></span></span> + <i>K</i><sub>21</sub><span class="symbol">[</span><span class="limits"><sup class="limit">3</sup><span class="limit"><span class="symbol">∑</span></span><sub class="limit"><i>k</i> = 1</sub></span><i>C</i><sub><i>ik</i></sub><i>ξ</i><sub><i>i</i></sub> − <i>α</i><sub><i>i</i></sub><span class="symbol">]</span> + <i>cII</i><sub><i>i</i></sub>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>β̇</i><sub><i>i</i></sub>
+</span>
+<span class="arraycell align-l">
+ = <span class="fraction"><span class="ignored">(</span><span class="numerator">1</span><span class="ignored">)/(</span><span class="denominator"><i>c</i></span><span class="ignored">)</span></span><span class="symbol">(</span><i>α</i><sub><i>i</i></sub> − <i>b</i><i>β</i><sub><i>i</i></sub> + <i>n</i><sub><i>i</i></sub><span class="symbol">)</span>
+</span>
+
+</span>
+</span>
 </div>
 </dd></dl>
 
@@ -475,51 +511,48 @@ calculating coefficients found in the supplemental material of
 <p><strong>traits on this class:</strong></p>
 <blockquote>
 <div><dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">K11</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>K</mi>
-<mrow><mn>1</mn><mn>1</mn></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">K11</span></tt> (<span class="formula"><i>K</i><sub>11</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Internal coupling, excitatory to excitatory</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.5] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">K12</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>K</mi>
-<mrow><mn>1</mn><mn>2</mn></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">K12</span></tt> (<span class="formula"><i>K</i><sub>12</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Internal coupling, excitatory to inhibitory</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.15] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">K21</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>K</mi>
-<mrow><mn>2</mn><mn>1</mn></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">K21</span></tt> (<span class="formula"><i>K</i><sub>21</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Internal coupling, inhibitory to excitatory</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.15] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">a</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>a</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">a</span></tt> (<span class="formula"><i>a</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">doc...</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.45] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">b</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>b</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">b</span></tt> (<span class="formula"><i>b</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">doc...</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.9] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">mu</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>μ</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">mu</span></tt> (<span class="formula"><i>μ</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Mean of Gaussian distribution</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.] </div>
@@ -532,8 +565,8 @@ calculating coefficients found in the supplemental material of
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.simulator.noise.Noise&#8217;&gt; </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">sigma</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>σ</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">sigma</span></tt> (<span class="formula"><i>σ</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Standard deviation of Gaussian distribution</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.35] </div>
@@ -546,8 +579,8 @@ calculating coefficients found in the supplemental material of
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  {&#8216;alpha&#8217;: array([-4.,  4.]), &#8216;beta&#8217;: array([-3.,  3.]), &#8216;xi&#8217;: array([-4.,  4.]), &#8216;eta&#8217;: array([-3.,  3.])} </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">tau</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>τ</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">tau</span></tt> (<span class="formula"><i>τ</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">doc...(prob something about timescale seperation)</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 3.] </div>
@@ -556,11 +589,11 @@ calculating coefficients found in the supplemental material of
 </dd>
 <dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Variables watched by Monitors)</dt>
 <dd><div class="first last line-block">
-<div class="line">This represents the default state-variables of this Model to be                                     monitored. It can be overridden for each Monitor if desired. The                                      corresponding state-variable indices for this model are <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>ξ</mi><mo>=</mo><mn>0</mn></mrow></math>,                                     <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>η</mi><mo>=</mo><mn>1</mn></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>α</mi><mo>=</mo><mn>2</mn></mrow></math>, and <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>β</mi><mo>=</mo><mn>3</mn></mrow></math>.</div>
+<div class="line">This represents the default state-variables of this Model to be                                     monitored. It can be overridden for each Monitor if desired. The                                      corresponding state-variable indices for this model are <span class="formula"><i>ξ</i> = 0</span>
+,                                     <span class="formula"><i>η</i> = 1</span>
+, <span class="formula"><i>α</i> = 2</span>
+, and <span class="formula"><i>β</i> = 3</span>
+.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [&#8216;xi&#8217;, &#8216;alpha&#8217;] </div>
 </div>
 </dd>
@@ -579,28 +612,28 @@ Dimensional Description of Globally Coupled Heterogeneous Neural
 Networks of Excitatory and Inhibitory</em>  4, 11, 26&#8211;36, 2008.</td></tr>
 </tbody>
 </table>
-<p>The models (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>ξ</mi></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>η</mi></mrow></math>) phase-plane, including a 
+<p>The models (<span class="formula"><i>ξ</i></span>
+, <span class="formula"><i>η</i></span>
+) phase-plane, including a 
 representation of the vector field as well as its nullclines, using default
 parameters, can be seen below:</p>
 <blockquote>
 <div><div class="figure" id="phase-plane-rhr-0">
-<img alt="Reduced set of FitzHughNagumo phase plane (xi, eta), 1st mode." src="../../../_images/ReducedSetHindmarshRose_01_mode_0_pplane1.svg" /><p class="caption">The (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>ξ</mi></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>η</mi></mrow></math>) phase-plane for the first mode of
+<img alt="Reduced set of FitzHughNagumo phase plane (xi, eta), 1st mode." src="../../../_images/ReducedSetHindmarshRose_01_mode_0_pplane1.svg" /><p class="caption">The (<span class="formula"><i>ξ</i></span>
+, <span class="formula"><i>η</i></span>
+) phase-plane for the first mode of
 a reduced set of Hindmarsh-Rose oscillators.</p>
 </div>
 <div class="figure" id="phase-plane-rhr-1">
-<img alt="Reduced set of FitzHughNagumo phase plane (xi, eta), 2nd mode." src="../../../_images/ReducedSetHindmarshRose_01_mode_1_pplane1.svg" /><p class="caption">The (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>ξ</mi></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>η</mi></mrow></math>) phase-plane for the second mode of 
+<img alt="Reduced set of FitzHughNagumo phase plane (xi, eta), 2nd mode." src="../../../_images/ReducedSetHindmarshRose_01_mode_1_pplane1.svg" /><p class="caption">The (<span class="formula"><i>ξ</i></span>
+, <span class="formula"><i>η</i></span>
+) phase-plane for the second mode of 
 a reduced set of Hindmarsh-Rose oscillators.</p>
 </div>
 <div class="figure" id="phase-plane-rhr-2">
-<img alt="Reduced set of FitzHughNagumo phase plane (xi, eta), 3rd mode." src="../../../_images/ReducedSetHindmarshRose_01_mode_2_pplane1.svg" /><p class="caption">The (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>ξ</mi></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>η</mi></mrow></math>) phase-plane for the third mode of
+<img alt="Reduced set of FitzHughNagumo phase plane (xi, eta), 3rd mode." src="../../../_images/ReducedSetHindmarshRose_01_mode_2_pplane1.svg" /><p class="caption">The (<span class="formula"><i>ξ</i></span>
+, <span class="formula"><i>η</i></span>
+) phase-plane for the third mode of
 a reduced set of Hindmarsh-Rose oscillators.</p>
 </div>
 </div></blockquote>
@@ -615,48 +648,107 @@ Hindmarsh Rose oscillators, <a class="reference internal" href="#sj-2008">[SJ_20
 <dt id="tvb.simulator.models.ReducedSetHindmarshRose.dfun">
 <tt class="descclassname">ReducedSetHindmarshRose.</tt><tt class="descname">dfun</tt><big>(</big><em>state_variables</em>, <em>coupling</em>, <em>local_coupling=0.0</em><big>)</big><a class="headerlink" href="#tvb.simulator.models.ReducedSetHindmarshRose.dfun" title="Permalink to this definition">¶</a></dt>
 <dd><p>The dynamic equations were taken from <a class="reference internal" href="#sj-2008">[SJ_2008]</a>, ...</p>
-<div>
-<math xmlns="http://www.w3.org/1998/Math/MathML" mode="display">
-<mtable>
-<mtr>
-<mtd><msub><mover>
-<mrow><mi>ξ</mi></mrow><mo>˙</mo></mover><mi>i</mi></msub></mtd>
-<mtd><mo>=</mo><msub><mi>η</mi><mi>i</mi></msub><mo>-</mo><msub><mi>a</mi><mi>i</mi></msub><msubsup><mi>ξ</mi><mi>i</mi><mn>3</mn></msubsup><mo>+</mo><msub><mi>b</mi><mi>i</mi></msub><msubsup><mi>ξ</mi><mi>i</mi><mn>2</mn></msubsup><mo>-</mo><msub><mi>τ</mi><mi>i</mi></msub><mo>+</mo><msub><mi>K</mi>
-<mrow><mn>1</mn><mn>1</mn></mrow></msub><mfenced open="[" close="]">
-<mrow><munderover><mo>∑</mo>
-<mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
-<mrow><mn>3</mn></mrow></munderover><msub><mi>A</mi>
-<mrow><mi>i</mi><mi>k</mi></mrow></msub><msub><mi>ξ</mi><mi>k</mi></msub><mo>-</mo><msub><mi>ξ</mi><mi>i</mi></msub></mrow></mfenced><mo>-</mo><msub><mi>K</mi>
-<mrow><mn>1</mn><mn>2</mn></mrow></msub><mfenced open="[" close="]">
-<mrow><munderover><mo>∑</mo>
-<mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
-<mrow><mn>3</mn></mrow></munderover><msub><mi>B</mi>
-<mrow><mi>i</mi><mi>k</mi></mrow></msub><msub><mi>α</mi><mi>k</mi></msub><mo>-</mo><msub><mi>ξ</mi><mi>i</mi></msub></mrow></mfenced><mo>+</mo><mi>I</mi><msub><mi>E</mi><mi>i</mi></msub></mtd></mtr>
-<mtr>
-<mtd><msub><mover>
-<mrow><mi>η</mi></mrow><mo>˙</mo></mover><mi>i</mi></msub></mtd>
-<mtd><mo>=</mo><msub><mi>c</mi><mi>i</mi></msub><mo>-</mo><msub><mi>d</mi><mi>i</mi></msub><msubsup><mi>ξ</mi><mi>i</mi><mn>2</mn></msubsup><mo>-</mo><msub><mi>η</mi><mi>i</mi></msub></mtd></mtr>
-<mtr>
-<mtd><msub><mover>
-<mrow><mi>τ</mi></mrow><mo>˙</mo></mover><mi>i</mi></msub></mtd>
-<mtd><mo>=</mo><mi>r</mi><mi>s</mi><msub><mi>ξ</mi><mi>i</mi></msub><mo>-</mo><mi>r</mi><msub><mi>τ</mi><mi>i</mi></msub><mo>-</mo><msub><mi>m</mi><mi>i</mi></msub></mtd></mtr>
-<mtr>
-<mtd><msub><mover>
-<mrow><mi>α</mi></mrow><mo>˙</mo></mover><mi>i</mi></msub></mtd>
-<mtd><mo>=</mo><msub><mi>β</mi><mi>i</mi></msub><mo>-</mo><msub><mi>e</mi><mi>i</mi></msub><msubsup><mi>α</mi><mi>i</mi><mn>3</mn></msubsup><mo>+</mo><msub><mi>f</mi><mi>i</mi></msub><msubsup><mi>α</mi><mi>i</mi><mn>2</mn></msubsup><mo>-</mo><msub><mi>γ</mi><mi>i</mi></msub><mo>+</mo><msub><mi>K</mi>
-<mrow><mn>2</mn><mn>1</mn></mrow></msub><mfenced open="[" close="]">
-<mrow><munderover><mo>∑</mo>
-<mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
-<mrow><mn>3</mn></mrow></munderover><msub><mi>C</mi>
-<mrow><mi>i</mi><mi>k</mi></mrow></msub><msub><mi>ξ</mi><mi>k</mi></msub><mo>-</mo><msub><mi>α</mi><mi>i</mi></msub></mrow></mfenced><mo>+</mo><mi>I</mi><msub><mi>I</mi><mi>i</mi></msub></mtd></mtr>
-<mtr>
-<mtd><msub><mover>
-<mrow><mi>β</mi></mrow><mo>˙</mo></mover><mi>i</mi></msub></mtd>
-<mtd><mo>=</mo><msub><mi>h</mi><mi>i</mi></msub><mo>-</mo><msub><mi>p</mi><mi>i</mi></msub><msubsup><mi>α</mi><mi>i</mi><mn>2</mn></msubsup><mo>-</mo><msub><mi>β</mi><mi>i</mi></msub></mtd></mtr>
-<mtr>
-<mtd><msub><mover>
-<mrow><mi>γ</mi></mrow><mo>˙</mo></mover><mi>i</mi></msub></mtd>
-<mtd><mo>=</mo><mi>r</mi><mi>s</mi><msub><mi>α</mi><mi>i</mi></msub><mo>-</mo><mi>r</mi><msub><mi>γ</mi><mi>i</mi></msub><mo>-</mo><msub><mi>n</mi><mi>i</mi></msub></mtd></mtr></mtable></math>
+<div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-r">
+<i>ξ̇</i><sub><i>i</i></sub>
+</span>
+<span class="arraycell align-l">
+ = <i>η</i><sub><i>i</i></sub> − <i>a</i><sub><i>i</i></sub><i>ξ</i><span class="scripts"><sup class="script">3</sup><sub class="script"><i>i</i></sub></span> + <i>b</i><sub><i>i</i></sub><i>ξ</i><span class="scripts"><sup class="script">2</sup><sub class="script"><i>i</i></sub></span> − <i>τ</i><sub><i>i</i></sub> + <i>K</i><sub>11</sub><span class="symbol">[</span><span class="limits"><sup class="limit">3</sup><span class="limit"><span class="symbol">∑</span></span><sub class="limit"><i>k</i> = 1</sub></span><i>A</i><sub><i>ik</i></sub><i>ξ</i><sub><i>k</i></sub> − <i>ξ</i><sub><i>i</i></sub><span class="symbol">]</span> − <i>K</i><sub>12</sub><span class="symbol">[</span><span class="limits"><sup class="limit">3</sup><span class="limit"><span class="symbol">∑</span></span><sub class="limit"><i>k</i> = 1</sub></span><i>B</i><sub><i>ik</i></sub><i>α</i><sub><i>k</i></sub> − <i>ξ</i><sub><i>i</i></sub><span class="symbol">]</span> + <i>IE</i><sub><i>i</i></sub>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>η̇</i><sub><i>i</i></sub>
+</span>
+<span class="arraycell align-l">
+ = <i>c</i><sub><i>i</i></sub> − <i>d</i><sub><i>i</i></sub><i>ξ</i><span class="scripts"><sup class="script">2</sup><sub class="script"><i>i</i></sub></span> − <i>η</i><sub><i>i</i></sub>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>τ̇</i><sub><i>i</i></sub>
+</span>
+<span class="arraycell align-l">
+ = <i>rs</i><i>ξ</i><sub><i>i</i></sub> − <i>r</i><i>τ</i><sub><i>i</i></sub> − <i>m</i><sub><i>i</i></sub>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>α̇</i><sub><i>i</i></sub>
+</span>
+<span class="arraycell align-l">
+ = <i>β</i><sub><i>i</i></sub> − <i>e</i><sub><i>i</i></sub><i>α</i><span class="scripts"><sup class="script">3</sup><sub class="script"><i>i</i></sub></span> + <i>f</i><sub><i>i</i></sub><i>α</i><span class="scripts"><sup class="script">2</sup><sub class="script"><i>i</i></sub></span> − <i>γ</i><sub><i>i</i></sub> + <i>K</i><sub>21</sub><span class="symbol">[</span><span class="limits"><sup class="limit">3</sup><span class="limit"><span class="symbol">∑</span></span><sub class="limit"><i>k</i> = 1</sub></span><i>C</i><sub><i>ik</i></sub><i>ξ</i><sub><i>k</i></sub> − <i>α</i><sub><i>i</i></sub><span class="symbol">]</span> + <i>II</i><sub><i>i</i></sub>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>β̇</i><sub><i>i</i></sub>
+</span>
+<span class="arraycell align-l">
+ = <i>h</i><sub><i>i</i></sub> − <i>p</i><sub><i>i</i></sub><i>α</i><span class="scripts"><sup class="script">2</sup><sub class="script"><i>i</i></sub></span> − <i>β</i><sub><i>i</i></sub>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>γ̇</i><sub><i>i</i></sub>
+</span>
+<span class="arraycell align-l">
+ = <i>rs</i><i>α</i><sub><i>i</i></sub> − <i>r</i><i>γ</i><sub><i>i</i></sub> − <i>n</i><sub><i>i</i></sub>
+</span>
+
+</span>
+</span>
 </div>
 </dd></dl>
 
@@ -674,67 +766,64 @@ material of <a class="reference internal" href="#sj-2008">[SJ_2008]</a>.</p>
 <p><strong>traits on this class:</strong></p>
 <blockquote>
 <div><dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">K11</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>K</mi>
-<mrow><mn>1</mn><mn>1</mn></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">K11</span></tt> (<span class="formula"><i>K</i><sub>11</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Internal coupling, excitatory to excitatory</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.5] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">K12</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>K</mi>
-<mrow><mn>1</mn><mn>2</mn></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">K12</span></tt> (<span class="formula"><i>K</i><sub>12</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Internal coupling, excitatory to inhibitory</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.15] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">K21</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>K</mi>
-<mrow><mn>2</mn><mn>1</mn></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">K21</span></tt> (<span class="formula"><i>K</i><sub>21</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Internal coupling, inhibitory to excitatory</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.15] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">a</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>a</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">a</span></tt> (<span class="formula"><i>a</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Dimensionless parameter as in the Hindmarsh-Rose model</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">b</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>b</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">b</span></tt> (<span class="formula"><i>b</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Dimensionless parameter as in the Hindmarsh-Rose model</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 3.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 3.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">c</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>c</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">c</span></tt> (<span class="formula"><i>c</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Dimensionless parameter as in the Hindmarsh-Rose model</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">d</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>d</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">d</span></tt> (<span class="formula"><i>d</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Dimensionless parameter as in the Hindmarsh-Rose model</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 5.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 2.5 ; high = 7.5 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">mu</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>μ</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">mu</span></tt> (<span class="formula"><i>μ</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Mean of Gaussian distribution</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 2.2] </div>
@@ -747,24 +836,24 @@ material of <a class="reference internal" href="#sj-2008">[SJ_2008]</a>.</p>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.simulator.noise.Noise&#8217;&gt; </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">r</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>r</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">r</span></tt> (<span class="formula"><i>r</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Adaptation parameter</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.006] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">s</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>s</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">s</span></tt> (<span class="formula"><i>s</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Adaptation paramters, governs feedback</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 4.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 2.0 ; high = 6.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">sigma</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>σ</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">sigma</span></tt> (<span class="formula"><i>σ</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Standard deviation of Gaussian distribution</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.3] </div>
@@ -779,19 +868,18 @@ material of <a class="reference internal" href="#sj-2008">[SJ_2008]</a>.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Variables watched by Monitors)</dt>
 <dd><div class="first last line-block">
-<div class="line">This represents the default state-variables of this Model to be                                     monitored. It can be overridden for each Monitor if desired. The                                      corresponding state-variable indices for this model are <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>ξ</mi><mo>=</mo><mn>0</mn></mrow></math>,                                     <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>η</mi><mo>=</mo><mn>1</mn></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>τ</mi><mo>=</mo><mn>2</mn></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>α</mi><mo>=</mo><mn>3</mn></mrow></math>,                                     <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>β</mi><mo>=</mo><mn>4</mn></mrow></math>, and <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>γ</mi><mo>=</mo><mn>5</mn></mrow></math></div>
+<div class="line">This represents the default state-variables of this Model to be                                     monitored. It can be overridden for each Monitor if desired. The                                      corresponding state-variable indices for this model are <span class="formula"><i>ξ</i> = 0</span>
+,                                     <span class="formula"><i>η</i> = 1</span>
+, <span class="formula"><i>τ</i> = 2</span>
+, <span class="formula"><i>α</i> = 3</span>
+,                                     <span class="formula"><i>β</i> = 4</span>
+, and <span class="formula"><i>γ</i> = 5</span>
+</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [&#8216;xi&#8217;, &#8216;eta&#8217;, &#8216;tau&#8217;] </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">xo</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>x</mi>
-<mrow><mi>o</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">xo</span></tt> (<span class="formula"><i>x</i><sub><i>o</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Leftmost equilibrium point of x</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [-1.6] </div>
@@ -827,9 +915,9 @@ potentials</em></td></tr>
 </tbody>
 </table>
 <div class="figure">
-<img alt="Jansen and Rit phase plane (y4, y5)" src="../../../_images/JansenRit_45_mode_0_pplane1.svg" /><p class="caption">The (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>y</mi><mn>4</mn></msub></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>y</mi><mn>5</mn></msub></mrow></math>) phase-plane for the Jansen and Rit model.</p>
+<img alt="Jansen and Rit phase plane (y4, y5)" src="../../../_images/JansenRit_45_mode_0_pplane1.svg" /><p class="caption">The (<span class="formula"><i>y</i><sub>4</sub></span>
+, <span class="formula"><i>y</i><sub>5</sub></span>
+) phase-plane for the Jansen and Rit model.</p>
 </div>
 <dl class="method">
 <dt id="tvb.simulator.models.JansenRit.__init__">
@@ -841,145 +929,257 @@ potentials</em></td></tr>
 <dt id="tvb.simulator.models.JansenRit.dfun">
 <tt class="descclassname">JansenRit.</tt><tt class="descname">dfun</tt><big>(</big><em>state_variables</em>, <em>coupling</em>, <em>local_coupling=0.0</em><big>)</big><a class="headerlink" href="#tvb.simulator.models.JansenRit.dfun" title="Permalink to this definition">¶</a></dt>
 <dd><p>The dynamic equations were taken from <a class="reference internal" href="#jr-1995">[JR_1995]</a></p>
-<div>
-<math xmlns="http://www.w3.org/1998/Math/MathML" mode="display">
-<mtable>
-<mtr>
-<mtd><mover>
-<mrow><msub><mi>y</mi><mn>0</mn></msub></mrow><mo>˙</mo></mover></mtd>
-<mtd><mo>=</mo><msub><mi>y</mi><mn>3</mn></msub></mtd></mtr>
-<mtr>
-<mtd><mover>
-<mrow><msub><mi>y</mi><mn>3</mn></msub></mrow><mo>˙</mo></mover></mtd>
-<mtd><mo>=</mo><mi>A</mi><mi>a</mi><mspace></mspace><mi>S</mi><mo>[</mo><msub><mi>y</mi><mn>1</mn></msub><mo>-</mo><msub><mi>y</mi><mn>2</mn></msub><mo>]</mo><mo>-</mo><mn>2</mn><mi>a</mi><mspace></mspace><msub><mi>y</mi><mn>3</mn></msub><mo>-</mo><mn>2</mn><msup><mi>a</mi><mn>2</mn></msup><mspace></mspace><msub><mi>y</mi><mn>0</mn></msub></mtd></mtr>
-<mtr>
-<mtd><mover>
-<mrow><msub><mi>y</mi><mn>1</mn></msub></mrow><mo>˙</mo></mover></mtd>
-<mtd><mo>=</mo><msub><mi>y</mi><mn>4</mn></msub></mtd></mtr>
-<mtr>
-<mtd><mover>
-<mrow><msub><mi>y</mi><mn>4</mn></msub></mrow><mo>˙</mo></mover></mtd>
-<mtd><mo>=</mo><mi>A</mi><mi>a</mi><mspace></mspace><mo>[</mo><mi>p</mi><mo>(</mo><mi>t</mi><mo>)</mo><mo>+</mo><msub><mi>α</mi><mn>2</mn></msub><mi>J</mi><mo>+</mo><mi>S</mi><mo>[</mo><msub><mi>α</mi><mn>1</mn></msub><mi>J</mi><mspace></mspace><msub><mi>y</mi><mn>0</mn></msub><mo>]</mo><mo>+</mo><msub><mi>c</mi><mn>0</mn></msub><mo>]</mo><mo>-</mo><mn>2</mn><mi>a</mi><mspace></mspace><mi>y</mi><mo>-</mo><msup><mi>a</mi><mn>2</mn></msup><mspace></mspace><msub><mi>y</mi><mn>1</mn></msub></mtd></mtr>
-<mtr>
-<mtd><mover>
-<mrow><msub><mi>y</mi><mn>2</mn></msub></mrow><mo>˙</mo></mover></mtd>
-<mtd><mo>=</mo><msub><mi>y</mi><mn>5</mn></msub></mtd></mtr>
-<mtr>
-<mtd><mover>
-<mrow><msub><mi>y</mi><mn>5</mn></msub></mrow><mo>˙</mo></mover></mtd>
-<mtd><mo>=</mo><mi>B</mi><mi>b</mi><mo>(</mo><msub><mi>α</mi><mn>4</mn></msub><mi>J</mi><mspace></mspace><mi>S</mi><mo>[</mo><msub><mi>α</mi><mn>3</mn></msub><mi>J</mi><mspace></mspace><msub><mi>y</mi><mn>0</mn></msub><mo>]</mo><mo>)</mo><mo>-</mo><mn>2</mn><mi>b</mi><mspace></mspace><msub><mi>y</mi><mn>5</mn></msub><mo>-</mo><msup><mi>b</mi><mn>2</mn></msup><mspace></mspace><msub><mi>y</mi><mn>2</mn></msub></mtd></mtr>
-<mtr>
-<mtd><mi>S</mi><mo>[</mo><mi>v</mi><mo>]</mo></mtd>
-<mtd><mo>=</mo><mfrac>
-<mrow><mn>2</mn><mspace></mspace><msub><mi>ν</mi>
-<mrow><mi>m</mi><mi>a</mi><mi>x</mi></mrow></msub></mrow>
-<mrow><mn>1</mn><mo>+</mo><msup><mo>exp</mo>
-<mrow><mi>r</mi><mo>(</mo><msub><mi>v</mi><mn>0</mn></msub><mo>-</mo><mi>v</mi><mo>)</mo></mrow></msup></mrow></mfrac></mtd></mtr></mtable></math>
+<div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-r">
+<i>y<sub>0</sub>̇</i>
+</span>
+<span class="arraycell align-l">
+ = <i>y</i><sub>3</sub>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>y<sub>3</sub>̇</i>
+</span>
+<span class="arraycell align-l">
+ = <i>A</i><i>a</i> <i>S</i>[<i>y</i><sub>1</sub> − <i>y</i><sub>2</sub>] − 2<i>a</i> <i>y</i><sub>3</sub> − 2<i>a</i><sup>2</sup> <i>y</i><sub>0</sub>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>y<sub>1</sub>̇</i>
+</span>
+<span class="arraycell align-l">
+ = <i>y</i><sub>4</sub>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>y<sub>4</sub>̇</i>
+</span>
+<span class="arraycell align-l">
+ = <i>A</i><i>a</i> [<i>p</i>(<i>t</i>) + <i>α</i><sub>2</sub><i>J</i> + <i>S</i>[<i>α</i><sub>1</sub><i>J</i> <i>y</i><sub>0</sub>] + <i>c</i><sub>0</sub>] − 2<i>a</i> <i>y</i> − <i>a</i><sup>2</sup> <i>y</i><sub>1</sub>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>y<sub>2</sub>̇</i>
+</span>
+<span class="arraycell align-l">
+ = <i>y</i><sub>5</sub>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>y<sub>5</sub>̇</i>
+</span>
+<span class="arraycell align-l">
+ = <i>B</i><i>b</i>(<i>α</i><sub>4</sub><i>J</i> <i>S</i>[<i>α</i><sub>3</sub><i>J</i> <i>y</i><sub>0</sub>]) − 2<i>b</i> <i>y</i><sub>5</sub> − <i>b</i><sup>2</sup> <i>y</i><sub>2</sub>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>S</i>[<i>v</i>]
+</span>
+<span class="arraycell align-l">
+ = <span class="fraction"><span class="ignored">(</span><span class="numerator">2 <i>ν</i><sub><i>max</i></sub></span><span class="ignored">)/(</span><span class="denominator">1 + exp<sup><i>r</i>(<i>v</i><sub>0</sub> − <i>v</i>)</sup></span><span class="ignored">)</span></span>
+</span>
+
+</span>
+</span>
 </div>
-<p><math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>p</mi><mo>(</mo><mi>t</mi><mo>)</mo></mrow></math> can be any arbitrary function, including white noise or 
+<p><span class="formula"><i>p</i>(<i>t</i>)</span>
+ can be any arbitrary function, including white noise or 
 random numbers taken from a uniform distribution, representing a pulse
 density with an amplitude varying between 120 and 320</p>
 <p>For Evoked Potentials, a transient component of the input, 
 representing the impulse density attribuable to a brief visual input is 
 applied. Time should be in seconds.</p>
-<div>
-<math xmlns="http://www.w3.org/1998/Math/MathML" mode="display">
-<mtable>
-<mtr>
-<mtd><mi>p</mi><mo>(</mo><mi>t</mi><mo>)</mo><mo>=</mo><mi>q</mi><mspace></mspace><mo>(</mo><mfrac>
-<mrow><mi>t</mi></mrow>
-<mrow><mi>w</mi></mrow></mfrac><msup><mo>)</mo><mi>n</mi></msup><mspace></mspace><mo>exp</mo>
-<mrow><mo>-</mo><mfrac>
-<mrow><mi>t</mi></mrow>
-<mrow><mi>w</mi></mrow></mfrac></mrow></mtd></mtr>
-<mtr>
-<mtd><mi>q</mi><mo>=</mo><mn>0</mn><mo>.</mo><mn>5</mn></mtd></mtr>
-<mtr>
-<mtd><mi>n</mi><mo>=</mo><mn>7</mn></mtd></mtr>
-<mtr>
-<mtd><mi>w</mi><mo>=</mo><mn>0</mn><mo>.</mo><mn>0</mn><mn>0</mn><mn>5</mn><mo>[</mo><mi>s</mi><mo>]</mo></mtd></mtr></mtable></math>
+<div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-r">
+<i>p</i>(<i>t</i>) = <i>q</i> (<span class="fraction"><span class="ignored">(</span><span class="numerator"><i>t</i></span><span class="ignored">)/(</span><span class="denominator"><i>w</i></span><span class="ignored">)</span></span>)<sup><i>n</i></sup> exp − <span class="fraction"><span class="ignored">(</span><span class="numerator"><i>t</i></span><span class="ignored">)/(</span><span class="denominator"><i>w</i></span><span class="ignored">)</span></span>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>q</i> = 0.5
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>n</i> = 7
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>w</i> = 0.005[<i>s</i>]
+</span>
+
+</span>
+</span>
 </div>
 </dd></dl>
 
 <p><strong>traits on this class:</strong></p>
 <blockquote>
 <div><dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">A</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>A</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">A</span></tt> (<span class="formula"><i>A</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Maximum amplitude of EPSP [mV]. Also called average synaptic gain.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 3.25] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 2.6 ; high = 9.75 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">B</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>B</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">B</span></tt> (<span class="formula"><i>B</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Maximum amplitude of IPSP [mV]. Also called average synaptic gain.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 22.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 17.6 ; high = 110.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">J</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>J</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">J</span></tt> (<span class="formula"><i>J</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Average number of synapses between populations.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 135.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 65.0 ; high = 1350.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">a</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>a</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">a</span></tt> (<span class="formula"><i>a</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Reciprocal of the time constant of passive membrane and all         other spatially distributed delays in the dendritic network [ms^-1].         Also called average synaptic time constant.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.1] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.05 ; high = 0.15 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">a_1</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>α</mi><mn>1</mn></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">a_1</span></tt> (<span class="formula"><i>α</i><sub>1</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Average probability of synaptic contacts in the feedback         excitatory loop.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.5 ; high = 1.5 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">a_2</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>α</mi><mn>2</mn></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">a_2</span></tt> (<span class="formula"><i>α</i><sub>2</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Average probability of synaptic contacts in the feedback         excitatory loop.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.8] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.4 ; high = 1.2 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">a_3</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>α</mi><mn>3</mn></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">a_3</span></tt> (<span class="formula"><i>α</i><sub>3</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Average probability of synaptic contacts in the feedback         excitatory loop.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.25] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.125 ; high = 0.375 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">a_4</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>α</mi><mn>4</mn></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">a_4</span></tt> (<span class="formula"><i>α</i><sub>4</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Average probability of synaptic contacts in the slow feedback         inhibitory loop.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.25] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.125 ; high = 0.375 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">b</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>b</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">b</span></tt> (<span class="formula"><i>b</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Reciprocal of the time constant of passive membrane and all         other spatially distributed delays in the dendritic network [ms^-1].         Also called average synaptic time constant.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.05] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.025 ; high = 0.075 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">mu</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>μ</mi>
-<mrow><mi>m</mi><mi>a</mi><mi>x</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">mu</span></tt> (<span class="formula"><i>μ</i><sub><i>max</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Mean input firing rate</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.22] </div>
@@ -992,35 +1192,32 @@ applied. Time should be in seconds.</p>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.simulator.noise.Noise&#8217;&gt; </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">nu_max</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>ν</mi>
-<mrow><mi>m</mi><mi>a</mi><mi>x</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">nu_max</span></tt> (<span class="formula"><i>ν</i><sub><i>max</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Determines the maximum firing rate of the neural population         [s^-1].</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.0025] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.00125 ; high = 0.00375 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">p_max</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>p</mi>
-<mrow><mi>m</mi><mi>a</mi><mi>x</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">p_max</span></tt> (<span class="formula"><i>p</i><sub><i>max</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Maximum input firing rate.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.32] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 0.32 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">p_min</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>p</mi>
-<mrow><mi>m</mi><mi>i</mi><mi>n</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">p_min</span></tt> (<span class="formula"><i>p</i><sub><i>min</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Minimum input firing rate.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.12] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 0.12 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">r</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>r</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">r</span></tt> (<span class="formula"><i>r</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Steepness of the sigmoidal transformation [mV^-1].</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.56] </div>
@@ -1033,8 +1230,8 @@ applied. Time should be in seconds.</p>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  {&#8216;y1&#8217;: array([-500.,  500.]), &#8216;y0&#8217;: array([-1.,  1.]), &#8216;y3&#8217;: array([-6.,  6.]), &#8216;y2&#8217;: array([-50.,  50.]), &#8216;y5&#8217;: array([-500.,  500.]), &#8216;y4&#8217;: array([-20.,  20.])} </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">v0</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>v</mi><mn>0</mn></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">v0</span></tt> (<span class="formula"><i>v</i><sub>0</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Firing threshold (PSP) for which a 50% firing rate is achieved.         In other words, it is the value of the average membrane potential         corresponding to the inflection point of the sigmoid [mV].</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 5.52] </div>
@@ -1043,13 +1240,13 @@ applied. Time should be in seconds.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Variables watched by Monitors)</dt>
 <dd><div class="first last line-block">
-<div class="line">This represents the default state-variables of this Model to be                                     monitored. It can be overridden for each Monitor if desired. The                                      corresponding state-variable indices for this model are <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>y</mi><mn>0</mn><mo>=</mo><mn>0</mn></mrow></math>,                                     <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>y</mi><mn>1</mn><mo>=</mo><mn>1</mn></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>y</mi><mn>2</mn><mo>=</mo><mn>2</mn></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>y</mi><mn>3</mn><mo>=</mo><mn>3</mn></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>y</mi><mn>4</mn><mo>=</mo><mn>4</mn></mrow></math>, and                                     <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>y</mi><mn>5</mn><mo>=</mo><mn>5</mn></mrow></math></div>
+<div class="line">This represents the default state-variables of this Model to be                                     monitored. It can be overridden for each Monitor if desired. The                                      corresponding state-variable indices for this model are <span class="formula"><i>y</i>0 = 0</span>
+,                                     <span class="formula"><i>y</i>1 = 1</span>
+, <span class="formula"><i>y</i>2 = 2</span>
+, <span class="formula"><i>y</i>3 = 3</span>
+, <span class="formula"><i>y</i>4 = 4</span>
+, and                                     <span class="formula"><i>y</i>5 = 5</span>
+</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [&#8216;y0&#8217;, &#8216;y1&#8217;, &#8216;y2&#8217;, &#8216;y3&#8217;] </div>
 </div>
 </dd>
@@ -1069,81 +1266,80 @@ True.</p>
 <p><strong>traits on this class:</strong></p>
 <blockquote>
 <div><dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">A</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>A</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">A</span></tt> (<span class="formula"><i>A</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Maximum amplitude of EPSP [mV]. Also called average synaptic gain.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 3.25] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 2.6 ; high = 9.75 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">B</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>B</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">B</span></tt> (<span class="formula"><i>B</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Maximum amplitude of IPSP [mV]. Also called average synaptic gain.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 22.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 17.6 ; high = 110.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">J</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>J</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">J</span></tt> (<span class="formula"><i>J</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Average number of synapses between populations.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 135.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 65.0 ; high = 1350.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">a</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>a</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">a</span></tt> (<span class="formula"><i>a</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Reciprocal of the time constant of passive membrane and all         other spatially distributed delays in the dendritic network [ms^-1].         Also called average synaptic time constant.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.1] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.05 ; high = 0.15 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">a_1</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>α</mi><mn>1</mn></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">a_1</span></tt> (<span class="formula"><i>α</i><sub>1</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Average probability of synaptic contacts in the feedback         excitatory loop.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.5 ; high = 1.5 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">a_2</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>α</mi><mn>2</mn></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">a_2</span></tt> (<span class="formula"><i>α</i><sub>2</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Average probability of synaptic contacts in the feedback         excitatory loop.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.8] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.4 ; high = 1.2 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">a_3</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>α</mi><mn>3</mn></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">a_3</span></tt> (<span class="formula"><i>α</i><sub>3</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Average probability of synaptic contacts in the feedback         excitatory loop.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.25] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.125 ; high = 0.375 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">a_4</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>α</mi><mn>4</mn></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">a_4</span></tt> (<span class="formula"><i>α</i><sub>4</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Average probability of synaptic contacts in the slow feedback         inhibitory loop.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.25] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.125 ; high = 0.375 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">b</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>b</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">b</span></tt> (<span class="formula"><i>b</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Reciprocal of the time constant of passive membrane and all         other spatially distributed delays in the dendritic network [ms^-1].         Also called average synaptic time constant.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.05] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.025 ; high = 0.075 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">mu</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>μ</mi>
-<mrow><mi>m</mi><mi>a</mi><mi>x</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">mu</span></tt> (<span class="formula"><i>μ</i><sub><i>max</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Mean input firing rate</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.22] </div>
@@ -1156,35 +1352,32 @@ True.</p>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.simulator.noise.Noise&#8217;&gt; </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">nu_max</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>ν</mi>
-<mrow><mi>m</mi><mi>a</mi><mi>x</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">nu_max</span></tt> (<span class="formula"><i>ν</i><sub><i>max</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Determines the maximum firing rate of the neural population         [s^-1].</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.0025] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.00125 ; high = 0.00375 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">p_max</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>p</mi>
-<mrow><mi>m</mi><mi>a</mi><mi>x</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">p_max</span></tt> (<span class="formula"><i>p</i><sub><i>max</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Maximum input firing rate.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.32] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 0.32 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">p_min</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>p</mi>
-<mrow><mi>m</mi><mi>i</mi><mi>n</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">p_min</span></tt> (<span class="formula"><i>p</i><sub><i>min</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Minimum input firing rate.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.12] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 0.12 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">r</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>r</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">r</span></tt> (<span class="formula"><i>r</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Steepness of the sigmoidal transformation [mV^-1].</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.56] </div>
@@ -1197,8 +1390,8 @@ True.</p>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  {&#8216;y1&#8217;: array([-500.,  500.]), &#8216;y0&#8217;: array([-1.,  1.]), &#8216;y3&#8217;: array([-6.,  6.]), &#8216;y2&#8217;: array([-50.,  50.]), &#8216;y5&#8217;: array([-500.,  500.]), &#8216;y4&#8217;: array([-20.,  20.])} </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">v0</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>v</mi><mn>0</mn></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">v0</span></tt> (<span class="formula"><i>v</i><sub>0</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Firing threshold (PSP) for which a 50% firing rate is achieved.         In other words, it is the value of the average membrane potential         corresponding to the inflection point of the sigmoid [mV].</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 5.52] </div>
@@ -1207,13 +1400,13 @@ True.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Variables watched by Monitors)</dt>
 <dd><div class="first last line-block">
-<div class="line">This represents the default state-variables of this Model to be                                     monitored. It can be overridden for each Monitor if desired. The                                      corresponding state-variable indices for this model are <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>y</mi><mn>0</mn><mo>=</mo><mn>0</mn></mrow></math>,                                     <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>y</mi><mn>1</mn><mo>=</mo><mn>1</mn></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>y</mi><mn>2</mn><mo>=</mo><mn>2</mn></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>y</mi><mn>3</mn><mo>=</mo><mn>3</mn></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>y</mi><mn>4</mn><mo>=</mo><mn>4</mn></mrow></math>, and                                     <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>y</mi><mn>5</mn><mo>=</mo><mn>5</mn></mrow></math></div>
+<div class="line">This represents the default state-variables of this Model to be                                     monitored. It can be overridden for each Monitor if desired. The                                      corresponding state-variable indices for this model are <span class="formula"><i>y</i>0 = 0</span>
+,                                     <span class="formula"><i>y</i>1 = 1</span>
+, <span class="formula"><i>y</i>2 = 2</span>
+, <span class="formula"><i>y</i>3 = 3</span>
+, <span class="formula"><i>y</i>4 = 4</span>
+, and                                     <span class="formula"><i>y</i>5 = 5</span>
+</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [&#8216;y0&#8217;, &#8216;y1&#8217;, &#8216;y2&#8217;, &#8216;y3&#8217;] </div>
 </div>
 </dd>
@@ -1272,9 +1465,9 @@ inhibitory neurons</em>. PLoS Computational Biology, 4(11), 2008).</td></tr>
 </tbody>
 </table>
 </div></blockquote>
-<p>The model&#8217;s (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>V</mi></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>W</mi></mrow></math>) time series and phase-plane its nullclines 
+<p>The model&#8217;s (<span class="formula"><i>V</i></span>
+, <span class="formula"><i>W</i></span>
+) time series and phase-plane its nullclines 
 can be seen in the figure below.</p>
 <p>The model with its default parameters exhibits FitzHugh-Nagumo like dynamics.</p>
 <table border="1" class="docutils">
@@ -1429,9 +1622,9 @@ approx 10 Hz</li>
 <div class="figure">
 <img src="../../../_images/Generic2dOscillator_01_mode_0_pplane1.svg" /></div>
 <blockquote>
-<div>The (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>V</mi></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>W</mi></mrow></math>) phase-plane for the generic 2D population 
+<div>The (<span class="formula"><i>V</i></span>
+, <span class="formula"><i>W</i></span>
+) phase-plane for the generic 2D population 
 model for default parameters. The dynamical system has an equilibrium 
 point.</div></blockquote>
 <dl class="method">
@@ -1442,114 +1635,131 @@ point.</div></blockquote>
 
 <dl class="method">
 <dt id="tvb.simulator.models.Generic2dOscillator.dfun">
-<tt class="descclassname">Generic2dOscillator.</tt><tt class="descname">dfun</tt><big>(</big><em>state_variables</em>, <em>coupling</em>, <em>local_coupling=0.0</em>, <em>ev=&lt;function evaluate at 0x3fc12a8&gt;</em><big>)</big><a class="headerlink" href="#tvb.simulator.models.Generic2dOscillator.dfun" title="Permalink to this definition">¶</a></dt>
-<dd><p>The two state variables <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>V</mi></mrow></math> and <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>W</mi></mrow></math> are typically considered 
+<tt class="descclassname">Generic2dOscillator.</tt><tt class="descname">dfun</tt><big>(</big><em>state_variables</em>, <em>coupling</em>, <em>local_coupling=0.0</em>, <em>ev=&lt;function evaluate at 0x46681b8&gt;</em><big>)</big><a class="headerlink" href="#tvb.simulator.models.Generic2dOscillator.dfun" title="Permalink to this definition">¶</a></dt>
+<dd><p>The two state variables <span class="formula"><i>V</i></span>
+ and <span class="formula"><i>W</i></span>
+ are typically considered 
 to represent a function of the neuron&#8217;s membrane potential, such as the 
 firing rate or dendritic currents, and a recovery variable, respectively. 
-If there is a time scale hierarchy, then typically <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>V</mi></mrow></math> is faster 
-than <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>W</mi></mrow></math> corresponding to a value of <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>τ</mi></mrow></math> greater than 1.</p>
+If there is a time scale hierarchy, then typically <span class="formula"><i>V</i></span>
+ is faster 
+than <span class="formula"><i>W</i></span>
+ corresponding to a value of <span class="formula"><i>τ</i></span>
+ greater than 1.</p>
 <p>#TODO: update equations</p>
 <p>The equations of the generic 2D population model read</p>
-<div>
-<math xmlns="http://www.w3.org/1998/Math/MathML" mode="display">
-<mtable>
-<mtr>
-<mtd><mover>
-<mrow><mi>V</mi></mrow><mo>˙</mo></mover></mtd>
-<mtd><mo>=</mo><mi>τ</mi><mo>(</mo><mi>α</mi><mi>W</mi><mo>-</mo><msup><mi>V</mi><mn>3</mn></msup><mo>+</mo><mn>3</mn><msup><mi>V</mi><mn>2</mn></msup><mo>+</mo><mi>I</mi><mo>)</mo></mtd></mtr>
-<mtr>
-<mtd><mover>
-<mrow><mi>W</mi></mrow><mo>˙</mo></mover></mtd>
-<mtd><mo>=</mo><mo>(</mo><mi>a</mi><mspace></mspace><mo>+</mo><mi>b</mi><mspace></mspace><mi>V</mi><mo>+</mo><mi>c</mi><mspace></mspace><msup><mi>V</mi><mn>2</mn></msup><mo>-</mo><mspace></mspace><mi>b</mi><mi>e</mi><mi>t</mi><mi>a</mi><mi>W</mi><mo>)</mo><mo>/</mo><mi>τ</mi></mtd></mtr></mtable></math>
+<div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-r">
+<i>V̇</i>
+</span>
+<span class="arraycell align-l">
+ = <i>τ</i>(<i>α</i><i>W</i> − <i>V</i><sup>3</sup> + 3<i>V</i><sup>2</sup> + <i>I</i>)
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>Ẇ</i>
+</span>
+<span class="arraycell align-l">
+ = (<i>a</i>  + <i>b</i> <i>V</i> + <i>c</i> <i>V</i><sup>2</sup> −  <i>beta</i><i>W</i>) ⁄ <i>τ</i>
+</span>
+
+</span>
+</span>
 </div>
-<p>where external currents <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>I</mi></mrow></math> provide the entry point for local, 
+<p>where external currents <span class="formula"><i>I</i></span>
+ provide the entry point for local, 
 long-range connectivity and stimulation.</p>
 </dd></dl>
 
 <p><strong>traits on this class:</strong></p>
 <blockquote>
 <div><dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">I</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>I</mi>
-<mrow><mi>e</mi><mi>x</mi><mi>t</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">I</span></tt> (<span class="formula"><i>I</i><sub><i>ext</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Baseline shift of the cubic nullcline</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -2.0 ; high = 2.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">a</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>a</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">a</span></tt> (<span class="formula"><i>a</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Vertical shift of the configurable nullcline</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [-2.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -5.0 ; high = 5.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">alpha</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>α</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">alpha</span></tt> (<span class="formula"><i>α</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Constant parameter to scale the rate of feedback from the             slow variable to the fast variable.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -5.0 ; high = 5.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">b</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>b</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">b</span></tt> (<span class="formula"><i>b</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Linear slope of the configurable nullcline</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [-10.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -20.0 ; high = 15.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">beta</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>β</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">beta</span></tt> (<span class="formula"><i>β</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Constant parameter to scale the rate of feedback from the             slow variable to itself</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -5.0 ; high = 5.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">c</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>c</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">c</span></tt> (<span class="formula"><i>c</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Parabolic term of the configurable nullcline</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -10.0 ; high = 10.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">d</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>d</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">d</span></tt> (<span class="formula"><i>d</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Temporal scale factor. Warning: do not use it unless         you know what you are doing and know about time tides.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.02] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0001 ; high = 1.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">e</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>e</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">e</span></tt> (<span class="formula"><i>e</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Coefficient of the quadratic term of the cubic nullcline.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 3.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -5.0 ; high = 5.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">f</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>f</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">f</span></tt> (<span class="formula"><i>f</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Coefficient of the cubic term of the cubic nullcline.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -5.0 ; high = 5.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">g</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>f</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">g</span></tt> (<span class="formula"><i>f</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Coefficient of the linear term of the cubic nullcline.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.] </div>
@@ -1568,21 +1778,21 @@ long-range connectivity and stimulation.</p>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  {&#8216;W&#8217;: array([-6.,  6.]), &#8216;V&#8217;: array([-2.,  4.])} </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">tau</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>τ</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">tau</span></tt> (<span class="formula"><i>τ</i></span>
+)</dt>
 <dd><div class="first last line-block">
-<div class="line">A time-scale hierarchy can be introduced for the state         variables <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>V</mi></mrow></math> and <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>W</mi></mrow></math>. Default parameter is 1, which means         no time-scale hierarchy.</div>
+<div class="line">A time-scale hierarchy can be introduced for the state         variables <span class="formula"><i>V</i></span>
+ and <span class="formula"><i>W</i></span>
+. Default parameter is 1, which means         no time-scale hierarchy.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 1.0 ; high = 5.0 </div>
 </div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Variables watched by Monitors)</dt>
 <dd><div class="first last line-block">
-<div class="line">This represents the default state-variables of this Model to be                                         monitored. It can be overridden for each Monitor if desired. The                                          corresponding state-variable indices for this model are <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>V</mi><mo>=</mo><mn>0</mn></mrow></math>                                         and <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>W</mi><mo>=</mo><mn>1</mn></mrow></math>.</div>
+<div class="line">This represents the default state-variables of this Model to be                                         monitored. It can be overridden for each Monitor if desired. The                                          corresponding state-variable indices for this model are <span class="formula"><i>V</i> = 0</span>
+                                         and <span class="formula"><i>W</i> = 1</span>
+.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [&#8216;V&#8217;] </div>
 </div>
 </dd>
@@ -1609,94 +1819,80 @@ h_i: exc population mean soma potential [mV]</p>
 I_ie: total &#8216;inh&#8217; current input to &#8216;exc&#8217; synapses [mV]
 I_ei: total &#8216;exc&#8217; current input to &#8216;inh&#8217; synapses [mV]
 I_ii: total &#8216;inh&#8217; current input to &#8216;inh&#8217; synapses [mV]</p>
-<p><math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mo>Ψ</mo>
-<mrow><mi>j</mi><mi>k</mi></mrow></msub></mrow></math>:  weighting factors for the I_jk inputs [dimensionless]</p>
-<p><math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>p</mi><mi>h</mi><msub><mi>i</mi><mi>e</mi></msub></mrow></math>: long-range (cortico-cortical) spike input to exc population
-<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>p</mi><mi>h</mi><msub><mi>i</mi><mi>i</mi></msub></mrow></math>: long-range (cortico-cortical) spike input to inh population [ms-1]</p>
+<p><span class="formula">Ψ<sub><i>jk</i></sub></span>
+:  weighting factors for the I_jk inputs [dimensionless]</p>
+<p><span class="formula"><i>phi</i><sub><i>e</i></sub></span>
+: long-range (cortico-cortical) spike input to exc population
+<span class="formula"><i>phi</i><sub><i>i</i></sub></span>
+: long-range (cortico-cortical) spike input to inh population [ms-1]</p>
 <p>EPSP: exc post-synaptic potential [mV]
 IPSP: inh post-synaptic potential [mV]</p>
 <p>Mean axonal conduction speed: 7 mm/ms</p>
 <p>S_e(h_e): sigmoid function mapping soma potential to firing rate [ms]-1
 S_i(h_i): sigmoid function mapping soma potential to firing rate [ms]-1</p>
-<p>The models (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>h</mi><mi>e</mi></msub></mrow></math>, :math:h_i`) phase-plane, including a representation of
+<p>The models (<span class="formula"><i>h</i><sub><i>e</i></sub></span>
+, :math:h_i`) phase-plane, including a representation of
 the vector field as well as its nullclines, using default parameters, can be
 seen below:</p>
 <blockquote>
 <div><div class="figure" id="phase-plane-lsr">
-<img alt="LileySteynRoss phase plane (E, I)" src="../../../_images/LileySteynRoss_01_mode_0_pplane1.svg" /><p class="caption">The (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>h</mi><mi>e</mi></msub></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>h</mi><mi>i</mi></mrow></math>) phase-plane for the LileySteynRoss model.</p>
+<img alt="LileySteynRoss phase plane (E, I)" src="../../../_images/LileySteynRoss_01_mode_0_pplane1.svg" /><p class="caption">The (<span class="formula"><i>h</i><sub><i>e</i></sub></span>
+, <span class="formula"><i>hi</i></span>
+) phase-plane for the LileySteynRoss model.</p>
 </div>
 </div></blockquote>
 <p><strong>traits on this class:</strong></p>
 <blockquote>
 <div><dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">A_ee</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>α</mi>
-<mrow><mi>e</mi><mi>e</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">A_ee</span></tt> (<span class="formula"><i>α</i><sub><i>ee</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Characteristic cortico-cortical inverse length scale [mm]-1. Original: 0.4 cm-1</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.04] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.02 ; high = 0.06 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">A_ei</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>α</mi>
-<mrow><mi>e</mi><mi>i</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">A_ei</span></tt> (<span class="formula"><i>α</i><sub><i>ei</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Characteristic cortico-cortical inverse length scale [mm]-1. Original: 0.4 cm-1</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.065] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.02 ; high = 0.08 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">G_e</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>G</mi><mi>e</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">G_e</span></tt> (<span class="formula"><i>G</i><sub><i>e</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">peak ampplitude of EPSP [mV]</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.18] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.1 ; high = 0.5 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">G_i</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>G</mi><mi>i</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">G_i</span></tt> (<span class="formula"><i>G</i><sub><i>i</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">peak ampplitude of IPSP [mV]</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.37] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.1 ; high = 0.5 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">N_a_ee</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msubsup><mi>N</mi>
-<mrow><mi>e</mi><mi>e</mi></mrow>
-<mrow><mi>α</mi></mrow></msubsup></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">N_a_ee</span></tt> (<span class="formula"><i>N</i><span class="scripts"><sup class="script"><i>α</i></sup><sub class="script"><i>ee</i></sub></span></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Total number of synaptic connections from distant exc populations</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 4000.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 3000.0 ; high = 5000.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">N_a_ei</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msubsup><mi>N</mi>
-<mrow><mi>e</mi><mi>i</mi></mrow>
-<mrow><mi>α</mi></mrow></msubsup></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">N_a_ei</span></tt> (<span class="formula"><i>N</i><span class="scripts"><sup class="script"><i>α</i></sup><sub class="script"><i>ei</i></sub></span></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Total number of synaptic connections from distant exc populations</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 2000.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 1000.0 ; high = 3000.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">N_b_ee</span></tt> (<div class="system-message">
-<p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">/home/tim/Work/Models/python/TVB/doc_tvb/repo_tvb_website_source/tvb/simulator/models.py:docstring of tvb.simulator.models.LileySteynRoss</tt>, line 94)</p>
-<p>
-Illegal character: ""</p>
-<pre class="literal-block">
-N_{ee}^{eta}
-</pre>
-</div>
+<dt><tt class="docutils literal"><span class="pre">N_b_ee</span></tt> (<span class="formula"><i>N</i><span class="scripts"><sup class="script"><i>eta</i></sup><sub class="script"><i>ee</i></sub></span></span>
 )</dt>
 <dd><div class="first last line-block">
 <div class="line">Total number of local exc to exc synaptic connections.</div>
@@ -1704,106 +1900,96 @@ N_{ee}^{eta}
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 3000.0 ; high = 3050.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">N_b_ei</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msubsup><mi>N</mi>
-<mrow><mi>e</mi><mi>i</mi></mrow>
-<mrow><mi>β</mi></mrow></msubsup></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">N_b_ei</span></tt> (<span class="formula"><i>N</i><span class="scripts"><sup class="script"><i>β</i></sup><sub class="script"><i>ei</i></sub></span></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Total number of local exc to inh synaptic connections.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 3034.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 3000.0 ; high = 3050.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">N_b_ie</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msubsup><mi>N</mi>
-<mrow><mi>i</mi><mi>e</mi></mrow>
-<mrow><mi>β</mi></mrow></msubsup></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">N_b_ie</span></tt> (<span class="formula"><i>N</i><span class="scripts"><sup class="script"><i>β</i></sup><sub class="script"><i>ie</i></sub></span></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Total number of local inh to exc synaptic connections.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 536.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 500.0 ; high = 550.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">N_b_ii</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msubsup><mi>N</mi>
-<mrow><mi>i</mi><mi>i</mi></mrow>
-<mrow><mi>β</mi></mrow></msubsup></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">N_b_ii</span></tt> (<span class="formula"><i>N</i><span class="scripts"><sup class="script"><i>β</i></sup><sub class="script"><i>ii</i></sub></span></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Total number of local inh to inh synaptic connections.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 536.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 500.0 ; high = 550.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">g_e</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>g</mi><mi>e</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">g_e</span></tt> (<span class="formula"><i>g</i><sub><i>e</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Sigmoid slope at inflection point exc population [mV]-1</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.28] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 2.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">g_i</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>g</mi><mi>i</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">g_i</span></tt> (<span class="formula"><i>g</i><sub><i>i</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Sigmoid slope at inflection point inh population [mV]-1</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.14] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 2.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">gamma_e</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>γ</mi><mi>e</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">gamma_e</span></tt> (<span class="formula"><i>γ</i><sub><i>e</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Neurotransmitter rate constant&#8221;for EPSP [ms]-1</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.3] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.1 ; high = 0.4 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">gamma_i</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>γ</mi><mi>i</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">gamma_i</span></tt> (<span class="formula"><i>γ</i><sub><i>i</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Neurotransmitter rate constant&#8221;for IPSP [ms]-1</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.065] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.005 ; high = 0.1 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">h_e_rest</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msubsup><mi>h</mi><mi>e</mi>
-<mrow><mi>r</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">h_e_rest</span></tt> (<span class="formula"><i>h</i><span class="scripts"><sup class="script"><i>rest</i></sup><sub class="script"><i>e</i></sub></span></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Excitatory population, cell resting potential [mV]</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [-70.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -90.0 ; high = -50.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">h_e_rev</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msubsup><mi>h</mi><mi>e</mi>
-<mrow><mi>r</mi><mi>e</mi><mi>v</mi></mrow></msubsup></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">h_e_rev</span></tt> (<span class="formula"><i>h</i><span class="scripts"><sup class="script"><i>rev</i></sup><sub class="script"><i>e</i></sub></span></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Excitatory population, cell reversal potential [mV]</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 45.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 50.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">h_i_rest</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msubsup><mi>h</mi><mi>i</mi>
-<mrow><mi>r</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">h_i_rest</span></tt> (<span class="formula"><i>h</i><span class="scripts"><sup class="script"><i>rest</i></sup><sub class="script"><i>i</i></sub></span></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Inhibitory population, cell resting potential [mV]</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [-70.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -90.0 ; high = -50.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">h_i_rev</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msubsup><mi>h</mi><mi>i</mi>
-<mrow><mi>r</mi><mi>e</mi><mi>v</mi></mrow></msubsup></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">h_i_rev</span></tt> (<span class="formula"><i>h</i><span class="scripts"><sup class="script"><i>rev</i></sup><sub class="script"><i>i</i></sub></span></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Inhibitory population, cell reversal potential [mV]</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [-90.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -90.0 ; high = -50.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">lambd</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>λ</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">lambd</span></tt> (<span class="formula"><i>λ</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Anesthetic effects</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
@@ -1816,36 +2002,32 @@ N_{ee}^{eta}
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.simulator.noise.Noise&#8217;&gt; </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">p_ee</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>p</mi>
-<mrow><mi>e</mi><mi>e</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">p_ee</span></tt> (<span class="formula"><i>p</i><sub><i>ee</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Exogenous (subcortical) spike input to exc population [ms]-1 [kHz].                 This could be replaced by a noise term</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.1] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 1.0 ; high = 1.8 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">p_ei</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>p</mi>
-<mrow><mi>e</mi><mi>i</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">p_ei</span></tt> (<span class="formula"><i>p</i><sub><i>ei</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Exogenous (subcortical) spike input to inh population [ms]-1 [kHz].                 This could be replaced by a noise term</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.6] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 1.0 ; high = 1.8 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">p_ie</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>p</mi>
-<mrow><mi>i</mi><mi>e</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">p_ie</span></tt> (<span class="formula"><i>p</i><sub><i>ie</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Exogenous (subcortical) spike input to exc population [ms]-1 [kHz].                 This could be replaced by a noise term</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.6] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 1.0 ; high = 1.8 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">p_ii</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>p</mi>
-<mrow><mi>i</mi><mi>i</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">p_ii</span></tt> (<span class="formula"><i>p</i><sub><i>ii</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Exogenous (subcortical) spike input to inh population [ms]-1 [kHz].                 This could be replaced by a noise term</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.1] </div>
@@ -1858,32 +2040,32 @@ N_{ee}^{eta}
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  {&#8216;hi&#8217;: array([-90.,  70.]), &#8216;he&#8217;: array([-90.,  70.])} </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">tau_e</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>τ</mi><mi>e</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">tau_e</span></tt> (<span class="formula"><i>τ</i><sub><i>e</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Excitatory population, membrane time-constant [ms]</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 40.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 5.0 ; high = 50.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">tau_i</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>τ</mi><mi>i</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">tau_i</span></tt> (<span class="formula"><i>τ</i><sub><i>i</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Inhibitory population, membrane time-constant [ms]</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 40.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 5.0 ; high = 50.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">theta_e</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>θ</mi><mi>e</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">theta_e</span></tt> (<span class="formula"><i>θ</i><sub><i>e</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">inflection point voltage for sigmoid function [mV]</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [-60.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -90.0 ; high = -40.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">theta_i</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>θ</mi><mi>i</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">theta_i</span></tt> (<span class="formula"><i>θ</i><sub><i>i</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">inflection point voltage for sigmoid function [mV]</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [-60.] </div>
@@ -1892,9 +2074,9 @@ N_{ee}^{eta}
 </dd>
 <dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Variables watched by Monitors)</dt>
 <dd><div class="first last line-block">
-<div class="line">This represents the default state-variables of this Model to be                                     monitored. It can be overridden for each Monitor if desired. The                                      corresponding state-variable indices for this model are <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>E</mi><mo>=</mo><mn>0</mn></mrow></math>                                     and <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>I</mi><mo>=</mo><mn>1</mn></mrow></math>.</div>
+<div class="line">This represents the default state-variables of this Model to be                                     monitored. It can be overridden for each Monitor if desired. The                                      corresponding state-variable indices for this model are <span class="formula"><i>E</i> = 0</span>
+                                     and <span class="formula"><i>I</i> = 1</span>
+.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [&#8216;he&#8217;] </div>
 </div>
 </dd>
@@ -1995,257 +2177,231 @@ and for d_V &gt; 0.59 chaotic attractors (eg, d_V=0.6,aee=0.5,aie=0.5,</p>
 The long-range coupling &#8216;C&#8217; is ‘weak’ in the sense that 
 they investigated parameter values for which C &lt; a_ee and C &lt;&lt; a_ie.</p>
 <div class="figure">
-<img alt="Larter-Breaskpear phase plane (V, W)" src="../../../_images/LarterBreakspear_01_mode_0_pplane1.svg" /><p class="caption">The (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>V</mi></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>W</mi></mrow></math>) phase-plane for the Larter-Breakspear model.</p>
+<img alt="Larter-Breaskpear phase plane (V, W)" src="../../../_images/LarterBreakspear_01_mode_0_pplane1.svg" /><p class="caption">The (<span class="formula"><i>V</i></span>
+, <span class="formula"><i>W</i></span>
+) phase-plane for the Larter-Breakspear model.</p>
 </div>
 <p><strong>traits on this class:</strong></p>
 <blockquote>
 <div><dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">C</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>c</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">C</span></tt> (<span class="formula"><i>c</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Strength of excitatory coupling. Balance between internal and         local (and global) coupling strength. C &gt; 0 introduces interdependences between          consecutive columns/nodes. C=1 corresponds to maximum coupling.         This strenght should be set to sensible values when a whole network is connected. </div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 0.2 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">Iext</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>I</mi>
-<mrow><mi>e</mi><mi>x</mi><mi>t</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">Iext</span></tt> (<span class="formula"><i>I</i><sub><i>ext</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Subcortical input strength. It represents a non-specific        excitation or thalamic inputs.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.3] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.165 ; high = 0.3 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">QV_max</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>Q</mi>
-<mrow><mi>m</mi><mi>a</mi><mi>x</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">QV_max</span></tt> (<span class="formula"><i>Q</i><sub><i>max</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Maximal firing rate for excitatory populations (kHz)</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.1 ; high = 1.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">QZ_max</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>Q</mi>
-<mrow><mi>m</mi><mi>a</mi><mi>x</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">QZ_max</span></tt> (<span class="formula"><i>Q</i><sub><i>max</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Maximal firing rate for excitatory populations (kHz)</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.1 ; high = 1.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">TCa</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>T</mi>
-<mrow><mi>C</mi><mi>a</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">TCa</span></tt> (<span class="formula"><i>T</i><sub><i>Ca</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Threshold value for Ca channels.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [-0.01] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -0.02 ; high = -0.01 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">TK</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>T</mi>
-<mrow><mi>K</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">TK</span></tt> (<span class="formula"><i>T</i><sub><i>K</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Threshold value for K channels.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 0.0001 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">TNa</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>T</mi>
-<mrow><mi>N</mi><mi>a</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">TNa</span></tt> (<span class="formula"><i>T</i><sub><i>Na</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Threshold value for Na channels.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.3] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.25 ; high = 0.3 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">VCa</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>V</mi>
-<mrow><mi>C</mi><mi>a</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">VCa</span></tt> (<span class="formula"><i>V</i><sub><i>Ca</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Ca Nernst potential.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.9 ; high = 1.1 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">VK</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>V</mi>
-<mrow><mi>K</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">VK</span></tt> (<span class="formula"><i>V</i><sub><i>K</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">K Nernst potential.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [-0.7] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -0.8 ; high = 1.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">VL</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>V</mi>
-<mrow><mi>L</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">VL</span></tt> (<span class="formula"><i>V</i><sub><i>L</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Nernst potential leak channels.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [-0.5] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = -0.7 ; high = -0.4 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">VNa</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>V</mi>
-<mrow><mi>N</mi><mi>a</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">VNa</span></tt> (<span class="formula"><i>V</i><sub><i>Na</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Na Nernst potential.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.53] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.51 ; high = 0.55 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">VT</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>V</mi>
-<mrow><mi>T</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">VT</span></tt> (<span class="formula"><i>V</i><sub><i>T</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Threshold potential (mean) for excitatory neurons.          In <a class="reference internal" href="#breaksetal-2003-b">[Breaksetal_2003_b]</a> this values is 0.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 0.7 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">ZT</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>Z</mi>
-<mrow><mi>T</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">ZT</span></tt> (<span class="formula"><i>Z</i><sub><i>T</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Threshold potential (mean) for inihibtory neurons.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 0.1 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">aee</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>a</mi>
-<mrow><mi>e</mi><mi>e</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">aee</span></tt> (<span class="formula"><i>a</i><sub><i>ee</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Excitatory-to-excitatory synaptic strength.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.4] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.4 ; high = 0.6 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">aei</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>a</mi>
-<mrow><mi>e</mi><mi>i</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">aei</span></tt> (<span class="formula"><i>a</i><sub><i>ei</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Excitatory-to-inhibitory synaptic strength.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 2.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.1 ; high = 2.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">aie</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>a</mi>
-<mrow><mi>i</mi><mi>e</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">aie</span></tt> (<span class="formula"><i>a</i><sub><i>ie</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Inhibitory-to-excitatory synaptic strength.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 2.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.5 ; high = 2.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">ane</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>a</mi>
-<mrow><mi>n</mi><mi>e</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">ane</span></tt> (<span class="formula"><i>a</i><sub><i>ne</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Non-specific-to-excitatory synaptic strength.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.4 ; high = 1.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">ani</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>a</mi>
-<mrow><mi>n</mi><mi>i</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">ani</span></tt> (<span class="formula"><i>a</i><sub><i>ni</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Non-specific-to-inhibitory synaptic strength.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.4] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.3 ; high = 0.5 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">b</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>b</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">b</span></tt> (<span class="formula"><i>b</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Time constant scaling factor. The original value is 0.1</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.1] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0001 ; high = 1.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">d_Ca</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>δ</mi>
-<mrow><mi>C</mi><mi>a</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">d_Ca</span></tt> (<span class="formula"><i>δ</i><sub><i>Ca</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Variance of Ca channel threshold.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.15] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 5.1 ; high = 0.2 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">d_K</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>δ</mi>
-<mrow><mi>K</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">d_K</span></tt> (<span class="formula"><i>δ</i><sub><i>K</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Variance of K channel threshold.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.3] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.1 ; high = 0.4 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">d_Na</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>δ</mi>
-<mrow><mi>N</mi><mi>a</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">d_Na</span></tt> (<span class="formula"><i>δ</i><sub><i>Na</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Variance of Na channel threshold.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.15] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.1 ; high = 0.2 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">d_V</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>δ</mi>
-<mrow><mi>V</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">d_V</span></tt> (<span class="formula"><i>δ</i><sub><i>V</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Variance of the excitatory threshold. It is one of the main         parameters explored in <a class="reference internal" href="#breaksetal-2003-b">[Breaksetal_2003_b]</a>.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.65] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.49 ; high = 0.7 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">d_Z</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>δ</mi>
-<mrow><mi>Z</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">d_Z</span></tt> (<span class="formula"><i>δ</i><sub><i>Z</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Variance of the inhibitory threshold.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.7] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.001 ; high = 0.75 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">gCa</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>g</mi>
-<mrow><mi>C</mi><mi>a</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">gCa</span></tt> (<span class="formula"><i>g</i><sub><i>Ca</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Conductance of population of Ca++ channels.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.1] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.9 ; high = 1.5 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">gK</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>g</mi>
-<mrow><mi>K</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">gK</span></tt> (<span class="formula"><i>g</i><sub><i>K</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Conductance of population of K channels.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 2.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 1.95 ; high = 2.05 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">gL</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>g</mi>
-<mrow><mi>L</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">gL</span></tt> (<span class="formula"><i>g</i><sub><i>L</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Conductance of population of leak channels.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.5] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.45 ; high = 0.55 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">gNa</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>g</mi>
-<mrow><mi>N</mi><mi>a</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">gNa</span></tt> (<span class="formula"><i>g</i><sub><i>Na</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Conductance of population of Na channels.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 6.7] </div>
@@ -2258,17 +2414,16 @@ they investigated parameter values for which C &lt; a_ee and C &lt;&lt; a_ie.</p
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.simulator.noise.Noise&#8217;&gt; </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">phi</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>ϕ</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">phi</span></tt> (<span class="formula"><i>φ</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Temperature scaling factor.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.7] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.3 ; high = 0.9 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">rNMDA</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>r</mi>
-<mrow><mi>N</mi><mi>M</mi><mi>D</mi><mi>A</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">rNMDA</span></tt> (<span class="formula"><i>r</i><sub><i>NMDA</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Ratio of NMDA to AMPA receptors.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.25] </div>
@@ -2281,9 +2436,8 @@ they investigated parameter values for which C &lt; a_ee and C &lt;&lt; a_ie.</p
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  {&#8216;Z&#8217;: array([-1.5,  1.5]), &#8216;W&#8217;: array([-1.,  1.]), &#8216;V&#8217;: array([-1.5,  1.5])} </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">tau_K</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>τ</mi>
-<mrow><mi>K</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">tau_K</span></tt> (<span class="formula"><i>τ</i><sub><i>K</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Time constant for K relaxation time (ms)</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
@@ -2324,26 +2478,24 @@ Neuroscience 32(27), 11239-11252, 2013.</td></tr>
 <p><strong>traits on this class:</strong></p>
 <blockquote>
 <div><dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">I_o</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>I</mi>
-<mrow><mi>o</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">I_o</span></tt> (<span class="formula"><i>I</i><sub><i>o</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">[nA] Effective external input</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.33] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">J_N</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>J</mi>
-<mrow><mi>N</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">J_N</span></tt> (<span class="formula"><i>J</i><sub><i>N</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Excitatory recurrence</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.2609] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.2609 ; high = 0.5 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">a</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>a</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">a</span></tt> (<span class="formula"><i>a</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line-block">
 <div class="line">[nC]^{-1}. Parameter chosen to ﬁt numerical solutions.</div>
@@ -2352,24 +2504,24 @@ Neuroscience 32(27), 11239-11252, 2013.</td></tr>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 0.27 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">b</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>b</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">b</span></tt> (<span class="formula"><i>b</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">[kHz]. Parameter chosen to ﬁt numerical solutions.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.108] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 1.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">d</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>d</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">d</span></tt> (<span class="formula"><i>d</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">[ms]. Parameter chosen to ﬁt numerical solutions.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 154.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.0 ; high = 200.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">gamma</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>γ</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">gamma</span></tt> (<span class="formula"><i>γ</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Kinetic parameter</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.641] </div>
@@ -2382,9 +2534,8 @@ Neuroscience 32(27), 11239-11252, 2013.</td></tr>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.simulator.noise.Noise&#8217;&gt; </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">sigma_noise</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>σ</mi>
-<mrow><mi>n</mi><mi>o</mi><mi>i</mi><mi>s</mi><mi>e</mi></mrow></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">sigma_noise</span></tt> (<span class="formula"><i>σ</i><sub><i>noise</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">[nA] Noise amplitude. Take this value into account for stochatic         integration schemes.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [  1.00000000e-09] </div>
@@ -2397,8 +2548,8 @@ Neuroscience 32(27), 11239-11252, 2013.</td></tr>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  {&#8216;S&#8217;: array([ 0.,  1.])} </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">tau_s</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>τ</mi><mi>S</mi></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">tau_s</span></tt> (<span class="formula"><i>τ</i><sub><i>S</i></sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Kinetic parameter. NMDA decay time constant.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 100.] </div>
@@ -2411,8 +2562,8 @@ Neuroscience 32(27), 11239-11252, 2013.</td></tr>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [&#8216;S&#8217;] </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">w</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>w</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">w</span></tt> (<span class="formula"><i>w</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Excitatory recurrence</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.6] </div>
@@ -2465,11 +2616,11 @@ NeuroImage, 57, 1, 2011.</td></tr>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.simulator.noise.Noise&#8217;&gt; </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">omega</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>ω</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">omega</span></tt> (<span class="formula"><i>ω</i></span>
+)</dt>
 <dd><div class="first last line-block">
-<div class="line"><math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>ω</mi></mrow></math> sets the base line frequency for the             Kuramoto oscillator</div>
+<div class="line"><span class="formula"><i>ω</i></span>
+ sets the base line frequency for the             Kuramoto oscillator</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 1.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.01 ; high = 200.0 </div>
 </div>
@@ -2505,120 +2656,233 @@ NeuroImage, 57, 1, 2011.</td></tr>
 <dt>
 <tt class="descclassname">JansenRit.</tt><tt class="descname">dfun</tt><big>(</big><em>state_variables</em>, <em>coupling</em>, <em>local_coupling=0.0</em><big>)</big></dt>
 <dd><p>The dynamic equations were taken from <a class="reference internal" href="#jr-1995">[JR_1995]</a></p>
-<div>
-<math xmlns="http://www.w3.org/1998/Math/MathML" mode="display">
-<mtable>
-<mtr>
-<mtd><mover>
-<mrow><msub><mi>y</mi><mn>0</mn></msub></mrow><mo>˙</mo></mover></mtd>
-<mtd><mo>=</mo><msub><mi>y</mi><mn>3</mn></msub></mtd></mtr>
-<mtr>
-<mtd><mover>
-<mrow><msub><mi>y</mi><mn>3</mn></msub></mrow><mo>˙</mo></mover></mtd>
-<mtd><mo>=</mo><mi>A</mi><mi>a</mi><mspace></mspace><mi>S</mi><mo>[</mo><msub><mi>y</mi><mn>1</mn></msub><mo>-</mo><msub><mi>y</mi><mn>2</mn></msub><mo>]</mo><mo>-</mo><mn>2</mn><mi>a</mi><mspace></mspace><msub><mi>y</mi><mn>3</mn></msub><mo>-</mo><mn>2</mn><msup><mi>a</mi><mn>2</mn></msup><mspace></mspace><msub><mi>y</mi><mn>0</mn></msub></mtd></mtr>
-<mtr>
-<mtd><mover>
-<mrow><msub><mi>y</mi><mn>1</mn></msub></mrow><mo>˙</mo></mover></mtd>
-<mtd><mo>=</mo><msub><mi>y</mi><mn>4</mn></msub></mtd></mtr>
-<mtr>
-<mtd><mover>
-<mrow><msub><mi>y</mi><mn>4</mn></msub></mrow><mo>˙</mo></mover></mtd>
-<mtd><mo>=</mo><mi>A</mi><mi>a</mi><mspace></mspace><mo>[</mo><mi>p</mi><mo>(</mo><mi>t</mi><mo>)</mo><mo>+</mo><msub><mi>α</mi><mn>2</mn></msub><mi>J</mi><mo>+</mo><mi>S</mi><mo>[</mo><msub><mi>α</mi><mn>1</mn></msub><mi>J</mi><mspace></mspace><msub><mi>y</mi><mn>0</mn></msub><mo>]</mo><mo>+</mo><msub><mi>c</mi><mn>0</mn></msub><mo>]</mo><mo>-</mo><mn>2</mn><mi>a</mi><mspace></mspace><mi>y</mi><mo>-</mo><msup><mi>a</mi><mn>2</mn></msup><mspace></mspace><msub><mi>y</mi><mn>1</mn></msub></mtd></mtr>
-<mtr>
-<mtd><mover>
-<mrow><msub><mi>y</mi><mn>2</mn></msub></mrow><mo>˙</mo></mover></mtd>
-<mtd><mo>=</mo><msub><mi>y</mi><mn>5</mn></msub></mtd></mtr>
-<mtr>
-<mtd><mover>
-<mrow><msub><mi>y</mi><mn>5</mn></msub></mrow><mo>˙</mo></mover></mtd>
-<mtd><mo>=</mo><mi>B</mi><mi>b</mi><mo>(</mo><msub><mi>α</mi><mn>4</mn></msub><mi>J</mi><mspace></mspace><mi>S</mi><mo>[</mo><msub><mi>α</mi><mn>3</mn></msub><mi>J</mi><mspace></mspace><msub><mi>y</mi><mn>0</mn></msub><mo>]</mo><mo>)</mo><mo>-</mo><mn>2</mn><mi>b</mi><mspace></mspace><msub><mi>y</mi><mn>5</mn></msub><mo>-</mo><msup><mi>b</mi><mn>2</mn></msup><mspace></mspace><msub><mi>y</mi><mn>2</mn></msub></mtd></mtr>
-<mtr>
-<mtd><mi>S</mi><mo>[</mo><mi>v</mi><mo>]</mo></mtd>
-<mtd><mo>=</mo><mfrac>
-<mrow><mn>2</mn><mspace></mspace><msub><mi>ν</mi>
-<mrow><mi>m</mi><mi>a</mi><mi>x</mi></mrow></msub></mrow>
-<mrow><mn>1</mn><mo>+</mo><msup><mo>exp</mo>
-<mrow><mi>r</mi><mo>(</mo><msub><mi>v</mi><mn>0</mn></msub><mo>-</mo><mi>v</mi><mo>)</mo></mrow></msup></mrow></mfrac></mtd></mtr></mtable></math>
+<div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-r">
+<i>y<sub>0</sub>̇</i>
+</span>
+<span class="arraycell align-l">
+ = <i>y</i><sub>3</sub>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>y<sub>3</sub>̇</i>
+</span>
+<span class="arraycell align-l">
+ = <i>A</i><i>a</i> <i>S</i>[<i>y</i><sub>1</sub> − <i>y</i><sub>2</sub>] − 2<i>a</i> <i>y</i><sub>3</sub> − 2<i>a</i><sup>2</sup> <i>y</i><sub>0</sub>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>y<sub>1</sub>̇</i>
+</span>
+<span class="arraycell align-l">
+ = <i>y</i><sub>4</sub>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>y<sub>4</sub>̇</i>
+</span>
+<span class="arraycell align-l">
+ = <i>A</i><i>a</i> [<i>p</i>(<i>t</i>) + <i>α</i><sub>2</sub><i>J</i> + <i>S</i>[<i>α</i><sub>1</sub><i>J</i> <i>y</i><sub>0</sub>] + <i>c</i><sub>0</sub>] − 2<i>a</i> <i>y</i> − <i>a</i><sup>2</sup> <i>y</i><sub>1</sub>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>y<sub>2</sub>̇</i>
+</span>
+<span class="arraycell align-l">
+ = <i>y</i><sub>5</sub>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>y<sub>5</sub>̇</i>
+</span>
+<span class="arraycell align-l">
+ = <i>B</i><i>b</i>(<i>α</i><sub>4</sub><i>J</i> <i>S</i>[<i>α</i><sub>3</sub><i>J</i> <i>y</i><sub>0</sub>]) − 2<i>b</i> <i>y</i><sub>5</sub> − <i>b</i><sup>2</sup> <i>y</i><sub>2</sub>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>S</i>[<i>v</i>]
+</span>
+<span class="arraycell align-l">
+ = <span class="fraction"><span class="ignored">(</span><span class="numerator">2 <i>ν</i><sub><i>max</i></sub></span><span class="ignored">)/(</span><span class="denominator">1 + exp<sup><i>r</i>(<i>v</i><sub>0</sub> − <i>v</i>)</sup></span><span class="ignored">)</span></span>
+</span>
+
+</span>
+</span>
 </div>
-<p><math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>p</mi><mo>(</mo><mi>t</mi><mo>)</mo></mrow></math> can be any arbitrary function, including white noise or 
+<p><span class="formula"><i>p</i>(<i>t</i>)</span>
+ can be any arbitrary function, including white noise or 
 random numbers taken from a uniform distribution, representing a pulse
 density with an amplitude varying between 120 and 320</p>
 <p>For Evoked Potentials, a transient component of the input, 
 representing the impulse density attribuable to a brief visual input is 
 applied. Time should be in seconds.</p>
-<div>
-<math xmlns="http://www.w3.org/1998/Math/MathML" mode="display">
-<mtable>
-<mtr>
-<mtd><mi>p</mi><mo>(</mo><mi>t</mi><mo>)</mo><mo>=</mo><mi>q</mi><mspace></mspace><mo>(</mo><mfrac>
-<mrow><mi>t</mi></mrow>
-<mrow><mi>w</mi></mrow></mfrac><msup><mo>)</mo><mi>n</mi></msup><mspace></mspace><mo>exp</mo>
-<mrow><mo>-</mo><mfrac>
-<mrow><mi>t</mi></mrow>
-<mrow><mi>w</mi></mrow></mfrac></mrow></mtd></mtr>
-<mtr>
-<mtd><mi>q</mi><mo>=</mo><mn>0</mn><mo>.</mo><mn>5</mn></mtd></mtr>
-<mtr>
-<mtd><mi>n</mi><mo>=</mo><mn>7</mn></mtd></mtr>
-<mtr>
-<mtd><mi>w</mi><mo>=</mo><mn>0</mn><mo>.</mo><mn>0</mn><mn>0</mn><mn>5</mn><mo>[</mo><mi>s</mi><mo>]</mo></mtd></mtr></mtable></math>
+<div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-r">
+<i>p</i>(<i>t</i>) = <i>q</i> (<span class="fraction"><span class="ignored">(</span><span class="numerator"><i>t</i></span><span class="ignored">)/(</span><span class="denominator"><i>w</i></span><span class="ignored">)</span></span>)<sup><i>n</i></sup> exp − <span class="fraction"><span class="ignored">(</span><span class="numerator"><i>t</i></span><span class="ignored">)/(</span><span class="denominator"><i>w</i></span><span class="ignored">)</span></span>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>q</i> = 0.5
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>n</i> = 7
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-r">
+<i>w</i> = 0.005[<i>s</i>]
+</span>
+
+</span>
+</span>
 </div>
 </dd></dl>
 
 <p><strong>traits on this class:</strong></p>
 <blockquote>
 <div><dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">He</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>H</mi><mi>e</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">He</span></tt> (<span class="formula"><i>He</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Maximum amplitude of EPSP [mV]. Also called average synaptic gain.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 3.25] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 2.6 ; high = 9.75 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">Hi</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>B</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">Hi</span></tt> (<span class="formula"><i>B</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Maximum amplitude of IPSP [mV]. Also called average synaptic gain.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 29.3] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 17.6 ; high = 110.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">eo</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>v</mi><mn>0</mn></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">eo</span></tt> (<span class="formula"><i>v</i><sub>0</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Firing threshold (PSP) for which a 50% firing rate is achieved.         In other words, it is the value of the average membrane potential         corresponding to the inflection point of the sigmoid [mV].</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.0025] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 3.12 ; high = 6.0 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">gamma_1</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>α</mi><mn>1</mn></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">gamma_1</span></tt> (<span class="formula"><i>α</i><sub>1</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Average probability of synaptic contacts in the feedback         excitatory loop.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 50.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.5 ; high = 1.5 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">gamma_2</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>α</mi><mn>2</mn></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">gamma_2</span></tt> (<span class="formula"><i>α</i><sub>2</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Average probability of synaptic contacts in the feedback         excitatory loop.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 40.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.4 ; high = 1.2 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">gamma_3</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>α</mi><mn>3</mn></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">gamma_3</span></tt> (<span class="formula"><i>α</i><sub>3</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Average probability of synaptic contacts in the feedback         excitatory loop.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 12.] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.125 ; high = 0.375 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">gamma_4</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><msub><mi>α</mi><mn>4</mn></msub></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">gamma_4</span></tt> (<span class="formula"><i>α</i><sub>4</sub></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Average probability of synaptic contacts in the slow feedback         inhibitory loop.</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 12.] </div>
@@ -2631,8 +2895,8 @@ applied. Time should be in seconds.</p>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  &lt;class &#8216;tvb.simulator.noise.Noise&#8217;&gt; </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">r</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>r</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">r</span></tt> (<span class="formula"><i>r</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">Steepness of the sigmoidal transformation [mV^-1].</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.56] </div>
@@ -2645,16 +2909,16 @@ applied. Time should be in seconds.</p>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  {&#8216;x2&#8217;: array([-5.,  5.]), &#8216;x3&#8217;: array([-6.,  6.]), &#8216;x0&#8217;: array([-1.,  1.]), &#8216;x1&#8217;: array([-1.,  1.]), &#8216;x6&#8217;: array([-5.,  5.]), &#8216;x7&#8217;: array([-5.,  5.]), &#8216;x4&#8217;: array([-2.,  2.]), &#8216;x5&#8217;: array([-5.,  5.])} </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">tau_e</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>a</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">tau_e</span></tt> (<span class="formula"><i>a</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">time constant</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.1] </div>
 <div class="line"><tt class="docutils literal"><span class="pre">range</span></tt>: low = 0.05 ; high = 0.15 </div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">tau_i</span></tt> (<math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>b</mi></mrow></math>)</dt>
+<dt><tt class="docutils literal"><span class="pre">tau_i</span></tt> (<span class="formula"><i>b</i></span>
+)</dt>
 <dd><div class="first last line-block">
 <div class="line">time constant</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [ 0.15] </div>
@@ -2663,13 +2927,13 @@ applied. Time should be in seconds.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">variables_of_interest</span></tt> (Variables watched by Monitors)</dt>
 <dd><div class="first last line-block">
-<div class="line">This represents the default state-variables of this Model to be                                     monitored. It can be overridden for each Monitor if desired. The                                      corresponding state-variable indices for this model are <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>y</mi><mn>0</mn><mo>=</mo><mn>0</mn></mrow></math>,                                     <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>y</mi><mn>1</mn><mo>=</mo><mn>1</mn></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>y</mi><mn>2</mn><mo>=</mo><mn>2</mn></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>y</mi><mn>3</mn><mo>=</mo><mn>3</mn></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>y</mi><mn>4</mn><mo>=</mo><mn>4</mn></mrow></math>, and                                     <math xmlns="http://www.w3.org/1998/Math/MathML">
-<mrow><mi>y</mi><mn>5</mn><mo>=</mo><mn>5</mn></mrow></math></div>
+<div class="line">This represents the default state-variables of this Model to be                                     monitored. It can be overridden for each Monitor if desired. The                                      corresponding state-variable indices for this model are <span class="formula"><i>y</i>0 = 0</span>
+,                                     <span class="formula"><i>y</i>1 = 1</span>
+, <span class="formula"><i>y</i>2 = 2</span>
+, <span class="formula"><i>y</i>3 = 3</span>
+, <span class="formula"><i>y</i>4 = 4</span>
+, and                                     <span class="formula"><i>y</i>5 = 5</span>
+</div>
 <div class="line"><tt class="docutils literal"><span class="pre">default</span></tt>:  [&#8216;x0&#8217;, &#8216;x1&#8217;, &#8216;x2&#8217;, &#8216;x3&#8217;] </div>
 </div>
 </dd>
@@ -2846,7 +3110,7 @@ for publication (Jirsa et al, 2013)</p>
     </div>
     <div class="footer">
         &copy; Copyright 2013, timpx.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

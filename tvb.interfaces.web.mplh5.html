@@ -57,7 +57,7 @@
   <ul>
 <li><a class="reference internal" href="#">mplh5 Package</a><ul>
 <li><a class="reference internal" href="#mplh5-backend-module"><tt class="docutils literal"><span class="pre">mplh5_backend</span></tt> Module</a></li>
-<li><a class="reference internal" href="#mplh5-server-module"><tt class="docutils literal"><span class="pre">mplh5_server</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-tvb.interfaces.web.mplh5.mplh5_server"><tt class="docutils literal"><span class="pre">mplh5_server</span></tt> Module</a></li>
 </ul>
 </li>
 </ul>
@@ -93,8 +93,37 @@
 <div class="section" id="mplh5-backend-module">
 <h2><tt class="xref py py-mod docutils literal"><span class="pre">mplh5_backend</span></tt> Module<a class="headerlink" href="#mplh5-backend-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="mplh5-server-module">
-<h2><tt class="xref py py-mod docutils literal"><span class="pre">mplh5_server</span></tt> Module<a class="headerlink" href="#mplh5-server-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-tvb.interfaces.web.mplh5.mplh5_server">
+<span id="mplh5-server-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">mplh5_server</span></tt> Module<a class="headerlink" href="#module-tvb.interfaces.web.mplh5.mplh5_server" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tvb.interfaces.web.mplh5.mplh5_server.ServerStarter">
+<em class="property">class </em><tt class="descclassname">tvb.interfaces.web.mplh5.mplh5_server.</tt><tt class="descname">ServerStarter</tt><big>(</big><em>group=None</em>, <em>target=None</em>, <em>name=None</em>, <em>args=()</em>, <em>kwargs=None</em>, <em>verbose=None</em><big>)</big><a class="headerlink" href="#tvb.interfaces.web.mplh5.mplh5_server.ServerStarter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">threading.Thread</span></tt></p>
+<p>Handler for starting in a different thread the MPLH5 server.
+Synchronization event. We want to start MPLH5 server in a new thread, 
+but the main thread should wait for it, otherwise wrong import 
+of pylb might be used.</p>
+<dl class="attribute">
+<dt id="tvb.interfaces.web.mplh5.mplh5_server.ServerStarter.logger">
+<tt class="descname">logger</tt><em class="property"> = None</em><a class="headerlink" href="#tvb.interfaces.web.mplh5.mplh5_server.ServerStarter.logger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tvb.interfaces.web.mplh5.mplh5_server.ServerStarter.run">
+<tt class="descname">run</tt><big>(</big><big>)</big><a class="headerlink" href="#tvb.interfaces.web.mplh5.mplh5_server.ServerStarter.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start MPLH5 server. 
+This method needs to be executed as soon as possible, before any import of pylab.
+Otherwise the proper mplh5canvas back-end will not be used correctly.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="tvb.interfaces.web.mplh5.mplh5_server.start_server">
+<tt class="descclassname">tvb.interfaces.web.mplh5.mplh5_server.</tt><tt class="descname">start_server</tt><big>(</big><em>logger</em><big>)</big><a class="headerlink" href="#tvb.interfaces.web.mplh5.mplh5_server.start_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start MPLH5 server in a new thread, to avoid crashes.</p>
+</dd></dl>
+
 </div>
 </div>
 
@@ -123,7 +152,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2013, timpx.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>
